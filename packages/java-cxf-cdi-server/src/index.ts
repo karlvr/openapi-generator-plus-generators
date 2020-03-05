@@ -395,7 +395,7 @@ const JavaCodegenConfig: CodegenConfig = {
 
 		const options: CodegenOptionsJava = state.options as CodegenOptionsJava
 		const rootContext: CodegenRootContext = {
-			generatorClass: 'openapi-generator-node',
+			generatorClass: 'openapi-generator-plus/java-cxf-cdi-server',
 			generatedDate: new Date().toISOString(),
 		}
 
