@@ -1,5 +1,5 @@
 import { constantCase } from 'change-case'
-import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenConfig, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError } from '@openapi-generator-plus/core'
+import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError } from '@openapi-generator-plus/core'
 import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
@@ -91,7 +91,7 @@ async function emit(templateName: string, outputPath: string, context: object, r
 	}
 }
 
-const JavaCodegenConfig: CodegenConfig = {
+const JavaCodegenConfig: CodegenGenerator = {
 	toClassName: (name) => {
 		return classCamelCase(name)
 	},

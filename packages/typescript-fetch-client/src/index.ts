@@ -1,4 +1,4 @@
-import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenRootContext, CodegenConfig, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from '@openapi-generator-plus/core'
+import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from '@openapi-generator-plus/core'
 import { CodegenOptionsTypescript } from './types'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
@@ -81,7 +81,7 @@ async function emit(templateName: string, outputPath: string, context: object, r
 	}
 }
 
-const config: CodegenConfig = {
+const config: CodegenGenerator = {
 	toClassName: (name) => {
 		return classCamelCase(name)
 	},
