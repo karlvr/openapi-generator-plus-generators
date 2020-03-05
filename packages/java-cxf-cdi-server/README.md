@@ -15,3 +15,4 @@
 |`dateTimeImplementation`|`string`|Date time type class.|`"java.time.OffsetDateTime"`|
 |`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"`|The style to use for constant naming.|`"allCapsSnake"`|
 |`authenticatedOperationAnnotation`|`string`|Annotation to add to API methods that require authentication.|`undefined`|
+|`hideGenerationTimestamp`|`boolean`|Whether to hide the timestamp in the `@Generated` annotation.|`false`|
