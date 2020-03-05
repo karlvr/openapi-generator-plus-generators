@@ -272,19 +272,19 @@ const JavaCodegenConfig: CodegenGenerator = {
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	options: (initialOptions): CodegenOptionsJava => {
-		const packageName = initialOptions.package || 'com.example'
+	options: (config): CodegenOptionsJava => {
+		const packageName = config.package || 'com.example'
 		return {
 			apiPackage: `${packageName}`,
-			apiServiceImplPackage: `${initialOptions.apiPackage || packageName}.impl`,
+			apiServiceImplPackage: `${config.apiPackage || packageName}.impl`,
 			modelPackage: `${packageName}.model`,
 			invokerPackage: `${packageName}.app`,
 			useBeanValidation: true,
-			dateImplementation: initialOptions.dateImplementation || 'java.time.LocalDate',
-			timeImplementation: initialOptions.timeImplementation || 'java.time.LocalTime',
-			dateTimeImplementation: initialOptions.dateTimeImplementation || 'java.time.OffsetDateTime',
+			dateImplementation: config.dateImplementation || 'java.time.LocalDate',
+			timeImplementation: config.timeImplementation || 'java.time.LocalTime',
+			dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
 			constantStyle: ConstantStyle.allCapsSnake,
-			...initialOptions,
+			...config,
 		}
 	},
 	operationGroupingStrategy: () => {

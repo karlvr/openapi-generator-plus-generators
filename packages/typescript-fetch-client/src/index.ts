@@ -215,11 +215,11 @@ const config: CodegenGenerator = {
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	options: (initialOptions): CodegenOptionsTypescript => {
+	options: (config): CodegenOptionsTypescript => {
 		return {
 			hideGenerationTimestamp: true,
 			supportsES6: false,
-			...initialOptions,
+			...config,
 		}
 	},
 	operationGroupingStrategy: () => {
