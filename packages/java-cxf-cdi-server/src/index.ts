@@ -290,6 +290,7 @@ const JavaGenerator: CodegenGenerator = {
 			dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
 			constantStyle: config.constantStyle || ConstantStyle.allCapsSnake,
 			hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
+			imports: config.imports,
 			config,
 		}
 	},
