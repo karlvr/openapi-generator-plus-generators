@@ -91,7 +91,7 @@ async function emit(templateName: string, outputPath: string, context: object, r
 	}
 }
 
-const JavaCodegenConfig: CodegenGenerator = {
+const JavaGenerator: CodegenGenerator = {
 	toClassName: (name) => {
 		return classCamelCase(name)
 	},
@@ -118,11 +118,11 @@ const JavaCodegenConfig: CodegenGenerator = {
 		return `${method.toLocaleLowerCase()}_${path}`
 	},
 	toModelNameFromPropertyName: (name, state) => {
-		return state.config.toClassName(pluralize.singular(name), state)
+		return state.generator.toClassName(pluralize.singular(name), state)
 	},
 	toLiteral: (value, type, format, required, state) => {
 		if (value === undefined) {
-			return state.config.toDefaultValue(undefined, type, format, required, state)
+			return state.generator.toDefaultValue(undefined, type, format, required, state)
 		}
 
 		switch (type) {
@@ -215,7 +215,7 @@ const JavaCodegenConfig: CodegenGenerator = {
 				if (modelNames) {
 					let modelName = `${(state.options as CodegenOptionsJava).modelPackage}`
 					for (const name of modelNames) {
-						modelName += `.${state.config.toClassName(name, state)}`
+						modelName += `.${state.generator.toClassName(name, state)}`
 					}
 					return new CodegenNativeType(modelName)
 				} else {
@@ -250,7 +250,7 @@ const JavaCodegenConfig: CodegenGenerator = {
 	},
 	toDefaultValue: (defaultValue, type, format, required, state) => {
 		if (defaultValue !== undefined) {
-			return state.config.toLiteral(defaultValue, type, format, required, state)
+			return state.generator.toLiteral(defaultValue, type, format, required, state)
 		}
 
 		if (!required) {
@@ -260,7 +260,7 @@ const JavaCodegenConfig: CodegenGenerator = {
 		switch (type) {
 			case 'integer':
 			case 'number':
-				return state.config.toLiteral(0, type, format, required, state)
+				return state.generator.toLiteral(0, type, format, required, state)
 			case 'boolean':
 				return 'false'
 			case 'string':
@@ -293,12 +293,12 @@ const JavaCodegenConfig: CodegenGenerator = {
 
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
-		const config = state.config
+		const generator = state.generator
 
 		/** Convert the string argument to a Java class name. */
 		hbs.registerHelper('className', function(name: string) {
 			if (typeof name === 'string') {
-				return config.toClassName(name, state)
+				return generator.toClassName(name, state)
 			} else {
 				throw new Error(`className helper has invalid name parameter: ${name}`)
 			}
@@ -306,14 +306,14 @@ const JavaCodegenConfig: CodegenGenerator = {
 		/** Convert the given name to be a safe appropriately named identifier for the language */
 		hbs.registerHelper('identifier', function(name: string) {
 			if (typeof name === 'string') {
-				return config.toIdentifier(name, state)
+				return generator.toIdentifier(name, state)
 			} else {
 				throw new Error(`identifier helper has invalid parameter: ${name}`)
 			}
 		})
 		hbs.registerHelper('constantName', function(name: string) {
 			if (typeof name === 'string') {
-				return config.toConstantName(name, state)
+				return generator.toConstantName(name, state)
 			} else {
 				throw new Error(`constantName helper has invalid parameter: ${name}`)
 			}
@@ -403,16 +403,16 @@ const JavaCodegenConfig: CodegenGenerator = {
 
 		const apiPackagePath = packageToPath(options.apiPackage)
 		for (const group of doc.groups) {
-			await emit('api', `${outputPath}/${apiPackagePath}/${state.config.toClassName(group.name, state)}Api.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
+			await emit('api', `${outputPath}/${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		for (const group of doc.groups) {
-			await emit('apiService', `${outputPath}/${apiPackagePath}/${state.config.toClassName(group.name, state)}ApiService.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
+			await emit('apiService', `${outputPath}/${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiService.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		const apiImplPackagePath = packageToPath(options.apiServiceImplPackage)
 		for (const group of doc.groups) {
-			await emit('apiServiceImpl', `${outputPath}/${apiImplPackagePath}/${state.config.toClassName(group.name, state)}ApiServiceImpl.java`, 
+			await emit('apiServiceImpl', `${outputPath}/${apiImplPackagePath}/${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`, 
 				{ ...group, ...state.options, ...rootContext }, false, hbs)
 		}
 
@@ -421,9 +421,9 @@ const JavaCodegenConfig: CodegenGenerator = {
 			const context = {
 				models: [model],
 			}
-			await emit('model', `${outputPath}/${modelPackagePath}/${state.config.toClassName(model.name, state)}.java`, { ...context, ...state.options, ...rootContext }, true, hbs)
+			await emit('model', `${outputPath}/${modelPackagePath}/${state.generator.toClassName(model.name, state)}.java`, { ...context, ...state.options, ...rootContext }, true, hbs)
 		}
 	},
 }
 
-export default JavaCodegenConfig
+export default JavaGenerator

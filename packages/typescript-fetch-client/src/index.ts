@@ -81,7 +81,7 @@ async function emit(templateName: string, outputPath: string, context: object, r
 	}
 }
 
-const config: CodegenGenerator = {
+const generator: CodegenGenerator = {
 	toClassName: (name) => {
 		return classCamelCase(name)
 	},
@@ -98,11 +98,11 @@ const config: CodegenGenerator = {
 		return `${method.toLocaleLowerCase()}_${path}`
 	},
 	toModelNameFromPropertyName: (name, state) => {
-		return state.config.toClassName(pluralize.singular(name), state)
+		return state.generator.toClassName(pluralize.singular(name), state)
 	},
 	toLiteral: (value, type, format, required, state) => {
 		if (value === undefined) {
-			return state.config.toDefaultValue(undefined, type, format, required, state)
+			return state.generator.toDefaultValue(undefined, type, format, required, state)
 		}
 
 		switch (type) {
@@ -164,7 +164,7 @@ const config: CodegenGenerator = {
 				if (modelNames) {
 					let modelName = ''
 					for (const name of modelNames) {
-						modelName += `.${state.config.toClassName(name, state)}`
+						modelName += `.${state.generator.toClassName(name, state)}`
 					}
 					return new CodegenNativeType(modelName.substring(1))
 				} else {
@@ -193,7 +193,7 @@ const config: CodegenGenerator = {
 	},
 	toDefaultValue: (defaultValue, type, format, required, state) => {
 		if (defaultValue !== undefined) {
-			return state.config.toLiteral(defaultValue, type, format, required, state)
+			return state.generator.toLiteral(defaultValue, type, format, required, state)
 		}
 
 		if (!required) {
@@ -203,7 +203,7 @@ const config: CodegenGenerator = {
 		switch (type) {
 			case 'integer':
 			case 'number':
-				return state.config.toLiteral(0, type, format, required, state)
+				return state.generator.toLiteral(0, type, format, required, state)
 			case 'boolean':
 				return 'false'
 			case 'string':
@@ -228,12 +228,12 @@ const config: CodegenGenerator = {
 
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
-		const config = state.config
+		const generator = state.generator
 
 		/** Convert the string argument to a Java class name. */
 		hbs.registerHelper('className', function(name: string) {
 			if (typeof name === 'string') {
-				return config.toClassName(name, state)
+				return generator.toClassName(name, state)
 			} else {
 				throw new Error(`className helper has invalid name parameter: ${name}`)
 			}
@@ -241,14 +241,14 @@ const config: CodegenGenerator = {
 		/** Convert the given name to be a safe appropriately named identifier for the language */
 		hbs.registerHelper('identifier', function(name: string) {
 			if (typeof name === 'string') {
-				return config.toIdentifier(name, state)
+				return generator.toIdentifier(name, state)
 			} else {
 				throw new Error(`identifier helper has invalid parameter: ${name}`)
 			}
 		})
 		hbs.registerHelper('constantName', function(name: string) {
 			if (typeof name === 'string') {
-				return config.toConstantName(name, state)
+				return generator.toConstantName(name, state)
 			} else {
 				throw new Error(`constantName helper has invalid parameter: ${name}`)
 			}
@@ -351,4 +351,4 @@ const config: CodegenGenerator = {
 	},
 }
 
-export default config
+export default generator
