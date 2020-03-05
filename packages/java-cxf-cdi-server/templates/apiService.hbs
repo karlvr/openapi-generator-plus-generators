@@ -32,6 +32,8 @@ public interface {{className name}}ApiService {
 			return this.entity;
 		}
 		{{/unless}}
+
+		{{>apiServiceExceptionContents}}
 	}
 	{{/isDefault}}
 	{{/responses}}
