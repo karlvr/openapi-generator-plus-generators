@@ -17,7 +17,12 @@ async function loadTemplates(templateDirPath: string, hbs: typeof Handlebars) {
 	
 	for (const file of files) {
 		const template = await compileTemplate(path.resolve(templateDirPath, file), hbs)
-		hbs.registerPartial(path.parse(file).name, template)
+		const name = path.parse(file).name
+		if (hbs.partials[name]) {
+			/* If we will clobber an existing partial, prefix the original so we can still access it */
+			hbs.registerPartial(`original${capitalize(name)}`, hbs.partials[name])
+		}
+		hbs.registerPartial(name, template)
 	}
 }
 
@@ -393,6 +398,11 @@ const JavaGenerator: CodegenGenerator = {
 		// 	const options = arguments[arguments.length - 1];
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+
+		if (state.config.customTemplates) {
+			const customTemplatesPath = state.config.config ? path.resolve(path.dirname(state.config.config), state.config.customTemplates) : state.config.customTemplates
+			await loadTemplates(customTemplatesPath, hbs)
+		}
 
 		const options = state.options as CodegenOptionsJava
 		const rootContext: CodegenRootContext = {

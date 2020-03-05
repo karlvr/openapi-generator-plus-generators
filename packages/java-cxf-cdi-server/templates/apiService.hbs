@@ -33,8 +33,9 @@ public interface {{className name}}ApiService {
 		}
 		{{/unless}}
 
-		{{>apiServiceExceptionContents}}
+		{{>apiServiceExceptionContents operation=..}}
 	}
+
 	{{/isDefault}}
 	{{/responses}}
 	{{/vendorExtensions.x-implementation-provided}}
