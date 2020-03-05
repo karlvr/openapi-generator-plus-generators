@@ -1,6 +1,11 @@
 {
   "name": "openapi-generator-plus-generators",
   "private": true,
+  "scripts": {
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "watch": "lerna run --parallel watch"
+  },
   "devDependencies": {
     "@types/jest": "^25.1.2",
     "@types/lodash": "^4.14.149",
