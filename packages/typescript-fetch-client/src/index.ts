@@ -1,5 +1,4 @@
-import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenRootContext } from 'openapi-generator-node-core'
-import { CodegenConfig, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from 'openapi-generator-node-core'
+import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenRootContext, CodegenConfig, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from '@openapi-generator-plus/core'
 import { CodegenOptionsTypescript } from './types'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'

@@ -1,6 +1,5 @@
 import { constantCase } from 'change-case'
-import { pascalCase, camelCase, capitalize, GroupingStrategies } from 'openapi-generator-node-core'
-import { CodegenConfig, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError } from 'openapi-generator-node-core'
+import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenConfig, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError } from '@openapi-generator-plus/core'
 import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
