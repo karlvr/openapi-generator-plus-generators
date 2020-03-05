@@ -217,9 +217,10 @@ const generator: CodegenGenerator = {
 	},
 	options: (config): CodegenOptionsTypescript => {
 		return {
-			hideGenerationTimestamp: true,
+			npmName: config.npmName,
+			npmVersion: config.npmVersion,
 			supportsES6: false,
-			...config,
+			config,
 		}
 	},
 	operationGroupingStrategy: () => {
@@ -337,13 +338,14 @@ const generator: CodegenGenerator = {
 			generatedDate: new Date().toISOString(),
 		}
 
-		const outputPath = state.options.output
+		const outputPath = state.config.output
+		const options = state.options as CodegenOptionsTypescript
 
 		await emit('api', `${outputPath}/api.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('configuration', `${outputPath}/configuration.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('custom.d', `${outputPath}/custom.d.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('index', `${outputPath}/index.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
-		if (state.options['npmName']) {
+		if (options.npmName) {
 			await emit('package', `${outputPath}/package.json`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		}
 		await emit('README', `${outputPath}/README.md`, { ...doc, ...state.options, ...rootContext }, true, hbs)

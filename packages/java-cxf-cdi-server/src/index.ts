@@ -275,16 +275,17 @@ const JavaGenerator: CodegenGenerator = {
 	options: (config): CodegenOptionsJava => {
 		const packageName = config.package || 'com.example'
 		return {
-			apiPackage: `${packageName}`,
-			apiServiceImplPackage: `${config.apiPackage || packageName}.impl`,
-			modelPackage: `${packageName}.model`,
-			invokerPackage: `${packageName}.app`,
-			useBeanValidation: true,
+			apiPackage: config.apiPackage || `${packageName}`,
+			apiServiceImplPackage: config.apiServiceImplPackage || `${config.apiPackage || packageName}.impl`,
+			modelPackage: config.modelPackage || `${packageName}.model`,
+			invokerPackage: config.invokerPackage || `${packageName}.app`,
+			useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
 			dateImplementation: config.dateImplementation || 'java.time.LocalDate',
 			timeImplementation: config.timeImplementation || 'java.time.LocalTime',
 			dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
-			constantStyle: ConstantStyle.allCapsSnake,
-			...config,
+			constantStyle: config.constantStyle || ConstantStyle.allCapsSnake,
+			hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
+			config,
 		}
 	},
 	operationGroupingStrategy: () => {
@@ -393,13 +394,13 @@ const JavaGenerator: CodegenGenerator = {
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
-		const options: CodegenOptionsJava = state.options as CodegenOptionsJava
+		const options = state.options as CodegenOptionsJava
 		const rootContext: CodegenRootContext = {
 			generatorClass: 'openapi-generator-plus/java-cxf-cdi-server',
 			generatedDate: new Date().toISOString(),
 		}
 
-		const outputPath = state.options.output
+		const outputPath = state.config.output
 
 		const apiPackagePath = packageToPath(options.apiPackage)
 		for (const group of doc.groups) {
