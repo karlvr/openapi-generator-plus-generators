@@ -15,5 +15,8 @@
     "change-case": "^4.1.1",
     "handlebars": "^4.7.3",
     "pluralize": "^8.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
