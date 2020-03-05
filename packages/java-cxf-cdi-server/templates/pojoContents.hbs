@@ -25,7 +25,7 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{#if vendorExtensions.extraAnnotation}}
 {{{vendorExtensions.extraAnnotation}}}
 {{/if}}
-@ApiModelProperty({{#example}}example = "{{{example}}}", {{/example}}{{#required}}required = {{required}}, {{/required}}value = "{{{description}}}")
+@io.swagger.annotations.ApiModelProperty({{#example}}example = "{{{example}}}", {{/example}}{{#required}}required = {{required}}, {{/required}}value = "{{{description}}}")
 @com.fasterxml.jackson.annotation.JsonProperty("{{name}}")
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}
@@ -58,7 +58,7 @@ public boolean equals(java.lang.Object o) {
 	{{/if}}
 	{{#if vars}}
 	{{className name}} {{identifier name}} = ({{className name}}) o;
-	return {{#vars}}Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}} &&
+	return {{#vars}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}} &&
 			{{/hasMore}}{{/vars}};
 	{{else}}
 	return true;
@@ -67,7 +67,7 @@ public boolean equals(java.lang.Object o) {
 
 @Override
 public int hashCode() {
-	return {{#if parent}}31 * super.hashCode() + {{/if}}Objects.hash({{#vars}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/vars}});
+	return {{#if parent}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#vars}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/vars}});
 }
 
 @Override
