@@ -8,8 +8,16 @@
     "test": "jest",
     "watch": "tsc --watch"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
   "author": "Karl von Randow",
   "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
     "@openapi-generator-plus/core": "^0.0.1",
     "change-case": "^4.1.1",
