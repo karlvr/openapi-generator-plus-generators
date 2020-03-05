@@ -401,7 +401,7 @@ const JavaGenerator: CodegenGenerator = {
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
 		if (state.config.customTemplates) {
-			const customTemplatesPath = state.config.config ? path.resolve(path.dirname(state.config.config), state.config.customTemplates) : state.config.customTemplates
+			const customTemplatesPath = state.config.configPath ? path.resolve(path.dirname(state.config.configPath), state.config.customTemplates) : state.config.customTemplates
 			await loadTemplates(customTemplatesPath, hbs)
 		}
 
@@ -411,7 +411,7 @@ const JavaGenerator: CodegenGenerator = {
 			generatedDate: new Date().toISOString(),
 		}
 
-		const outputPath = state.config.output
+		const outputPath = state.config.outputPath
 
 		const apiPackagePath = packageToPath(options.apiPackage)
 		for (const group of doc.groups) {

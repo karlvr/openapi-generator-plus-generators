@@ -338,7 +338,7 @@ const generator: CodegenGenerator = {
 			generatedDate: new Date().toISOString(),
 		}
 
-		const outputPath = state.config.output
+		const outputPath = state.config.outputPath
 		const options = state.options as CodegenOptionsTypescript
 
 		await emit('api', `${outputPath}/api.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
