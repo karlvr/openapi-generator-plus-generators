@@ -75,7 +75,7 @@ async function emit(templateName: string, outputPath: string, context: object, r
 	try {
 		outputString = template(context)
 	} catch (error) {
-		console.error(`Failed to generate template "${templateName}"`, error)
+		console.error(`Failed to generate template "${templateName}": ${error.message}`)
 		return
 	}
 
