@@ -1,0 +1,10 @@
+/**
+ * {{{description}}}
+ * @export
+ * @enum {string}
+ */
+export enum {{className name}} {
+{{#enumValues}}
+	{{{constantName value}}} = <any> {{{literalValue}}}{{#hasMore}},{{/hasMore}}
+{{/enumValues}}
+}
