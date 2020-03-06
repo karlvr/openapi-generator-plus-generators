@@ -51,9 +51,9 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 	toModelNameFromPropertyName: (name, state) => {
 		return state.generator.toClassName(pluralize.singular(name), state)
 	},
-	toLiteral: (value, type, format, required, state) => {
+	toLiteral: (value, { type, format, required }, state) => {
 		if (value === undefined) {
-			return state.generator.toDefaultValue(undefined, type, format, required, state)
+			return state.generator.toDefaultValue(undefined, { type, format, required }, state)
 		}
 
 		switch (type) {
@@ -183,9 +183,9 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		}
 		return new CodegenNativeType(`java.util.Map<${keyNativeType}, ${componentNativeType}>`, `java.util.Map<${keyNativeType.wireType}, ${componentNativeType.wireType}>`)
 	},
-	toDefaultValue: (defaultValue, type, format, required, state) => {
+	toDefaultValue: (defaultValue, { type, format, required }, state) => {
 		if (defaultValue !== undefined) {
-			return state.generator.toLiteral(defaultValue, type, format, required, state)
+			return state.generator.toLiteral(defaultValue, { type, format, required }, state)
 		}
 
 		if (!required) {
@@ -195,7 +195,7 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		switch (type) {
 			case 'integer':
 			case 'number':
-				return state.generator.toLiteral(0, type, format, required, state)
+				return state.generator.toLiteral(0, { type, format, required }, state)
 			case 'boolean':
 				return 'false'
 			case 'string':

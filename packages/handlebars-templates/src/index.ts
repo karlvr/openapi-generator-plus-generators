@@ -138,7 +138,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenSt
 
 	/** Format the given string as a string literal, including quotes as required */
 	hbs.registerHelper('stringLiteral', function(value: string) {
-		return generator.toLiteral(value, 'string', undefined, true, state)
+		return generator.toLiteral(value, { type: 'string' }, state)
 	})
 
 	/** Block helper that evaluates if there are more items in the current iteration context */
