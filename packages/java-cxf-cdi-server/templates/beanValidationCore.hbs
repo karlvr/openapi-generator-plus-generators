@@ -1,4 +1,4 @@
-{{#if pattern}} @javax.validation.constraints.Pattern(regexp="{{{escapeString pattern}}}"{{#if vendorExtensions.x-pattern-message}}, message="{{&vendorExtensions.x-pattern-message}}"{{/if}}){{/if}}{{!
+{{#if pattern}} @javax.validation.constraints.Pattern(regexp={{{stringLiteral pattern}}}{{#if vendorExtensions.x-pattern-message}}, message="{{&vendorExtensions.x-pattern-message}}"{{/if}}){{/if}}{{!
 minLength && maxLength set
 }}{{#if minLength}}{{#if maxLength}} @javax.validation.constraints.Size(min={{minLength}},max={{maxLength}}{{#if vendorExtensions.x-length-message}}, message="{{&vendorExtensions.x-length-message}}"{{/if}}){{/if}}{{/if}}{{!
 minLength set, maxLength not

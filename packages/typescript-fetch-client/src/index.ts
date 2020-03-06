@@ -1,84 +1,15 @@
-import { pascalCase, camelCase, capitalize, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from '@openapi-generator-plus/core'
+import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from '@openapi-generator-plus/core'
 import { CodegenOptionsTypescript } from './types'
 import path from 'path'
-import Handlebars, { HelperOptions } from 'handlebars'
-import { promises as fs } from 'fs'
+import Handlebars from 'handlebars'
 import pluralize from 'pluralize'
-
-async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
-	const templateSource = await fs.readFile(templatePath, 'UTF-8')
-	return hbs.compile(templateSource)
-}
-
-async function loadTemplates(templateDirPath: string, hbs: typeof Handlebars) {
-	const files = await fs.readdir(templateDirPath)
-	
-	for (const file of files) {
-		const template = await compileTemplate(path.resolve(templateDirPath, file), hbs)
-		hbs.registerPartial(path.parse(file).name, template)
-	}
-}
-
-/** Returns the string converted to a string that is safe as an identifier in most languages */
-function identifierSafe(value: string) {
-	/* Remove invalid leading characters */
-	value = value.replace(/^[^a-zA-Z_]*/, '')
-
-	/* Convert any illegal characters to underscores */
-	value = value.replace(/[^a-zA-Z0-9_]/g, '_')
-
-	return value
-}
-
-/**
- * Camel case and capitalize suitable for a class name. Doesn't change existing
- * capitalization in the value.
- * e.g. "FAQSection" remains "FAQSection", and "faqSection" will become "FaqSection" 
- * @param value string to be turned into a class name
- */
-function classCamelCase(value: string) {
-	return pascalCase(identifierSafe(value))
-}
-
-function identifierCamelCase(value: string) {
-	return camelCase(identifierSafe(value))
-}
+import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
+import { classCamelCase, identifierCamelCase } from '@openapi-generator-plus/java-like-generator-helper'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
 	value = value.replace(/'/g, '\\\'')
 	return value
-}
-
-async function emit(templateName: string, outputPath: string, context: object, replace: boolean, hbs: typeof Handlebars) {
-	const template = hbs.partials[templateName]
-	if (!template) {
-		throw new Error(`Unknown template: ${templateName}`)
-	}
-
-	let outputString
-	try {
-		outputString = template(context)
-	} catch (error) {
-		console.error(`Failed to generate template "${templateName}"`, error)
-		return
-	}
-
-	if (outputPath === '-') {
-		console.log(outputString)
-	} else {
-		if (!replace) {
-			try {
-				await fs.access(outputPath)
-				/* File exists, don't replace */
-				return
-			} catch (error) {
-				/* Ignore, file doesn't exist */
-			}
-		}
-		await fs.mkdir(path.dirname(outputPath), { recursive: true })
-		fs.writeFile(outputPath, outputString, 'UTF-8')
-	}
 }
 
 const generator: CodegenGenerator = {
@@ -229,107 +160,8 @@ const generator: CodegenGenerator = {
 
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
-		const generator = state.generator
 
-		/** Convert the string argument to a Java class name. */
-		hbs.registerHelper('className', function(name: string) {
-			if (typeof name === 'string') {
-				return generator.toClassName(name, state)
-			} else {
-				throw new Error(`className helper has invalid name parameter: ${name}`)
-			}
-		})
-		/** Convert the given name to be a safe appropriately named identifier for the language */
-		hbs.registerHelper('identifier', function(name: string) {
-			if (typeof name === 'string') {
-				return generator.toIdentifier(name, state)
-			} else {
-				throw new Error(`identifier helper has invalid parameter: ${name}`)
-			}
-		})
-		hbs.registerHelper('constantName', function(name: string) {
-			if (typeof name === 'string') {
-				return generator.toConstantName(name, state)
-			} else {
-				throw new Error(`constantName helper has invalid parameter: ${name}`)
-			}
-		})
-		// Handlebars.registerHelper('literal', function(value: any) {
-		// 	if (value !== undefined) {
-		// 		return new Handlebars.SafeString(config.toLiteral(value, state))
-		// 	} else {
-		// 		throw new Error(`literal helper has invalid parameter: ${value}`)
-		// 	}
-		// })
-		hbs.registerHelper('capitalize', function(value: string) {
-			return capitalize(value)
-		})
-		hbs.registerHelper('escapeString', function(value: string) {
-			return escapeString(value)
-		})
-		// Handlebars.registerHelper('hasConsumes', function(this: any, options: HelperOptions) {
-		// 	if (this.consumes) {
-		// 		return options.fn({
-		// 			...this,
-		// 			consumes: this.consumes.map((mediaType: string) => ({ mediaType })),
-		// 		})
-		// 	} else {
-		// 		return options.inverse(this)
-		// 	}
-		// })
-		// Handlebars.registerHelper('hasProduces', function(this: any, options: HelperOptions) {
-		// 	if (this.produces) {
-		// 		return options.fn({
-		// 			...this,
-		// 			produces: this.produces.map((mediaType: string) => ({ mediaType })),
-		// 		})
-		// 	} else {
-		// 		return options.inverse(this)
-		// 	}
-		// })
-		// Handlebars.registerHelper('subresourceOperation', function(this: any, options: HelperOptions) {
-		// 	if (this.path) {
-		// 		return options.fn(this)
-		// 	} else {
-		// 		return options.inverse(this)
-		// 	}
-		// })
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		hbs.registerHelper('hasMore', function(this: any, options: HelperOptions) {
-			if (options.data.last === false) {
-				return options.fn(this)
-			} else {
-				return options.inverse(this)
-			}
-		})
-		// Handlebars.registerHelper('dataType', function(this: any, name: string) {
-		// 	/* Convert the given swagger type to a type appropriate to the language */
-		// 	if (this.type) {
-		// 		return new Handlebars.SafeString(config.toDataType(this.type, this.format, this.required, this.refName))
-		// 	}
-		// })
-		// Handlebars.registerHelper('returnBaseType', function(this: CodegenOperationDetail, options: HelperOptions) {
-		// 	// console.log('returnBaseType', options)
-		// 	if (this.responses) {
-
-		// 	}
-		// 	if (options.fn) {
-		// 		/* Block helper */
-		// 		return options.fn(this)
-		// 	} else {
-		// 		return 'OK'
-		// 	}
-		// })
-		// Handlebars.registerHelper('httpMethod', function(this: any, options: HelperOptions) {
-		// 	console.log('HTTP METHOD', this)
-		// 	return this.method
-		// })
-		// Handlebars.registerHelper('helperMissing', function(this: any) {
-		// 	const options = arguments[arguments.length - 1];
-
-		hbs.registerHelper('safe', function(value: string) {
-			return new Handlebars.SafeString(value)
-		})
+		registerStandardHelpers(hbs, state)
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
