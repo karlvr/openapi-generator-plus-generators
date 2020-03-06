@@ -237,7 +237,9 @@ const JavaGenerator: CodegenGenerator = {
 	toNativeArrayType: ({ componentNativeType, uniqueItems, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
 			/* We don't support array types as superclasses as we don't use model names for our non-parent type */
-			throw new InvalidModelError('Array types are not supported as superclasses')
+			const error = new InvalidModelError('Array types are not supported as superclasses')
+			error.name = 'InvalidModelError'
+			throw error
 		}
 
 		if (uniqueItems) {
@@ -249,7 +251,9 @@ const JavaGenerator: CodegenGenerator = {
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
-			throw new InvalidModelError('Map types are not supported as superclasses')
+			const error = new InvalidModelError('Map types are not supported as superclasses')
+			error.name = 'InvalidModelError'
+			throw error
 		}
 		return new CodegenNativeType(`java.util.Map<${keyNativeType}, ${componentNativeType}>`, `java.util.Map<${keyNativeType.wireType}, ${componentNativeType.wireType}>`)
 	},
