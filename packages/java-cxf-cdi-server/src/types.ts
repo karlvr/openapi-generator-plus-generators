@@ -18,6 +18,7 @@ export interface CodegenOptionsJava extends CodegenOptions {
 	imports?: string[]
 
 	hideGenerationTimestamp: boolean
+	authenticatedOperationAnnotation?: string
 }
 
 export const enum ConstantStyle {
