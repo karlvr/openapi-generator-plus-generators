@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-cxf-cdi-server-generator",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,8 +21,8 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
     "@openapi-generator-plus/core": "^0.0.6",
-    "@openapi-generator-plus/handlebars-templates": "^0.0.1",
-    "@openapi-generator-plus/java-like-generator-helper": "^0.0.1",
+    "@openapi-generator-plus/handlebars-templates": "^0.0.2",
+    "@openapi-generator-plus/java-like-generator-helper": "^0.0.2",
     "change-case": "^4.1.1",
     "handlebars": "^4.7.3",
     "lodash": "^4.17.15",
