@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOptions } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
@@ -22,7 +22,7 @@ function packageToPath(packageName: string) {
 	return packageName.replace(/\./g, path.sep)
 }
 
-const generator: CodegenGenerator = {
+const generator: CodegenGenerator<CodegenOptionsJava> = {
 	toClassName: (name) => {
 		return classCamelCase(name)
 	},
@@ -30,7 +30,7 @@ const generator: CodegenGenerator = {
 		return identifierCamelCase(name)
 	},
 	toConstantName: (name, state) => {
-		const constantStyle = (state.options as CodegenOptionsJava).constantStyle
+		const constantStyle = state.options.constantStyle
 		switch (constantStyle) {
 			case ConstantStyle.allCaps:
 				return constantCase(name).replace(/_/g, '')
@@ -83,11 +83,11 @@ const generator: CodegenGenerator = {
 				} else if (format === 'binary') {
 					throw new Error(`Cannot format literal for type ${type} format ${format}`)
 				} else if (format === 'date') {
-					return `${(state.options as CodegenOptionsJava).dateImplementation}.parse("${value}")`
+					return `${state.options.dateImplementation}.parse("${value}")`
 				} else if (format === 'time') {
-					return `${(state.options as CodegenOptionsJava).timeImplementation}.parse("${value}")`
+					return `${state.options.timeImplementation}.parse("${value}")`
 				} else if (format === 'date-time') {
-					return `${(state.options as CodegenOptionsJava).dateTimeImplementation}.parse("${value}")`
+					return `${state.options.dateTimeImplementation}.parse("${value}")`
 				} else {
 					return `"${escapeString(value)}"`
 				}
@@ -130,11 +130,11 @@ const generator: CodegenGenerator = {
 				} else if (format === 'binary') {
 					return new CodegenNativeType('java.lang.String')
 				} else if (format === 'date') {
-					return new CodegenNativeType((state.options as CodegenOptionsJava).dateImplementation)
+					return new CodegenNativeType(state.options.dateImplementation)
 				} else if (format === 'time') {
-					return new CodegenNativeType((state.options as CodegenOptionsJava).timeImplementation)
+					return new CodegenNativeType(state.options.timeImplementation)
 				} else if (format === 'date-time') {
-					return new CodegenNativeType((state.options as CodegenOptionsJava).dateTimeImplementation)
+					return new CodegenNativeType(state.options.dateTimeImplementation)
 				} else {
 					return new CodegenNativeType('java.lang.String')
 				}
@@ -144,7 +144,7 @@ const generator: CodegenGenerator = {
 			}
 			case 'object': {
 				if (modelNames) {
-					let modelName = `${(state.options as CodegenOptionsJava).modelPackage}`
+					let modelName = `${state.options.modelPackage}`
 					for (const name of modelNames) {
 						modelName += `.${state.generator.toClassName(name, state)}`
 					}
@@ -207,7 +207,7 @@ const generator: CodegenGenerator = {
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	options: (config): CodegenOptionsJava => {
+	options: (config) => {
 		const packageName = config.package || 'com.example'
 		return {
 			apiPackage: config.apiPackage || `${packageName}`,
@@ -241,7 +241,6 @@ const generator: CodegenGenerator = {
 			await loadTemplates(customTemplatesPath, hbs)
 		}
 
-		const options = state.options as CodegenOptionsJava
 		const rootContext: CodegenRootContext = {
 			generatorClass: 'openapi-generator-plus/java-cxf-cdi-server',
 			generatedDate: new Date().toISOString(),
@@ -249,7 +248,7 @@ const generator: CodegenGenerator = {
 
 		const outputPath = state.config.outputPath
 
-		const apiPackagePath = packageToPath(options.apiPackage)
+		const apiPackagePath = packageToPath(state.options.apiPackage)
 		for (const group of doc.groups) {
 			await emit('api', `${outputPath}/${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
 		}
@@ -258,13 +257,13 @@ const generator: CodegenGenerator = {
 			await emit('apiService', `${outputPath}/${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiService.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
 		}
 
-		const apiImplPackagePath = packageToPath(options.apiServiceImplPackage)
+		const apiImplPackagePath = packageToPath(state.options.apiServiceImplPackage)
 		for (const group of doc.groups) {
 			await emit('apiServiceImpl', `${outputPath}/${apiImplPackagePath}/${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`, 
 				{ ...group, ...state.options, ...rootContext }, false, hbs)
 		}
 
-		const modelPackagePath = packageToPath(options.modelPackage)
+		const modelPackagePath = packageToPath(state.options.modelPackage)
 		for (const model of doc.models) {
 			const context = {
 				models: [model],

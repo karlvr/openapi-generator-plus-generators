@@ -12,7 +12,7 @@ function escapeString(value: string) {
 	return value
 }
 
-const generator: CodegenGenerator = {
+const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 	toClassName: (name) => {
 		return classCamelCase(name)
 	},
@@ -146,7 +146,7 @@ const generator: CodegenGenerator = {
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	options: (config): CodegenOptionsTypescript => {
+	options: (config) => {
 		return {
 			npmName: config.npmName,
 			npmVersion: config.npmVersion,
@@ -171,13 +171,12 @@ const generator: CodegenGenerator = {
 		}
 
 		const outputPath = state.config.outputPath
-		const options = state.options as CodegenOptionsTypescript
 
 		await emit('api', `${outputPath}/api.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('configuration', `${outputPath}/configuration.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('custom.d', `${outputPath}/custom.d.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('index', `${outputPath}/index.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
-		if (options.npmName) {
+		if (state.options.npmName) {
 			await emit('package', `${outputPath}/package.json`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		}
 		await emit('README', `${outputPath}/README.md`, { ...doc, ...state.options, ...rootContext }, true, hbs)
