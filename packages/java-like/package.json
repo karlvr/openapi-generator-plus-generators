@@ -1,26 +1,25 @@
 {
 	"name": "@openapi-generator-plus/java-like-generator-helper",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Helpers for Java-like language generators",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
-	  "build": "tsc",
-	  "test": "jest",
-	  "watch": "tsc --watch"
+		"build": "tsc",
+		"test": "jest",
+		"watch": "tsc --watch"
 	},
 	"repository": {
-	  "type": "git",
-	  "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+		"type": "git",
+		"url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
 	},
 	"author": "Karl von Randow",
 	"license": "Apache-2.0",
 	"bugs": {
-	  "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+		"url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
 	},
 	"homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
 	"dependencies": {
-	  "@openapi-generator-plus/core": "^0.0.6"
+		"@openapi-generator-plus/core": "^0.0.6"
 	}
-  }
-  
+}
