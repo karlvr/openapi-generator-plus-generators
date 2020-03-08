@@ -1,6 +1,6 @@
 import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOptions } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
-import { CodegenOptionsJava, ConstantStyle } from './types'
+import { CodegenOptionsJava, ConstantStyle, CodegenMavenOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import * as _ from 'lodash'
@@ -246,20 +246,31 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			generatedDate: new Date().toISOString(),
 		}
 
-		const outputPath = state.config.outputPath
+		let outputPath = state.config.outputPath
+		if (!outputPath.endsWith('/')) {
+			outputPath += '/'
+		}
+
+		const maven = state.config.maven
+		const defaultRelativeSourceOutputPath = maven ? 'src/main/java/' : ''
+		
+		let relativeSourceOutputPath: string = state.config.relativeSourceOutputPath !== undefined ? state.config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
+		if (relativeSourceOutputPath.length && !relativeSourceOutputPath.endsWith('/')) {
+			relativeSourceOutputPath += '/'
+		}
 
 		const apiPackagePath = packageToPath(state.options.apiPackage)
 		for (const group of doc.groups) {
-			await emit('api', `${outputPath}/${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
+			await emit('api', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		for (const group of doc.groups) {
-			await emit('apiService', `${outputPath}/${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiService.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
+			await emit('apiService', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiService.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		const apiImplPackagePath = packageToPath(state.options.apiServiceImplPackage)
 		for (const group of doc.groups) {
-			await emit('apiServiceImpl', `${outputPath}/${apiImplPackagePath}/${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`, 
+			await emit('apiServiceImpl', `${outputPath}${relativeSourceOutputPath}${apiImplPackagePath}/${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`, 
 				{ ...group, ...state.options, ...rootContext }, false, hbs)
 		}
 
@@ -268,7 +279,16 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			const context = {
 				models: [model],
 			}
-			await emit('model', `${outputPath}/${modelPackagePath}/${state.generator.toClassName(model.name, state)}.java`, { ...context, ...state.options, ...rootContext }, true, hbs)
+			await emit('model', `${outputPath}${relativeSourceOutputPath}${modelPackagePath}/${state.generator.toClassName(model.name, state)}.java`, { ...context, ...state.options, ...rootContext }, true, hbs)
+		}
+
+		if (maven) {
+			const mavenConfig: CodegenMavenOptions = {
+				groupId: state.config.maven.groupId || 'com.example',
+				artifactId: state.config.maven.artifactId || 'api-server',
+				version: state.config.maven.version || '0.0.1',
+			}
+			await emit('pom', `${outputPath}pom.xml`, { ...mavenConfig, ...state.options, ...rootContext }, false, hbs)
 		}
 	},
 }

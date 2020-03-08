@@ -1,4 +1,4 @@
-import { CodegenOptions } from '@openapi-generator-plus/core'
+import { CodegenOptions, CodegenConfig } from '@openapi-generator-plus/core'
 
 /**
  * Options specific to Java that the user can provide to the code generation process.
@@ -25,4 +25,10 @@ export const enum ConstantStyle {
 	allCapsSnake = 'snake',
 	allCaps = 'allCaps',
 	camelCase = 'camelCase',
+}
+
+export interface CodegenMavenOptions {
+	groupId: string
+	artifactId: string
+	version: string
 }
