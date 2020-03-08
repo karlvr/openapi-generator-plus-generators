@@ -21,8 +21,8 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
     "@openapi-generator-plus/core": "^0.0.7",
-    "@openapi-generator-plus/handlebars-templates": "^0.0.2",
-    "@openapi-generator-plus/java-like-generator-helper": "^0.0.2",
+    "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
+    "@openapi-generator-plus/java-like-generator-helper": "file:../java-like",
     "change-case": "^4.1.1",
     "handlebars": "^4.7.3",
     "lodash": "^4.17.15",

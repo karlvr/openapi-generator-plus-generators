@@ -17,6 +17,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
+    "@openapi-generator-plus/core": "0.0.7",
     "@openapi-generator-plus/java-cxf-cdi-server-generator": "file:packages/java-cxf-cdi-server",
     "@openapi-generator-plus/typescript-fetch-client-generator": "file:packages/typescript-fetch-client"
   }
