@@ -67,7 +67,7 @@ public class {{className name}}Api  {
 			{{/allParams}}
 			{{/@root.useBeanValidation}}
 			{{#defaultResponse}}
-			{{#if nativeType}}{{{nativeType}}} entity = {{/if}}delegate.{{identifier ../name}}({{#../allParams}}{{#if isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/../allParams}}{{#unless nativeType}}, response{{/unless}});
+			{{#if nativeType}}{{{nativeType}}} entity = {{/if}}delegate.{{identifier ../name}}({{#../allParams}}{{#if isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/../allParams}}{{#unless nativeType}}{{#if ../allParams}}, {{/if}}response{{/unless}});
 			{{#if nativeType}}
 			response.entity(entity);
 			{{/if}}
@@ -77,9 +77,9 @@ public class {{className name}}Api  {
 		{{^isDefault}}
 		} catch ({{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception e) {
 			response.status({{code}});
-			{{^vendorExtensions.x-java-is-response-void}}
+			{{#if nativeType}}
 			response.entity(e.getEntity());
-			{{/vendorExtensions.x-java-is-response-void}}
+			{{/if}}
 			return response.build();
 		{{/isDefault}}
 		{{/responses}}

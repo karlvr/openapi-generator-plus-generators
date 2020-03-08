@@ -8,7 +8,7 @@ package {{apiPackage}};
 public interface {{className name}}ApiService {
 	{{#operations}}
 	{{^vendorExtensions.x-implementation-provided}}
-	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{#unless returnNativeType}}, javax.ws.rs.core.Response.ResponseBuilder response{{/unless}}) throws RuntimeException{{#responses}}{{^isDefault}}, {{{className ../name}}}{{{code}}}Exception{{/isDefault}}{{/responses}};
+	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{#unless returnNativeType}}{{#if allParams}}, {{/if}}javax.ws.rs.core.Response.ResponseBuilder response{{/unless}}) throws RuntimeException{{#responses}}{{^isDefault}}, {{{className ../name}}}{{{code}}}Exception{{/isDefault}}{{/responses}};
 	{{/vendorExtensions.x-implementation-provided}}
 	{{/operations}}
 	
