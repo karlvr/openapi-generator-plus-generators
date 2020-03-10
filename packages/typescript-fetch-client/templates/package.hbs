@@ -1,20 +1,21 @@
 {
-	"name": "{{npmName}}",
-	"version": "{{npmVersion}}",
-	"description": "swagger client for {{npmName}}",
-	"author": "Swagger Codegen Contributors",
+	"name": "{{name}}",
+	"version": "{{version}}",
+	"description": "API client for {{name}}",
+	"author": "@openapi-generator-plus/typescript-fetch-client-generator",
 	"keywords": [
 		"fetch",
 		"typescript",
-		"swagger-client",
-		"{{npmName}}"
+		"swagger",
+		"openapi",
+		"{{name}}"
 	],
-	"license": "Unlicense",
+	"license": "UNLICENSED",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"scripts" : {
-		"build": "tsc --outDir dist/",
-		"prepublishOnly": "npm run build"
+		"build": "tsc",
+		"prepare": "npm run build"
 	},
 	"dependencies": {
 		"portable-fetch": "^3.0.0"
@@ -22,10 +23,9 @@
 	"devDependencies": {
 		"@types/node": "^8.0.9",
 		"typescript": "^3.0"
-	}{{#npmRepository}},{{/npmRepository}}
-{{#npmRepository}}
+	}{{#repository}},
 	"publishConfig":{
-		"registry":"{{npmRepository}}"
+		"registry": "{{repository}}"
 	}
-{{/npmRepository}}
+	{{/repository}}
 }

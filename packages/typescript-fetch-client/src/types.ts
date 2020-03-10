@@ -8,3 +8,9 @@ export interface CodegenOptionsTypescript extends CodegenOptions {
 	npmVersion?: string
 	supportsES6: boolean
 }
+
+export interface NpmOptions {
+	name: string
+	version: string
+	repository?: string
+}
