@@ -1,7 +1,8 @@
 {
   "name": "@openapi-generator-plus/java-cxf-cdi-server-generator",
   "version": "0.0.7",
-  "description": "",
+  "description": "An OpenAPI Generator+ module for a Java API server using CXF and CDI",
+  "keywords": ["openapi-generator-plus", "openapi-generator-plus-generator", "openapi", "openapi-generator", "java", "cxf", "server"],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
