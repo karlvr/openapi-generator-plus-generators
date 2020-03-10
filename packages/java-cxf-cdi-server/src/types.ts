@@ -27,7 +27,7 @@ export const enum ConstantStyle {
 	camelCase = 'camelCase',
 }
 
-export interface CodegenMavenOptions {
+export interface MavenOptions {
 	groupId: string
 	artifactId: string
 	version: string

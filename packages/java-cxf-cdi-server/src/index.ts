@@ -1,6 +1,6 @@
 import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOptions } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
-import { CodegenOptionsJava, ConstantStyle, CodegenMavenOptions } from './types'
+import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import * as _ from 'lodash'
@@ -283,10 +283,10 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		}
 
 		if (maven) {
-			const mavenConfig: CodegenMavenOptions = {
-				groupId: state.config.maven.groupId || 'com.example',
-				artifactId: state.config.maven.artifactId || 'api-server',
-				version: state.config.maven.version || '0.0.1',
+			const mavenConfig: MavenOptions = {
+				groupId: maven.groupId || 'com.example',
+				artifactId: maven.artifactId || 'api-server',
+				version: maven.version || '0.0.1',
 			}
 			await emit('pom', `${outputPath}pom.xml`, { ...mavenConfig, ...state.options, ...rootContext }, false, hbs)
 		}
