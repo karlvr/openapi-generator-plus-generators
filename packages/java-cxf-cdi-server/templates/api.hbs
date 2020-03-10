@@ -41,14 +41,18 @@ public class {{className name}}Api  {
 	@javax.ws.rs.Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} })
 	{{/if}}
 	@io.swagger.annotations.ApiOperation(value = "{{{summary}}}", notes = "{{{notes}}}"{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if authMethods}}, authorizations = {
-		{{#authMethods}}@io.swagger.annotations.Authorization(value = "{{name}}"{{#isOAuth}}, scopes = {
-			{{#scopes}}@io.swagger.annotations.AuthorizationScope(scope = "{{scope}}", description = "{{description}}"){{#unless @last}},
-			{{/unless}}{{/scopes}}
-		}{{/isOAuth}}){{#unless @last}},
-		{{/unless}}{{/authMethods}}
-	}{{/if}}, tags={ {{#tags}}"{{.}}"{{#unless @last}}, {{/unless}}{{/tags}} })
-	@io.swagger.annotations.ApiResponses(value = { {{#responses}}
-		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = "{{{description}}}", response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#containerType}}, responseContainer = "{{{containerType}}}"{{/containerType}}){{#hasMore}},{{/hasMore}}{{/responses}}
+		{{#authMethods}}
+		@io.swagger.annotations.Authorization(value = "{{name}}"{{#isOAuth}}, scopes = {
+			{{#scopes}}
+			@io.swagger.annotations.AuthorizationScope(scope = "{{scope}}", description = "{{description}}"){{#hasMore}},{{/hasMore}}
+			{{/scopes}}
+		}{{/isOAuth}}){{#hasMore}},{{/hasMore}}
+		{{/authMethods}}
+	}{{/if}}, tags={ {{#tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/tags}} })
+	@io.swagger.annotations.ApiResponses(value = {
+		{{#responses}}
+		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = "{{{description}}}", response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}){{#hasMore}},{{/hasMore}}
+		{{/responses}}
 	})
 	public javax.ws.rs.core.Response {{name}}({{#allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {
 		{{#responses}}{{#isDefault}}final javax.ws.rs.core.Response.ResponseBuilder response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));{{/isDefault}}{{/responses}}
