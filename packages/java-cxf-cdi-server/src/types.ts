@@ -1,4 +1,4 @@
-import { CodegenOptions, CodegenConfig } from '@openapi-generator-plus/core'
+import { CodegenOptions } from '@openapi-generator-plus/core'
 
 /**
  * Options specific to Java that the user can provide to the code generation process.
