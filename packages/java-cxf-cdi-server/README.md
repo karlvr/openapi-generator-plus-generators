@@ -2,6 +2,14 @@
 
 An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) module for a Java API server using CXF and CDI
 
+## Overview
+
+The generated code has useful features:
+
+* Exceptions are used for non-default responses, such as `400` responses, so you can only return the specified status codes.
+* Response Exceptions can have an entity type to return with the error response.
+* Model objects and enums will be nested in the API service if they are inlined in the specification.
+
 ## Using
 
 See the [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
