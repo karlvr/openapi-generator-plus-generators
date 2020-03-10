@@ -1,5 +1,5 @@
 import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from '@openapi-generator-plus/core'
-import { CodegenOptionsTypescript, NpmOptions } from './types'
+import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import pluralize from 'pluralize'
@@ -146,11 +146,30 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	options: (config) => {
+	options: (config): CodegenOptionsTypescript => {
+		const npm = config.npm
+		const defaultRelativeSourceOutputPath = npm ? 'src/' : ''
+		
+		let relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
+		if (relativeSourceOutputPath.length && !relativeSourceOutputPath.endsWith('/')) {
+			relativeSourceOutputPath += '/'
+		}
+
+		const npmConfig: NpmOptions | undefined = npm ? {
+			name: npm.name || 'typescript-fetch-api',
+			version: npm.version || '0.0.1',
+			repository: npm.repository,
+		} : undefined
+
+		const typescriptOptions: TypeScriptOptions | undefined = config.typescript ? {
+			target: config.typescript.target || 'ES5',
+			libs: config.typescript.libs || [config.typescript.target || 'ES5', 'DOM'],
+		} : undefined
+
 		return {
-			npmName: config.npmName,
-			npmVersion: config.npmVersion,
-			supportsES6: false,
+			relativeSourceOutputPath,
+			npm: npmConfig,
+			typescript: typescriptOptions,
 			config,
 		}
 	},
@@ -175,28 +194,19 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 			outputPath += '/'
 		}
 
-		const npm = state.config.npm
-		const defaultRelativeSourceOutputPath = npm ? 'src/' : ''
-		
-		let relativeSourceOutputPath: string = state.config.relativeSourceOutputPath !== undefined ? state.config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
-		if (relativeSourceOutputPath.length && !relativeSourceOutputPath.endsWith('/')) {
-			relativeSourceOutputPath += '/'
-		}
+		const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 
 		await emit('api', `${outputPath}${relativeSourceOutputPath}api.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('configuration', `${outputPath}${relativeSourceOutputPath}configuration.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
-		await emit('custom.d', `${outputPath}custom.d.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
+		await emit('custom.d', `${outputPath}${relativeSourceOutputPath}custom.d.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('index', `${outputPath}${relativeSourceOutputPath}index.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
-		if (npm) {
-			const npmConfig: NpmOptions = {
-				name: npm.name || 'typescript-fetch-api',
-				version: npm.version || '0.0.1',
-				repository: npm.repository,
-			}
-			await emit('package', `${outputPath}package.json`, { ...npmConfig, ...state.options, ...rootContext }, true, hbs)
+		if (state.options.npm) {
+			await emit('package', `${outputPath}package.json`, { ...state.options.npm, ...state.options, ...rootContext }, true, hbs)
 		}
 		await emit('README', `${outputPath}README.md`, { ...doc, ...state.options, ...rootContext }, true, hbs)
-		await emit('tsconfig', `${outputPath}tsconfig.json`, { ...doc, ...state.options, ...rootContext }, true, hbs)
+		if (state.options.typescript) {
+			await emit('tsconfig', `${outputPath}tsconfig.json`, { ...state.options.typescript, ...state.options, ...rootContext }, true, hbs)
+		}
 		await emit('gitignore', `${outputPath}.gitignore`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 	},
 }

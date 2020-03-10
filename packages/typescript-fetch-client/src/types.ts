@@ -1,12 +1,17 @@
-import { CodegenOptions, CodegenRootContext } from '@openapi-generator-plus/core'
+import { CodegenOptions } from '@openapi-generator-plus/core'
 
 /**
  * Options specific to the template that the user can provide to the code generation process.
  */
 export interface CodegenOptionsTypescript extends CodegenOptions {
-	npmName?: string
-	npmVersion?: string
-	supportsES6: boolean
+	relativeSourceOutputPath: string
+	npm?: NpmOptions
+	typescript?: TypeScriptOptions
+}
+
+export interface TypeScriptOptions {
+	target: string
+	libs: string
 }
 
 export interface NpmOptions {
