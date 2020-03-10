@@ -17,7 +17,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@openapi-generator-plus/core": "0.0.8",
+    "@openapi-generator-plus/core": "0.0.9",
     "@openapi-generator-plus/handlebars-templates": "file:packages/handlebars-templates",
     "@openapi-generator-plus/java-cxf-cdi-server-generator": "file:packages/java-cxf-cdi-server",
     "@openapi-generator-plus/java-like": "file:packages/java-like",
