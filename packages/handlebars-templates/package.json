@@ -19,9 +19,6 @@
     "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
-  "dependencies": {
-    "@openapi-generator-plus/core": "^0.0.7"
-  },
   "publishConfig": {
     "access": "public"
   },
