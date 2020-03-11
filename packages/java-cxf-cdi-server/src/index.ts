@@ -242,7 +242,7 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		}
 
 		const rootContext: CodegenRootContext = {
-			generatorClass: 'openapi-generator-plus/java-cxf-cdi-server',
+			generatorClass: '@openapi-generator-plus/java-cxf-cdi-server',
 			generatedDate: new Date().toISOString(),
 		}
 

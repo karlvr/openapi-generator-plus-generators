@@ -185,7 +185,7 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
 		const rootContext: CodegenRootContext = {
-			generatorClass: 'openapi-generator-node',
+			generatorClass: '@openapi-generator-plus/typescript-fetch-client-generator',
 			generatedDate: new Date().toISOString(),
 		}
 
