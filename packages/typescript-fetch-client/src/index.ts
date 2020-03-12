@@ -26,7 +26,7 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		return classCamelCase(name) + 'Enum'
 	},
 	toOperationName: (path, method) => {
-		return `${method.toLocaleLowerCase()}_${path}`
+		return identifierCamelCase(`${method.toLocaleLowerCase()}_${path}`)
 	},
 	toModelNameFromPropertyName: (name, state) => {
 		return state.generator.toClassName(pluralize.singular(name), state)
