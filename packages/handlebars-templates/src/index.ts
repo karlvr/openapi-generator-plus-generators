@@ -83,10 +83,26 @@ export async function emit(templateName: string, outputPath: string, context: ob
 export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenState) {
 	const generator = state.generator
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function convertToString(value: any) {
+		if (value === undefined) {
+			return undefined
+		}
+		if (typeof value === 'string') {
+			return value
+		}
+		if (typeof value === 'object') {
+			return value.toString()
+		}
+		if (typeof value === 'function') {
+			return value.name
+		}
+		return `${value}`
+	}
 	/** Convert the string argument to a class name using the generator */
 	hbs.registerHelper('className', function(name: string) {
-		if (typeof name === 'string') {
-			return generator.toClassName(name, state)
+		if (name !== undefined) {
+			return generator.toClassName(convertToString(name), state)
 		} else {
 			throw new Error(`className helper has invalid name parameter: ${name}`)
 		}
@@ -94,8 +110,8 @@ export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenSt
 
 	/** Convert the given name to be a safe, appropriately named identifier for the language */
 	hbs.registerHelper('identifier', function(name: string) {
-		if (typeof name === 'string') {
-			return generator.toIdentifier(name, state)
+		if (name !== undefined) {
+			return generator.toIdentifier(convertToString(name), state)
 		} else {
 			throw new Error(`identifier helper has invalid parameter: ${name}`)
 		}
@@ -103,8 +119,8 @@ export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenSt
 
 	/** Convert the given name to a constant name */
 	hbs.registerHelper('constantName', function(name: string) {
-		if (typeof name === 'string') {
-			return generator.toConstantName(name, state)
+		if (name !== undefined) {
+			return generator.toConstantName(convertToString(name), state)
 		} else {
 			throw new Error(`constantName helper has invalid parameter: ${name}`)
 		}
@@ -112,37 +128,65 @@ export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenSt
 
 	/** Capitalize the given string */
 	hbs.registerHelper('capitalize', function(value: string) {
-		return capitalize(value)
+		if (value !== undefined) {
+			return capitalize(convertToString(value))
+		} else {
+			return value
+		}
 	})
 
 	/** Uppercase the given string */
 	hbs.registerHelper('upperCase', function(value: string) {
-		return value.toLocaleUpperCase()
+		if (value !== undefined) {
+			return convertToString(value).toLocaleUpperCase()
+		} else {
+			return value
+		}
 	})
 
 	/** Lowercase the given string */
 	hbs.registerHelper('lowerCase', function(value: string) {
-		return value.toLocaleLowerCase()
+		if (value !== undefined) {
+			return convertToString(value).toLocaleLowerCase()
+		} else {
+			return value
+		}
 	})
 
 	/** Camel case the given string */
 	hbs.registerHelper('camelCase', function(value: string) {
-		return camelCase(value)
+		if (value !== undefined) {
+			return camelCase(convertToString(value))
+		} else {
+			return value
+		}
 	})
 
 	/** Pascal case the given string */
 	hbs.registerHelper('pascalCase', function(value: string) {
-		return pascalCase(value)
+		if (value !== undefined) {
+			return pascalCase(convertToString(value))
+		} else {
+			return value
+		}
 	})
 
 	/** Snake case the given string */
 	hbs.registerHelper('snakeCase', function(value: string) {
-		return snakeCase(value)
+		if (value !== undefined) {
+			return snakeCase(convertToString(value))
+		} else {
+			return value
+		}
 	})
 
 	/** All caps snake case the given string */
 	hbs.registerHelper('allCapsSnakeCase', function(value: string) {
-		return constantCase(value)
+		if (value !== undefined) {
+			return constantCase(convertToString(value))
+		} else {
+			return value
+		}
 	})
 
 	/** Format the given string as a string literal, including quotes as required */
@@ -161,6 +205,6 @@ export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenSt
 
 	/** Convert a string to a "safe" string for Handlebars. Useful for outputting {} characters. */
 	hbs.registerHelper('safe', function(value: string) {
-		return new Handlebars.SafeString(value)
+		return new Handlebars.SafeString(convertToString(value))
 	})
 }
