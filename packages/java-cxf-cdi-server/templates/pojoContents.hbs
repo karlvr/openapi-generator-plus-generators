@@ -1,11 +1,11 @@
 {{>nestedModels}}
 
-{{#vars}}
+{{#properties}}
 private {{{nativeType}}} {{identifier name}} = {{{defaultValue}}};
 private boolean __patched{{capitalize (identifier name)}} = false;
-{{/vars}}
+{{/properties}}
 
-{{#vars}}
+{{#properties}}
 /**
  {{#if description}}
  * {{description}}
@@ -41,7 +41,7 @@ public boolean patched{{capitalize (identifier name)}}() {
 	return this.__patched{{capitalize (identifier name)}};
 }
 
-{{/vars}}
+{{/properties}}
 
 @Override
 public boolean equals(java.lang.Object o) {
@@ -56,10 +56,10 @@ public boolean equals(java.lang.Object o) {
 		return false;
 	}
 	{{/if}}
-	{{#if vars}}
+	{{#if properties}}
 	{{className name}} {{identifier name}} = ({{className name}}) o;
-	return {{#vars}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}} &&
-			{{/hasMore}}{{/vars}};
+	return {{#properties}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}} &&
+			{{/hasMore}}{{/properties}};
 	{{else}}
 	return true;
 	{{/if}}
@@ -67,7 +67,7 @@ public boolean equals(java.lang.Object o) {
 
 @Override
 public int hashCode() {
-	return {{#if parent}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#vars}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/vars}});
+	return {{#if parent}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/properties}});
 }
 
 @Override
@@ -75,8 +75,8 @@ public String toString() {
 	StringBuilder sb = new StringBuilder();
 	sb.append("class {{className name}} {\n");
 	{{#parent}}sb.append("    ").append(toIndentedString(super.toString())).append("\n");{{/parent}}
-	{{#vars}}sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
-	{{/vars}}sb.append("}");
+	{{#properties}}sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
+	{{/properties}}sb.append("}");
 	return sb.toString();
 }
 
