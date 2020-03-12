@@ -1,0 +1,11 @@
+{{!--
+    Renders the paths-section of the Rest-Service definition
+    @params {Path[]} paths a list of Swagger Path-Objects
+    @api public
+--}}
+<article id="groups" class="content">
+    <h1>Endpoints</h1>
+    {{#eachSorted groups}}
+        {{>api/group}}
+    {{/eachSorted}}
+</article>

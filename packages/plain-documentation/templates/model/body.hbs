@@ -1,0 +1,28 @@
+{{!
+renders a model without the surrounding panel.
+}}
+{{#if description}}
+    <section class="model-description">
+        {{{md description}}}
+    </section>
+{{/if}}
+{{#if example}}
+    <section class="model-example">
+        <pre>{{{example}}}</pre>
+    </section>
+{{/if}}
+
+{{#if properties}}
+    {{>model/properties anchor=anchor}}
+{{/if}}
+
+{{#if isEnum}}
+    {{>model/enum}}
+{{/if}}
+
+{{#if allOf}}
+    {{>model/allOf allOf}}
+{{/if}}
+{{#if anyOf}}
+    {{>model/anyOf anyOf}}
+{{/if}}

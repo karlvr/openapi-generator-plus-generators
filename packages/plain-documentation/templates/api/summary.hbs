@@ -1,0 +1,40 @@
+{{!--
+    Renders a summary of this services, containing references to all operations and paths
+    @todo params
+    @api public
+--}}
+
+            <aside id="sidebar">
+                <nav>
+                    <ul>
+                        <li><a href="#overview">Overview</a></li>
+                    </ul>
+                    {{#if securitySchemes}}
+                    <ul>
+                        <li><a href="#auth">Authentication</a></li>
+                    </ul>
+                    {{/if}}
+                    <ul id="endpoints-list">
+                        <li class="title"><a href="#groups">Endpoints</a></li>
+                        {{#eachSorted groups}}
+                            <li class="expandable">
+                                <h2><a href="#group-{{htmlId name}}">{{name}}</a></h2>
+                                {{#if operations}}
+                                    <section style="display: none">
+                                        <ul>
+                                            {{#eachSorted operations}}
+                                                <li>
+                                                    <div><a href="#operation-{{htmlId name}}">{{name}}</a></div>
+                                                </li>
+                                            {{/eachSorted}}
+                                        </ul>
+                                    </section>
+                                {{/if}}
+                            </li>
+                        {{/eachSorted}}
+                    </ul>
+                    <ul>
+                        <li><a href="#definitions">Definitions</a></li>
+                    </ul>
+                </nav>
+            </aside>

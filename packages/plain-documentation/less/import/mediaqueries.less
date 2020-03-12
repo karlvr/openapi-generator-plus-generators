@@ -1,0 +1,31 @@
+@vp-min-page-padding: %(~"(min-width: %a)", (@page-width-padding + 1px));
+@vp-max-page-padding: %(~"(max-width: %a)", @page-width-padding);
+
+@vp-large: %(~"(min-width: %a) and (max-width: %d)", (@page-width-desktop + 1px), @page-width);
+@vp-min-large: %(~"(min-width: %a)", (@page-width + 1px));
+@vp-max-large: %(~"(max-width: %a)", @page-width);
+
+@vp-desktop: %(~"(min-width: %a) and (max-width: %d)", (@page-width-tablet-wide + 1px), @page-width-desktop);
+@vp-min-desktop: %(~"(min-width: %a)", (@page-width-desktop + 1px));
+@vp-max-desktop: %(~"(max-width: %a)", @page-width-desktop);
+
+@vp-tablet-wide: %(~"(min-width: %a) and (max-width: %d)", (@page-width-tablet + 1px), @page-width-tablet-wide);
+@vp-min-tablet-wide: %(~"(min-width: %a)", (@page-width-tablet-wide + 1px));
+@vp-max-tablet-wide: %(~"(max-width: %a)", @page-width-tablet-wide);
+
+@vp-tablet: %(~"(min-width: %a) and (max-width: %d)", (@page-width-tablet-small + 1px), @page-width-tablet);
+@vp-min-tablet: %(~"(min-width: %a)", (@page-width-tablet + 1px));
+@vp-max-tablet: %(~"(max-width: %a)", @page-width-tablet);
+
+@vp-tablet-small: %(~"(min-width: %a) and (max-width: %d)", (@page-width-small + 1px), @page-width-tablet-small);
+@vp-min-tablet-small: %(~"(min-width: %a)", (@page-width-tablet-small + 1px));
+@vp-max-tablet-small: %(~"(max-width: %a)", @page-width-tablet-small);
+
+@vp-small: %(~"(max-width: %a)", @page-width-small);
+@vp-min-small: %(~"(min-width: %a)", (@page-width-small + 1px));
+
+@vp-tall-heroes: %(~"(min-width: %a) and (min-height: %d)", (@page-width-tablet-small + 1px), (@page-height-tall + 1px));
+@vp-short: %(~"(max-width: %a), (max-height: %d)", @page-width-tablet, @page-height-short);
+@vp-overlay-small: %(~"(max-width: %a), (max-height: %d)", @page-width-tiny, @page-height-tiny);
+
+@2x: ~"only screen and (-webkit-min-device-pixel-ratio:1.5), only screen and (min-device-pixel-ratio:1.5), only screen and (min-resolution: 2dppx)";

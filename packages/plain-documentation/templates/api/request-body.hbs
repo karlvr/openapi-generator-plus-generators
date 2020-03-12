@@ -1,0 +1,15 @@
+{{!--
+    Renders the request-body section of an operation.
+--}}
+
+{{#bodyParam}}
+    <div class="request">
+        <h2>Request</h2>
+            {{#if ../consumes}}
+            <p>{{#each ../consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>
+            {{/if}}
+            {{{md description}}}
+
+            <p class="meta">{{>model/datatype anchor='/definitions'}}</p>
+    </div>
+{{/bodyParam}}

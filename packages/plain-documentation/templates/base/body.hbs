@@ -1,0 +1,25 @@
+{{!--
+This partial renders the <body> of the HTML page.
+@api public
+@name base/body
+
+--}}
+
+<div class="main">
+
+	{{>api/summary}}
+
+	<article id="overview" class="content">
+		<section class="summary">
+			<h1>Overview</h1>
+			{{{md info.description}}}
+		</section>
+	</article>
+
+	{{>api/securitySchemes}}
+
+	{{>api/groups groups=groups}}
+
+	{{>api/definitions definitions=definitions}}
+
+</div>

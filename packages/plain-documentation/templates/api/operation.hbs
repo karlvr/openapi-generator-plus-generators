@@ -1,0 +1,21 @@
+{{!--
+    This partial renders a box containing information about a single operation of the service
+    (such as calling a POST on the "/pets" resource).
+    @name api/operations
+    @param {Operation} operation a Swagger-Operation object.
+    @param {string} method the http-method (GET, POST, DELETE, PUT, PATCH)
+    @api public
+--}}
+
+<section class="summary operation{{#deprecated}} -deprecated{{/deprecated}}" data-path="{{path}}" data-method="{{method}}" id="operation-{{htmlId name}}">
+    <h1 class="api-title"><span class="method operation-{{lowerCase httpMethod}}">{{upperCase httpMethod}}</span> {{path}}</h1>
+    {{#deprecated}}
+    <p><strong class="deprecated-label">DEPRECATED</strong></p>
+    {{/deprecated}}
+    {{{md summary "true"}}}
+    {{{md operation.description}}}
+
+    {{>api/request-body}}
+    {{>api/parameters parameters=parameters}}
+    {{>api/responses}}
+</section>

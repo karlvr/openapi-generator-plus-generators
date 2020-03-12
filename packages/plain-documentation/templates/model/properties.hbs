@@ -1,0 +1,25 @@
+{{!Renders model object properties.}}
+                    <div class="params -properties">
+                        <h2>Properties</h2>
+                        <table>
+                            {{#each properties}}
+                                <tr data-property-name="{{name}}">
+                                    <td class="name">
+                                        {{name}}
+                                        {{#if required}}<span class="type">Required</span>{{/if}}
+                                        {{#if discriminator}}<span class="type">Discriminator</span>{{/if}}
+                                    </td>
+                                    <td class="type">
+                                        {{#if discriminator}}
+                                            {{>model/discriminators}}
+                                        {{else}}
+                                            {{>model/datatype anchor=../anchor}}
+                                        {{/if}}
+	                                </td>
+                                    <td class="desc">
+                                        {{{md description}}}
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </table>
+                    </div>

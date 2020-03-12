@@ -1,0 +1,13 @@
+{{!--
+	Renders the definition-section of the HTML-page.
+	@param {Definition[]} definitions a list of JSON-subschemas.
+	@api public
+--}}
+
+<article id="definitions" class="content">
+	<h1>Definitions</h1>
+
+	{{#eachSorted models}}
+		{{>api/model model=. anchor="/definitions" }}
+	{{/eachSorted}}
+</article>

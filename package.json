@@ -8,7 +8,9 @@
   },
   "devDependencies": {
     "@types/jest": "^25.1.2",
+    "@types/less": "^3.0.1",
     "@types/lodash": "^4.14.149",
+    "@types/marked": "^0.7.3",
     "@types/node": "^13.7.0",
     "@types/pluralize": "0.0.29",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
@@ -25,6 +27,7 @@
     "@openapi-generator-plus/handlebars-templates": "file:packages/handlebars-templates",
     "@openapi-generator-plus/java-cxf-cdi-server-generator": "file:packages/java-cxf-cdi-server",
     "@openapi-generator-plus/java-like-generator-helper": "file:packages/java-like",
+    "@openapi-generator-plus/plain-documentation-generator": "file:packages/plain-documentation",
     "@openapi-generator-plus/typescript-fetch-client-generator": "file:packages/typescript-fetch-client"
   }
 }

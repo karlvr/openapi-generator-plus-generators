@@ -1,0 +1,394 @@
+// Main
+
+#auth, #groups {
+	margin-top: @base * 10;
+}
+
+#definitions {
+	margin-top: @base * 20;
+}
+
+#overview .summary {
+	position: relative;
+	top: -6px;
+}
+
+body.api {
+	.content {
+		@media @vp-min-tablet-wide {
+			margin-left: percentage(((6 * @grid-column) + (6 * @grid-gutter)) / @grid-width);
+		}
+	
+		a {
+			.link-simple;
+			.link-simple-hover;
+		}
+	}
+
+	#header {
+		.dots {
+
+			@media @vp-min-tablet {
+				.grid(6);
+			}
+		}
+	}
+
+	.page-bg, .footer {
+		@media @vp-min-tablet and @vp-max-page-padding {
+ 			max-width: @page-width-padding;
+ 			padding-left: @page-gutter;
+			padding-right: @page-gutter;
+			margin: 0 auto;
+		}
+	}
+	
+	h1 {
+		span.method {
+			position: relative;
+			color: @white;
+			font-family: @f-text;
+			font-size: 16px;
+			line-height: 1;
+			display: inline-block;
+			padding: 6px 6px 4px 8px;
+			letter-spacing: 0.2em;
+			top: -1px;
+			.border-radius(4px);
+
+			&.operation-get {
+				background-color: @green;
+			}
+
+			&.operation-post {
+				background-color: @orange;
+			}
+
+			&.operation-delete {
+				background-color: @red;
+			}
+
+			&.operation-put {
+				background-color: @blue;
+			}
+
+			&.operation-patch {
+				background-color: @blue;
+			}
+		}
+
+		&.api-title {
+			font-family: @f-meta;
+			&:first-child {
+				position: relative;
+				top: -5px;
+			}
+		}
+
+		& + .summary, & + span[id] + .summary {
+			margin-top: (@base * 5);
+		}
+	}
+
+	.summary {
+		margin-bottom: @base * 6;
+
+		& + .summary, & + span[id] {
+			display: block;
+			margin-top: @base * 12;
+		}
+	}
+
+	span.type {
+		display: inline-block;
+		font-family: @f-meta;
+		font-size: @fs;
+		line-height: 1;
+		border: 1px solid @ui-border;
+		padding: 4px 6px 6px;
+		margin-left: 0.25em;
+		.border-radius(3px);
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: @base 0 (@base * 2);
+
+		tr {
+			td {
+				border-top: 1px solid @ui-divider;
+			}
+		}
+
+		tr.-inherited-property {
+//			background-color: @ui-bg;
+		}
+		
+		td {
+			padding: (@base * 1.5) (@base * 2) (@base * 1.75) 0;
+
+			.summary {
+				margin-bottom: 0;
+			}
+
+			&:last-child {
+				padding-right: 0 !important;
+			}
+		}
+
+		td.code, td.name {
+			font-size: 17px;
+		}
+
+		td.resp, td.desc {
+			font-size: 14px;
+			line-height: 1.5;
+		}
+
+		td.code {
+			font-family: @f-meta;
+			color: @text-light;
+			width: 25%;
+		}
+
+		td.name {
+			line-height: 1;
+			white-space: nowrap;
+			width: 25%;
+		}
+
+		td.resp {
+			width: 50%;
+		}
+
+		td.type {
+			font-family: @f-meta;
+			font-size: 16px;
+			line-height: 1.33;
+			color: @text-light;
+			white-space: nowrap;
+			width: 25%;
+			
+			.model-property-enum {
+				white-space: normal;
+			}
+		}
+
+		td.desc {
+			padding-right: 0;
+			width: 25%;
+		}
+	}
+
+	span.p {
+		display: block;
+		margin: @base 0;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.response table {
+		td {
+			padding: @base (@base * 2) @base 0;
+
+			p {
+				line-height: 1.33;
+			}
+		}
+	}
+
+	#definitions {
+		table {
+			td.type, td.desc {
+				width: 37.5%;
+			}
+		}
+	}
+
+	.api-title, .name {
+		.type {
+			position: relative;
+			color: @text-light;
+			font-family: @f-text;
+			font-size: @fs - 4;
+			border: none;
+			background-color: @ui-bg;
+			padding: 4px 8px 5px;
+			top: -1px;
+		}
+	}
+
+	.name .type {
+		text-transform: uppercase;
+		font-size: @fs - 6;
+		letter-spacing: 0.1em;
+		padding: 4px 5px 3px;
+	}
+
+	.meta {
+		color: @text-light;
+	}
+
+	div.code {
+		background-color: @grey-dark;
+		padding: @base * 5;
+		margin-top: @base * 3;
+		.border-radius(4px);
+	}
+
+	code, pre {
+		font-family: @f-meta;
+		color: @green-text;
+		background-color: mix(@green, @white, 10%);
+		font-size: 15px; 
+		line-height: 1;
+	}
+
+	pre {
+		font-size: @fs;
+		line-height: 1.5;
+		padding-bottom: 1em;
+		background-color: @ui-bg;
+		word-wrap: break-word;
+		-ms-word-break: break-all;
+		word-break: break-all;
+		word-break: break-word;
+		-webkit-hyphens: auto;
+		-moz-hyphens: auto;
+		hyphens: auto;
+	}
+	
+	.deprecated-label {
+		display: inline-block;
+		background-color: @red;
+		padding: 4px 5px 3px;
+		letter-spacing: 0.2em;
+		line-height: 1;
+		color: white;
+		font-size: @fs - 6;
+		top: -1px;
+		position: relative;
+		margin-right: 0.25em;
+
+		.border-radius(2px);
+	}
+
+	// Bootprint Overrides
+	
+	.hljs-value, .hljs-attribute { color: @white; }
+	.hljs-string { color: @blue; }
+	.hljs-literal { color: @orange; }
+	.hljs-number { color: @green; }
+	
+	#definitions .hljs-string {
+		color: @text-light;
+	}
+	
+	.model-ref {
+		font-family: @f-meta;
+		font-size: 18px;
+	
+		&:hover, &:active {
+			color: @blue-hover;
+			border-bottom: 1px solid @blue-hover;
+		}
+	}
+	
+	td .model-ref,
+	.api-title .model-ref {
+		font-size: 16px;
+	}
+	
+	.model-property-enum-item .model-ref {
+		font-size: 15px;
+	}
+	
+	span.type .model-ref {
+		color: @text-light;
+		border-bottom: none;
+	
+		&:hover, &:active {
+			color: @text;
+		}
+	}
+	
+	.model-property-enum-item::before, .model-property-enum-item::after {
+		content: "";
+	}
+	
+	.model-property-type { font-style: normal; }
+	.model-property-enum { font-size: 15px; }
+	
+	.model-allOf-inherited::before,
+	.model-array-items::before,
+	.model-additionalProperties::before,
+	.model-description::before {
+		float: left;
+		display: inline-block;
+		text-transform: none;
+		padding-bottom: 0;
+		color: inherit;
+		font-weight: normal;
+		margin-right: 0.25em;
+	}
+	
+	.model-array-items::before,
+	.model-description::before {
+		display: inline;
+		content: '';
+	}
+	
+	.model-additionalProperties::before {
+		content: 'Additional properties are';
+	}
+	
+	.model-description {
+		font-size: 16px;
+	}
+	
+	.summary .model-description {
+		line-height: 1.5;
+	}
+	
+	.model-example {
+		pre {
+			color: @text-light;
+			font-size: 14px;
+			padding: 0.25em 0.5em;
+		}
+	
+		&::before {
+			content: 'Example';
+			color: @text-light;
+			font-family: @f-subtitle;
+			font-weight: normal;
+			font-size: 14px;
+			text-transform: capitalize;
+			display: inline-block;
+			line-height: 1;
+			margin: (@base * 2) 0 0;
+		}
+	}
+	
+	.model-allOf-inherited {
+		a {
+			font-size: 16px;
+		}
+	
+		&::before {
+			content: 'Inherits from';
+			font-size: 16px;
+		}
+	}
+}
+
+/* This hides the Links and FilmContributionsCollection classes, which accidentally leak into the docs */
+#definitions .summary {
+	&[data-class-title='Links'],
+	&[data-class-title='FilmContributionsCollection'] {
+		display: none;
+	}
+}

@@ -1,0 +1,36 @@
+{{!
+renders the inherited properties of a parent class.
+}}
+{{#if properties}}
+                    <div class="params -inherited-properties">
+                        <h2>Inherited Properties</h2>
+                        <table>
+                            {{#each properties}}
+                                {{#ifeq @key ../discriminator}}
+                                {{else}}
+                                <tr class="-inherited-property" data-property-name="{{@key}}">
+                                    <td class="name">
+                                        {{@key}} <span class="type">Inherited</span>
+                                        {{#ifcontains ../../required @key}}<span class="type">Required</span>{{/ifcontains}}
+                                    </td>
+                                    <td class="type">
+                                        {{#if additionalProperties}}
+                                            {{#each additionalProperties}}
+                                                <span class="model-property-type">
+                                                    dictionary&lt;ref,{{>model/reference}}&gt;
+                                                </span>
+                                            {{/each}}
+                                        {{else}} 
+                                            {{>model/datatype}}
+                                        {{/if}}
+                                    </td>
+                                    <td class="desc">
+                                        {{md description}}
+                                        {{>model/body $ref="" description=""}}
+                                    </td>
+                                </tr>
+                                {{/ifeq}}
+                            {{/each}}
+                        </table>
+                    </div>
+{{/if}}

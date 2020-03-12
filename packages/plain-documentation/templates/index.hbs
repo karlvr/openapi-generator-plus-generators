@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html lang="en" class="ie6 lte9 lte8 lte7 lte6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="ie7 lte9 lte8 lte7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="ie8 lte9 lte8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="ie9 lte9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html id="html" lang="en" class="no-js"> <!--<![endif]-->
+
+<head>
+
+    <title>{{>base/title}}</title>
+
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="apple-mobile-web-app-title" content="{{info.title}}" />
+	<meta name="application-name" content="{{info.title}}" />
+	<meta name="theme-color" content="#556677" />
+
+    <link rel="stylesheet" href="main.css" />
+
+	{{!--
+	<script src="js/highlight.pack.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+	--}}
+
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<script src="js/jquery.sticky-kit.min.js"></script>
+	<script src="js/constants.js"></script>
+	<script>
+		$(function() {
+			if ($(window).width() > SIDEBAR_MIN_PAGEWIDTH) {
+				$("#sidebar").stick_in_parent();
+			}
+			
+			$("#sidebar .expandable").on("click", "h2", function(e) {
+				e.preventDefault();
+				var count = $(this).siblings("section").children("div").length;
+				$(this).siblings("section").slideToggle(Math.max((count * 50), 200));
+			});
+
+			$("body").removeClass("before-js");
+		});
+	</script>
+	<noscript>
+		<style>
+			body.before-js .page-bg * { visibility: visible !important; }
+		</style>
+	</noscript>
+</head>
+
+<body class="editorial api before-js">
+	<div class="page-bg">
+		<div class="page">
+			{{>base/header}}
+	
+			{{>base/body}}
+	
+			{{>base/footer}}
+		</div>
+	</div>
+</body>
+</html>

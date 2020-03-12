@@ -1,0 +1,25 @@
+{{!--
+    Renders the parameter table within a operation definition.
+    @param {Parameter[]} parameters a list of Swagger-Parameter objects
+    @api public
+--}}
+
+{{#if nonBodyParams}}
+    <div class="params">
+        <h2>Parameters</h2>
+        <table>
+            {{#each nonBodyParams}}
+                <tr>
+                    <td class="name">{{name}} {{#if required}}<span class="type">Required</span>{{/if}}</td>
+                    <td class="type">
+                        {{>model/datatype .}}{{#if items}},{{>model/datatype items}}{{/if}}
+                        {{#if collectionFormat}}
+                            <div class="sw-param-collection-format">{{{md (swagger--collection-format collectionFormat)}}}</div>
+                        {{/if}}
+                    </td>
+                    <td class="desc">{{{md description}}}</td>
+                </tr>
+            {{/each}}
+        </table>
+    </div>
+{{/if}}

@@ -1,0 +1,10 @@
+{{#if securitySchemes}}
+	<article id="auth" class="content">
+		<section class="summary">
+			<h1>Authentication</h1>
+			{{#securitySchemes}}
+				{{>api/securityScheme}}
+			{{/securitySchemes}}
+		</section>
+	</article>
+{{/if}}

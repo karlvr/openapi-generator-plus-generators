@@ -1,0 +1,39 @@
+{
+  "name": "@openapi-generator-plus/plain-documentation-generator",
+  "version": "0.0.9",
+  "description": "An OpenAPI Generator+ module for generating plain documentation",
+  "keywords": [
+    "openapi-generator-plus",
+    "openapi-generator-plus-generator",
+    "openapi",
+    "openapi-generator",
+    "documentation"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
+  "author": "Karl von Randow",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
+  "dependencies": {
+    "@openapi-generator-plus/core": "0.0.9",
+    "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
+    "handlebars": "^4.7.3",
+    "less": "^3.11.1",
+    "marked": "^0.8.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
