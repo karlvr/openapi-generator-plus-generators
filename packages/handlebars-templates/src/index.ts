@@ -14,19 +14,28 @@ async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
  * @param templateDirPath path to template dir
  * @param hbs Handlebars instance
  */
-export async function loadTemplates(templateDirPath: string, hbs: typeof Handlebars) {
+export async function loadTemplates(templateDirPath: string, hbs: typeof Handlebars, prefix = '') {
 	const files = await fs.readdir(templateDirPath)
 	
 	for (const file of files) {
+		const resolvedFile = path.resolve(templateDirPath, file)
+		const stat = await fs.stat(resolvedFile)
+		if (stat.isDirectory()) {
+			await loadTemplates(resolvedFile, hbs, `${prefix}${file}/`)
+			continue
+		}
+
 		if (!file.endsWith('.hbs')) {
 			continue
 		}
 
-		const template = await compileTemplate(path.resolve(templateDirPath, file), hbs)
-		const name = path.parse(file).name
+		const template = await compileTemplate(resolvedFile, hbs)
+
+		const baseName = path.parse(file).name
+		const name = `${prefix}${baseName}`
 		if (hbs.partials[name]) {
 			/* If we will clobber an existing partial, prefix the original so we can still access it */
-			hbs.registerPartial(`original${capitalize(name)}`, hbs.partials[name])
+			hbs.registerPartial(`${prefix}original${capitalize(baseName)}`, hbs.partials[name])
 		}
 		hbs.registerPartial(name, template)
 	}
