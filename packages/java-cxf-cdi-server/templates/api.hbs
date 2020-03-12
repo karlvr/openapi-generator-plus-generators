@@ -44,7 +44,7 @@ public class {{className name}}Api  {
 		{{#authMethods}}
 		@io.swagger.annotations.Authorization(value = "{{name}}"{{#isOAuth}}, scopes = {
 			{{#scopes}}
-			@io.swagger.annotations.AuthorizationScope(scope = "{{scope}}", description = "{{description}}"){{#hasMore}},{{/hasMore}}
+			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = "{{description}}"){{#hasMore}},{{/hasMore}}
 			{{/scopes}}
 		}{{/isOAuth}}){{#hasMore}},{{/hasMore}}
 		{{/authMethods}}
