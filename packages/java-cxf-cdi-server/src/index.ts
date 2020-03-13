@@ -21,6 +21,14 @@ function packageToPath(packageName: string) {
 	return packageName.replace(/\./g, path.sep)
 }
 
+function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
+	if (configPath) {
+		return path.resolve(path.dirname(configPath), customTemplatesPath) 
+	} else {
+		return customTemplatesPath
+	}
+}
+
 const generator: CodegenGenerator<CodegenOptionsJava> = {
 	toClassName: (name) => {
 		return classCamelCase(name)
@@ -228,6 +236,14 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		return GroupingStrategies.addToGroupsByPath
 	},
 
+	watchPaths: (config) => {
+		const result = [path.resolve(__dirname, '../templates')]
+		if (config.customTemplates) {
+			result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
+		}
+		return result
+	},
+
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 		
@@ -236,7 +252,7 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
 		if (state.config.customTemplates) {
-			const customTemplatesPath = state.config.configPath ? path.resolve(path.dirname(state.config.configPath), state.config.customTemplates) : state.config.customTemplates
+			const customTemplatesPath = computeCustomTemplatesPath(state.config.configPath, state.config.customTemplates)
 			await loadTemplates(customTemplatesPath, hbs)
 		}
 

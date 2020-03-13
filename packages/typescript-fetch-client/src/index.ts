@@ -12,6 +12,14 @@ function escapeString(value: string) {
 	return value
 }
 
+function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
+	if (configPath) {
+		return path.resolve(path.dirname(configPath), customTemplatesPath) 
+	} else {
+		return customTemplatesPath
+	}
+}
+
 const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 	toClassName: (name) => {
 		return classCamelCase(name)
@@ -177,12 +185,25 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		return GroupingStrategies.addToGroupsByTag
 	},
 
+	watchPaths: (config) => {
+		const result = [path.resolve(__dirname, '../templates')]
+		if (config.customTemplates) {
+			result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
+		}
+		return result
+	},
+
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 
 		registerStandardHelpers(hbs, state)
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+
+		if (state.config.customTemplates) {
+			const customTemplatesPath = computeCustomTemplatesPath(state.config.configPath, state.config.customTemplates)
+			await loadTemplates(customTemplatesPath, hbs)
+		}
 
 		const rootContext: CodegenRootContext = {
 			generatorClass: '@openapi-generator-plus/typescript-fetch-client-generator',

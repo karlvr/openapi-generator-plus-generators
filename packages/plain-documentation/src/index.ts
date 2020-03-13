@@ -158,6 +158,13 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		return GroupingStrategies.addToGroupsByPath
 	},
 
+	watchPaths: () => {
+		const result = [path.resolve(__dirname, '../templates')]
+		result.push(path.resolve(__dirname, '../less'))
+		result.push(path.resolve(__dirname, '../static'))
+		return result
+	},
+
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 
