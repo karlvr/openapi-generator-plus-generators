@@ -33,7 +33,6 @@
     "@openapi-generator-plus/java-like-generator-helper": "file:../java-like",
     "change-case": "^4.1.1",
     "handlebars": "^4.7.3",
-    "lodash": "^4.17.15",
     "pluralize": "^8.0.0"
   },
   "publishConfig": {
