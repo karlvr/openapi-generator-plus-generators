@@ -9,12 +9,6 @@ import marked from 'marked'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
 
-function escapeString(value: string) {
-	value = value.replace(/\\/g, '\\\\')
-	value = value.replace(/'/g, '\\\'')
-	return value
-}
-
 const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 	toClassName: (name) => {
 		return classCamelCase(name)
