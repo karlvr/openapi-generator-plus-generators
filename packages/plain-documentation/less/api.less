@@ -85,10 +85,23 @@ body.api-docs {
 			display: block;
 			margin-top: @base * 6;
 		}
+
+		.summary {
+			margin: (@base * 3) 0;
+
+			h4 {
+				font-size: @fs;
+				line-height: @lh;
+			}
+		}
 	}
 
 	.params, .request, .response {
 		margin-top: @base * 5;
+	}
+
+	.params + .summary {
+		margin-top: @base * 3;
 	}
 
 	span.type {
@@ -169,11 +182,15 @@ body.api-docs {
 			font-size: 16px;
 			line-height: 1.33;
 			color: @text-light;
-			white-space: nowrap;
+//			white-space: nowrap;
 			width: 25%;
 			
 			.model-property-enum {
 				white-space: normal;
+			}
+			
+			.model-property-type, .model-ref {
+				font-size: @fs - 2;
 			}
 		}
 
@@ -242,8 +259,8 @@ body.api-docs {
 
 	code, pre {
 		font-family: @f-meta;
-		color: @get-text;
-		background-color: mix(@get, @white, 10%);
+		color: @code;
+		background-color: @code-bg;
 		font-size: 15px; 
 		line-height: 1;
 	}
@@ -303,10 +320,19 @@ body.api-docs {
 	.api-title .model-ref {
 		font-size: 16px;
 	}
-	
-	.model-property-enum-item .model-ref {
-		font-size: 15px;
+
+	.model-property-enum {
+		display: block;
+		font-family: @f-meta;
+		font-size: @fs - 2;
+		line-height: 1.75;
+		color: @code;
+		margin-top: @base;
 	}
+
+	// .model-property-enum-item .model-ref {
+	// 	font-size: 15px;
+	// }
 	
 	span.type .model-ref {
 		color: @text-light;
@@ -322,7 +348,7 @@ body.api-docs {
 	}
 	
 	.model-property-type { font-style: normal; }
-	.model-property-enum { font-size: 15px; }
+	// .model-property-enum { font-size: 15px; }
 	
 	.model-allOf-inherited::before,
 	.model-array-items::before,
