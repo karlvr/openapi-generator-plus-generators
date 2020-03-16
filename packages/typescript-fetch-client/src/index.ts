@@ -9,6 +9,7 @@ import { classCamelCase, identifierCamelCase } from '@openapi-generator-plus/jav
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
 	value = value.replace(/'/g, '\\\'')
+	value = value.replace(/\n/g, '\\n')
 	return value
 }
 
