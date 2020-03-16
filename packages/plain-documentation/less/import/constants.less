@@ -2,23 +2,18 @@
 @white: #FFF;
 @black: #000;
 
-@blue: #9CF;
-@blue-text: #58E;
-@blue-hover: #36C;
+@get: #50BCA0;
+@get-text: darken(@get, 10%);
 
-@green: #6C4;
-@green-text: #5B3;
+@post: #F08868;
 
-@yellow: #FEFE41;
+@patch: #E86098;
+@patch-text: darken(@patch, 10%);
+@patch-hover: @patch;
 
-@orange: #F94;
+@delete: #645880;
 
-@red: #F44;
-
-@grey-dark: #2C3641;
-
-@brand: @blue-text;
-@brand-fill: @blue;
+@grey-dark: #202830;
 
 @text: #567;
 @text-light: #89A;
@@ -31,8 +26,8 @@
 
 @footer-bg: #F0F2F4;
 
-@link: @blue;
-@link-hover: darken(@blue, 10%);
+@link: #68D;
+@link-hover: darken(@link, 10%);
 
 @base: 8px;
 
@@ -64,20 +59,27 @@
 @header-mini-height: 54px;
 
 // Typography
-@f-title: "Graphik-Bold-Web", sans-serif;
-@f-subtitle: "Graphik-Semibold-Web", sans-serif;
-@f-text: "Graphik-Regular-Web", sans-serif;
-@f-meta: "PitchWeb-Regular", "Courier New", Courier, monospace;
-@f-serif: "TiemposTextWeb-Regular", Georgia, serif;
+@f-text: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+@f-title: @f-text;
+@f-subtitle: @f-text;
+@f-meta: "IBM Plex Mono", monospace;
 
 @font-default: @text;
 
 @fs: 16px;
 @lh: 28 / 16;
-@fs-title: 24px;
-@lh-title: 24 / 16;
-@fs-title2: 21px;
-@lh-title2: 21 / 16;
+@fs-meta: 12px;
+@lh-meta: 1;
+@fs-title: 40px;
+@lh-title: 1;
+@fs-title2: 32px;
+@lh-title2: 1;
+@fs-title3: 28px;
+@lh-title3: 28 / 16;
+@fs-title4: 24px;
+@lh-title4: 24 / 16;
+@fs-title5: 12px;
+@lh-title5: 1;
 @fs-caption: 16px;
 @lh-caption: 16 / 16;
 

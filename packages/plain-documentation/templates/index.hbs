@@ -6,16 +6,15 @@
 <!--[if (gt IE 9)|!(IE)]><!--> <html id="html" lang="en" class="no-js"> <!--<![endif]-->
 
 <head>
+	<title>{{>base/title}}</title>
 
-    <title>{{>base/title}}</title>
-
-    <meta charset="UTF-8">
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="apple-mobile-web-app-title" content="{{info.title}}" />
 	<meta name="application-name" content="{{info.title}}" />
-	<meta name="theme-color" content="#556677" />
 
-    <link rel="stylesheet" href="main.css" />
+	<link href="main.css" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet" />
 
 	{{!--
 	<script src="js/highlight.pack.js"></script>
@@ -30,8 +29,8 @@
 			if ($(window).width() > SIDEBAR_MIN_PAGEWIDTH) {
 				$("#sidebar").stick_in_parent();
 			}
-			
-			$("#sidebar .expandable").on("click", "h2", function(e) {
+
+			$("#sidebar .expandable").on("click", ".endpoint", function(e) {
 				e.preventDefault();
 				var count = $(this).siblings("section").children("div").length;
 				$(this).siblings("section").slideToggle(Math.max((count * 50), 200));
@@ -40,14 +39,13 @@
 			$("body").removeClass("before-js");
 		});
 	</script>
+
 	<noscript>
-		<style>
-			body.before-js .page-bg * { visibility: visible !important; }
-		</style>
+		<style>body.before-js .page-bg * { visibility: visible !important; }</style>
 	</noscript>
 </head>
 
-<body class="editorial api before-js">
+<body class="api-docs before-js">
 	<div class="page-bg">
 		<div class="page">
 			{{>base/header}}
@@ -58,4 +56,5 @@
 		</div>
 	</div>
 </body>
+
 </html>

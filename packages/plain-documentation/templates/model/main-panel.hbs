@@ -7,9 +7,9 @@
                 <section class="summary" data-class-title="{{name}}">
                     {{#if name}}
                         {{#if anchor}}
-                            <h1 class="api-title"><a name="{{anchor}}/{{htmlId nativeType}}"></a>{{nativeType}} {{#each allOf}}{{#if $ref}}<span class="type">&lt; {{>model/reference $ref}}</span>{{/if}}{{/each}}</h1>
+                            <h4 class="api-title"><a name="{{anchor}}/{{htmlId nativeType}}"></a>{{nativeType}} {{#each allOf}}{{#if $ref}}<span class="type">&lt; {{>model/reference $ref}}</span>{{/if}}{{/each}}</h4>
                         {{else}}
-                            <h1 class="api-title">{{nativeType}}</h1>
+                            <h4 class="api-title">{{nativeType}}</h4>
                         {{/if}}
                     {{/if}}
 

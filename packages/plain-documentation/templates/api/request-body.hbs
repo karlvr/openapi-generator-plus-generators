@@ -4,12 +4,13 @@
 
 {{#bodyParam}}
     <div class="request">
-        <h2>Request</h2>
-            {{#if ../consumes}}
-            <p>{{#each ../consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>
-            {{/if}}
+        <h5>Request</h5>
             {{{md description}}}
 
             <p class="meta">{{>model/datatype anchor='/definitions'}}</p>
+
+            {{#if ../consumes}}
+            <p>{{#each ../consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>
+            {{/if}}
     </div>
 {{/bodyParam}}

@@ -42,18 +42,45 @@ p + p {
 h1, h2, h3, h4 {
 	font-family: @f-subtitle;
 	color: @text;
+	margin: 0 0 (@base * 2);
 }
 
 h1 {
 	font-family: @f-title;
 	font-size: @fs-title;
 	line-height: @lh-title;
-	margin: 0 0 @fs;
+	font-weight: 800;
 }
 
 h2 {
-	font-size: 14px;
-	line-height: 16 / 14;
+	font-size: @fs-title2;
+	line-height: @lh-title2;
+	font-weight: 200;
+}
+
+h3 {
+	font-size: @fs-title3;
+	line-height: @lh-title3;
+	font-weight: 200;
+	margin: (@base * 6) 0 (@base * 4);
+	text-transform: capitalize;
+	border-top: 1px solid @ui-border;
+}
+
+h4 {
+	font-size: @fs-title4;
+	line-height: @lh-title4;
+	font-weight: 700;
+	margin: 0;
+}
+
+h5 {
+	font-size: @fs-title5;
+	line-height: @lh-title5;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+	color: @text-light;
+	margin-top: @base;
 }
 
 input, textarea, select {
@@ -66,7 +93,6 @@ strong, b {
 }
 
 em, i {
-	// font-family: @f-text-italic;
 	font-style: italic;
 }
 
@@ -77,7 +103,7 @@ figcaption {
 }
 
 a {
-	color: @text;
+	color: @link;
 	text-decoration: none;
 }
 
@@ -89,7 +115,7 @@ a {
 	white-space: nowrap;
 }
 
-body.editorial {
+body.api-docs {
 
 	// Page
 	
@@ -126,37 +152,11 @@ body.editorial {
 	// Header
 	
 	#header {
-		padding-bottom: @base * 4;
+		padding-bottom: @base * 3;
 	
 		@media @vp-min-tablet-wide {
-			padding-bottom: @base * 12;
+			padding-bottom: @base * 2;
 		}
-	
-		.dots, h1, h2 {
-			display: inline-block;
-			height: 41px;
-			line-height: 1;
-			margin: 0;
-		}
-	
-		h1 {
-			padding: 0 (percentage(@grid-gutter / @grid-width));
-		}
-	
-		h2 img {
-			position: relative;
-			top: 9px;
-		}
-	}
-	
-	// Titles
-	
-	h2 {
-		color: @text-light;
-		font-family: @f-text;
-		text-transform: uppercase;
-		letter-spacing: 0.2em;
-		margin: (@base * 5) 0 @base;
 	}
 	
 	// Sidebar
@@ -169,6 +169,10 @@ body.editorial {
 			nav {
 				border-right: 1px solid @ui-border;
 				.grid(5, 6);
+
+				li:not(.expandable) a {
+					font-weight: 700;
+				}
 			}
 		}
 	
