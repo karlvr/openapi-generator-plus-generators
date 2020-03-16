@@ -143,7 +143,28 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		hbs.registerHelper('eachSorted', function(this: object, collection: Array<unknown>, options: Handlebars.HelperOptions) {
 			if (collection) {
 				let result = ''
-				for (const item of collection.sort()) {
+				for (const item of collection.sort(function(a: unknown, b: unknown) {
+					if (a === b) {
+						return 0
+					}
+					if (typeof a === 'string' && typeof b === 'string') {
+						return a.localeCompare(b)
+					} else if (typeof a === 'object' && typeof b === 'object') {
+						if (a === null) {
+							return 1
+						} else if (b === null) {
+							return -1
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						} else if ((a as any).name && (b as any).name) {
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any
+							return (a as any).name.localeCompare((b as any).name)
+						} else {
+							return 0
+						}
+					} else {
+						return 0
+					}
+				})) {
 					result += options.fn(item)
 				}
 				return result
