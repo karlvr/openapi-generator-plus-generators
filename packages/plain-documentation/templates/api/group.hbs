@@ -3,7 +3,7 @@
 --}}
 
 <span id="group-{{htmlId name}}" data-path="{{path}}" class="operation-group"></span>
-<h3>{{name}}</h3>
+<h3 class="group">{{capitalize name}}</h3>
 {{#eachSorted operations}}
     {{>api/operation .}}
 {{/eachSorted}}

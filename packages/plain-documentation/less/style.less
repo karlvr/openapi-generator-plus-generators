@@ -62,21 +62,36 @@ h3 {
 	font-size: @fs-title3;
 	line-height: @lh-title3;
 	font-weight: 200;
-	margin: (@base * 6) 0 (@base * 4);
-	text-transform: capitalize;
-	border-top: 1px solid @ui-border;
+
+	&.group {
+		margin: (@base * 6) 0 (@base * 4);
+		border-top: 1px solid @ui-border;
+	}
 }
 
 h4 {
 	font-size: @fs-title4;
 	line-height: @lh-title4;
-	font-weight: 700;
+	font-weight: 200;
 	margin: 0;
+
+	.operation & {
+		font-weight: 700;
+	}
 }
 
 h5 {
 	font-size: @fs-title5;
 	line-height: @lh-title5;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+	color: @text-light;
+	margin-top: @base;
+}
+
+h6 {
+	font-size: @fs-title6;
+	line-height: @lh-title6;
 	text-transform: uppercase;
 	letter-spacing: 0.2em;
 	color: @text-light;
@@ -191,9 +206,8 @@ body.api-docs {
 			}
 		
 			.expandable {
-				h2 {
+				.endpoint {
 					font-family: @f-subtitle;
-					text-transform: capitalize;
 					letter-spacing: 0;
 					margin: (@base * 1.5) 0 (@base / 2);
 					cursor: pointer;

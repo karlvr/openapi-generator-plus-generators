@@ -39,37 +39,7 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 			return state.generator.toDefaultValue(undefined, { type, format, required }, state)
 		}
 
-		switch (type) {
-			case 'integer': {
-				return `${value}`
-			}
-			case 'number': {
-				return `${value}`
-			}
-			case 'string': {
-				if (format === 'binary') {
-					throw new Error(`Cannot format literal for type ${type} format ${format}`)
-				} else if (format === 'date') {
-					/* The date format should be an ISO date, and the timezone doesn't matter */
-					return `new Date("${value}")`
-				} else if (format === 'time') {
-					/* Parse the date at 1/1/1970 with a local time (no trailing Z), so it's parsed in the client's locale */
-					return `new Date("1970-01-01T${value}")`
-				} else if (format === 'date-time') {
-					/* The date-time format should be an ISO datetime with an offset timezone */
-					return `new Date("${value}")`
-				} else {
-					return `'${escapeString(value)}'`
-				}
-			}
-			case 'boolean':
-				return !required ? `java.lang.Boolean.valueOf(${value})` : `${value}`
-			case 'object':
-			case 'file':
-				throw new Error(`Cannot format literal for type ${type}`)
-		}
-
-		throw new Error(`Unsupported type name: ${type}`)
+		return value
 	},
 	toNativeType: ({ type, format, modelNames }, state) => {
 		/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */

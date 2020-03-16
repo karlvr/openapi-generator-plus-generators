@@ -1,75 +1,74 @@
-<h2>
-	<span class="type">{{type}}</span>
-	{{name}}
-</h2>
+<h3>{{type}}</h3>
 
 {{{md description}}}
 
-{{#if isApiKey}}
-	<table>
-		<tbody>
-			{{#ifeq in 'header'}}
-				<tr>
-					<td class="name">Header</td>
-					<td class="type">{{paramName}}</td>
-				</tr>
-			{{else ifeq in 'query'}}
-				<tr>
-					<td class="name">Query Parameter</td>
-					<td class="type">{{paramName}}</td>
-				</tr>
-			{{else ifeq in 'cookie'}}
-				<tr>
-					<td class="name">Cookie Name</td>
-					<td class="type">{{paramName}}</td>
-				</tr>
-			{{else}}
-				<tr>
-					<td class="name">{{in}} Name</td>
-					<td class="type">{{paramName}}</td>
-				</tr>
-			{{/ifeq}}
-		</tbody>
-	</table>
-{{else if isOAuth}}
-	{{#flows}}
-		<h3>{{capitalize type}} flow</h3>
+<section class="summary">
+	{{#if isApiKey}}
 		<table>
 			<tbody>
-				{{#if authorizationUrl}}
-				<tr>
-					<td class="name">Authorization URL</td>
-					<td class="type">{{authorizationUrl}}</td>
-				</tr>
-				{{/if}}
-				{{#if tokenUrl}}
-				<tr>
-					<td class="name">Token URL</td>
-					<td class="type">{{tokenUrl}}</td>
-				</tr>
-				{{/if}}
-				{{#if refreshUrl}}
-				<tr>
-					<td class="name">Refresh URL</td>
-					<td class="type">{{refreshUrl}}</td>
-				</tr>
-				{{/if}}
-				{{#if scopes}}
-				<tr>
-					<td class="name">Scopes</td>
-					<td class="type">{{scopes}}</td>
-				</tr>
-				{{/if}}
+				{{#ifeq in 'header'}}
+					<tr>
+						<td class="name">Header</td>
+						<td class="type">{{paramName}}</td>
+					</tr>
+				{{else ifeq in 'query'}}
+					<tr>
+						<td class="name">Query Parameter</td>
+						<td class="type">{{paramName}}</td>
+					</tr>
+				{{else ifeq in 'cookie'}}
+					<tr>
+						<td class="name">Cookie Name</td>
+						<td class="type">{{paramName}}</td>
+					</tr>
+				{{else}}
+					<tr>
+						<td class="name">{{in}} Name</td>
+						<td class="type">{{paramName}}</td>
+					</tr>
+				{{/ifeq}}
 			</tbody>
 		</table>
-	{{/flows}}
-{{else if isOpenIdConnect}}
-	<table>
-		<tbody>
-			<tr>
-				<td class="name">OpenId Connect URL</td>
-				<td class="type">{{openIdConnectUrl}}</td>
-			</tr>
-		</tbody>
-	</table>
-{{/if}}
+	{{else if isOAuth}}
+		{{#flows}}
+			<h4>{{capitalize type}} flow</h4>
+			<table>
+				<tbody>
+					{{#if authorizationUrl}}
+					<tr>
+						<td class="name">Authorization URL</td>
+						<td class="type">{{authorizationUrl}}</td>
+					</tr>
+					{{/if}}
+					{{#if tokenUrl}}
+					<tr>
+						<td class="name">Token URL</td>
+						<td class="type">{{tokenUrl}}</td>
+					</tr>
+					{{/if}}
+					{{#if refreshUrl}}
+					<tr>
+						<td class="name">Refresh URL</td>
+						<td class="type">{{refreshUrl}}</td>
+					</tr>
+					{{/if}}
+					{{#if scopes}}
+					<tr>
+						<td class="name">Scopes</td>
+						<td class="type">{{scopes}}</td>
+					</tr>
+					{{/if}}
+				</tbody>
+			</table>
+		{{/flows}}
+	{{else if isOpenIdConnect}}
+		<table>
+			<tbody>
+				<tr>
+					<td class="name">OpenId Connect URL</td>
+					<td class="type">{{openIdConnectUrl}}</td>
+				</tr>
+			</tbody>
+		</table>
+	{{/if}}
+</section>

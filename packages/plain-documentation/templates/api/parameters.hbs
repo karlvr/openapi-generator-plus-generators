@@ -10,7 +10,7 @@
         <table>
             {{#each nonBodyParams}}
                 <tr>
-                    <td class="name">{{name}} {{#if required}}<span class="type">Required</span>{{/if}}</td>
+                    <td class="name">{{name}} {{#if required}}<span class="type">Required</span>{{/if}} {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}</td>
                     <td class="type">
                         {{>model/datatype .}}{{#if items}},{{>model/datatype items}}{{/if}}
                         {{#if collectionFormat}}
@@ -20,6 +20,23 @@
                     <td class="in">{{in}}</td>
                     <td class="desc">{{{md description}}}</td>
                 </tr>
+                {{#if examples}}
+                    <tr class="examples">
+                        <td colspan="3">
+                            {{#examples}}
+                                <div class="example">
+                                    {{#if name}}
+                                        <p><strong>{name}}</strong></p>
+                                    {{/if}}
+                                    <pre>{{valueString}}</pre>
+                                    {{#if mediaType}}
+                                        <p><span class="type">{{mediaType.mediaType}}</span></p>
+                                    {{/if}}
+                                </div>
+                            {{/examples}}
+                        </td>
+                    </tr>
+                {{/if}}
             {{/each}}
         </table>
     </div>
