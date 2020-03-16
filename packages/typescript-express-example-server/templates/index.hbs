@@ -1,0 +1,48 @@
+import express from 'express'
+import getopts from 'getopts'
+
+const app = express()
+
+{{#groups}}
+/* {{{name}}} */
+{{#operations}}
+app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res, next) {
+	{{#if defaultResponse}}
+	{{#if defaultResponse.examples}}
+	const defaultResponses: { contentType: string, body: string }[] = []
+	{{#defaultResponse.examples}}
+	defaultResponses.push({
+		contentType: "{{{mediaType.mediaType}}}",
+		body: {{{valueString}}},
+	})
+	{{/defaultResponse.examples}}
+	const response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+	res.set('Content-Type', response.contentType)
+	res.send(response.body)
+	{{else}}
+	//TODO
+	res.status(503).send('Unimplemented')
+	{{/if}}
+	{{else}}
+	//TODO
+	res.status(503).send('Unimplemented')
+	{{/if}}
+})
+{{/operations}}
+
+{{/groups}}
+const options = getopts(process.argv.slice(2), {
+	alias: {
+		port: 'p',
+	},
+	unknown: (option) => {
+		console.log(`Unknown option: ${option}`)
+		return false
+	},
+})
+
+const port = options.port || 3000
+const server = app.listen(port, function() {
+	const address = server.address()
+	console.log(`Listening on ${address.port}`)
+})
