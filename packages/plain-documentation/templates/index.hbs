@@ -36,6 +36,22 @@
 				$(this).siblings("section").slideToggle(Math.max((count * 50), 200));
 			});
 
+			$('.example-trigger').each(function() {
+				var $trigger = $(this);
+				var $target = $trigger.closest('tr').next('tr').filter('.examples');
+				if (!$target) {
+					$target = $trigger.closest('p').next('div').filter('.examples');
+				}
+
+				if ($target) {
+					$target.hide();
+					$trigger.on('click', function(evt) {
+						evt.preventDefault();
+						$target.toggle();
+					});
+				}
+			});
+
 			$("body").removeClass("before-js");
 		});
 	</script>

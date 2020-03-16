@@ -18,7 +18,7 @@
                         <li class="title"><a href="#groups">Endpoints</a></li>
                         {{#eachSorted groups}}
                             <li class="expandable">
-                                <div class="endpoint"><a href="#group-{{htmlId name}}">{{name}}</a></div>
+                                <div class="endpoint"><a href="#group-{{htmlId name}}">{{capitalize name}}</a></div>
                                 {{#if operations}}
                                     <section style="display: none">
                                         <ul>

@@ -81,7 +81,7 @@ body.api-docs {
 	.summary {
 		margin-bottom: @base * 8;
 
-		& + .summary, & + span[id] {
+		& + .summary, & + span[id], p + .summary {
 			display: block;
 			margin-top: @base * 6;
 		}
@@ -175,6 +175,14 @@ body.api-docs {
 			padding-right: 0;
 			width: 25%;
 		}
+
+		td .example-trigger {
+			font-size: @fs-meta;
+		}
+	}
+
+	.example {
+		margin-bottom: @base * 2;
 	}
 
 	span.p {
