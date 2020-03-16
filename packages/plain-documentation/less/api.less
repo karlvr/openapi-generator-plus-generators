@@ -138,8 +138,14 @@ body.api-docs {
 		}
 
 		td.resp, td.desc {
-			font-size: 14px;
-			line-height: 1.5;
+			p, .model-property-type a {
+				font-size: @fs - 2;
+				line-height: @lh;
+			}
+
+			code {
+				font-size: @fs - 2;
+			}
 		}
 
 		td.code {
@@ -259,7 +265,7 @@ body.api-docs {
 	.deprecated-label {
 		display: inline-block;
 		background-color: @delete;
-		padding: 4px 5px 3px;
+		padding: 4px 5px;
 		letter-spacing: 0.2em;
 		line-height: 1;
 		color: white;
