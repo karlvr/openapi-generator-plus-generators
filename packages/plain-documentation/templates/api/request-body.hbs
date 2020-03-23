@@ -4,12 +4,28 @@
 
 {{#bodyParam}}
     <div class="request">
-        <h2>Request</h2>
-            {{#if ../consumes}}
-            <p>{{#each ../consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>
-            {{/if}}
+        <h5>Request</h5>
             {{{md description}}}
 
             <p class="meta">{{>model/datatype anchor='/definitions'}}</p>
+
+            {{#if examples}}
+                <p><a href="#" class="example-trigger">Examples</a></p>
+                <div class="examples">
+                    {{#each examples}}
+                        {{#if name}}
+                            <p><strong>{name}}</strong></p>
+                        {{/if}}
+                        <pre>{{valuePretty}}</pre>
+                        {{#if mediaType}}
+                            <p><span class="type">{{mediaType.mediaType}}</span></p>
+                        {{/if}}
+                    {{/each}}
+                </div>
+            {{/if}}
+
+            {{#if ../consumes}}
+            <p>{{#each ../consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>
+            {{/if}}
     </div>
 {{/bodyParam}}

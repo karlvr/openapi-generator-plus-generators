@@ -7,15 +7,32 @@
 
 {{#if responses}}
     <div class="response">
-        <h2>Response</h2>
+        <h5>Response</h5>
 
         <table>
             {{#each responses}}
                 <tr>
-                    <td class="code">{{code}}</td>
+                    <td class="code">{{code}} {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}</td>
                     <td class="resp">{{{md description}}}</td>
                     <td class="desc">{{>model/datatype anchor='/definitions'}}</td>
                 </tr>
+                {{#if examples}}
+                    <tr class="examples">
+                        <td colspan="3">
+                            {{#examples}}
+                                <div class="example">
+                                    {{#if name}}
+                                        <p><strong>{name}}</strong></p>
+                                    {{/if}}
+                                    <pre>{{valuePretty}}</pre>
+                                    {{#if mediaType}}
+                                        <p><span class="type">{{mediaType.mediaType}}</span></p>
+                                    {{/if}}
+                                </div>
+                            {{/examples}}
+                        </td>
+                    </tr>
+                {{/if}}
             {{/each}}
         </table>
 

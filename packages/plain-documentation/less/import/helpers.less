@@ -273,26 +273,26 @@
 
 .link() {
 	text-decoration: none;
-	border-bottom: 4px solid fade(@blue, 50%);
+	border-bottom: 4px solid fade(@link, 50%);
 }
 
 .link-hover() {
 	&:hover, &:active {
 		text-decoration: none;
-		border-bottom: 4px solid @blue;
+		border-bottom: 4px solid @link;
 	}
 }
 
 .link-simple() {
-	color: @blue-text;
+	color: @link;
 	text-decoration: none;
-	border-bottom: 1px solid fade(@blue-text, 50%);
+	border-bottom: 1px solid fade(@link, 50%);
 }
 
 .link-simple-hover() {
 	&:hover, &:active {
-		color: @blue-hover;
+		color: @link-hover;
 		text-decoration: none;
-		border-bottom: 1px solid @blue-text;
+		border-bottom: 1px solid @link;
 	}
 }

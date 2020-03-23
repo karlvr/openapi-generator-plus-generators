@@ -165,14 +165,14 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		}
 
 		const npmConfig: NpmOptions | undefined = npm ? {
-			name: npm.name || 'typescript-fetch-api',
+			name: npm.name || 'typescript-express-example-server',
 			version: npm.version || '0.0.1',
 			repository: npm.repository,
 		} : undefined
 
 		const typescriptOptions: TypeScriptOptions | undefined = config.typescript ? {
-			target: config.typescript.target || 'ES5',
-			libs: config.typescript.libs || [config.typescript.target || 'ES5', 'DOM'],
+			target: config.typescript.target || 'ES2015',
+			libs: config.typescript.libs || [config.typescript.target || 'ES2015', 'DOM'],
 		} : undefined
 
 		return {
@@ -183,7 +183,7 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		}
 	},
 	operationGroupingStrategy: () => {
-		return GroupingStrategies.addToGroupsByTag
+		return GroupingStrategies.addToGroupsByPath
 	},
 
 	watchPaths: (config) => {
@@ -199,6 +199,15 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 
 		registerStandardHelpers(hbs, state)
 
+		/* Convert an operation path to an express path */
+		hbs.registerHelper('expressPath', function(path: string) {
+			if (!path) {
+				return path
+			}
+
+			return path.replace(/\{([-a-zA-Z_]+)\}/g, ':$1')
+		})
+
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
 		if (state.config.customTemplates) {
@@ -207,7 +216,7 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		}
 
 		const rootContext: CodegenRootContext = {
-			generatorClass: '@openapi-generator-plus/typescript-fetch-client-generator',
+			generatorClass: '@openapi-generator-plus/typescript-node-express-server-generator',
 			generatedDate: new Date().toISOString(),
 		}
 
@@ -218,14 +227,10 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 
 		const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 
-		await emit('api', `${outputPath}${relativeSourceOutputPath}api.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
-		await emit('configuration', `${outputPath}${relativeSourceOutputPath}configuration.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
-		await emit('custom.d', `${outputPath}${relativeSourceOutputPath}custom.d.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('index', `${outputPath}${relativeSourceOutputPath}index.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		if (state.options.npm) {
 			await emit('package', `${outputPath}package.json`, { ...state.options.npm, ...state.options, ...rootContext }, true, hbs)
 		}
-		await emit('README', `${outputPath}README.md`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		if (state.options.typescript) {
 			await emit('tsconfig', `${outputPath}tsconfig.json`, { ...state.options.typescript, ...state.options, ...rootContext }, true, hbs)
 		}

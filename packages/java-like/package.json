@@ -1,6 +1,6 @@
 {
 	"name": "@openapi-generator-plus/java-like-generator-helper",
-	"version": "0.0.6",
+	"version": "0.0.8",
 	"description": "Helpers for Java-like language generators",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
 	},
 	"homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
 	"dependencies": {
-		"@openapi-generator-plus/core": "0.0.9"
+		"@openapi-generator-plus/core": "0.0.15"
 	},
 	"publishConfig": {
 		"access": "public"

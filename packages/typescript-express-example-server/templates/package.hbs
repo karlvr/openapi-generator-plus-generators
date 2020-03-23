@@ -1,0 +1,35 @@
+{
+	"name": "{{name}}",
+	"version": "{{version}}",
+	"description": "API server for {{name}}",
+	"author": "@openapi-generator-plus/typescript-node-express-server-generator",
+	"keywords": [
+		"express",
+		"typescript",
+		"swagger",
+		"openapi",
+		"{{name}}"
+	],
+	"license": "UNLICENSED",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"prepare": "npm run build",
+		"start": "node dist/index"
+	},
+	"dependencies": {
+		"express": "^4",
+		"getopts": "^2.2.5"
+	},
+	"devDependencies": {
+		"@types/node": "^8.0.9",
+		"@types/express": "^4",
+		"typescript": "^3"
+	{{#repository}}
+	},
+	"publishConfig": {
+		"registry": "{{{repository}}}"
+	{{/repository}}
+	}
+}

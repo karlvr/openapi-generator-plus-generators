@@ -8,10 +8,14 @@
 --}}
 
 <section class="summary operation{{#deprecated}} -deprecated{{/deprecated}}" data-path="{{path}}" data-method="{{method}}" id="operation-{{htmlId name}}">
-    <h1 class="api-title"><span class="method operation-{{lowerCase httpMethod}}">{{upperCase httpMethod}}</span> {{path}}</h1>
+    <h4>{{name}}</h4>
+
+    <div class="api-title"><span class="method operation-{{lowerCase httpMethod}}">{{upperCase httpMethod}}</span> {{fullPath}}</div>
+
     {{#deprecated}}
     <p><strong class="deprecated-label">DEPRECATED</strong></p>
     {{/deprecated}}
+
     {{{md summary "true"}}}
     {{{md operation.description}}}
 

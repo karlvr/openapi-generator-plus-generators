@@ -13,7 +13,7 @@
 	top: -6px;
 }
 
-body.api {
+body.api-docs {
 	.content {
 		@media @vp-min-tablet-wide {
 			margin-left: percentage(((6 * @grid-column) + (6 * @grid-gutter)) / @grid-width);
@@ -25,15 +25,6 @@ body.api {
 		}
 	}
 
-	#header {
-		.dots {
-
-			@media @vp-min-tablet {
-				.grid(6);
-			}
-		}
-	}
-
 	.page-bg, .footer {
 		@media @vp-min-tablet and @vp-max-page-padding {
  			max-width: @page-width-padding;
@@ -42,78 +33,96 @@ body.api {
 			margin: 0 auto;
 		}
 	}
-	
-	h1 {
-		span.method {
-			position: relative;
-			color: @white;
-			font-family: @f-text;
-			font-size: 16px;
-			line-height: 1;
-			display: inline-block;
-			padding: 6px 6px 4px 8px;
-			letter-spacing: 0.2em;
-			top: -1px;
-			.border-radius(4px);
 
-			&.operation-get {
-				background-color: @green;
-			}
+	.api-title {
+		font-family: @f-meta;
+		font-size: @fs;
+		line-height: @lh;
+		margin-bottom: @base * 2;
+	}
 
-			&.operation-post {
-				background-color: @orange;
-			}
-
-			&.operation-delete {
-				background-color: @red;
-			}
-
-			&.operation-put {
-				background-color: @blue;
-			}
-
-			&.operation-patch {
-				background-color: @blue;
-			}
-		}
-
-		&.api-title {
-			font-family: @f-meta;
-			&:first-child {
-				position: relative;
-				top: -5px;
-			}
-		}
-
+	h4 {
 		& + .summary, & + span[id] + .summary {
 			margin-top: (@base * 5);
 		}
 	}
 
-	.summary {
-		margin-bottom: @base * 6;
+	span.method {
+		color: @white;
+		font-family: @f-text;
+		font-size: 14px;
+		line-height: 1;
+		display: inline-block;
+		padding: 3px 3px 3px 4px;
+		letter-spacing: 0.1em;
+		.border-radius(4px);
 
-		& + .summary, & + span[id] {
-			display: block;
-			margin-top: @base * 12;
+		&.operation-get {
+			background-color: @get;
+		}
+
+		&.operation-post {
+			background-color: @post;
+		}
+
+		&.operation-delete {
+			background-color: @delete;
+		}
+
+		&.operation-put {
+			background-color: @patch;
+		}
+
+		&.operation-patch {
+			background-color: @patch;
 		}
 	}
 
+	.summary {
+		margin-bottom: @base * 8;
+
+		& + .summary, & + span[id], p + .summary {
+			display: block;
+			margin-top: @base * 6;
+		}
+
+		.summary {
+			margin: (@base * 3) 0;
+
+			h4 {
+				font-size: @fs;
+				line-height: @lh;
+			}
+		}
+	}
+
+	.params, .request, .response {
+		margin-top: @base * 5;
+	}
+
+	.params + .summary {
+		margin-top: @base * 3;
+	}
+
 	span.type {
+		color: @text-light;
 		display: inline-block;
 		font-family: @f-meta;
-		font-size: @fs;
-		line-height: 1;
+		font-size: @fs-meta;
+		line-height: @lh-meta;
 		border: 1px solid @ui-border;
-		padding: 4px 6px 6px;
-		margin-left: 0.25em;
+		padding: 4px 6px;
 		.border-radius(3px);
+
+		+ span.type {
+			margin-left: 0.25em;
+		}
 	}
 
 	table {
 		width: 100%;
 		border-collapse: collapse;
-		margin: @base 0 (@base * 2);
+		margin: @base 0;
 
 		tr {
 			td {
@@ -138,12 +147,18 @@ body.api {
 		}
 
 		td.code, td.name {
-			font-size: 17px;
+			font-size: @fs;
 		}
 
 		td.resp, td.desc {
-			font-size: 14px;
-			line-height: 1.5;
+			p, .model-property-type a {
+				font-size: @fs - 2;
+				line-height: @lh;
+			}
+
+			code {
+				font-size: @fs - 2;
+			}
 		}
 
 		td.code {
@@ -167,11 +182,15 @@ body.api {
 			font-size: 16px;
 			line-height: 1.33;
 			color: @text-light;
-			white-space: nowrap;
+//			white-space: nowrap;
 			width: 25%;
 			
 			.model-property-enum {
 				white-space: normal;
+			}
+			
+			.model-property-type, .model-ref {
+				font-size: @fs - 2;
 			}
 		}
 
@@ -179,6 +198,14 @@ body.api {
 			padding-right: 0;
 			width: 25%;
 		}
+
+		td .example-trigger {
+			font-size: @fs-meta;
+		}
+	}
+
+	.example {
+		margin-bottom: @base * 2;
 	}
 
 	span.p {
@@ -210,14 +237,12 @@ body.api {
 
 	.api-title, .name {
 		.type {
-			position: relative;
 			color: @text-light;
 			font-family: @f-text;
 			font-size: @fs - 4;
 			border: none;
 			background-color: @ui-bg;
-			padding: 4px 8px 5px;
-			top: -1px;
+			padding: 4px 8px 6px;
 		}
 	}
 
@@ -225,11 +250,12 @@ body.api {
 		text-transform: uppercase;
 		font-size: @fs - 6;
 		letter-spacing: 0.1em;
-		padding: 4px 5px 3px;
+		padding: 4px 5px;
 	}
 
 	.meta {
 		color: @text-light;
+		margin-top: @base;
 	}
 
 	div.code {
@@ -241,8 +267,8 @@ body.api {
 
 	code, pre {
 		font-family: @f-meta;
-		color: @green-text;
-		background-color: mix(@green, @white, 10%);
+		color: @code;
+		background-color: @code-bg;
 		font-size: 15px; 
 		line-height: 1;
 	}
@@ -263,8 +289,8 @@ body.api {
 	
 	.deprecated-label {
 		display: inline-block;
-		background-color: @red;
-		padding: 4px 5px 3px;
+		background-color: @delete;
+		padding: 4px 5px;
 		letter-spacing: 0.2em;
 		line-height: 1;
 		color: white;
@@ -279,9 +305,9 @@ body.api {
 	// Bootprint Overrides
 	
 	.hljs-value, .hljs-attribute { color: @white; }
-	.hljs-string { color: @blue; }
-	.hljs-literal { color: @orange; }
-	.hljs-number { color: @green; }
+	.hljs-string { color: @patch; }
+	.hljs-literal { color: @post; }
+	.hljs-number { color: @get; }
 	
 	#definitions .hljs-string {
 		color: @text-light;
@@ -289,11 +315,12 @@ body.api {
 	
 	.model-ref {
 		font-family: @f-meta;
-		font-size: 18px;
+		font-size: @fs;
+		line-height: @lh;
 	
 		&:hover, &:active {
-			color: @blue-hover;
-			border-bottom: 1px solid @blue-hover;
+			color: @link-hover;
+			border-bottom: 1px solid @link-hover;
 		}
 	}
 	
@@ -301,10 +328,19 @@ body.api {
 	.api-title .model-ref {
 		font-size: 16px;
 	}
-	
-	.model-property-enum-item .model-ref {
-		font-size: 15px;
+
+	.model-property-enum {
+		display: block;
+		font-family: @f-meta;
+		font-size: @fs - 2;
+		line-height: 1.75;
+		color: @code;
+		margin-top: @base;
 	}
+
+	// .model-property-enum-item .model-ref {
+	// 	font-size: 15px;
+	// }
 	
 	span.type .model-ref {
 		color: @text-light;
@@ -320,7 +356,7 @@ body.api {
 	}
 	
 	.model-property-type { font-style: normal; }
-	.model-property-enum { font-size: 15px; }
+	// .model-property-enum { font-size: 15px; }
 	
 	.model-allOf-inherited::before,
 	.model-array-items::before,
@@ -382,13 +418,5 @@ body.api {
 			content: 'Inherits from';
 			font-size: 16px;
 		}
-	}
-}
-
-/* This hides the Links and FilmContributionsCollection classes, which accidentally leak into the docs */
-#definitions .summary {
-	&[data-class-title='Links'],
-	&[data-class-title='FilmContributionsCollection'] {
-		display: none;
 	}
 }
