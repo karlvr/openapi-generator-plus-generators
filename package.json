@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run build",
-    "link": "lerna exec npm link && npm link @openapi-generator-plus/core openapi-generator-plus",
+    "link": "lerna clean --yes && lerna run build && lerna exec --concurrency 1 -- npm link && npm link @openapi-generator-plus/core openapi-generator-plus && lerna clean --yes",
     "test": "lerna run test",
     "watch": "lerna run build && lerna run --parallel watch"
   },
