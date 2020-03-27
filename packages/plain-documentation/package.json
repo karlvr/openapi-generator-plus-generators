@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/core": "0.0.17",
+    "@openapi-generator-plus/core": "0.0.18",
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
     "less": "^3.11.1",
     "marked": "^0.8.0"
