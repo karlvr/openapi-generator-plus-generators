@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperationGroup, CodegenOperation, CodegenModel } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
@@ -277,25 +277,43 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 
 		const apiPackagePath = packageToPath(state.options.apiPackage)
 		for (const group of doc.groups) {
-			await emit('api', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
+			const operations = group.operations.filter(shouldGenerateOperation)
+			if (!operations.length) {
+				continue
+			}
+			await emit('api', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, 
+				{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		for (const group of doc.groups) {
-			await emit('apiService', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiService.java`, { ...group, ...state.options, ...rootContext }, true, hbs)
+			const operations = group.operations.filter(shouldGenerateOperation)
+			if (!operations.length) {
+				continue
+			}
+			await emit('apiService', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiService.java`, 
+				{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		const apiImplPackagePath = packageToPath(state.options.apiServiceImplPackage)
 		for (const group of doc.groups) {
+			const operations = group.operations.filter(shouldGenerateOperation)
+			if (!operations.length) {
+				continue
+			}
 			await emit('apiServiceImpl', `${outputPath}${relativeSourceOutputPath}${apiImplPackagePath}/${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`, 
 				{ ...group, ...state.options, ...rootContext }, false, hbs)
 		}
 
 		const modelPackagePath = packageToPath(state.options.modelPackage)
 		for (const model of doc.models) {
+			if (!shouldGenerateModel(model)) {
+				continue
+			}
 			const context = {
 				models: [model],
 			}
-			await emit('model', `${outputPath}${relativeSourceOutputPath}${modelPackagePath}/${state.generator.toClassName(model.name, state)}.java`, { ...context, ...state.options, ...rootContext }, true, hbs)
+			await emit('model', `${outputPath}${relativeSourceOutputPath}${modelPackagePath}/${state.generator.toClassName(model.name, state)}.java`, 
+				{ ...context, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		if (maven) {
@@ -307,6 +325,14 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			await emit('pom', `${outputPath}pom.xml`, { ...mavenConfig, ...state.options, ...rootContext }, false, hbs)
 		}
 	},
+}
+
+function shouldGenerateOperation(op: CodegenOperation) {
+	return !(op.vendorExtensions && op.vendorExtensions['x-no-server'])
+}
+
+function shouldGenerateModel(model: CodegenModel) {
+	return !(model.vendorExtensions && model.vendorExtensions['x-no-server'])
 }
 
 export default generator

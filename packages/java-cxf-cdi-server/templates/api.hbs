@@ -20,7 +20,6 @@ public class {{className name}}Api  {
 	@javax.inject.Inject {{className name}}ApiService delegate;
 
 {{#operations}}
-{{^vendorExtensions.x-implementation-provided}}
 {{>nestedModels}}
 	@javax.ws.rs.{{httpMethod}}
 	{{#if authMethods}}
@@ -92,6 +91,5 @@ public class {{className name}}Api  {
 		}
 	}
 
-{{/vendorExtensions.x-implementation-provided}}
 {{/operations}}
 }
