@@ -1,0 +1,18 @@
+{{#if securityRequirements}}
+	<div class="security">
+        <h5>Security</h5>
+
+        <table>
+            {{#each securityRequirements}}
+                <tr>
+                    <td><a href="#/security/{{htmlId scheme.name}}">{{capitalize scheme.type}}</a></td>
+                    <td>
+                        {{#scopes}}
+                            {{name}}{{#hasMore}},{{/hasMore}}
+                        {{/scopes}}
+                    </td>
+                </tr>
+            {{/each}}
+        </table>
+    </div>
+{{/if}}
