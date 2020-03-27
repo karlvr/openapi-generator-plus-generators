@@ -39,5 +39,11 @@
                 {{/if}}
             {{/each}}
         </table>
+
+        {{#if formParams}}
+            {{#if consumes}}
+            <p>{{#each consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>
+            {{/if}}
+        {{/if}}
     </div>
 {{/if}}
