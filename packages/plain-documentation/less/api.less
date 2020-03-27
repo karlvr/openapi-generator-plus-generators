@@ -286,20 +286,24 @@ body.api-docs {
 		-moz-hyphens: auto;
 		hyphens: auto;
 	}
-	
-	.deprecated-label {
+
+	.operation-label {
 		display: inline-block;
-		background-color: @delete;
 		padding: 4px 5px;
 		letter-spacing: 0.2em;
 		line-height: 1;
 		color: white;
+		background-color: @grey-dark;
 		font-size: @fs - 6;
 		top: -1px;
 		position: relative;
 		margin-right: 0.25em;
 
 		.border-radius(2px);
+
+		&.-deprecated {
+			background-color: @delete;
+		}
 	}
 
 	// Bootprint Overrides
