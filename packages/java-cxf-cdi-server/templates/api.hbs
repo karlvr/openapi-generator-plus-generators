@@ -22,7 +22,7 @@ public class {{className name}}Api  {
 {{#operations}}
 {{>nestedModels}}
 	@javax.ws.rs.{{httpMethod}}
-	{{#if authMethods}}
+	{{#if securityRequirements}}
 	{{#if @root.authenticatedOperationAnnotation}}
 	{{@root.authenticatedOperationAnnotation}}
 	{{/if}}
@@ -39,14 +39,14 @@ public class {{className name}}Api  {
 	{{#if produces}}
 	@javax.ws.rs.Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} })
 	{{/if}}
-	@io.swagger.annotations.ApiOperation(value = "{{{summary}}}", notes = "{{{notes}}}"{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if authMethods}}, authorizations = {
-		{{#authMethods}}
-		@io.swagger.annotations.Authorization(value = "{{name}}"{{#isOAuth}}, scopes = {
+	@io.swagger.annotations.ApiOperation(value = "{{{summary}}}", notes = "{{{notes}}}"{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if securityRequirements}}, authorizations = {
+		{{#securityRequirements}}
+		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
 			{{#scopes}}
 			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = "{{description}}"){{#hasMore}},{{/hasMore}}
 			{{/scopes}}
-		}{{/isOAuth}}){{#hasMore}},{{/hasMore}}
-		{{/authMethods}}
+		}{{/scheme.isOAuth}}){{#hasMore}},{{/hasMore}}
+		{{/securityRequirements}}
 	}{{/if}}, tags={ {{#tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/tags}} })
 	@io.swagger.annotations.ApiResponses(value = {
 		{{#responses}}
