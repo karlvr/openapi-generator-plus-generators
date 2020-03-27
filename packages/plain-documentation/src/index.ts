@@ -127,7 +127,7 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		}
 	},
 	operationGroupingStrategy: () => {
-		return GroupingStrategies.addToGroupsByPath
+		return GroupingStrategies.addToGroupsByTagOrPath
 	},
 
 	watchPaths: (config) => {
