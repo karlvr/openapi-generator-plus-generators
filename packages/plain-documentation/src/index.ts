@@ -9,6 +9,14 @@ import marked from 'marked'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
 
+function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
+	if (configPath) {
+		return path.resolve(path.dirname(configPath), customTemplatesPath) 
+	} else {
+		return customTemplatesPath
+	}
+}
+
 const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 	toClassName: (name) => {
 		return classCamelCase(name)
@@ -122,10 +130,13 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		return GroupingStrategies.addToGroupsByPath
 	},
 
-	watchPaths: () => {
+	watchPaths: (config) => {
 		const result = [path.resolve(__dirname, '../templates')]
 		result.push(path.resolve(__dirname, '../less'))
 		result.push(path.resolve(__dirname, '../static'))
+		if (config.customTemplates) {
+			result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
+		}
 		return result
 	},
 
@@ -203,6 +214,11 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		})
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+
+		if (state.config.customTemplates) {
+			const customTemplatesPath = computeCustomTemplatesPath(state.config.configPath, state.config.customTemplates)
+			await loadTemplates(customTemplatesPath, hbs)
+		}
 
 		const rootContext: CodegenRootContext = {
 			generatorClass: '@openapi-generator-plus/plain-documentation-generator',
