@@ -30,7 +30,7 @@ public interface {{className name}}ApiService {
 		}
 		{{/unless}}
 
-		{{>apiServiceExceptionContents operation=..}}
+		{{>hooks/apiServiceException operation=..}}
 	}
 
 	{{/isDefault}}
