@@ -203,6 +203,8 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		return result
 	},
 
+	cleanPathPatterns: () => undefined,
+
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 

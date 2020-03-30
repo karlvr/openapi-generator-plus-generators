@@ -107,6 +107,8 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		return result
 	},
 
+	cleanPathPatterns: () => undefined,
+
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 
