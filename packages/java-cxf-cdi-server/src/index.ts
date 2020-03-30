@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperationGroup, CodegenOperation, CodegenModel } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
@@ -210,22 +210,31 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			return state.generator.toLiteral(defaultValue, options, state)
 		}
 
-		const { required, propertyType, nativeType } = options
+		const { type, required, propertyType, nativeType } = options
 
 		if (!required) {
 			return 'null'
 		}
 
-		switch (type) {
-			case 'integer':
-			case 'number':
-				return state.generator.toLiteral(0, { type, format, required }, state)
-			case 'boolean':
-				return 'false'
-			case 'string':
-			case 'object':
-			case 'array':
-			case 'file':
+		switch (propertyType) {
+			case CodegenPropertyType.ENUM:
+				return 'null'
+			case CodegenPropertyType.OBJECT:
+				return 'null'
+			case CodegenPropertyType.ARRAY:
+			case CodegenPropertyType.MAP:
+				return `new ${nativeType.concreteType}()`
+			case CodegenPropertyType.NUMBER:
+				return state.generator.toLiteral(0, options, state)
+			case CodegenPropertyType.BOOLEAN:
+				return state.generator.toLiteral(false, options, state)
+			case CodegenPropertyType.DATE:
+			case CodegenPropertyType.TIME:
+			case CodegenPropertyType.DATETIME:
+				return 'null'
+			case CodegenPropertyType.FILE:
+				return 'null'
+			case CodegenPropertyType.STRING:
 				return 'null'
 		}
 
