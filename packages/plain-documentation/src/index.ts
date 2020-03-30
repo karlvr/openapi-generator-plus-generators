@@ -5,6 +5,7 @@ import Handlebars from 'handlebars'
 import pluralize from 'pluralize'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { classCamelCase, identifierCamelCase } from '@openapi-generator-plus/java-like-generator-helper'
+import { defaultOperationName } from '@openapi-generator-plus/generator-common'
 import marked from 'marked'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
@@ -30,9 +31,7 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 	toEnumName: (name) => {
 		return classCamelCase(name) + 'Enum'
 	},
-	toOperationName: (path, method) => {
-		return identifierCamelCase(`${method.toLocaleLowerCase()}_${path}`)
-	},
+	toOperationName: defaultOperationName,
 	toModelNameFromPropertyName: (name, state) => {
 		return state.generator.toClassName(pluralize.singular(name), state)
 	},

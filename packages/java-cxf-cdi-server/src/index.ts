@@ -6,6 +6,7 @@ import Handlebars from 'handlebars'
 import pluralize from 'pluralize'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { classCamelCase, identifierCamelCase } from '@openapi-generator-plus/java-like-generator-helper'
+import { defaultOperationName } from '@openapi-generator-plus/generator-common'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -53,9 +54,7 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 	toEnumName: (name) => {
 		return classCamelCase(name) + 'Enum'
 	},
-	toOperationName: (path, method) => {
-		return identifierCamelCase(`${method.toLocaleLowerCase()}_${path}`)
-	},
+	toOperationName: defaultOperationName,
 	toModelNameFromPropertyName: (name, state) => {
 		return state.generator.toClassName(pluralize.singular(name), state)
 	},
