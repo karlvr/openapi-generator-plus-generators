@@ -59,10 +59,12 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 	toModelNameFromPropertyName: (name, state) => {
 		return state.generator.toClassName(pluralize.singular(name), state)
 	},
-	toLiteral: (value, { type, format, required }, state) => {
+	toLiteral: (value, options, state) => {
 		if (value === undefined) {
-			return state.generator.toDefaultValue(undefined, { type, format, required }, state)
+			return state.generator.toDefaultValue(undefined, options, state)
 		}
+
+		const { type, format, required } = options
 
 		switch (type) {
 			case 'integer': {
@@ -203,10 +205,12 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			concreteType: `java.util.HashMap<${keyNativeType}, ${componentNativeType}>`,
 		})
 	},
-	toDefaultValue: (defaultValue, { type, format, required }, state) => {
+	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
-			return state.generator.toLiteral(defaultValue, { type, format, required }, state)
+			return state.generator.toLiteral(defaultValue, options, state)
 		}
+
+		const { required, propertyType, nativeType } = options
 
 		if (!required) {
 			return 'null'

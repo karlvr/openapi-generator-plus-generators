@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
-import { camelCase, capitalize, pascalCase, CodegenState } from '@openapi-generator-plus/core'
+import { camelCase, capitalize, pascalCase, CodegenState, stringLiteralValueOptions } from '@openapi-generator-plus/core'
 import { snakeCase, constantCase } from 'change-case'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
@@ -191,7 +191,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenSt
 
 	/** Format the given string as a string literal, including quotes as required */
 	hbs.registerHelper('stringLiteral', function(value: string) {
-		return generator.toLiteral(value, { type: 'string' }, state)
+		return generator.toLiteral(value, stringLiteralValueOptions(state), state)
 	})
 
 	/** Block helper that evaluates if there are more items in the current iteration context */

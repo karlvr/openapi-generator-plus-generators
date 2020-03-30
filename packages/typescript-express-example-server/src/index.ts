@@ -40,11 +40,12 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 	toModelNameFromPropertyName: (name, state) => {
 		return state.generator.toClassName(pluralize.singular(name), state)
 	},
-	toLiteral: (value, { type, format, required }, state) => {
+	toLiteral: (value, options, state) => {
 		if (value === undefined) {
-			return state.generator.toDefaultValue(undefined, { type, format, required }, state)
+			return state.generator.toDefaultValue(undefined, options, state)
 		}
 
+		const { type, format, required } = options
 		switch (type) {
 			case 'integer': {
 				return `${value}`
@@ -139,11 +140,12 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 			wireType: `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`,
 		})
 	},
-	toDefaultValue: (defaultValue, { type, format, required }, state) => {
+	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
-			return state.generator.toLiteral(defaultValue, { type, format, required }, state)
+			return state.generator.toLiteral(defaultValue, options, state)
 		}
 
+		const { type, required } = options
 		if (!required) {
 			return 'undefined'
 		}
@@ -151,7 +153,7 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		switch (type) {
 			case 'integer':
 			case 'number':
-				return state.generator.toLiteral(0, { type, format, required }, state)
+				return state.generator.toLiteral(0, options, state)
 			case 'boolean':
 				return 'false'
 			case 'string':
