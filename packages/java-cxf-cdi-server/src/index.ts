@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenState, CodegenConfig } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
@@ -29,6 +29,18 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	} else {
 		return customTemplatesPath
 	}
+}
+
+function computeRelativeSourceOutputPath(config: CodegenConfig) {
+	const maven = config.maven
+	const defaultRelativeSourceOutputPath = maven ? 'src/main/java/' : ''
+	
+	let relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
+	if (relativeSourceOutputPath.length && !relativeSourceOutputPath.endsWith('/')) {
+		relativeSourceOutputPath += '/'
+	}
+
+	return relativeSourceOutputPath
 }
 
 const generator: CodegenGenerator<CodegenOptionsJava> = {
@@ -269,6 +281,18 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		return result
 	},
 
+	cleanPathPatterns: (options) => {
+		const relativeSourceOutputPath = computeRelativeSourceOutputPath(options.config)
+		
+		const apiPackagePath = packageToPath(options.apiPackage)
+		const modelPackagePath = packageToPath(options.modelPackage)
+
+		return [
+			`${relativeSourceOutputPath}${apiPackagePath}/*Api.java`,
+			`${relativeSourceOutputPath}${modelPackagePath}/*.java`,
+		]
+	},
+
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 		
@@ -291,13 +315,7 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			outputPath += '/'
 		}
 
-		const maven = state.config.maven
-		const defaultRelativeSourceOutputPath = maven ? 'src/main/java/' : ''
-		
-		let relativeSourceOutputPath: string = state.config.relativeSourceOutputPath !== undefined ? state.config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
-		if (relativeSourceOutputPath.length && !relativeSourceOutputPath.endsWith('/')) {
-			relativeSourceOutputPath += '/'
-		}
+		const relativeSourceOutputPath = computeRelativeSourceOutputPath(state.config)
 
 		const apiPackagePath = packageToPath(state.options.apiPackage)
 		for (const group of doc.groups) {
@@ -340,6 +358,7 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 				{ ...context, ...state.options, ...rootContext }, true, hbs)
 		}
 
+		const maven = state.config.maven
 		if (maven) {
 			const mavenConfig: MavenOptions = {
 				groupId: maven.groupId || 'com.example',
