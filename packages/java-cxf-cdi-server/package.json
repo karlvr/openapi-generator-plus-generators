@@ -16,6 +16,7 @@
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
+    "prepare": "npm run clean && npm run build",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
   "repository": {
