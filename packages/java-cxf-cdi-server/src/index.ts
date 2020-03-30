@@ -178,9 +178,17 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 
 		if (uniqueItems) {
 			// TODO should we use a LinkedHashSet here
-			return new CodegenNativeType(`java.util.List<${componentNativeType}>`, `java.util.List<${componentNativeType.wireType}>`, 'java.util.List')
+			return new CodegenNativeType(`java.util.List<${componentNativeType}>`, {
+				wireType: `java.util.List<${componentNativeType.wireType}>`,
+				literalType: 'java.util.List',
+				concreteType: `java.util.ArrayList<${componentNativeType}>`,
+			})
 		} else {
-			return new CodegenNativeType(`java.util.List<${componentNativeType}>`, `java.util.List<${componentNativeType.wireType}>`, 'java.util.List')
+			return new CodegenNativeType(`java.util.List<${componentNativeType}>`, {
+				wireType: `java.util.List<${componentNativeType.wireType}>`, 
+				literalType: 'java.util.List',
+				concreteType: `java.util.ArrayList<${componentNativeType}>`,
+			})
 		}
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
@@ -189,7 +197,11 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			error.name = 'InvalidModelError'
 			throw error
 		}
-		return new CodegenNativeType(`java.util.Map<${keyNativeType}, ${componentNativeType}>`, `java.util.Map<${keyNativeType.wireType}, ${componentNativeType.wireType}>`)
+		return new CodegenNativeType(`java.util.Map<${keyNativeType}, ${componentNativeType}>`, {
+			wireType: `java.util.Map<${keyNativeType.wireType}, ${componentNativeType.wireType}>`,
+			literalType: 'java.util.Map',
+			concreteType: `java.util.HashMap<${keyNativeType}, ${componentNativeType}>`,
+		})
 	},
 	toDefaultValue: (defaultValue, { type, format, required }, state) => {
 		if (defaultValue !== undefined) {

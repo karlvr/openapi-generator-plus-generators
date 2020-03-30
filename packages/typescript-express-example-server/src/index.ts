@@ -92,7 +92,9 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 					case 'time':
 					case 'date-time':
 						/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-						return new CodegenNativeType('Date', 'string')
+						return new CodegenNativeType('Date', {
+							wireType: 'string',
+						})
 					default:
 						return new CodegenNativeType('string')
 				}
@@ -113,7 +115,9 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 			}
 			case 'file': {
 				/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a wireType */
-				return new CodegenNativeType('File', null)
+				return new CodegenNativeType('File', {
+					wireType: null,
+				})
 			}
 		}
 
@@ -123,13 +127,17 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
 			throw new InvalidModelError()
 		}
-		return new CodegenNativeType(`${componentNativeType}[]`, `${componentNativeType.wireType}[]`)
+		return new CodegenNativeType(`${componentNativeType}[]`, {
+			wireType: `${componentNativeType.wireType}[]`,
+		})
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
 			throw new InvalidModelError()
 		}
-		return new CodegenNativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`)
+		return new CodegenNativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, {
+			wireType: `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`,
+		})
 	},
 	toDefaultValue: (defaultValue, { type, format, required }, state) => {
 		if (defaultValue !== undefined) {
