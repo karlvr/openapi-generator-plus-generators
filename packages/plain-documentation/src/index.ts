@@ -61,12 +61,14 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		} else if (type === 'integer') {
 			if (format) {
 				return new CodegenNativeType(format, {
-					wireType: 'string',
+					wireType: 'number',
 				})
 			}
 		}
 
-		return new CodegenNativeType(type)
+		return new CodegenNativeType(type, {
+			wireType: null,
+		})
 	},
 	toNativeArrayType: ({ componentNativeType, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {

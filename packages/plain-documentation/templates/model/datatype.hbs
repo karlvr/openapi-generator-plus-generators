@@ -12,6 +12,9 @@
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
         {{else}}
             {{nativeType}}
+            {{#if nativeType.wireType}}
+            ({{nativeType.wireType}})
+            {{/if}}
         {{/if}}
     {{else}}
         {{nativeType}}
