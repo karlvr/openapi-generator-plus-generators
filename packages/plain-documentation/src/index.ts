@@ -36,90 +36,56 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 	toModelNameFromPropertyName: (name, state) => {
 		return state.generator.toClassName(pluralize.singular(name), state)
 	},
-	toLiteral: (value, { type, format, required }, state) => {
+	toLiteral: (value, options, state) => {
 		if (value === undefined) {
-			return state.generator.toDefaultValue(undefined, { type, format, required }, state)
+			return state.generator.toDefaultValue(undefined, options, state)
 		}
 
 		return value
 	},
 	toNativeType: ({ type, format, modelNames }, state) => {
-		/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
-		switch (type) {
-			case 'integer': {
-				return new CodegenNativeType('number')
-			}
-			case 'number': {
-				return new CodegenNativeType('number')
-			}
-			case 'string': {
-				switch (format) {
-					case 'date':
-					case 'time':
-					case 'date-time':
-						/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-						return new CodegenNativeType('Date', 'string')
-					default:
-						return new CodegenNativeType('string')
+		if (type === 'object') {
+			if (modelNames) {
+				let modelName = ''
+				for (const name of modelNames) {
+					modelName += `.${state.generator.toClassName(name, state)}`
 				}
+				return new CodegenNativeType(modelName.substring(1))
 			}
-			case 'boolean': {
-				return new CodegenNativeType('boolean')
+		} else if (type === 'string') {
+			if (format) {
+				return new CodegenNativeType(format, {
+					wireType: 'string',
+				})
 			}
-			case 'object': {
-				if (modelNames) {
-					let modelName = ''
-					for (const name of modelNames) {
-						modelName += `.${state.generator.toClassName(name, state)}`
-					}
-					return new CodegenNativeType(modelName.substring(1))
-				} else {
-					return new CodegenNativeType('object')
-				}
-			}
-			case 'file': {
-				/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a wireType */
-				return new CodegenNativeType('File', null)
+		} else if (type === 'integer') {
+			if (format) {
+				return new CodegenNativeType(format, {
+					wireType: 'string',
+				})
 			}
 		}
 
-		throw new Error(`Unsupported type name: ${type}`)
+		return new CodegenNativeType(type)
 	},
 	toNativeArrayType: ({ componentNativeType, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
 			throw new InvalidModelError()
 		}
-		return new CodegenNativeType(`${componentNativeType}[]`, `${componentNativeType.wireType}[]`)
+		return new CodegenNativeType(`${componentNativeType}[]`)
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
 			throw new InvalidModelError()
 		}
-		return new CodegenNativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`)
+		return new CodegenNativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
 	},
-	toDefaultValue: (defaultValue, { type, format, required }, state) => {
+	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
-			return state.generator.toLiteral(defaultValue, { type, format, required }, state)
+			return state.generator.toLiteral(defaultValue, options, state)
 		}
 
-		if (!required) {
-			return 'undefined'
-		}
-
-		switch (type) {
-			case 'integer':
-			case 'number':
-				return state.generator.toLiteral(0, { type, format, required }, state)
-			case 'boolean':
-				return 'false'
-			case 'string':
-			case 'object':
-			case 'array':
-			case 'file':
-				return 'undefined'
-		}
-
-		throw new Error(`Unsupported type name: ${type}`)
+		return 'undefined'
 	},
 	options: (config): CodegenOptionsDocumentation => {
 		return {
