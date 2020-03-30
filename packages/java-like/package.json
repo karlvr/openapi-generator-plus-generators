@@ -1,28 +1,29 @@
 {
-	"name": "@openapi-generator-plus/java-like-generator-helper",
-	"version": "0.0.9",
-	"description": "Helpers for Java-like language generators",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "../../node_modules/.bin/rimraf dist && ../../node_modules/.bin/tsc -p tsconfig.prod.json",
-		"watch": "../../node_modules/.bin/tsc --watch"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
-	},
-	"author": "Karl von Randow",
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
-	},
-	"homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
-	"dependencies": {
-		"@openapi-generator-plus/core": "0.0.15"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"gitHead": "4d7336969427733ca316dfb48219f166adb9182a"
+  "name": "@openapi-generator-plus/java-like-generator-helper",
+  "version": "0.0.9",
+  "description": "Helpers for Java-like language generators",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "clean": "../../node_modules/.bin/rimraf dist",
+    "watch": "../../node_modules/.bin/tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
+  "author": "Karl von Randow",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
+  "dependencies": {
+    "@openapi-generator-plus/core": "0.0.15"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "4d7336969427733ca316dfb48219f166adb9182a"
 }

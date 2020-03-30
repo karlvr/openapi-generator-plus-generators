@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "../../node_modules/.bin/rimraf dist && ../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "clean": "../../node_modules/.bin/rimraf dist",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
   "repository": {
