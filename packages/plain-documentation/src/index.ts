@@ -154,7 +154,7 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		})
 		hbs.registerHelper('htmlId', function(value: string) {
 			if (value !== undefined) {
-				return `${value}`.replace(/[^-a-zA-Z0-9_]/g, '_')
+				return `${value}`.replace(/[^-a-zA-Z0-9_]+/g, '_').replace(/^_+/, '').replace(/_+$/, '')
 			} else {
 				return value
 			}

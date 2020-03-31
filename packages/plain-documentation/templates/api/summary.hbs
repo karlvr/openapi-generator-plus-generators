@@ -24,7 +24,7 @@
                                         <ul>
                                             {{#eachSorted operations}}
                                                 <li>
-                                                    <div><a href="#operation-{{htmlId fullPath}}">{{name}}</a></div>
+                                                    <div><a href="#operation-{{htmlId httpMethod}}-{{htmlId fullPath}}">{{name}}</a></div>
                                                 </li>
                                             {{/eachSorted}}
                                         </ul>
