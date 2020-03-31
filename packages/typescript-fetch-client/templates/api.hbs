@@ -76,7 +76,7 @@ export class RequiredError extends Error {
 }
 
 {{#models}}
-{{#isEnum}}{{>modelEnum}}{{/isEnum}}{{^isEnum}}{{>modelGeneric}}{{/isEnum}}
+{{#if isEnum}}{{>modelEnum}}{{else}}{{>modelGeneric}}{{/if}}
 {{/models}}
 {{#groups}}
 /**
@@ -119,31 +119,31 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 	{{#securityRequirements}}
 			// authentication {{scheme.name}} required
-			{{#scheme.isApiKey}}
-			{{#scheme.isInHeader}}
+			{{#if scheme.isApiKey}}
+			{{#if scheme.isInHeader}}
 			if (configuration && configuration.apiKey) {
 				const localVarApiKeyValue = typeof configuration.apiKey === 'function'
 					? configuration.apiKey("{{identifier scheme.name}}")
 					: configuration.apiKey;
 				localVarHeaderParameter["{{identifier scheme.name}}"] = localVarApiKeyValue;
 			}
-			{{/scheme.isInHeader}}
-			{{#scheme.isInQuery}}
+			{{/if}}
+			{{#if scheme.isInQuery}}
 			if (configuration && configuration.apiKey) {
 				const localVarApiKeyValue = typeof configuration.apiKey === 'function'
 					? configuration.apiKey("{{identifier scheme.name}}")
 					: configuration.apiKey;
 				localVarQueryParameter["{{identifier scheme.name}}"] = localVarApiKeyValue;
 			}
-			{{/scheme.isInQuery}}
-			{{/scheme.isApiKey}}
-			{{#scheme.isBasic}}
+			{{/if}}
+			{{/if}}
+			{{#if scheme.isBasic}}
 			// http basic authentication required
 			if (configuration && (configuration.username || configuration.password)) {
 				localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
 			}
-			{{/scheme.isBasic}}
-			{{#scheme.isOAuth}}
+			{{/if}}
+			{{#if scheme.isOAuth}}
 			// oauth required
 			if (configuration && configuration.accessToken) {
 				const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
@@ -151,68 +151,59 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 					: configuration.accessToken;
 				localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
 			}
-			{{/scheme.isOAuth}}
+			{{/if}}
 
 	{{/securityRequirements}}
 	{{#queryParams}}
-			{{#isListContainer}}
+			{{#if isListContainer}}
 			if ({{identifier name}}) {
-			{{#isCollectionFormatMulti}}
+			{{#if isCollectionFormatMulti}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}};
-			{{/isCollectionFormatMulti}}
-			{{^isCollectionFormatMulti}}
+			{{else}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]);
-			{{/isCollectionFormatMulti}}
+			{{/if}}
 			}
-			{{/isListContainer}}
-			{{^isListContainer}}
+			{{else}}
 			if ({{identifier name}} !== undefined) {
-				{{#isDateTime}}
+				{{#if isDateTime}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString();
-				{{/isDateTime}}
-				{{^isDateTime}}
-				{{#isDate}}
+				{{else if isDate}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString().replace(/T.*/, "");
-				{{/isDate}}
-				{{^isDate}}
+				{{else}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}};
-				{{/isDate}}
-				{{/isDateTime}}
+				{{/if}}
 			}
-			{{/isListContainer}}
+			{{/if}}
 
 	{{/queryParams}}
 	{{#headerParams}}
-			{{#isListContainer}}
+			{{#if isListContainer}}
 			if ({{identifier name}}) {
 				localVarHeaderParameter['{{name}}'] = {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
 			}
-			{{/isListContainer}}
-			{{^isListContainer}}
+			{{else}}
 			if ({{identifier name}} !== undefined && {{identifier name}} !== null) {
 				localVarHeaderParameter['{{name}}'] = String({{identifier name}});
 			}
-			{{/isListContainer}}
+			{{/if}}
 
 	{{/headerParams}}
 	{{#formParams}}
-			{{#isListContainer}}
+			{{#if isListContainer}}
 			if ({{identifier name}}) {
-			{{#isCollectionFormatMulti}}
+			{{#if isCollectionFormatMulti}}
 				{{identifier name}}.forEach((element) => {
 					localVarFormParams.append('{{name}}', element as any);
 				})
-			{{/isCollectionFormatMulti}}
-			{{^isCollectionFormatMulti}}
+			{{else}}
 					localVarFormParams.set('{{name}}', {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
-			{{/isCollectionFormatMulti}}
+			{{/if}}
 			}
-			{{/isListContainer}}
-			{{^isListContainer}}
+			{{else}}
 			if ({{identifier name}} !== undefined) {
 				localVarFormParams.set('{{name}}', {{identifier name}} as any);
 			}
-			{{/isListContainer}}
+			{{/if}}
 
 	{{/formParams}}
 	{{#if formParams}}
