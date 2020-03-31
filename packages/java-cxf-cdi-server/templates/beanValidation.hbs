@@ -1,13 +1,14 @@
-{{#isObject}}
-	@javax.validation.Valid
-{{/isObject}}
-{{#isArray}}
-	@javax.validation.Valid
-{{/isArray}}
+{{#if isObject}}
+@javax.validation.Valid
+{{else if isArray}}
+@javax.validation.Valid
+{{else if isMap}}
+@javax.validation.Valid
+{{/if}}
 {{#if required}}
 {{#unless vendorExtensions.x-not-blank}}
 {{#unless vendorExtensions.x-not-empty}}
-	@javax.validation.constraints.NotNull{{#if vendorExtensions.x-required-message}}(message="{{&vendorExtensions.x-required-message}}"){{/if}}
+@javax.validation.constraints.NotNull{{#if vendorExtensions.x-required-message}}(message="{{&vendorExtensions.x-required-message}}"){{/if}}
 {{/unless}}
 {{/unless}}
 {{/if}}
