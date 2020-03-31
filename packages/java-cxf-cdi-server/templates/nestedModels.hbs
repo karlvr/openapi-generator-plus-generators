@@ -1,7 +1,7 @@
 {{#models}}
-{{#isEnum}}
+{{#if isEnum}}
 {{>enumNested}}
-{{/isEnum}}
+{{/if}}
 {{^isEnum}}
 {{>pojoNested}}
 {{/isEnum}}

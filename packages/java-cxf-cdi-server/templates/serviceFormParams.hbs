@@ -1,1 +1,1 @@
-{{#isFormParam}}{{#unless isFile}}{{{nativeType}}} {{identifier name}}{{else}}java.io.InputStream {{identifier name}}InputStream, org.apache.cxf.jaxrs.ext.multipart.Attachment {{identifier name}}Detail{{/unless}}{{/isFormParam}}
+{{#if isFormParam}}{{#unless isFile}}{{{nativeType}}} {{identifier name}}{{else}}java.io.InputStream {{identifier name}}InputStream, org.apache.cxf.jaxrs.ext.multipart.Attachment {{identifier name}}Detail{{/unless}}{{/if}}

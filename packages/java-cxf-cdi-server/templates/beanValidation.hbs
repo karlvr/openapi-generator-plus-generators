@@ -4,11 +4,11 @@
 {{#isArray}}
 	@javax.validation.Valid
 {{/isArray}}
-{{#required}}
-{{^vendorExtensions.x-not-blank}}
-{{^vendorExtensions.x-not-empty}}
+{{#if required}}
+{{#unless vendorExtensions.x-not-blank}}
+{{#unless vendorExtensions.x-not-empty}}
 	@javax.validation.constraints.NotNull{{#if vendorExtensions.x-required-message}}(message="{{&vendorExtensions.x-required-message}}"){{/if}}
-{{/vendorExtensions.x-not-empty}}
-{{/vendorExtensions.x-not-blank}}
-{{/required}}
+{{/unless}}
+{{/unless}}
+{{/if}}
 {{>beanValidationCore}}
