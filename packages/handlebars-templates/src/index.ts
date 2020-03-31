@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
-import { camelCase, capitalize, pascalCase, CodegenState, stringLiteralValueOptions } from '@openapi-generator-plus/core'
+import { camelCase, capitalize, pascalCase, CodegenState, stringLiteralValueOptions, CodegenOptions } from '@openapi-generator-plus/core'
 import { snakeCase, constantCase } from 'change-case'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
@@ -80,7 +80,7 @@ export async function emit(templateName: string, outputPath: string, context: ob
 	}
 }
 
-export function registerStandardHelpers(hbs: typeof Handlebars, state: CodegenState) {
+export function registerStandardHelpers<O extends CodegenOptions>(hbs: typeof Handlebars, state: CodegenState<O>) {
 	const generator = state.generator
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
