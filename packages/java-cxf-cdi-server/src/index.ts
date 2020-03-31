@@ -127,9 +127,13 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 		switch (type) {
 			case 'integer': {
 				if (format === 'int32' || format === undefined) {
-					return new CodegenNativeType(!required ? 'java.lang.Integer' : 'int')
+					return new CodegenNativeType(!required ? 'java.lang.Integer' : 'int', {
+						componentType: 'java.lang.Integer',
+					})
 				} else if (format === 'int64') {
-					return new CodegenNativeType(!required ? 'java.lang.Long' : 'long')
+					return new CodegenNativeType(!required ? 'java.lang.Long' : 'long', {
+						componentType: 'java.lang.Long',
+					})
 				} else {
 					throw new Error(`Unsupported ${type} format: ${format}`)
 				}
@@ -138,16 +142,22 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 				if (format === undefined) {
 					return new CodegenNativeType('java.math.BigDecimal')
 				} else if (format === 'float') {
-					return new CodegenNativeType(!required ? 'java.lang.Float' : 'float')
+					return new CodegenNativeType(!required ? 'java.lang.Float' : 'float', {
+						componentType: 'java.lang.Float',
+					})
 				} else if (format === 'double') {
-					return new CodegenNativeType(!required ? 'java.lang.Double' : 'double')
+					return new CodegenNativeType(!required ? 'java.lang.Double' : 'double', {
+						componentType: 'java.lang.Double',
+					})
 				} else {
 					throw new Error(`Unsupported ${type} format: ${format}`)
 				}
 			}
 			case 'string': {
 				if (format === 'byte') {
-					return new CodegenNativeType(!required ? 'java.lang.Byte' : 'byte')
+					return new CodegenNativeType(!required ? 'java.lang.Byte' : 'byte', {
+						componentType: 'java.lang.Byte',
+					})
 				} else if (format === 'binary') {
 					return new CodegenNativeType('java.lang.String')
 				} else if (format === 'date') {
@@ -161,7 +171,9 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 				}
 			}
 			case 'boolean': {
-				return new CodegenNativeType(!required ? 'java.lang.Boolean' : 'boolean')
+				return new CodegenNativeType(!required ? 'java.lang.Boolean' : 'boolean', {
+					componentType: 'java.lang.Boolean',
+				})
 			}
 			case 'object': {
 				if (modelNames) {
@@ -191,16 +203,16 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 
 		if (uniqueItems) {
 			// TODO should we use a LinkedHashSet here
-			return new CodegenNativeType(`java.util.List<${componentNativeType}>`, {
-				wireType: `java.util.List<${componentNativeType.wireType}>`,
+			return new CodegenNativeType(`java.util.List<${componentNativeType.componentType}>`, {
+				wireType: `java.util.List<${componentNativeType.componentWireType}>`,
 				literalType: 'java.util.List',
-				concreteType: `java.util.ArrayList<${componentNativeType}>`,
+				concreteType: `java.util.ArrayList<${componentNativeType.componentType}>`,
 			})
 		} else {
-			return new CodegenNativeType(`java.util.List<${componentNativeType}>`, {
-				wireType: `java.util.List<${componentNativeType.wireType}>`, 
+			return new CodegenNativeType(`java.util.List<${componentNativeType.componentType}>`, {
+				wireType: `java.util.List<${componentNativeType.componentWireType}>`, 
 				literalType: 'java.util.List',
-				concreteType: `java.util.ArrayList<${componentNativeType}>`,
+				concreteType: `java.util.ArrayList<${componentNativeType.componentType}>`,
 			})
 		}
 	},
@@ -210,10 +222,10 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			error.name = 'InvalidModelError'
 			throw error
 		}
-		return new CodegenNativeType(`java.util.Map<${keyNativeType}, ${componentNativeType}>`, {
-			wireType: `java.util.Map<${keyNativeType.wireType}, ${componentNativeType.wireType}>`,
+		return new CodegenNativeType(`java.util.Map<${keyNativeType.componentType}, ${componentNativeType.componentType}>`, {
+			wireType: `java.util.Map<${keyNativeType.componentWireType}, ${componentNativeType.componentWireType}>`,
 			literalType: 'java.util.Map',
-			concreteType: `java.util.HashMap<${keyNativeType}, ${componentNativeType}>`,
+			concreteType: `java.util.HashMap<${keyNativeType.componentType}, ${componentNativeType.componentType}>`,
 		})
 	},
 	toDefaultValue: (defaultValue, options, state) => {

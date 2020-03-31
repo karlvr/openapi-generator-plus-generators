@@ -1,0 +1,24 @@
+---
+swagger: '2.0'
+info:
+  description: Lorem ipsum
+  version: 1.0.1
+  title: Example
+host: example.com
+basePath: /v1
+schemes:
+- http
+paths:
+  /test1:
+    get:
+      parameters:
+      - name: arg1
+        in: query
+        required: true
+        type: array
+        items:
+          type: integer
+      responses:
+        200:
+          description: OK
+          
