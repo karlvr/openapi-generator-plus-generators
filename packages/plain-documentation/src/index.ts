@@ -1,4 +1,4 @@
-import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose } from '@openapi-generator-plus/core'
+import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods } from '@openapi-generator-plus/core'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -120,27 +120,39 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 				return value
 			}
 		})
-		hbs.registerHelper('eachSorted', function(this: object, collection: Array<unknown>, options: Handlebars.HelperOptions) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		hbs.registerHelper('eachSorted', function(this: object, collection: Array<any>, options: Handlebars.HelperOptions) {
 			if (collection) {
 				let result = ''
-				for (const item of collection.sort(function(a: unknown, b: unknown) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				for (const item of collection.sort(function(a: any, b: any) {
 					if (a === b) {
 						return 0
 					}
 					if (typeof a === 'string' && typeof b === 'string') {
 						return a.localeCompare(b)
+					} else if (typeof a === 'number' && typeof b === 'number') {
+						return a < b ? -1 : a > b ? 1 : 0
 					} else if (typeof a === 'object' && typeof b === 'object') {
 						if (a === null) {
 							return 1
 						} else if (b === null) {
 							return -1
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						} else if ((a as any).name && (b as any).name) {
-							// eslint-disable-next-line @typescript-eslint/no-explicit-any
-							return (a as any).name.localeCompare((b as any).name)
-						} else {
-							return 0
 						}
+						
+						if (a.httpMethod && b.httpMethod) {
+							/* Sort CodegenOperations by http method and then by name */
+							const result = compareHttpMethods(a.httpMethod, b.httpMethod)
+							if (result !== 0) {
+								return result
+							}
+						}
+						
+						if (a.name && b.name) {
+							return a.name.localeCompare(b.name)
+						}
+
+						return 0
 					} else {
 						return 0
 					}
