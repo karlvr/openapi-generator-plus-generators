@@ -100,12 +100,12 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		 */
 		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{^required}} | undefined{{/required}}, {{/allParams}}options: any = {}): FetchArgs {
 	{{#allParams}}
-	{{#required}}
+	{{#if required}}
 			// verify required parameter '{{identifier name}}' is not null or undefined
 			if ({{identifier name}} === null || {{identifier name}} === undefined) {
 				throw new RequiredError('{{identifier name}}','Required parameter {{identifier name}} was null or undefined when calling {{identifier ../name}}.');
 			}
-	{{/required}}
+	{{/if}}
 	{{/allParams}}
 			const localVarPath = `{{{../path}}}{{{path}}}`{{#pathParams}}
 				.replace('{{safe '{'}}{{{name}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/pathParams}};
