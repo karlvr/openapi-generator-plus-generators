@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/core": "0.0.26",
+    "@openapi-generator-plus/core": "0.0.28",
     "change-case": "^4.1.1"
   },
   "publishConfig": {
