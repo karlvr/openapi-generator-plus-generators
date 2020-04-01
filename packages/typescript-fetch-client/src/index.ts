@@ -2,10 +2,9 @@ import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, C
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
-import pluralize from 'pluralize'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
-import { classCamelCase, identifierCamelCase } from '@openapi-generator-plus/java-like-generator-helper'
-import { defaultOperationName } from '@openapi-generator-plus/generator-common'
+import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
+import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -23,21 +22,10 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 }
 
 const generator: CodegenGenerator<CodegenOptionsTypescript> = {
-	toClassName: (name) => {
-		return classCamelCase(name)
-	},
-	toIdentifier: (name) => {
-		return identifierCamelCase(name)
-	},
+	...commonGenerator(),
+	...javaLikeGenerator(),
 	toConstantName: (name) => {
 		return pascalCase(name)
-	},
-	toEnumName: (name) => {
-		return classCamelCase(name) + 'Enum'
-	},
-	toOperationName: defaultOperationName,
-	toModelNameFromPropertyName: (name, state) => {
-		return state.generator.toClassName(pluralize.singular(name), state)
 	},
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {

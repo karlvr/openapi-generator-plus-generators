@@ -1,12 +1,11 @@
-import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenState, CodegenConfig } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
-import pluralize from 'pluralize'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
-import { classCamelCase, identifierCamelCase } from '@openapi-generator-plus/java-like-generator-helper'
-import { defaultOperationName } from '@openapi-generator-plus/generator-common'
+import { identifierCamelCase, javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
+import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -44,12 +43,8 @@ function computeRelativeSourceOutputPath(config: CodegenConfig) {
 }
 
 const generator: CodegenGenerator<CodegenOptionsJava> = {
-	toClassName: (name) => {
-		return classCamelCase(name)
-	},
-	toIdentifier: (name) => {
-		return identifierCamelCase(name)
-	},
+	...commonGenerator(),
+	...javaLikeGenerator(),
 	toConstantName: (name, state) => {
 		const constantStyle = state.options.constantStyle
 		switch (constantStyle) {
@@ -62,13 +57,6 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			default:
 				throw new Error(`Invalid valid for constantStyle: ${constantStyle}`)
 		}
-	},
-	toEnumName: (name) => {
-		return classCamelCase(name) + 'Enum'
-	},
-	toOperationName: defaultOperationName,
-	toModelNameFromPropertyName: (name, state) => {
-		return state.generator.toClassName(pluralize.singular(name), state)
 	},
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {

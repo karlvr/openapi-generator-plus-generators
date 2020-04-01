@@ -1,11 +1,10 @@
-import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods } from '@openapi-generator-plus/core'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
-import pluralize from 'pluralize'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
-import { classCamelCase, identifierCamelCase } from '@openapi-generator-plus/java-like-generator-helper'
-import { defaultOperationName } from '@openapi-generator-plus/generator-common'
+import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
+import { commonGenerator } from '@openapi-generator-plus/generator-common'
 import marked from 'marked'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
@@ -19,22 +18,8 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 }
 
 const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
-	toClassName: (name) => {
-		return classCamelCase(name)
-	},
-	toIdentifier: (name) => {
-		return identifierCamelCase(name)
-	},
-	toConstantName: (name) => {
-		return pascalCase(name)
-	},
-	toEnumName: (name) => {
-		return classCamelCase(name) + 'Enum'
-	},
-	toOperationName: defaultOperationName,
-	toModelNameFromPropertyName: (name, state) => {
-		return state.generator.toClassName(pluralize.singular(name), state)
-	},
+	...commonGenerator(),
+	...javaLikeGenerator(),
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {
 			return state.generator.toDefaultValue(undefined, options, state)

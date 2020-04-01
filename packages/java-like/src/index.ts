@@ -1,4 +1,5 @@
-import { pascalCase, camelCase } from '@openapi-generator-plus/core'
+import { pascalCase, camelCase, CodegenGenerator, CodegenOptions } from '@openapi-generator-plus/core'
+import { constantCase } from 'change-case'
 
 /** Returns the string converted to a string that is safe as an identifier in most languages */
 function identifierSafe(value: string) {
@@ -23,4 +24,21 @@ export function classCamelCase(value: string) {
 
 export function identifierCamelCase(value: string) {
 	return camelCase(identifierSafe(value))
+}
+
+export function javaLikeGenerator<O extends CodegenOptions>(): Pick<CodegenGenerator<O>, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toEnumName'> {
+	return {
+		toClassName: (name) => {
+			return classCamelCase(name)
+		},
+		toIdentifier: (name) => {
+			return identifierCamelCase(name)
+		},
+		toConstantName: (name) => {
+			return constantCase(name)
+		},
+		toEnumName: (name) => {
+			return classCamelCase(name) + 'Enum'
+		},
+	}
 }
