@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods, baseGenerator } from '@openapi-generator-plus/core'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -18,6 +18,7 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 }
 
 const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
+	...baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	toLiteral: (value, options, state) => {
