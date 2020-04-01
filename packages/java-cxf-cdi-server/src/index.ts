@@ -157,15 +157,22 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 				if (format === 'byte') {
 					return new CodegenNativeType(!required ? 'java.lang.Byte' : 'byte', {
 						componentType: 'java.lang.Byte',
+						wireType: 'java.lang.String',
 					})
 				} else if (format === 'binary') {
 					return new CodegenNativeType('java.lang.String')
 				} else if (format === 'date') {
-					return new CodegenNativeType(state.options.dateImplementation)
+					return new CodegenNativeType(state.options.dateImplementation, {
+						wireType: 'java.lang.String',
+					})
 				} else if (format === 'time') {
-					return new CodegenNativeType(state.options.timeImplementation)
+					return new CodegenNativeType(state.options.timeImplementation, {
+						wireType: 'java.lang.String',
+					})
 				} else if (format === 'date-time') {
-					return new CodegenNativeType(state.options.dateTimeImplementation)
+					return new CodegenNativeType(state.options.dateTimeImplementation, {
+						wireType: 'java.lang.String',
+					})
 				} else if (format === 'uuid') {
 					return new CodegenNativeType('java.util.UUID', {
 						wireType: 'java.lang.String',
