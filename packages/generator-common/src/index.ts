@@ -12,7 +12,7 @@ export function defaultOperationName(path: string, method: string): string {
 
 export function commonGenerator<O extends CodegenOptions>(): Pick<CodegenGenerator<O>, 'toIteratedModelName' | 'toModelNameFromPropertyName' | 'toOperationName'> {
 	return {
-		toIteratedModelName: (name, _, iteration) => `${name}${iteration}`,
+		toIteratedModelName: (name, _, iteration) => `${name}${iteration + 1}`,
 		toModelNameFromPropertyName: (name, state) => {
 			return state.generator.toClassName(pluralize.singular(name), state)
 		},
