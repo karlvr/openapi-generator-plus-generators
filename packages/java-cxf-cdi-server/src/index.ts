@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig, baseGenerator } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenGenerator, CodegenGeneratorOptions, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
@@ -42,8 +42,8 @@ function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	return relativeSourceOutputPath
 }
 
-const generator: CodegenGenerator<CodegenOptionsJava> = {
-	...baseGenerator(),
+export const createGenerator = (generatorOptions: CodegenGeneratorOptions): CodegenGenerator<CodegenOptionsJava> => ({
+	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	toConstantName: (name, state) => {
@@ -380,7 +380,7 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 			await emit('pom', `${outputPath}pom.xml`, { ...mavenConfig, ...state.options, ...rootContext }, false, hbs)
 		}
 	},
-}
+})
 
 function shouldGenerateOperation(op: CodegenOperation) {
 	return !(op.vendorExtensions && op.vendorExtensions['x-no-server'])
@@ -390,4 +390,4 @@ function shouldGenerateModel(model: CodegenModel) {
 	return !(model.vendorExtensions && model.vendorExtensions['x-no-server'])
 }
 
-export default generator
+export default createGenerator

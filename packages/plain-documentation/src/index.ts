@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods, baseGenerator } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenGeneratorOptions, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods } from '@openapi-generator-plus/core'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -17,8 +17,8 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
-const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
-	...baseGenerator(),
+export const createGenerator = (generatorOptions: CodegenGeneratorOptions): CodegenGenerator<CodegenOptionsDocumentation> => ({
+	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	toLiteral: (value, options, state) => {
@@ -202,6 +202,6 @@ const generator: CodegenGenerator<CodegenOptionsDocumentation> = {
 		emitLess('style.less', `${outputPath}main.css`)
 		copyContents(path.resolve(__dirname, '../static'), outputPath)
 	},
-}
+})
 
-export default generator
+export default createGenerator

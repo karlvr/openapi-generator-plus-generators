@@ -1,4 +1,4 @@
-import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, baseGenerator } from '@openapi-generator-plus/core'
+import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorOptions } from '@openapi-generator-plus/core'
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -21,8 +21,8 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
-const generator: CodegenGenerator<CodegenOptionsTypescript> = {
-	...baseGenerator(),
+export const createGenerator = (generatorOptions: CodegenGeneratorOptions): CodegenGenerator<CodegenOptionsTypescript> => ({
+	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	toConstantName: (name) => {
@@ -236,6 +236,6 @@ const generator: CodegenGenerator<CodegenOptionsTypescript> = {
 		}
 		await emit('gitignore', `${outputPath}.gitignore`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 	},
-}
+})
 
-export default generator
+export default createGenerator
