@@ -12,5 +12,5 @@ export async function emit(fileName: string, outputPath: string) {
 	const result = await less.render(templateSource as string, lessOptions)
 
 	await fs.mkdir(path.dirname(outputPath), { recursive: true })
-	fs.writeFile(outputPath, result.css, 'UTF-8')
+	await fs.writeFile(outputPath, result.css, 'UTF-8')
 }

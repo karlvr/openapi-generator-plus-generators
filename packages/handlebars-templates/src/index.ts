@@ -76,7 +76,7 @@ export async function emit(templateName: string, outputPath: string, context: ob
 			}
 		}
 		await fs.mkdir(path.dirname(outputPath), { recursive: true })
-		fs.writeFile(outputPath, outputString, 'UTF-8')
+		await fs.writeFile(outputPath, outputString, 'UTF-8')
 	}
 }
 
