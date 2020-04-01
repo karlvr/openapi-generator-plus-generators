@@ -4,8 +4,8 @@
   "scripts": {
     "build": "lerna run build",
     "clean": "lerna clean --yes && lerna run clean",
-    "lerna:publish": "npm run clean && npm run build && npm test && lerna publish",
     "link": "lerna clean --yes && lerna exec --concurrency 1 -- npm link && npm link @openapi-generator-plus/core openapi-generator-plus && lerna clean --yes && rimraf packages/*/package-lock.json",
+    "release": "npm run clean && npm run build && npm test && lerna publish",
     "test": "lerna run test",
     "watch": "lerna run --parallel watch"
   },
