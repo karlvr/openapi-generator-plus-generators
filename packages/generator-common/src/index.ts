@@ -10,8 +10,9 @@ export function defaultOperationName(path: string, method: string): string {
 	return camelCase(sanitizedCombined)
 }
 
-export function commonGenerator<O extends CodegenOptions>(): Pick<CodegenGenerator<O>, 'toModelNameFromPropertyName' | 'toOperationName'> {
+export function commonGenerator<O extends CodegenOptions>(): Pick<CodegenGenerator<O>, 'toIteratedModelName' | 'toModelNameFromPropertyName' | 'toOperationName'> {
 	return {
+		toIteratedModelName: (name, _, iteration) => `${name}${iteration}`,
 		toModelNameFromPropertyName: (name, state) => {
 			return state.generator.toClassName(pluralize.singular(name), state)
 		},
