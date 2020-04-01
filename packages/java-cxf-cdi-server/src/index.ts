@@ -1,4 +1,4 @@
-import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig, baseGenerator } from '@openapi-generator-plus/core'
+import { GroupingStrategies, CodegenGenerator, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig } from '@openapi-generator-plus/core'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
@@ -43,7 +43,6 @@ function computeRelativeSourceOutputPath(config: CodegenConfig) {
 }
 
 const generator: CodegenGenerator<CodegenOptionsJava> = {
-	...baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	toConstantName: (name, state) => {
