@@ -166,6 +166,10 @@ const generator: CodegenGenerator<CodegenOptionsJava> = {
 					return new CodegenNativeType(state.options.timeImplementation)
 				} else if (format === 'date-time') {
 					return new CodegenNativeType(state.options.dateTimeImplementation)
+				} else if (format === 'uuid') {
+					return new CodegenNativeType('java.util.UUID', {
+						wireType: 'java.lang.String',
+					})
 				} else {
 					return new CodegenNativeType('java.lang.String')
 				}
