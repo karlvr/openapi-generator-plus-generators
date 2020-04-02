@@ -1,11 +1,11 @@
-import { GroupingStrategies, CodegenGenerator, CodegenGeneratorOptions, CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenNativeType, InvalidModelError, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig } from '@openapi-generator-plus/core'
+import { CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { identifierCamelCase, javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, GroupingStrategies } from '@openapi-generator-plus/generator-common'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -42,7 +42,7 @@ function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	return relativeSourceOutputPath
 }
 
-export const createGenerator = (generatorOptions: CodegenGeneratorOptions): CodegenGenerator<CodegenOptionsJava> => ({
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = (generatorOptions) => ({
 	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
@@ -116,11 +116,11 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 		switch (type) {
 			case 'integer': {
 				if (format === 'int32' || format === undefined) {
-					return new CodegenNativeType(!required ? 'java.lang.Integer' : 'int', {
+					return new generatorOptions.NativeType(!required ? 'java.lang.Integer' : 'int', {
 						componentType: 'java.lang.Integer',
 					})
 				} else if (format === 'int64') {
-					return new CodegenNativeType(!required ? 'java.lang.Long' : 'long', {
+					return new generatorOptions.NativeType(!required ? 'java.lang.Long' : 'long', {
 						componentType: 'java.lang.Long',
 					})
 				} else {
@@ -129,13 +129,13 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 			}
 			case 'number': {
 				if (format === undefined) {
-					return new CodegenNativeType('java.math.BigDecimal')
+					return new generatorOptions.NativeType('java.math.BigDecimal')
 				} else if (format === 'float') {
-					return new CodegenNativeType(!required ? 'java.lang.Float' : 'float', {
+					return new generatorOptions.NativeType(!required ? 'java.lang.Float' : 'float', {
 						componentType: 'java.lang.Float',
 					})
 				} else if (format === 'double') {
-					return new CodegenNativeType(!required ? 'java.lang.Double' : 'double', {
+					return new generatorOptions.NativeType(!required ? 'java.lang.Double' : 'double', {
 						componentType: 'java.lang.Double',
 					})
 				} else {
@@ -144,34 +144,34 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 			}
 			case 'string': {
 				if (format === 'byte') {
-					return new CodegenNativeType(!required ? 'java.lang.Byte' : 'byte', {
+					return new generatorOptions.NativeType(!required ? 'java.lang.Byte' : 'byte', {
 						componentType: 'java.lang.Byte',
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'binary') {
-					return new CodegenNativeType('java.lang.String')
+					return new generatorOptions.NativeType('java.lang.String')
 				} else if (format === 'date') {
-					return new CodegenNativeType(state.options.dateImplementation, {
+					return new generatorOptions.NativeType(state.options.dateImplementation, {
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'time') {
-					return new CodegenNativeType(state.options.timeImplementation, {
+					return new generatorOptions.NativeType(state.options.timeImplementation, {
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'date-time') {
-					return new CodegenNativeType(state.options.dateTimeImplementation, {
+					return new generatorOptions.NativeType(state.options.dateTimeImplementation, {
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'uuid') {
-					return new CodegenNativeType('java.util.UUID', {
+					return new generatorOptions.NativeType('java.util.UUID', {
 						wireType: 'java.lang.String',
 					})
 				} else {
-					return new CodegenNativeType('java.lang.String')
+					return new generatorOptions.NativeType('java.lang.String')
 				}
 			}
 			case 'boolean': {
-				return new CodegenNativeType(!required ? 'java.lang.Boolean' : 'boolean', {
+				return new generatorOptions.NativeType(!required ? 'java.lang.Boolean' : 'boolean', {
 					componentType: 'java.lang.Boolean',
 				})
 			}
@@ -181,13 +181,13 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 					for (const name of modelNames) {
 						modelName += `.${state.generator.toClassName(name, state)}`
 					}
-					return new CodegenNativeType(modelName)
+					return new generatorOptions.NativeType(modelName)
 				} else {
-					return new CodegenNativeType('java.lang.Object')
+					return new generatorOptions.NativeType('java.lang.Object')
 				}
 			}
 			case 'file': {
-				return new CodegenNativeType('java.io.InputStream')
+				return new generatorOptions.NativeType('java.io.InputStream')
 			}
 		}
 
@@ -196,20 +196,20 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 	toNativeArrayType: ({ componentNativeType, uniqueItems, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
 			/* We don't support array types as superclasses as we don't use model names for our non-parent type */
-			const error = new InvalidModelError('Array types are not supported as superclasses')
+			const error = new generatorOptions.InvalidModelError('Array types are not supported as superclasses')
 			error.name = 'InvalidModelError'
 			throw error
 		}
 
 		if (uniqueItems) {
 			// TODO should we use a LinkedHashSet here
-			return new CodegenNativeType(`java.util.List<${componentNativeType.componentType}>`, {
+			return new generatorOptions.NativeType(`java.util.List<${componentNativeType.componentType}>`, {
 				wireType: `java.util.List<${componentNativeType.componentWireType}>`,
 				literalType: 'java.util.List',
 				concreteType: `java.util.ArrayList<${componentNativeType.componentType}>`,
 			})
 		} else {
-			return new CodegenNativeType(`java.util.List<${componentNativeType.componentType}>`, {
+			return new generatorOptions.NativeType(`java.util.List<${componentNativeType.componentType}>`, {
 				wireType: `java.util.List<${componentNativeType.componentWireType}>`, 
 				literalType: 'java.util.List',
 				concreteType: `java.util.ArrayList<${componentNativeType.componentType}>`,
@@ -218,11 +218,11 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
-			const error = new InvalidModelError('Map types are not supported as superclasses')
+			const error = new generatorOptions.InvalidModelError('Map types are not supported as superclasses')
 			error.name = 'InvalidModelError'
 			throw error
 		}
-		return new CodegenNativeType(`java.util.Map<${keyNativeType.componentType}, ${componentNativeType.componentType}>`, {
+		return new generatorOptions.NativeType(`java.util.Map<${keyNativeType.componentType}, ${componentNativeType.componentType}>`, {
 			wireType: `java.util.Map<${keyNativeType.componentWireType}, ${componentNativeType.componentWireType}>`,
 			literalType: 'java.util.Map',
 			concreteType: `java.util.HashMap<${keyNativeType.componentType}, ${componentNativeType.componentType}>`,
@@ -308,7 +308,7 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 		
-		registerStandardHelpers(hbs, state)
+		registerStandardHelpers(hbs, generatorOptions, state)
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
