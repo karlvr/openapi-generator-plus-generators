@@ -17,11 +17,17 @@ private boolean __patched{{capitalize (identifier name)}} = false;
  * maximum: {{maximum}}
  {{/if}}
  */
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
 public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	set{{capitalize (identifier name)}}({{identifier name}});
 	return this;
 }
 
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
 {{#if vendorExtensions.extraAnnotation}}
 {{{vendorExtensions.extraAnnotation}}}
 {{/if}}
@@ -33,6 +39,9 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 public {{{nativeType}}} {{#isBoolean}}is{{else}}get{{/isBoolean}}{{capitalize (identifier name)}}() {
 	return this.{{identifier name}};
 }
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
 public void set{{capitalize (identifier name)}}({{{nativeType}}} {{identifier name}}) {
 	this.{{identifier name}} = {{identifier name}};
 	this.__patched{{capitalize (identifier name)}} = true;
