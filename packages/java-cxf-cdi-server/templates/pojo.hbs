@@ -3,7 +3,7 @@
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
-@SuppressWarnings({"unused", "serial"})
+@java.lang.SuppressWarnings({"unused", "serial"})
 public class {{className name}}{{#if parent}} extends {{{parent}}}{{/if}} {{>pojoImplements}} {
 	{{>pojoContents}}
 }

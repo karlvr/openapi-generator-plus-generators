@@ -14,7 +14,7 @@ package {{apiPackage}};
 {{/if}}
 {{>generatedAnnotation}}
 
-@SuppressWarnings("all")
+@java.lang.SuppressWarnings("all")
 public class {{className name}}Api  {
 
 	@javax.inject.Inject {{className name}}ApiService delegate;
@@ -27,9 +27,9 @@ public class {{className name}}Api  {
 	{{@root.authenticatedOperationAnnotation}}
 	{{/if}}
 	{{/if}}
-	{{#isDeprecated}}
-	@Deprecated
-	{{/isDeprecated}}
+	{{#if deprecated}}
+	@java.lang.Deprecated
+	{{/if}}
 	{{#if path}}
 	@javax.ws.rs.Path("{{{path}}}")
 	{{/if}}
