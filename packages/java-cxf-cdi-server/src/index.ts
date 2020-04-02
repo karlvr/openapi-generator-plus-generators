@@ -166,6 +166,10 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 					return new generatorOptions.NativeType('java.util.UUID', {
 						wireType: 'java.lang.String',
 					})
+				} else if (format === 'url') {
+					return new generatorOptions.NativeType('java.net.URL', {
+						wireType: 'java.lang.String',
+					})
 				} else {
 					return new generatorOptions.NativeType('java.lang.String')
 				}
