@@ -102,13 +102,20 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{^required}} | undefined{{/required}}, {{/allParams}}options: any = {}): FetchArgs {
+		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options: any = {}): FetchArgs {
 	{{#allParams}}
 	{{#if required}}
+	{{#unless nullable}}
 			// verify required parameter '{{identifier name}}' is not null or undefined
 			if ({{identifier name}} === null || {{identifier name}} === undefined) {
 				throw new RequiredError('{{identifier name}}','Required parameter {{identifier name}} was null or undefined when calling {{identifier ../name}}.');
 			}
+	{{else}}
+			// verify required parameter '{{identifier name}}' is not undefined
+			if ({{identifier name}} === undefined) {
+				throw new RequiredError('{{identifier name}}','Required parameter {{identifier name}} was undefined when calling {{identifier ../name}}.');
+			}
+	{{/unless}}
 	{{/if}}
 	{{/allParams}}
 			const localVarPath = `{{{../path}}}{{{path}}}`{{#pathParams}}
@@ -265,7 +272,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.wireType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
+		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.wireType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
 			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#allParams}}{{identifier name}}, {{/allParams}}options);
 			return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
 				return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
@@ -300,7 +307,7 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any) {
+		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any) {
 			return {{className ../name}}ApiFp(configuration).{{identifier name}}({{#allParams}}{{identifier name}}, {{/allParams}}options)(fetch, basePath);
 		},
 	{{/operations}}
@@ -328,7 +335,7 @@ export interface {{className name}}ApiInterface {
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}ApiInterface
 	 */
-	{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
+	{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
 
 {{/operations}}
 }
@@ -359,7 +366,7 @@ export class {{className name}}Api extends BaseAPI {
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}Api
 	 */
-	public {{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any) {
+	public {{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any) {
 		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#allParams}}{{identifier name}}, {{/allParams}}options)(this.fetch, this.basePath);
 	}
 
