@@ -7,6 +7,7 @@
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
+    "test": "../../node_modules/.bin/jest",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
   "repository": {
@@ -20,7 +21,7 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/core": "0.0.29"
+    "@openapi-generator-plus/types": "0.1.0"
   },
   "publishConfig": {
     "access": "public"
