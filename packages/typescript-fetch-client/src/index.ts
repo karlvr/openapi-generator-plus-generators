@@ -1,10 +1,10 @@
-import { pascalCase, GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorOptions } from '@openapi-generator-plus/core'
+import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, pascalCase, GroupingStrategies } from '@openapi-generator-plus/generator-common'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -21,7 +21,7 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
-export const createGenerator = (generatorOptions: CodegenGeneratorOptions): CodegenGenerator<CodegenOptionsTypescript> => ({
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescript> = (generatorOptions) => ({
 	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
@@ -70,10 +70,10 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 		/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 		switch (type) {
 			case 'integer': {
-				return new CodegenNativeType('number')
+				return new generatorOptions.NativeType('number')
 			}
 			case 'number': {
-				return new CodegenNativeType('number')
+				return new generatorOptions.NativeType('number')
 			}
 			case 'string': {
 				switch (format) {
@@ -81,15 +81,15 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 					case 'time':
 					case 'date-time':
 						/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-						return new CodegenNativeType('Date', {
+						return new generatorOptions.NativeType('Date', {
 							wireType: 'string',
 						})
 					default:
-						return new CodegenNativeType('string')
+						return new generatorOptions.NativeType('string')
 				}
 			}
 			case 'boolean': {
-				return new CodegenNativeType('boolean')
+				return new generatorOptions.NativeType('boolean')
 			}
 			case 'object': {
 				if (modelNames) {
@@ -97,14 +97,14 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 					for (const name of modelNames) {
 						modelName += `.${state.generator.toClassName(name, state)}`
 					}
-					return new CodegenNativeType(modelName.substring(1))
+					return new generatorOptions.NativeType(modelName.substring(1))
 				} else {
-					return new CodegenNativeType('object')
+					return new generatorOptions.NativeType('object')
 				}
 			}
 			case 'file': {
 				/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a wireType */
-				return new CodegenNativeType('File', {
+				return new generatorOptions.NativeType('File', {
 					wireType: null,
 				})
 			}
@@ -114,17 +114,17 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 	},
 	toNativeArrayType: ({ componentNativeType, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
-			throw new InvalidModelError()
+			throw new generatorOptions.InvalidModelError()
 		}
-		return new CodegenNativeType(`${componentNativeType}[]`, {
+		return new generatorOptions.NativeType(`${componentNativeType}[]`, {
 			wireType: `${componentNativeType.wireType}[]`,
 		})
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
-			throw new InvalidModelError()
+			throw new generatorOptions.InvalidModelError()
 		}
-		return new CodegenNativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, {
+		return new generatorOptions.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, {
 			wireType: `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`,
 		})
 	},
@@ -198,7 +198,7 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 
-		registerStandardHelpers(hbs, state)
+		registerStandardHelpers(hbs, generatorOptions, state)
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
