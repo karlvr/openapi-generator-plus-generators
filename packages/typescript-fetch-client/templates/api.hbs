@@ -76,7 +76,11 @@ export class RequiredError extends Error {
 }
 
 {{#models}}
-{{#if isEnum}}{{>modelEnum}}{{else}}{{>modelGeneric}}{{/if}}
+{{#if isEnum}}
+{{>modelEnum}}
+{{else}}
+{{>modelGeneric}}
+{{/if}}
 {{/models}}
 {{#groups}}
 /**
@@ -337,12 +341,11 @@ export interface {{className name}}ApiInterface {
  * @class {{className name}}Api
  * @extends {BaseAPI}
  */
-{{#withInterfaces}}
+{{#if withInterfaces}}
 export class {{className name}}Api extends BaseAPI implements {{className name}}ApiInterface {
-{{/withInterfaces}}
-{{^withInterfaces}}
+{{else}}
 export class {{className name}}Api extends BaseAPI {
-{{/withInterfaces}}
+{{/if}}
 	{{#operations}}
 	/**
 	 * {{&description}}
