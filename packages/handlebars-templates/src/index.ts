@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
-import { camelCase, capitalize, pascalCase, CodegenState, stringLiteralValueOptions, CodegenOptions } from '@openapi-generator-plus/core'
+import { camelCase, capitalize, pascalCase } from '@openapi-generator-plus/generator-common'
+import { CodegenState, CodegenOptions, CodegenGeneratorOptions } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase } from 'change-case'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
@@ -80,7 +81,7 @@ export async function emit(templateName: string, outputPath: string, context: ob
 	}
 }
 
-export function registerStandardHelpers<O extends CodegenOptions>(hbs: typeof Handlebars, state: CodegenState<O>) {
+export function registerStandardHelpers<O extends CodegenOptions>(hbs: typeof Handlebars, { utils }: CodegenGeneratorOptions<O>, state: CodegenState<O>) {
 	const generator = state.generator
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -191,7 +192,7 @@ export function registerStandardHelpers<O extends CodegenOptions>(hbs: typeof Ha
 
 	/** Format the given string as a string literal, including quotes as required */
 	hbs.registerHelper('stringLiteral', function(value: string) {
-		return generator.toLiteral(value, stringLiteralValueOptions(state), state)
+		return generator.toLiteral(value, utils.stringLiteralValueOptions(state), state)
 	})
 
 	/** Block helper that evaluates if there are more items in the current iteration context */
