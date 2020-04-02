@@ -1,4 +1,4 @@
-import { CodegenOptions } from '@openapi-generator-plus/core'
+import { CodegenOptions } from '@openapi-generator-plus/types'
 
 /**
  * Options specific to the template that the user can provide to the code generation process.

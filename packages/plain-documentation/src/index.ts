@@ -1,10 +1,10 @@
-import { GroupingStrategies, CodegenRootContext, CodegenGenerator, CodegenGeneratorOptions, CodegenNativeType, InvalidModelError, CodegenMapTypePurpose, CodegenArrayTypePurpose, compareHttpMethods } from '@openapi-generator-plus/core'
+import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, compareHttpMethods, GroupingStrategies } from '@openapi-generator-plus/generator-common'
 import marked from 'marked'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
@@ -17,7 +17,7 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
-export const createGenerator = (generatorOptions: CodegenGeneratorOptions): CodegenGenerator<CodegenOptionsDocumentation> => ({
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocumentation> = (generatorOptions) => ({
 	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
@@ -35,37 +35,37 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 				for (const name of modelNames) {
 					modelName += `.${state.generator.toClassName(name, state)}`
 				}
-				return new CodegenNativeType(modelName.substring(1))
+				return new generatorOptions.NativeType(modelName.substring(1))
 			}
 		} else if (type === 'string') {
 			if (format) {
-				return new CodegenNativeType(format, {
+				return new generatorOptions.NativeType(format, {
 					wireType: 'string',
 				})
 			}
 		} else if (type === 'integer') {
 			if (format) {
-				return new CodegenNativeType(format, {
+				return new generatorOptions.NativeType(format, {
 					wireType: 'number',
 				})
 			}
 		}
 
-		return new CodegenNativeType(type, {
+		return new generatorOptions.NativeType(type, {
 			wireType: null,
 		})
 	},
 	toNativeArrayType: ({ componentNativeType, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
-			throw new InvalidModelError()
+			throw new generatorOptions.InvalidModelError()
 		}
-		return new CodegenNativeType(`${componentNativeType}[]`)
+		return new generatorOptions.NativeType(`${componentNativeType}[]`)
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
-			throw new InvalidModelError()
+			throw new generatorOptions.InvalidModelError()
 		}
-		return new CodegenNativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
+		return new generatorOptions.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
 	},
 	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
@@ -98,7 +98,7 @@ export const createGenerator = (generatorOptions: CodegenGeneratorOptions): Code
 	exportTemplates: async(doc, state) => {
 		const hbs = Handlebars.create()
 
-		registerStandardHelpers(hbs, state)
+		registerStandardHelpers(hbs, generatorOptions, state)
 		hbs.registerHelper('md', function(value: string) {
 			if (typeof value === 'string') {
 				return marked(value)
