@@ -4,12 +4,13 @@
   "scripts": {
     "build": "lerna run build",
     "clean": "lerna clean --yes && lerna run clean",
-    "link": "lerna clean --yes && lerna exec --concurrency 1 -- npm link && npm link @openapi-generator-plus/core openapi-generator-plus && lerna clean --yes && rimraf packages/*/package-lock.json",
+    "link": "lerna clean --yes && npm link @openapi-generator-plus/core @openapi-generator-plus/types openapi-generator-plus && lerna exec --concurrency 1 -- npm link && lerna clean --yes && rimraf packages/*/package-lock.json",
     "release": "npm run clean && npm run build && npm test && lerna publish",
     "test": "lerna run test",
     "watch": "lerna run --parallel watch"
   },
   "devDependencies": {
+    "@openapi-generator-plus/core": "0.1.0",
     "@types/jest": "^25.1.2",
     "@types/less": "^3.0.1",
     "@types/lodash": "^4.14.149",
@@ -26,7 +27,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@openapi-generator-plus/core": "0.0.29",
+    "@openapi-generator-plus/types": "0.1.0",
     "@openapi-generator-plus/generator-common": "file:packages/generator-common",
     "@openapi-generator-plus/handlebars-templates": "file:packages/handlebars-templates",
     "@openapi-generator-plus/java-cxf-cdi-server-generator": "file:packages/java-cxf-cdi-server",
