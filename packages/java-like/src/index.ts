@@ -1,4 +1,5 @@
-import { pascalCase, camelCase, CodegenGenerator, CodegenOptions } from '@openapi-generator-plus/core'
+import { CodegenGenerator, CodegenOptions } from '@openapi-generator-plus/types'
+import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 
 /** Returns the string converted to a string that is safe as an identifier in most languages */
