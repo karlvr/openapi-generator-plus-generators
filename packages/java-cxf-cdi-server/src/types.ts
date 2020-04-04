@@ -1,9 +1,7 @@
-import { CodegenOptions } from '@openapi-generator-plus/types'
-
 /**
  * Options specific to Java that the user can provide to the code generation process.
  */
-export interface CodegenOptionsJava extends CodegenOptions {
+export interface CodegenOptionsJava {
 	apiPackage: string
 	apiServiceImplPackage: string
 	modelPackage: string
@@ -19,6 +17,10 @@ export interface CodegenOptionsJava extends CodegenOptions {
 
 	hideGenerationTimestamp: boolean
 	authenticatedOperationAnnotation?: string
+
+	maven?: MavenOptions
+	relativeSourceOutputPath: string
+	customTemplatesPath?: string
 }
 
 export const enum ConstantStyle {

@@ -1,6 +1,6 @@
 import { CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import { constantCase } from 'change-case'
-import { CodegenOptionsJava, ConstantStyle, MavenOptions } from './types'
+import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
@@ -267,7 +267,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	options: (config) => {
+	options: (config): CodegenOptionsJava => {
 		const packageName = config.package || 'com.example'
 		return {
 			apiPackage: config.apiPackage || `${packageName}`,
@@ -282,7 +282,13 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
 			authenticatedOperationAnnotation: config.authenticatedOperationAnnotation,
 			imports: config.imports,
-			config,
+			maven: config.maven && {
+				groupId: config.maven.groupId || 'com.example',
+				artifactId: config.maven.artifactId || 'api-server',
+				version: config.maven.version || '0.0.1',
+			},
+			relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
+			customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 		}
 	},
 	operationGroupingStrategy: () => {
@@ -298,7 +304,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 	},
 
 	cleanPathPatterns: (options) => {
-		const relativeSourceOutputPath = computeRelativeSourceOutputPath(options.config)
+		const relativeSourceOutputPath = options.relativeSourceOutputPath
 		
 		const apiPackagePath = packageToPath(options.apiPackage)
 		const modelPackagePath = packageToPath(options.modelPackage)
@@ -309,16 +315,15 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		]
 	},
 
-	exportTemplates: async(doc, state) => {
+	exportTemplates: async(outputPath, doc, state) => {
 		const hbs = Handlebars.create()
 		
 		registerStandardHelpers(hbs, generatorOptions, state)
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
-		if (state.config.customTemplates) {
-			const customTemplatesPath = computeCustomTemplatesPath(state.config.configPath, state.config.customTemplates)
-			await loadTemplates(customTemplatesPath, hbs)
+		if (state.options.customTemplatesPath) {
+			await loadTemplates(state.options.customTemplatesPath, hbs)
 		}
 
 		const rootContext: CodegenRootContext = {
@@ -326,12 +331,11 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			generatedDate: new Date().toISOString(),
 		}
 
-		let outputPath = state.config.outputPath
 		if (!outputPath.endsWith('/')) {
 			outputPath += '/'
 		}
 
-		const relativeSourceOutputPath = computeRelativeSourceOutputPath(state.config)
+		const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 
 		const apiPackagePath = packageToPath(state.options.apiPackage)
 		for (const group of doc.groups) {
@@ -374,14 +378,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 				{ ...context, ...state.options, ...rootContext }, true, hbs)
 		}
 
-		const maven = state.config.maven
+		const maven = state.options.maven
 		if (maven) {
-			const mavenConfig: MavenOptions = {
-				groupId: maven.groupId || 'com.example',
-				artifactId: maven.artifactId || 'api-server',
-				version: maven.version || '0.0.1',
-			}
-			await emit('pom', `${outputPath}pom.xml`, { ...mavenConfig, ...state.options, ...rootContext }, false, hbs)
+			await emit('pom', `${outputPath}pom.xml`, { ...maven, ...state.options, ...rootContext }, false, hbs)
 		}
 	},
 })

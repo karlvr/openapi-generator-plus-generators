@@ -1,31 +1,25 @@
-import SwaggerParser from 'swagger-parser'
-import { OpenAPI } from 'openapi-types'
 import path from 'path'
-import { CodegenState, CodegenConfig } from '@openapi-generator-plus/types'
-import { defaultGeneratorOptions } from '@openapi-generator-plus/core'
+import { CodegenState, CodegenConfig, CodegenDocument } from '@openapi-generator-plus/types'
 import createGenerator from '../index'
 import { CodegenOptionsJava } from '../types'
+import { constructGenerator, createCodegenState, createCodegenDocument } from '@openapi-generator-plus/core'
 
-export async function createTestState(specName: string): Promise<CodegenState<CodegenOptionsJava>> {
-	const parser = new SwaggerParser()
+export interface TestResult {
+	result: CodegenDocument
+	state: CodegenState<CodegenOptionsJava>
+}
 
-	const root: OpenAPI.Document = await parser.parse(path.resolve(__dirname, specName))
-
+export async function createTestResult(inputPath: string): Promise<TestResult> {
+	const generator = constructGenerator(createGenerator)
 	const config: CodegenConfig = {
-		inputPath: '',
-		outputPath: '',
-		generator: '',
+		inputPath: path.resolve(__dirname, inputPath),
+		outputPath: 'TODO', // TODO
+		generator: 'TODO', // TODO
 	}
-
-	const generator = createGenerator(defaultGeneratorOptions())
-	const options = generator.options(config)
-
-	const state: CodegenState<CodegenOptionsJava> = {
-		root,
-		parser,
-		generator,
-		config,
-		options,
+	const state = await createCodegenState(config, generator)
+	const result = createCodegenDocument(state)
+	return {
+		result,
+		state,
 	}
-	return state
 }

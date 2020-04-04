@@ -1,4 +1,4 @@
-import { CodegenGenerator, CodegenOptions } from '@openapi-generator-plus/types'
+import { CodegenGenerator } from '@openapi-generator-plus/types'
 import { camelCase } from './case-transforms'
 export * from './case-transforms'
 export * from './http-methods'
@@ -6,7 +6,7 @@ export * from './http-methods'
 import * as allGroupingStrategies from './operation-grouping'
 export const GroupingStrategies = allGroupingStrategies
 
-export function commonGenerator<O extends CodegenOptions>(): Pick<CodegenGenerator<O>, 'toOperationName'> {
+export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName'> {
 	return {
 
 		/** Create a default operation name for operations that lack an operationId */

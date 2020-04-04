@@ -1,9 +1,7 @@
-import { createTestState } from './common'
-import { processDocument } from '@openapi-generator-plus/core'
+import { createTestResult } from './common'
 
 test('array component with primitive type', async() => {
-	const state = await createTestState('component-types-v2.yml')
-	const result = processDocument(state)
+	const { result } = await createTestResult('component-types-v2.yml')
 
 	const group1 = result.groups[0]
 	const op1 = group1.operations[0]

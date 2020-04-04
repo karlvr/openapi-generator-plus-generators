@@ -76,7 +76,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	},
 	options: (config): CodegenOptionsDocumentation => {
 		return {
-			config,
+			customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 		}
 	},
 	operationGroupingStrategy: () => {
@@ -95,7 +95,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 
 	cleanPathPatterns: () => undefined,
 
-	exportTemplates: async(doc, state) => {
+	exportTemplates: async(outputPath, doc, state) => {
 		const hbs = Handlebars.create()
 
 		registerStandardHelpers(hbs, generatorOptions, state)
@@ -182,9 +182,8 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
-		if (state.config.customTemplates) {
-			const customTemplatesPath = computeCustomTemplatesPath(state.config.configPath, state.config.customTemplates)
-			await loadTemplates(customTemplatesPath, hbs)
+		if (state.options.customTemplatesPath) {
+			await loadTemplates(state.options.customTemplatesPath, hbs)
 		}
 
 		const rootContext: CodegenRootContext = {
@@ -192,7 +191,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 			generatedDate: new Date().toISOString(),
 		}
 
-		let outputPath = state.config.outputPath
 		if (!outputPath.endsWith('/')) {
 			outputPath += '/'
 		}
