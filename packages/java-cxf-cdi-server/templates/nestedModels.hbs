@@ -1,8 +1,8 @@
 {{#models}}
 {{#if isEnum}}
 {{>enumNested}}
-{{/if}}
-{{^isEnum}}
+{{else}}
 {{>pojoNested}}
-{{/isEnum}}
+{{/if}}
+
 {{/models}}

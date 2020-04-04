@@ -1,5 +1,4 @@
 {{>nestedModels}}
-
 {{#properties}}
 private {{{nativeType}}} {{identifier name}} = {{{defaultValue}}};
 private boolean __patched{{capitalize (identifier name)}} = false;
@@ -51,7 +50,6 @@ public boolean patched{{capitalize (identifier name)}}() {
 }
 
 {{/properties}}
-
 @Override
 public boolean equals(java.lang.Object o) {
 	if (this == o) {

@@ -1,5 +1,8 @@
-{{#if description}}@ApiModel(description = "{{{description}}}"){{/if}}
-
+{{#if description}}
+@ApiModel(description = "{{{description}}}")
+{{/if}}
 public static class {{className name}}{{#if parent}} extends {{{parent}}}{{/if}} {{>pojoImplements}} {
+
 	{{>pojoContents}}
+
 }
