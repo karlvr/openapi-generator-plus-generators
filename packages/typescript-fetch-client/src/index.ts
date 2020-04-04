@@ -218,6 +218,8 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 		const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 
 		await emit('api', `${outputPath}${relativeSourceOutputPath}api.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
+		await emit('models', `${outputPath}${relativeSourceOutputPath}models.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
+		await emit('runtime', `${outputPath}${relativeSourceOutputPath}runtime.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('configuration', `${outputPath}${relativeSourceOutputPath}configuration.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('custom.d', `${outputPath}${relativeSourceOutputPath}custom.d.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
 		await emit('index', `${outputPath}${relativeSourceOutputPath}index.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
