@@ -33,7 +33,7 @@
     "@openapi-generator-plus/generator-common": "file:../generator-common",
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
     "@openapi-generator-plus/java-like-generator-helper": "file:../java-like",
-    "@openapi-generator-plus/types": "0.1.1",
+    "@openapi-generator-plus/types": "0.2.0",
     "change-case": "^4.1.1"
   },
   "publishConfig": {
