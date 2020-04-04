@@ -169,10 +169,13 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 			repository: npm.repository,
 		} : undefined
 
-		const typescriptOptions: TypeScriptOptions | undefined = config.typescript ? {
+		const typescriptOptions: TypeScriptOptions | undefined = typeof config.typescript === 'object' ? {
 			target: config.typescript.target || 'ES5',
 			libs: config.typescript.libs || [config.typescript.target || 'ES5', 'DOM'],
-		} : undefined
+		} : (typeof config.typescript === 'boolean' && !config.typescript) ? undefined : {
+			target: 'ES5',
+			libs: ['ES5', 'DOM'],
+		}
 
 		return {
 			relativeSourceOutputPath,
