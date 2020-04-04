@@ -5,7 +5,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { identifierCamelCase, javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, GroupingStrategies } from '@openapi-generator-plus/generator-common'
+import { apiBasePath, commonGenerator, GroupingStrategies } from '@openapi-generator-plus/generator-common'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -376,6 +376,13 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			}
 			await emit('model', `${outputPath}${relativeSourceOutputPath}${modelPackagePath}/${state.generator.toClassName(model.name, state)}.java`, 
 				{ ...context, ...state.options, ...rootContext }, true, hbs)
+		}
+
+		const invokerPackagePath = packageToPath(state.options.invokerPackage)
+		if (invokerPackagePath) {
+			const basePath = apiBasePath(doc.servers)
+			await emit('invoker', `${outputPath}${relativeSourceOutputPath}${invokerPackagePath}/RestApplication.java`, 
+				{ ...doc.info, ...state.options, ...rootContext, basePath }, true, hbs)
 		}
 
 		const maven = state.options.maven
