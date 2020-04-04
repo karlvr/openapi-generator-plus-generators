@@ -75,11 +75,32 @@ export class RequiredError extends Error {
 	}
 }
 
+export namespace Api {
+	{{#models}}
+	{{#if isEnum}}
+	{{>modelEnum}}
+	{{else}}
+	{{>modelGeneric}}
+	{{/if}}
+
+{{/models}}
+}
+
 {{#models}}
 {{#if isEnum}}
-{{>modelEnum}}
+/**
+ * {{{description}}}
+ * @export
+ * @enum {string}
+ */
+export import {{className name}} = Api.{{className name}}
 {{else}}
-{{>modelGeneric}}
+/**
+ * {{{description}}}
+ * @export
+ * @interface {{className name}}
+ */
+export type {{className name}} = Api.{{className name}}
 {{/if}}
 
 {{/models}}

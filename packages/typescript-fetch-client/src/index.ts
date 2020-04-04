@@ -93,11 +93,11 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 			}
 			case 'object': {
 				if (modelNames) {
-					let modelName = ''
+					let modelName = 'Api'
 					for (const name of modelNames) {
 						modelName += `.${state.generator.toClassName(name, state)}`
 					}
-					return new generatorOptions.NativeType(modelName.substring(1))
+					return new generatorOptions.NativeType(modelName)
 				} else {
 					return new generatorOptions.NativeType('object')
 				}
