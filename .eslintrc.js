@@ -4,6 +4,9 @@ module.exports = {
 		'node': true,
 		'jest': true,
 	},
+	"parserOptions": {
+		"ecmaVersion" 6,
+	},
 	'rules': {
 		'array-bracket-spacing': 'warn',
 		'arrow-spacing': 'warn',
