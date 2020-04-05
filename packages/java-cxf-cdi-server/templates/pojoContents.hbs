@@ -30,7 +30,7 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{#if vendorExtensions.extraAnnotation}}
 {{{vendorExtensions.extraAnnotation}}}
 {{/if}}
-@io.swagger.annotations.ApiModelProperty({{#if example}}example = "{{{example}}}", {{/if}}{{#if required}}required = {{required}}, {{/if}}value = "{{{description}}}")
+@io.swagger.annotations.ApiModelProperty({{#if example}}example = {{{stringLiteral example}}}, {{/if}}{{#if required}}required = {{required}}, {{/if}}{{#if description}}value = {{{stringLiteral description}}}{{else}}value = ""{{/if}})
 @com.fasterxml.jackson.annotation.JsonProperty("{{name}}")
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}
