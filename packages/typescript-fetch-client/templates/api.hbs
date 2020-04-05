@@ -148,14 +148,14 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 	{{/if}}
 	{{#bodyParam}}
-			{{^../consumes}}
+			{{^consumes}}
 			localVarHeaderParameter['Content-Type'] = 'application/json';
-			{{/../consumes}}
-			{{#../consumes}}
+			{{/consumes}}
+			{{#consumes}}
 			{{#if @first}}
 			localVarHeaderParameter['Content-Type'] = '{{{mediaType}}}';
 			{{/if}}
-			{{/../consumes}}
+			{{/consumes}}
 
 	{{/bodyParam}}
 			localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
@@ -166,8 +166,28 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			localVarRequestOptions.body = localVarFormParams.toString();
 	{{/if}}
 	{{#bodyParam}}
-			const needsSerialization = (<any>"{{nativeType}}" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-			localVarRequestOptions.body =  needsSerialization ? JSON.stringify({{identifier name}} || {}) : ({{identifier name}} || "");
+		{{^consumes}}
+			localVarRequestOptions.body =  JSON.stringify({{identifier name}} || {});
+		{{/consumes}}
+		{{#consumes}}
+		{{#if @first}}
+			{{#ifeq mimeType 'application/x-www-form-urlencoded'}}
+			const localVarFormParams = new URLSearchParams();
+			for (const localVarName in {{identifier ../name}}) {
+				if (localVarName !== undefined) {
+					localVarFormParams.set(localVarName, ({{identifier ../name}} as any)[localVarName]);
+				}
+			}
+			localVarRequestOptions.body = localVarFormParams.toString();
+			{{else ifeq mimeType 'application/json'}}
+			localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
+			{{else ifeq mimeType 'text/json'}}
+			localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
+			{{else}}
+			localVarRequestOptions.body =  ({{identifier ../name}} || "");
+			{{/ifeq}}
+		{{/if}}
+		{{/consumes}}
 	{{/bodyParam}}
 
 			return {
