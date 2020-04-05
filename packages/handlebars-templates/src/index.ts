@@ -208,4 +208,30 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	hbs.registerHelper('safe', function(value: string) {
 		return new Handlebars.SafeString(convertToString(value))
 	})
+
+	/** Test if two arguments are equal */
+	hbs.registerHelper('ifeq', function(this: object, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
+		if (!options) {
+			throw new Error('ifeq helper must be called with two arguments')
+		}
+
+		if (a == b) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
+
+	/** Test if the first argument contains the second */
+	hbs.registerHelper('ifcontains', function(this: object, haystack: unknown[], needle: unknown, options: Handlebars.HelperOptions) {
+		if (!options) {
+			throw new Error('ifcontains helper must be called with two arguments')
+		}
+
+		if (haystack && haystack.indexOf(needle) !== -1) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
 }

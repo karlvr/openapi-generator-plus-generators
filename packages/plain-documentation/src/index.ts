@@ -157,28 +157,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 				return value
 			}
 		})
-		hbs.registerHelper('ifeq', function(this: object, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
-			if (!options) {
-				throw new Error('ifeq helper must be called with two arguments')
-			}
-
-			if (a == b) {
-				return options.fn(this)
-			} else {
-				return options.inverse(this)
-			}
-		})
-		hbs.registerHelper('ifcontains', function(this: object, haystack: unknown[], needle: unknown, options: Handlebars.HelperOptions) {
-			if (!options) {
-				throw new Error('ifcontains helper must be called with two arguments')
-			}
-
-			if (haystack && haystack.indexOf(needle) !== -1) {
-				return options.fn(this)
-			} else {
-				return options.inverse(this)
-			}
-		})
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
