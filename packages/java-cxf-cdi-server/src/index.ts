@@ -382,7 +382,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		if (invokerPackagePath) {
 			const basePath = apiBasePath(doc.servers)
 			await emit('invoker', `${outputPath}${relativeSourceOutputPath}${invokerPackagePath}/RestApplication.java`, 
-				{ ...doc.info, ...state.options, ...rootContext, basePath }, true, hbs)
+				{ ...doc.info, ...state.options, ...rootContext, basePath }, false, hbs)
 		}
 
 		const maven = state.options.maven
