@@ -12,6 +12,10 @@ renders a model without the surrounding panel.
     </section>
 {{/if}}
 
+{{#if parentModel}}
+    {{>model/inherited parentModel anchor=anchor}}
+{{/if}}
+
 {{#if properties}}
     {{>model/properties anchor=anchor}}
 {{/if}}
@@ -20,9 +24,9 @@ renders a model without the surrounding panel.
     {{>model/enum}}
 {{/if}}
 
-{{#if allOf}}
+{{!-- {{#if allOf}}
     {{>model/allOf allOf}}
 {{/if}}
 {{#if anyOf}}
     {{>model/anyOf anyOf}}
-{{/if}}
+{{/if}} --}}
