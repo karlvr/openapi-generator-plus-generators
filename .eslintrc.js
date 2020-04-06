@@ -5,7 +5,7 @@ module.exports = {
 		'jest': true,
 	},
 	"parserOptions": {
-		"ecmaVersion" 6,
+		"ecmaVersion": 6,
 	},
 	'rules': {
 		'array-bracket-spacing': 'warn',
