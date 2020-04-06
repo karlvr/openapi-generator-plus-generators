@@ -51,14 +51,17 @@ export async function loadTemplates(templateDirPath: string, hbs: typeof Handleb
  * @param hbs Handlebars instance
  */
 export async function emit(templateName: string, outputPath: string, context: object, replace: boolean, hbs: typeof Handlebars) {
-	const template = hbs.partials[templateName]
+	const template: Handlebars.TemplateDelegate = hbs.partials[templateName]
 	if (!template) {
 		throw new Error(`Unknown template: ${templateName}`)
 	}
 
 	let outputString
 	try {
-		outputString = template(context)
+		outputString = template(context, {
+			/* We use property methods in CodegeNativeType subclasses */
+			allowProtoPropertiesByDefault: true,
+		})
 	} catch (error) {
 		console.error(`Failed to generate template "${templateName}": ${error.message}`)
 		return
