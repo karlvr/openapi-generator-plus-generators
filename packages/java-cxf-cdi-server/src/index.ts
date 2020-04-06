@@ -201,7 +201,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
 			/* We don't support array types as superclasses as we don't use model names for our non-parent type */
 			const error = new generatorOptions.InvalidModelError('Array types are not supported as superclasses')
-			error.name = 'InvalidModelError'
 			throw error
 		}
 
@@ -225,7 +224,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
 			const error = new generatorOptions.InvalidModelError('Map types are not supported as superclasses')
-			error.name = 'InvalidModelError'
 			throw error
 		}
 		return new generatorOptions.FullComposingNativeType([keyNativeType, componentNativeType], {
