@@ -1,5 +1,19 @@
-{{#if description}}
-@io.swagger.annotations.ApiModel(description = {{{stringLiteral description}}})
+@io.swagger.annotations.ApiModel(value = "{{{name}}}"{{#if description}}, description = {{{stringLiteral description}}}{{/if}}{{#if discriminator}}, discriminator="{{{discriminator.name}}}"{{/if}})
+{{#if discriminator}}
+@com.fasterxml.jackson.annotation.JsonTypeInfo(use=com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include=com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY, property="{{{discriminator.name}}}")
+{{/if}}
+{{#if children}}
+@com.fasterxml.jackson.annotation.JsonSubTypes({
+	{{#each children}}
+	@com.fasterxml.jackson.annotation.JsonSubTypes.Type(value = {{{model.nativeType.literalType}}}.class, name = "{{{name}}}"),
+	{{/each}}
+})
+{{else if subModels}}
+@com.fasterxml.jackson.annotation.JsonSubTypes({
+	{{#each subModels}}
+	@com.fasterxml.jackson.annotation.JsonSubTypes.Type(value = {{{model.nativeType.literalType}}}.class, name = "{{{name}}}"),
+	{{/each}}
+})
 {{/if}}
 {{#if deprecated}}
 @java.lang.Deprecated
