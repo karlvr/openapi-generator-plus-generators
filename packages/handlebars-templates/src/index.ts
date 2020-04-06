@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase } from '@openapi-generator-plus/generator-common'
-import { CodegenState, CodegenGeneratorOptions } from '@openapi-generator-plus/types'
+import { CodegenState, CodegenGeneratorOptions, CodegenTypeInfo, CodegenPropertyType } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase } from 'change-case'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
@@ -229,6 +229,34 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 
 		if (haystack && haystack.indexOf(needle) !== -1) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
+
+	/* Property type helpers */
+	registerPropertyTypeHelper('isObject', CodegenPropertyType.OBJECT, hbs)
+	registerPropertyTypeHelper('isMap', CodegenPropertyType.MAP, hbs)
+	registerPropertyTypeHelper('isArray', CodegenPropertyType.ARRAY, hbs)
+	registerPropertyTypeHelper('isBoolean', CodegenPropertyType.BOOLEAN, hbs)
+	registerPropertyTypeHelper('isNumber', CodegenPropertyType.NUMBER, hbs)
+	registerPropertyTypeHelper('isEnum', CodegenPropertyType.ENUM, hbs)
+	registerPropertyTypeHelper('isString', CodegenPropertyType.STRING, hbs)
+	registerPropertyTypeHelper('isDateTime', CodegenPropertyType.DATETIME, hbs)
+	registerPropertyTypeHelper('isDate', CodegenPropertyType.DATE, hbs)
+	registerPropertyTypeHelper('isTime', CodegenPropertyType.TIME, hbs)
+	registerPropertyTypeHelper('isFile', CodegenPropertyType.FILE, hbs)
+}
+
+function registerPropertyTypeHelper(name: string, propertyType: CodegenPropertyType, hbs: typeof Handlebars) {
+	hbs.registerHelper(name, function(this: CodegenTypeInfo, options: Handlebars.HelperOptions) {
+		const aPropertyType = this.propertyType
+		if (propertyType === undefined) {
+			throw new Error(`${name} helper used without propertyType in the context`)
+		}
+
+		if (aPropertyType === propertyType) {
 			return options.fn(this)
 		} else {
 			return options.inverse(this)
