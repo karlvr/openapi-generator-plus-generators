@@ -24,6 +24,10 @@ renders a model without the surrounding panel.
     {{>model/enum}}
 {{/isEnum}}
 
+{{#if children}}
+    {{>model/children anchor=anchor}}
+{{/if}}
+
 {{!-- {{#if allOf}}
     {{>model/allOf allOf}}
 {{/if}}
