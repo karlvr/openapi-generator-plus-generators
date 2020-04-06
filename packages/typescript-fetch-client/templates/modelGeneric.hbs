@@ -4,6 +4,14 @@
  * @interface {{className name}}
  */
 export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{
+{{#discriminator}}
+	{{name}}: {{{nativeType.wireType}}};
+	
+{{/discriminator}}
+{{#discriminatorValues}}
+	{{discriminator.name}}: {{{value}}}
+
+{{/discriminatorValues}}
 {{#additionalPropertiesType}}
 	[key: string]: {{{additionalPropertiesType}}}{{#if properties}} | any{{/if}};
 
