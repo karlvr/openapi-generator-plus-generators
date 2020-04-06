@@ -1,5 +1,8 @@
 {
 	"name": "{{name}}",
+	{{#if private}}
+	"private": true,
+	{{/if}}
 	"version": "{{version}}",
 	"description": "API client for {{name}}",
 	"author": "@openapi-generator-plus/typescript-fetch-client-generator",

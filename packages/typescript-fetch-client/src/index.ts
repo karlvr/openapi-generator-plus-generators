@@ -168,6 +168,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 			name: npm.name || 'typescript-fetch-api',
 			version: npm.version || '0.0.1',
 			repository: npm.repository,
+			private: npm.private,
 		} : undefined
 
 		const typescriptOptions: TypeScriptOptions | undefined = typeof config.typescript === 'object' ? {

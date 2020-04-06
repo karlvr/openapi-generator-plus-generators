@@ -17,4 +17,5 @@ export interface NpmOptions {
 	name: string
 	version: string
 	repository?: string
+	private?: boolean
 }
