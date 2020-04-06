@@ -207,16 +207,18 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 		if (uniqueItems) {
 			// TODO should we use a LinkedHashSet here
-			return new generatorOptions.NativeType(`java.util.List<${componentNativeType.componentType}>`, {
-				wireType: `java.util.List<${componentNativeType.componentWireType}>`,
-				literalType: 'java.util.List',
-				concreteType: `java.util.ArrayList<${componentNativeType.componentType}>`,
+			return new generatorOptions.FullTransformingNativeType(componentNativeType, {
+				nativeType: (nativeTypeString) => `java.util.List<${nativeTypeString}>`,
+				literalType: () => 'java.util.List',
+				concreteType: (nativeTypeString) => `java.util.ArrayList<${nativeTypeString}>`,
+				transform: (nativeType) => nativeType.componentType || nativeType,
 			})
 		} else {
-			return new generatorOptions.NativeType(`java.util.List<${componentNativeType.componentType}>`, {
-				wireType: `java.util.List<${componentNativeType.componentWireType}>`, 
-				literalType: 'java.util.List',
-				concreteType: `java.util.ArrayList<${componentNativeType.componentType}>`,
+			return new generatorOptions.FullTransformingNativeType(componentNativeType, {
+				nativeType: (nativeTypeString) => `java.util.List<${nativeTypeString}>`,
+				literalType: () => 'java.util.List',
+				concreteType: (nativeTypeString) => `java.util.ArrayList<${nativeTypeString}>`,
+				transform: (nativeType) => nativeType.componentType || nativeType,
 			})
 		}
 	},
@@ -226,10 +228,11 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			error.name = 'InvalidModelError'
 			throw error
 		}
-		return new generatorOptions.NativeType(`java.util.Map<${keyNativeType.componentType}, ${componentNativeType.componentType}>`, {
-			wireType: `java.util.Map<${keyNativeType.componentWireType}, ${componentNativeType.componentWireType}>`,
-			literalType: 'java.util.Map',
-			concreteType: `java.util.HashMap<${keyNativeType.componentType}, ${componentNativeType.componentType}>`,
+		return new generatorOptions.FullComposingNativeType([keyNativeType, componentNativeType], {
+			nativeType: ([keyNativeTypeString, componentNativeTypeString]) => `java.util.Map<${keyNativeTypeString}, ${componentNativeTypeString}>`,
+			literalType: () => 'java.util.Map',
+			concreteType: ([keyNativeTypeString, componentNativeTypeString]) => `java.util.HashMap<${keyNativeTypeString}, ${componentNativeTypeString}>`,
+			transform: (nativeType) => nativeType.componentType || nativeType,
 		})
 	},
 	toDefaultValue: (defaultValue, options, state) => {
