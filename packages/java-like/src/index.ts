@@ -2,7 +2,7 @@ import { CodegenGenerator } from '@openapi-generator-plus/types'
 import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 
-/** Returns the string converted to a string that is safe as an identifier in most languages */
+/** Returns the string converted to a string that is safe as an identifier in java-like languages */
 function identifierSafe(value: string) {
 	/* Remove invalid leading characters */
 	value = value.replace(/^[^a-zA-Z_]*/, '')
