@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenPropertyType, CodegenTypePurpose } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenPropertyType } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -18,6 +18,14 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 		return path.resolve(path.dirname(configPath), customTemplatesPath) 
 	} else {
 		return customTemplatesPath
+	}
+}
+
+function toSafeTypeForComposing(nativeType: string): string {
+	if (/[^a-zA-Z0-9_.]/.test(nativeType)) {
+		return `(${nativeType})`
+	} else {
+		return nativeType
 	}
 }
 
@@ -117,16 +125,16 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
 			throw new generatorOptions.InvalidModelError()
 		}
-		return new generatorOptions.NativeType(`${componentNativeType}[]`, {
-			wireType: `${componentNativeType.wireType}[]`,
+		return new generatorOptions.TransformingNativeType(componentNativeType, (nativeTypeString) => {
+			return `${toSafeTypeForComposing(nativeTypeString)}[]`
 		})
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
 		if (purpose === CodegenMapTypePurpose.PARENT) {
 			throw new generatorOptions.InvalidModelError()
 		}
-		return new generatorOptions.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, {
-			wireType: `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`,
+		return new generatorOptions.ComposingNativeType([keyNativeType, componentNativeType], (nativeTypeStrings) => {
+			return `{ [name: ${nativeTypeStrings[0]}]: ${nativeTypeStrings[1]} }`
 		})
 	},
 	toDefaultValue: (defaultValue, options, state) => {
