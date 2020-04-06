@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenPropertyType } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -33,7 +33,12 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 			return state.generator.toDefaultValue(undefined, options, state)
 		}
 
-		const { type, format, required } = options
+		const { type, format, required, propertyType } = options
+
+		if (propertyType === CodegenPropertyType.ENUM) {
+			return `${options.nativeType.toString()}.${state.generator.toEnumMemberName(value, state)}`
+		}
+
 		switch (type) {
 			case 'integer': {
 				return `${value}`
