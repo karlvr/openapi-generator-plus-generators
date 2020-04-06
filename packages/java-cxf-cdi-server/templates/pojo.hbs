@@ -1,8 +1,4 @@
-{{#if description}}@io.swagger.annotations.ApiModel(description = {{{stringLiteral description}}}){{/if}}
-
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+{{>frag/pojoHeader}}
 @java.lang.SuppressWarnings({"unused", "serial"})
 public class {{className name}}{{#if parent}} extends {{{parent}}}{{/if}} {{>pojoImplements}} {
 

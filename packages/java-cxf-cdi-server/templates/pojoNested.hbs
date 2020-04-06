@@ -1,6 +1,4 @@
-{{#if description}}
-@ApiModel(description = "{{{description}}}")
-{{/if}}
+{{>frag/pojoHeader}}
 public static class {{className name}}{{#if parent}} extends {{{parent}}}{{/if}} {{>pojoImplements}} {
 
 	{{>pojoContents}}

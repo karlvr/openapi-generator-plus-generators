@@ -1,0 +1,6 @@
+{{#if description}}
+@io.swagger.annotations.ApiModel(description = {{{stringLiteral description}}})
+{{/if}}
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
