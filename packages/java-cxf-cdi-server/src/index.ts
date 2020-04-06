@@ -64,7 +64,11 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			return state.generator.toDefaultValue(undefined, options, state)
 		}
 
-		const { type, format, required } = options
+		const { type, format, required, propertyType } = options
+
+		if (propertyType === CodegenPropertyType.ENUM) {
+			return `${options.nativeType.toString()}.${state.generator.toEnumMemberName(value, state)}`
+		}
 
 		switch (type) {
 			case 'integer': {
