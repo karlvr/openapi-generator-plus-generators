@@ -102,13 +102,13 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			}
 			{{else}}
 			if ({{identifier name}} !== undefined) {
-				{{#if isDateTime}}
+				{{#isDateTime}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString();
-				{{else if isDate}}
+				{{else isDate}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString().replace(/T.*/, "");
 				{{else}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}};
-				{{/if}}
+				{{/isDateTime}}
 			}
 			{{/if}}
 
