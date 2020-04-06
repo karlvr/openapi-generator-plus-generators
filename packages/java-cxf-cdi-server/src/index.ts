@@ -115,7 +115,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	toNativeType: ({ type, format, required, modelNames }, state) => {
+	toNativeType: ({ type, format, required }, state) => {
 		/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 		switch (type) {
 			case 'integer': {
@@ -183,23 +183,19 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 					componentType: 'java.lang.Boolean',
 				})
 			}
-			case 'object': {
-				if (modelNames) {
-					let modelName = `${state.options.modelPackage}`
-					for (const name of modelNames) {
-						modelName += `.${state.generator.toClassName(name, state)}`
-					}
-					return new generatorOptions.NativeType(modelName)
-				} else {
-					return new generatorOptions.NativeType('java.lang.Object')
-				}
-			}
 			case 'file': {
 				return new generatorOptions.NativeType('java.io.InputStream')
 			}
 		}
 
 		throw new Error(`Unsupported type name: ${type}`)
+	},
+	toNativeObjectType: function({ modelNames }, state) {
+		let modelName = `${state.options.modelPackage}`
+		for (const name of modelNames) {
+			modelName += `.${state.generator.toClassName(name, state)}`
+		}
+		return new generatorOptions.NativeType(modelName)
 	},
 	toNativeArrayType: ({ componentNativeType, uniqueItems, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {

@@ -28,16 +28,8 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 
 		return value
 	},
-	toNativeType: ({ type, format, modelNames }, state) => {
-		if (type === 'object') {
-			if (modelNames) {
-				let modelName = ''
-				for (const name of modelNames) {
-					modelName += `.${state.generator.toClassName(name, state)}`
-				}
-				return new generatorOptions.NativeType(modelName.substring(1))
-			}
-		} else if (type === 'string') {
+	toNativeType: ({ type, format }) => {
+		if (type === 'string') {
 			if (format) {
 				return new generatorOptions.NativeType(format, {
 					wireType: 'string',
@@ -54,6 +46,13 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 		return new generatorOptions.NativeType(type, {
 			wireType: null,
 		})
+	},
+	toNativeObjectType: function({ modelNames }, state) {
+		let modelName = ''
+		for (const name of modelNames) {
+			modelName += `.${state.generator.toClassName(name, state)}`
+		}
+		return new generatorOptions.NativeType(modelName.substring(1))
 	},
 	toNativeArrayType: ({ componentNativeType, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {

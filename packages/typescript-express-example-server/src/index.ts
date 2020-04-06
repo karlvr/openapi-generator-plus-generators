@@ -66,7 +66,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 
 		throw new Error(`Unsupported type name: ${type}`)
 	},
-	toNativeType: ({ type, format, modelNames }, state) => {
+	toNativeType: ({ type, format }) => {
 		/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 		switch (type) {
 			case 'integer': {
@@ -91,17 +91,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 			case 'boolean': {
 				return new generatorOptions.NativeType('boolean')
 			}
-			case 'object': {
-				if (modelNames) {
-					let modelName = ''
-					for (const name of modelNames) {
-						modelName += `.${state.generator.toClassName(name, state)}`
-					}
-					return new generatorOptions.NativeType(modelName.substring(1))
-				} else {
-					return new generatorOptions.NativeType('object')
-				}
-			}
 			case 'file': {
 				/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a wireType */
 				return new generatorOptions.NativeType('File', {
@@ -111,6 +100,13 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 		}
 
 		throw new Error(`Unsupported type name: ${type}`)
+	},
+	toNativeObjectType: function({ modelNames }, state) {
+		let modelName = ''
+		for (const name of modelNames) {
+			modelName += `.${state.generator.toClassName(name, state)}`
+		}
+		return new generatorOptions.NativeType(modelName.substring(1))
 	},
 	toNativeArrayType: ({ componentNativeType, purpose }) => {
 		if (purpose === CodegenArrayTypePurpose.PARENT) {
