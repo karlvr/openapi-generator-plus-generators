@@ -1,6 +1,6 @@
 {{>frag/pojoHeader}}
 @java.lang.SuppressWarnings({"unused", "serial"})
-public class {{className name}}{{#if parent}} extends {{{parent}}}{{/if}} {{>pojoImplements}} {
+public class {{className name}}{{#if parentNativeType}} extends {{{parentNativeType}}}{{/if}} {{>pojoImplements}} {
 
 	{{>pojoContents}}
 

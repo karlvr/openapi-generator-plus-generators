@@ -1,5 +1,5 @@
 {{>frag/pojoHeader}}
-public static class {{className name}}{{#if parent}} extends {{{parent}}}{{/if}} {{>pojoImplements}} {
+public static class {{className name}}{{#if parentNativeType}} extends {{{parentNativeType}}}{{/if}} {{>pojoImplements}} {
 
 	{{>pojoContents}}
 

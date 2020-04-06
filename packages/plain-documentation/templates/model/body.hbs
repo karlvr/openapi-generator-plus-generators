@@ -12,8 +12,8 @@ renders a model without the surrounding panel.
     </section>
 {{/if}}
 
-{{#if parentModel}}
-    {{>model/inherited parentModel anchor=anchor}}
+{{#if parent}}
+    {{>model/inherited parent anchor=anchor}}
 {{/if}}
 
 {{#if properties}}

@@ -3,7 +3,7 @@
  * @export
  * @interface {{className name}}
  */
-export interface {{className name}} {{#if parent}}extends {{{parent}}} {{/if}}{
+export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{
 {{#additionalPropertiesType}}
 	[key: string]: {{{additionalPropertiesType}}}{{#if properties}} | any{{/if}};
 

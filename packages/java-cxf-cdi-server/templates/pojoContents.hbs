@@ -58,7 +58,7 @@ public boolean equals(java.lang.Object o) {
 	if (o == null || getClass() != o.getClass()) {
 		return false;
 	}
-	{{#if parent}}
+	{{#if parentNativeType}}
 	if (!super.equals(o)) {
 		return false;
 	}
@@ -74,14 +74,14 @@ public boolean equals(java.lang.Object o) {
 
 @Override
 public int hashCode() {
-	return {{#if parent}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/properties}});
+	return {{#if parentNativeType}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/properties}});
 }
 
 @Override
 public String toString() {
 	StringBuilder sb = new StringBuilder();
 	sb.append("class {{className name}} {\n");
-	{{#parent}}sb.append("    ").append(toIndentedString(super.toString())).append("\n");{{/parent}}
+	{{#if parentNativeType}}sb.append("    ").append(toIndentedString(super.toString())).append("\n");{{/if}}
 	{{#properties}}sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
 	{{/properties}}sb.append("}");
 	return sb.toString();
