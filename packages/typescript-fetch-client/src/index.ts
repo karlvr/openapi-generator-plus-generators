@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenPropertyType } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenPropertyType, CodegenModelReference, CodegenNativeType } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -196,6 +196,44 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 	},
 	operationGroupingStrategy: () => {
 		return GroupingStrategies.addToGroupsByTagOrPath
+	},
+
+	postProcessModel: (model) => {
+		function toDisjunction(references: CodegenModelReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+			const result = references.reduce((result, reference) => {
+				const r = transform(reference.model.propertyNativeType)
+				if (!r) {
+					return result
+				}
+				if (result) {
+					return `${result} | ${toSafeTypeForComposing(r)}`
+				} else {
+					return toSafeTypeForComposing(r)
+				}
+			}, '')
+			if (result) {
+				return result
+			} else {
+				return undefined
+			}
+		}
+
+		/* If this model has a discriminator then we change its propertyNativeType to a disjunction */
+		if (model.discriminator) {
+			if (model.discriminator.references) {
+				model.propertyNativeType.nativeType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.nativeType)!
+				model.propertyNativeType.wireType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.wireType)
+				model.propertyNativeType.literalType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
+				model.propertyNativeType.concreteType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
+				
+				if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
+					model.propertyNativeType.componentType.nativeType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+					model.propertyNativeType.componentType.wireType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
+					model.propertyNativeType.componentType.literalType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+					model.propertyNativeType.componentType.concreteType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+				}
+			}
+		}
 	},
 
 	watchPaths: (config) => {
