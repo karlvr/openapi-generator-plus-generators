@@ -121,11 +121,11 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			case 'integer': {
 				if (format === 'int32' || format === undefined) {
 					return new generatorOptions.NativeType(!required ? 'java.lang.Integer' : 'int', {
-						componentType: 'java.lang.Integer',
+						componentType: new generatorOptions.NativeType('java.lang.Integer'),
 					})
 				} else if (format === 'int64') {
 					return new generatorOptions.NativeType(!required ? 'java.lang.Long' : 'long', {
-						componentType: 'java.lang.Long',
+						componentType: new generatorOptions.NativeType('java.lang.Long'),
 					})
 				} else {
 					throw new Error(`Unsupported ${type} format: ${format}`)
@@ -136,11 +136,11 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 					return new generatorOptions.NativeType('java.math.BigDecimal')
 				} else if (format === 'float') {
 					return new generatorOptions.NativeType(!required ? 'java.lang.Float' : 'float', {
-						componentType: 'java.lang.Float',
+						componentType: new generatorOptions.NativeType('java.lang.Float'),
 					})
 				} else if (format === 'double') {
 					return new generatorOptions.NativeType(!required ? 'java.lang.Double' : 'double', {
-						componentType: 'java.lang.Double',
+						componentType: new generatorOptions.NativeType('java.lang.Double'),
 					})
 				} else {
 					throw new Error(`Unsupported ${type} format: ${format}`)
@@ -149,7 +149,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			case 'string': {
 				if (format === 'byte') {
 					return new generatorOptions.NativeType(!required ? 'java.lang.Byte' : 'byte', {
-						componentType: 'java.lang.Byte',
+						componentType: new generatorOptions.NativeType('java.lang.Byte'),
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'binary') {
@@ -180,7 +180,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			}
 			case 'boolean': {
 				return new generatorOptions.NativeType(!required ? 'java.lang.Boolean' : 'boolean', {
-					componentType: 'java.lang.Boolean',
+					componentType: new generatorOptions.NativeType('java.lang.Boolean'),
 				})
 			}
 			case 'file': {
