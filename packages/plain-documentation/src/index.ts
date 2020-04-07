@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -21,6 +21,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
+	generatorType: () => CodegenGeneratorType.DOCUMENTATION,
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {
 			return state.generator.toDefaultValue(undefined, options, state)

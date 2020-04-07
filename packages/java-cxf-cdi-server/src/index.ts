@@ -1,4 +1,4 @@
-import { CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenOperation, CodegenModel, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
+import { CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
@@ -46,6 +46,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
+	generatorType: () => CodegenGeneratorType.SERVER,
 	toConstantName: (name, state) => {
 		const constantStyle = state.options.constantStyle
 		switch (constantStyle) {
@@ -340,7 +341,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 		const apiPackagePath = packageToPath(state.options.apiPackage)
 		for (const group of doc.groups) {
-			const operations = group.operations.filter(shouldGenerateOperation)
+			const operations = group.operations
 			if (!operations.length) {
 				continue
 			}
@@ -349,7 +350,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		}
 
 		for (const group of doc.groups) {
-			const operations = group.operations.filter(shouldGenerateOperation)
+			const operations = group.operations
 			if (!operations.length) {
 				continue
 			}
@@ -359,7 +360,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 		const apiImplPackagePath = packageToPath(state.options.apiServiceImplPackage)
 		for (const group of doc.groups) {
-			const operations = group.operations.filter(shouldGenerateOperation)
+			const operations = group.operations
 			if (!operations.length) {
 				continue
 			}
@@ -369,9 +370,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 		const modelPackagePath = packageToPath(state.options.modelPackage)
 		for (const model of doc.models) {
-			if (!shouldGenerateModel(model)) {
-				continue
-			}
 			const context = {
 				models: [model],
 			}
@@ -392,13 +390,5 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		}
 	},
 })
-
-function shouldGenerateOperation(op: CodegenOperation) {
-	return !(op.vendorExtensions && op.vendorExtensions['x-no-server'])
-}
-
-function shouldGenerateModel(model: CodegenModel) {
-	return !(model.vendorExtensions && model.vendorExtensions['x-no-server'])
-}
 
 export default createGenerator

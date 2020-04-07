@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenPropertyType, CodegenModelReference, CodegenNativeType } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -33,6 +33,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 	...generatorOptions.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
+	generatorType: () => CodegenGeneratorType.CLIENT,
 	toConstantName: (name) => {
 		return pascalCase(name)
 	},
