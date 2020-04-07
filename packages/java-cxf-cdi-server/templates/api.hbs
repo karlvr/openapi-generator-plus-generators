@@ -39,7 +39,7 @@ public class {{className name}}Api  {
 	{{#if produces}}
 	@javax.ws.rs.Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} })
 	{{/if}}
-	@io.swagger.annotations.ApiOperation(value = "{{{summary}}}", notes = "{{{notes}}}"{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if securityRequirements}}, authorizations = {
+	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if notes}}, notes = {{{stringLiteral notes}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if securityRequirements}}, authorizations = {
 		{{#securityRequirements}}
 		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
 			{{#scopes}}
