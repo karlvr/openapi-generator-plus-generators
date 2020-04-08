@@ -1,7 +1,9 @@
 {{>nestedModels}}
 {{#properties}}
 private {{{nativeType}}} {{identifier name}} = {{{defaultValue}}};
+{{#if ../vendorExtensions.x-patch}}
 private boolean __patched{{capitalize (identifier name)}} = false;
+{{/if}}
 {{/properties}}
 
 {{#properties}}
@@ -43,11 +45,15 @@ public {{{nativeType}}} {{#isBoolean}}is{{else}}get{{/isBoolean}}{{capitalize (i
 {{/if}}
 public void set{{capitalize (identifier name)}}({{{nativeType}}} {{identifier name}}) {
 	this.{{identifier name}} = {{identifier name}};
+	{{#if ../vendorExtensions.x-patch}}
 	this.__patched{{capitalize (identifier name)}} = true;
+	{{/if}}
 }
+{{#if ../vendorExtensions.x-patch}}
 public boolean patched{{capitalize (identifier name)}}() {
 	return this.__patched{{capitalize (identifier name)}};
 }
+{{/if}}
 
 {{/properties}}
 @Override
