@@ -4,6 +4,7 @@ import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase } from '@openapi-generator-plus/generator-common'
 import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase } from 'change-case'
+import pluralize from 'pluralize'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
 	const templateSource = await fs.readFile(templatePath, 'UTF-8')
@@ -188,6 +189,22 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	hbs.registerHelper('allCapsSnakeCase', function(value: string) {
 		if (value !== undefined) {
 			return constantCase(convertToString(value))
+		} else {
+			return value
+		}
+	})
+
+	hbs.registerHelper('plural', function(value: string) {
+		if (value !== undefined) {
+			return pluralize(convertToString(value))
+		} else {
+			return value
+		}
+	})
+
+	hbs.registerHelper('singular', function(value: string) {
+		if (value !== undefined) {
+			return pluralize.singular(convertToString(value))
 		} else {
 			return value
 		}

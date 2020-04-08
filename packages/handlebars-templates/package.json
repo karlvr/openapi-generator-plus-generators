@@ -22,7 +22,8 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "file:../generator-common",
     "@openapi-generator-plus/types": "0.4.0",
-    "handlebars": "^4.7.3"
+    "handlebars": "^4.7.3",
+    "pluralize": "^8.0.0"
   },
   "publishConfig": {
     "access": "public"
