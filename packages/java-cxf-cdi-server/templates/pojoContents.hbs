@@ -54,6 +54,17 @@ public boolean patched{{capitalize (identifier name)}}() {
 	return this.__patched{{capitalize (identifier name)}};
 }
 {{/if}}
+{{#isArray}}
+public void add{{capitalize (singular (identifier name))}}({{{componentNativeType}}} {{singular (identifier name)}}) {
+	if (this.{{identifier name}} == null) {
+		this.{{identifier name}} = new {{{nativeType.concreteType}}}();
+	}
+	this.{{identifier name}}.add({{singular (identifier name)}});
+	{{#if ../vendorExtensions.x-patch}}
+	this.__patched{{capitalize (identifier name)}} = true;
+	{{/if}}
+}
+{{/isArray}}
 
 {{/properties}}
 @Override
