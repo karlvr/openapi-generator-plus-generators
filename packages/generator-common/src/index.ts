@@ -3,11 +3,12 @@ import { camelCase } from './case-transforms'
 export * from './case-transforms'
 export * from './http-methods'
 import Url from 'url-parse'
+import pluralize from 'pluralize'
 
 import * as allGroupingStrategies from './operation-grouping'
 export const GroupingStrategies = allGroupingStrategies
 
-export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName'> {
+export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName' | 'toModelNameFromPropertyName'> {
 	return {
 
 		/** Create a default operation name for operations that lack an operationId */
@@ -17,6 +18,10 @@ export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName
 			const combined = `${method.toLocaleLowerCase()}_${sanitisedPath}`
 			const sanitizedCombined = combined.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+$/, '')
 			return camelCase(sanitizedCombined)
+		},
+		
+		toModelNameFromPropertyName: (name, state) => {
+			return state.generator.toClassName(pluralize.singular(name), state)
 		},
 
 	}
