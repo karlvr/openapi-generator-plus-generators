@@ -3,9 +3,7 @@ module.exports = {
 	'env': {
 		'node': true,
 		'jest': true,
-	},
-	"parserOptions": {
-		"ecmaVersion": 6,
+		'es6': true,
 	},
 	'rules': {
 		'array-bracket-spacing': 'warn',
