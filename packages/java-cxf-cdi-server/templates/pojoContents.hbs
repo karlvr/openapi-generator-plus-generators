@@ -29,8 +29,8 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
-{{#if vendorExtensions.extraAnnotation}}
-{{{vendorExtensions.extraAnnotation}}}
+{{#if vendorExtensions.x-extra-annotation}}
+{{{vendorExtensions.x-extra-annotation}}}
 {{/if}}
 @io.swagger.annotations.ApiModelProperty({{#if example}}example = {{{stringLiteral example}}}, {{/if}}{{#if required}}required = {{required}}, {{/if}}{{#if description}}value = {{{stringLiteral description}}}{{else}}value = ""{{/if}})
 @com.fasterxml.jackson.annotation.JsonProperty("{{name}}")
