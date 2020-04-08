@@ -15,12 +15,12 @@ package {{apiPackage}};
 {{>generatedAnnotation}}
 
 @java.lang.SuppressWarnings("all")
-public class {{className name}}Api  {
+public class {{className name}}Api {
 
 	@javax.inject.Inject {{className name}}ApiService delegate;
 
 {{#operations}}
-{{>nestedModels}}
+	{{>nestedModels}}
 	@javax.ws.rs.{{httpMethod}}
 	{{#if securityRequirements}}
 	{{#if @root.authenticatedOperationAnnotation}}
