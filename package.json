@@ -10,7 +10,7 @@
     "watch": "lerna run --parallel watch"
   },
   "devDependencies": {
-    "@openapi-generator-plus/core": "0.3.0",
+    "@openapi-generator-plus/core": "0.4.0",
     "@types/jest": "^25.1.2",
     "@types/less": "^3.0.1",
     "@types/lodash": "^4.14.149",
@@ -31,7 +31,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@openapi-generator-plus/types": "0.3.0",
+    "@openapi-generator-plus/types": "0.4.0",
     "@openapi-generator-plus/generator-common": "file:packages/generator-common",
     "@openapi-generator-plus/handlebars-templates": "file:packages/handlebars-templates",
     "@openapi-generator-plus/java-cxf-cdi-server-generator": "file:packages/java-cxf-cdi-server",
