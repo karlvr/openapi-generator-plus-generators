@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypescript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -109,18 +109,12 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 		}
 		return new generatorOptions.NativeType(modelName.substring(1))
 	},
-	toNativeArrayType: ({ componentNativeType, purpose }) => {
-		if (purpose === CodegenArrayTypePurpose.PARENT) {
-			throw new generatorOptions.InvalidModelError()
-		}
+	toNativeArrayType: ({ componentNativeType }) => {
 		return new generatorOptions.NativeType(`${componentNativeType}[]`, {
 			wireType: `${componentNativeType.wireType}[]`,
 		})
 	},
-	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
-		if (purpose === CodegenMapTypePurpose.PARENT) {
-			throw new generatorOptions.InvalidModelError()
-		}
+	toNativeMapType: ({ keyNativeType, componentNativeType }) => {
 		return new generatorOptions.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, {
 			wireType: `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`,
 		})

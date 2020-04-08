@@ -1,4 +1,4 @@
-import { CodegenArrayTypePurpose, CodegenRootContext, CodegenMapTypePurpose, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
@@ -198,13 +198,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		}
 		return new generatorOptions.NativeType(modelName)
 	},
-	toNativeArrayType: ({ componentNativeType, uniqueItems, purpose }) => {
-		if (purpose === CodegenArrayTypePurpose.PARENT) {
-			/* We don't support array types as superclasses as we don't use model names for our non-parent type */
-			const error = new generatorOptions.InvalidModelError('Array types are not supported as superclasses')
-			throw error
-		}
-
+	toNativeArrayType: ({ componentNativeType, uniqueItems }) => {
 		if (uniqueItems) {
 			// TODO should we use a LinkedHashSet here
 			return new generatorOptions.FullTransformingNativeType(componentNativeType, {
@@ -222,11 +216,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			})
 		}
 	},
-	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
-		if (purpose === CodegenMapTypePurpose.PARENT) {
-			const error = new generatorOptions.InvalidModelError('Map types are not supported as superclasses')
-			throw error
-		}
+	toNativeMapType: ({ keyNativeType, componentNativeType }) => {
 		return new generatorOptions.FullComposingNativeType([keyNativeType, componentNativeType], {
 			nativeType: ([keyNativeTypeString, componentNativeTypeString]) => `java.util.Map<${keyNativeTypeString}, ${componentNativeTypeString}>`,
 			literalType: () => 'java.util.Map',

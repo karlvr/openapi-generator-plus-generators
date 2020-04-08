@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenMapTypePurpose, CodegenArrayTypePurpose, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -55,16 +55,10 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 		}
 		return new generatorOptions.NativeType(modelName.substring(1))
 	},
-	toNativeArrayType: ({ componentNativeType, purpose }) => {
-		if (purpose === CodegenArrayTypePurpose.PARENT) {
-			throw new generatorOptions.InvalidModelError()
-		}
+	toNativeArrayType: ({ componentNativeType }) => {
 		return new generatorOptions.NativeType(`${componentNativeType}[]`)
 	},
-	toNativeMapType: ({ keyNativeType, componentNativeType, purpose }) => {
-		if (purpose === CodegenMapTypePurpose.PARENT) {
-			throw new generatorOptions.InvalidModelError()
-		}
+	toNativeMapType: ({ keyNativeType, componentNativeType }) => {
 		return new generatorOptions.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
 	},
 	toDefaultValue: (defaultValue, options, state) => {
