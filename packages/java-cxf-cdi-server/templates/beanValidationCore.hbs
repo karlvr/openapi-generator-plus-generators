@@ -76,17 +76,17 @@ Not Integer, not Long => we have a decimal value!
 Email addresses
 }}
 {{#if vendorExtensions.x-email}}
-@javax.validation.constraints.Email({{#if vendorExtensions.x-email-message}}message="{{&vendorExtensions.x-email-message}}"{{/if}})
+@javax.validation.constraints.Email{{#if vendorExtensions.x-email-message}}(message="{{&vendorExtensions.x-email-message}}"){{/if}}
 {{/if}}
 {{!
 Not blank
 }}
 {{#if vendorExtensions.x-not-blank}}
-@javax.validation.constraints.NotBlank({{#if vendorExtensions.x-not-blank-message}}message="{{&vendorExtensions.x-not-blank-message}}"{{/if}})
+@javax.validation.constraints.NotBlank{{#if vendorExtensions.x-not-blank-message}}(message="{{&vendorExtensions.x-not-blank-message}}"){{/if}}
 {{/if}}
 {{!
 Not empty
 }}
 {{#if vendorExtensions.x-not-empty}}
-@javax.validation.constraints.NotEmpty({{#if vendorExtensions.x-not-empty-message}}message="{{&vendorExtensions.x-not-empty-message}}"{{/if}})
+@javax.validation.constraints.NotEmpty{{#if vendorExtensions.x-not-empty-message}}(message="{{&vendorExtensions.x-not-empty-message}}"){{/if}}
 {{/if}}
