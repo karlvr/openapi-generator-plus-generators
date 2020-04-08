@@ -42,8 +42,8 @@ function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	return relativeSourceOutputPath
 }
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = (generatorOptions) => ({
-	...generatorOptions.baseGenerator(),
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = (context) => ({
+	...context.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	generatorType: () => CodegenGeneratorType.SERVER,
@@ -121,12 +121,12 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		switch (type) {
 			case 'integer': {
 				if (format === 'int32' || format === undefined) {
-					return new generatorOptions.NativeType(!required ? 'java.lang.Integer' : 'int', {
-						componentType: new generatorOptions.NativeType('java.lang.Integer'),
+					return new context.NativeType(!required ? 'java.lang.Integer' : 'int', {
+						componentType: new context.NativeType('java.lang.Integer'),
 					})
 				} else if (format === 'int64') {
-					return new generatorOptions.NativeType(!required ? 'java.lang.Long' : 'long', {
-						componentType: new generatorOptions.NativeType('java.lang.Long'),
+					return new context.NativeType(!required ? 'java.lang.Long' : 'long', {
+						componentType: new context.NativeType('java.lang.Long'),
 					})
 				} else {
 					throw new Error(`Unsupported ${type} format: ${format}`)
@@ -134,14 +134,14 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			}
 			case 'number': {
 				if (format === undefined) {
-					return new generatorOptions.NativeType('java.math.BigDecimal')
+					return new context.NativeType('java.math.BigDecimal')
 				} else if (format === 'float') {
-					return new generatorOptions.NativeType(!required ? 'java.lang.Float' : 'float', {
-						componentType: new generatorOptions.NativeType('java.lang.Float'),
+					return new context.NativeType(!required ? 'java.lang.Float' : 'float', {
+						componentType: new context.NativeType('java.lang.Float'),
 					})
 				} else if (format === 'double') {
-					return new generatorOptions.NativeType(!required ? 'java.lang.Double' : 'double', {
-						componentType: new generatorOptions.NativeType('java.lang.Double'),
+					return new context.NativeType(!required ? 'java.lang.Double' : 'double', {
+						componentType: new context.NativeType('java.lang.Double'),
 					})
 				} else {
 					throw new Error(`Unsupported ${type} format: ${format}`)
@@ -149,43 +149,43 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 			}
 			case 'string': {
 				if (format === 'byte') {
-					return new generatorOptions.NativeType(!required ? 'java.lang.Byte' : 'byte', {
-						componentType: new generatorOptions.NativeType('java.lang.Byte'),
+					return new context.NativeType(!required ? 'java.lang.Byte' : 'byte', {
+						componentType: new context.NativeType('java.lang.Byte'),
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'binary') {
-					return new generatorOptions.NativeType('java.lang.String')
+					return new context.NativeType('java.lang.String')
 				} else if (format === 'date') {
-					return new generatorOptions.NativeType(state.options.dateImplementation, {
+					return new context.NativeType(state.options.dateImplementation, {
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'time') {
-					return new generatorOptions.NativeType(state.options.timeImplementation, {
+					return new context.NativeType(state.options.timeImplementation, {
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'date-time') {
-					return new generatorOptions.NativeType(state.options.dateTimeImplementation, {
+					return new context.NativeType(state.options.dateTimeImplementation, {
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'uuid') {
-					return new generatorOptions.NativeType('java.util.UUID', {
+					return new context.NativeType('java.util.UUID', {
 						wireType: 'java.lang.String',
 					})
 				} else if (format === 'url') {
-					return new generatorOptions.NativeType('java.net.URL', {
+					return new context.NativeType('java.net.URL', {
 						wireType: 'java.lang.String',
 					})
 				} else {
-					return new generatorOptions.NativeType('java.lang.String')
+					return new context.NativeType('java.lang.String')
 				}
 			}
 			case 'boolean': {
-				return new generatorOptions.NativeType(!required ? 'java.lang.Boolean' : 'boolean', {
-					componentType: new generatorOptions.NativeType('java.lang.Boolean'),
+				return new context.NativeType(!required ? 'java.lang.Boolean' : 'boolean', {
+					componentType: new context.NativeType('java.lang.Boolean'),
 				})
 			}
 			case 'file': {
-				return new generatorOptions.NativeType('java.io.InputStream')
+				return new context.NativeType('java.io.InputStream')
 			}
 		}
 
@@ -196,19 +196,19 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		for (const name of modelNames) {
 			modelName += `.${state.generator.toClassName(name, state)}`
 		}
-		return new generatorOptions.NativeType(modelName)
+		return new context.NativeType(modelName)
 	},
 	toNativeArrayType: ({ componentNativeType, uniqueItems }) => {
 		if (uniqueItems) {
 			// TODO should we use a LinkedHashSet here
-			return new generatorOptions.FullTransformingNativeType(componentNativeType, {
+			return new context.FullTransformingNativeType(componentNativeType, {
 				nativeType: (nativeTypeString) => `java.util.List<${nativeTypeString}>`,
 				literalType: () => 'java.util.List',
 				concreteType: (nativeTypeString) => `java.util.ArrayList<${nativeTypeString}>`,
 				transform: (nativeType) => nativeType.componentType || nativeType,
 			})
 		} else {
-			return new generatorOptions.FullTransformingNativeType(componentNativeType, {
+			return new context.FullTransformingNativeType(componentNativeType, {
 				nativeType: (nativeTypeString) => `java.util.List<${nativeTypeString}>`,
 				literalType: () => 'java.util.List',
 				concreteType: (nativeTypeString) => `java.util.ArrayList<${nativeTypeString}>`,
@@ -217,7 +217,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		}
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType }) => {
-		return new generatorOptions.FullComposingNativeType([keyNativeType, componentNativeType], {
+		return new context.FullComposingNativeType([keyNativeType, componentNativeType], {
 			nativeType: ([keyNativeTypeString, componentNativeTypeString]) => `java.util.Map<${keyNativeTypeString}, ${componentNativeTypeString}>`,
 			literalType: () => 'java.util.Map',
 			concreteType: ([keyNativeTypeString, componentNativeTypeString]) => `java.util.HashMap<${keyNativeTypeString}, ${componentNativeTypeString}>`,
@@ -310,7 +310,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 	exportTemplates: async(outputPath, doc, state) => {
 		const hbs = Handlebars.create()
 		
-		registerStandardHelpers(hbs, generatorOptions, state)
+		registerStandardHelpers(hbs, context, state)
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
