@@ -1,0 +1,9 @@
+{{#bodyParam}}
+javax.validation.ValidatorFactory factory = javax.validation.Validation.buildDefaultValidatorFactory();
+javax.validation.Validator validator = factory.getValidator();
+java.util.Set<javax.validation.ConstraintViolation<{{{nativeType}}}>> validations = validator.validate({{identifier name}});
+if (!validations.isEmpty()) {
+	return response.status(javax.ws.rs.core.Response.Status.BAD_REQUEST).build();
+}
+
+{{/bodyParam}}

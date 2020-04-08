@@ -56,19 +56,9 @@ public class {{className name}}Api {
 	public javax.ws.rs.core.Response {{name}}({{#allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {
 		{{#responses}}{{#isDefault}}final javax.ws.rs.core.Response.ResponseBuilder response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));{{/isDefault}}{{/responses}}
 		try {
-			{{#@root.useBeanValidation}}
-			{{#allParams}}
-			{{#if vendorExtensions.x-validation}}
-			javax.validation.ValidatorFactory factory = javax.validation.Validation.buildDefaultValidatorFactory();
-			javax.validation.Validator validator = factory.getValidator();
-			java.util.Set<javax.validation.ConstraintViolation<{{{nativeType}}}>> validations = validator.validate({{identifier name}});
-			if (!validations.isEmpty()) {
-				throw new {{{className @root/name}}}ApiService.{{{className ../name}}}400Exception(validations);
-			}
-			
+			{{#if @root.useBeanValidation}}
+			{{>frag/beanValidationValidateParams}}
 			{{/if}}
-			{{/allParams}}
-			{{/@root.useBeanValidation}}
 			{{#defaultResponse}}
 			{{#if nativeType}}{{{nativeType}}} entity = {{/if}}delegate.{{identifier ../name}}({{#../allParams}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/../allParams}}{{#unless nativeType}}{{#if ../allParams}}, {{/if}}response{{/unless}});
 			{{#if nativeType}}
