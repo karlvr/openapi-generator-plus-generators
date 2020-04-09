@@ -13,11 +13,11 @@ package {{apiPackage}};
 @javax.ws.rs.Produces({ {{#produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/produces}} })
 {{/if}}
 {{>generatedAnnotation}}
-
 @java.lang.SuppressWarnings("all")
 public class {{className name}}Api {
 
-	@javax.inject.Inject {{className name}}ApiService delegate;
+	@javax.inject.Inject
+	private {{className name}}ApiService delegate;
 
 {{#operations}}
 	{{>nestedModels}}
@@ -54,17 +54,17 @@ public class {{className name}}Api {
 		{{/responses}}
 	})
 	public javax.ws.rs.core.Response {{name}}({{#allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {
-		{{#responses}}{{#isDefault}}final javax.ws.rs.core.Response.ResponseBuilder response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));{{/isDefault}}{{/responses}}
+		{{#responses}}{{#isDefault}}final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));{{/isDefault}}{{/responses}}
 		try {
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#defaultResponse}}
-			{{#if nativeType}}{{{nativeType}}} entity = {{/if}}delegate.{{identifier ../name}}({{#../allParams}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/../allParams}}{{#unless nativeType}}{{#if ../allParams}}, {{/if}}response{{/unless}});
+			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#../allParams}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/../allParams}}{{#unless nativeType}}{{#if ../allParams}}, {{/if}}response{{/unless}});
 			{{#if nativeType}}
-			response.entity(entity);
+			__response.entity(__entity);
 			{{/if}}
-			return response.build();
+			return __response.build();
 			{{/defaultResponse}}
 		{{#responses}}
 		{{^isDefault}}
