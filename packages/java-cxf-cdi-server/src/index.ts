@@ -319,7 +319,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		}
 
 		const rootContext: CodegenRootContext = {
-			generatorClass: '@openapi-generator-plus/java-cxf-cdi-server',
+			generatorClass: '@openapi-generator-plus/java-cxf-cdi-server-generator',
 			generatedDate: new Date().toISOString(),
 		}
 
