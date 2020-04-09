@@ -1,8 +1,11 @@
 package {{apiServiceImplPackage}};
 
-{{#imports}}import {{.}};
+{{#if imports}}
+{{#imports}}
+import {{.}};
 {{/imports}}
 
+{{/if}}
 @javax.enterprise.context.Dependent
 public class {{className name}}ApiServiceImpl implements {{@root/apiPackage}}.{{className name}}ApiService {
 
