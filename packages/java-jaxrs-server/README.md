@@ -1,6 +1,6 @@
-# Java CXF + CDI Server API generator for OpenAPI Generator+
+# Java JAX-RS Server API generator for OpenAPI Generator+
 
-An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) module for a Java API server using CXF and CDI
+An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) module for a Java API server using JAX-RS.
 
 ## Overview
 

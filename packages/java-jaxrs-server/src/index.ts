@@ -320,7 +320,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		}
 
 		const rootContext: CodegenRootContext = {
-			generatorClass: '@openapi-generator-plus/java-cxf-cdi-server-generator',
+			generatorClass: '@openapi-generator-plus/java-jaxrs-server-generator',
 			generatedDate: new Date().toISOString(),
 		}
 
