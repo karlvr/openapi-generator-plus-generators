@@ -17,8 +17,8 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocumentation> = (generatorOptions) => ({
-	...generatorOptions.baseGenerator(),
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocumentation> = (context) => ({
+	...context.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	generatorType: () => CodegenGeneratorType.DOCUMENTATION,
@@ -32,19 +32,19 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	toNativeType: ({ type, format }) => {
 		if (type === 'string') {
 			if (format) {
-				return new generatorOptions.NativeType(format, {
+				return new context.NativeType(format, {
 					wireType: 'string',
 				})
 			}
 		} else if (type === 'integer') {
 			if (format) {
-				return new generatorOptions.NativeType(format, {
+				return new context.NativeType(format, {
 					wireType: 'number',
 				})
 			}
 		}
 
-		return new generatorOptions.NativeType(type, {
+		return new context.NativeType(type, {
 			wireType: null,
 		})
 	},
@@ -53,13 +53,13 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 		for (const name of modelNames) {
 			modelName += `.${state.generator.toClassName(name, state)}`
 		}
-		return new generatorOptions.NativeType(modelName.substring(1))
+		return new context.NativeType(modelName.substring(1))
 	},
 	toNativeArrayType: ({ componentNativeType }) => {
-		return new generatorOptions.NativeType(`${componentNativeType}[]`)
+		return new context.NativeType(`${componentNativeType}[]`)
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType }) => {
-		return new generatorOptions.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
+		return new context.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
 	},
 	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
@@ -92,7 +92,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	exportTemplates: async(outputPath, doc, state) => {
 		const hbs = Handlebars.create()
 
-		registerStandardHelpers(hbs, generatorOptions, state)
+		registerStandardHelpers(hbs, context, state)
 		hbs.registerHelper('md', function(value: string) {
 			if (typeof value === 'string') {
 				return marked(value)

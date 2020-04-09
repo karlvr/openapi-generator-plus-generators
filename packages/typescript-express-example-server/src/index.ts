@@ -21,8 +21,8 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescript> = (generatorOptions) => ({
-	...generatorOptions.baseGenerator(),
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescript> = (context) => ({
+	...context.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
 	generatorType: () => CodegenGeneratorType.SERVER,
@@ -71,10 +71,10 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 		/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 		switch (type) {
 			case 'integer': {
-				return new generatorOptions.NativeType('number')
+				return new context.NativeType('number')
 			}
 			case 'number': {
-				return new generatorOptions.NativeType('number')
+				return new context.NativeType('number')
 			}
 			case 'string': {
 				switch (format) {
@@ -82,19 +82,19 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 					case 'time':
 					case 'date-time':
 						/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-						return new generatorOptions.NativeType('Date', {
+						return new context.NativeType('Date', {
 							wireType: 'string',
 						})
 					default:
-						return new generatorOptions.NativeType('string')
+						return new context.NativeType('string')
 				}
 			}
 			case 'boolean': {
-				return new generatorOptions.NativeType('boolean')
+				return new context.NativeType('boolean')
 			}
 			case 'file': {
 				/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a wireType */
-				return new generatorOptions.NativeType('File', {
+				return new context.NativeType('File', {
 					wireType: null,
 				})
 			}
@@ -107,15 +107,15 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 		for (const name of modelNames) {
 			modelName += `.${state.generator.toClassName(name, state)}`
 		}
-		return new generatorOptions.NativeType(modelName.substring(1))
+		return new context.NativeType(modelName.substring(1))
 	},
 	toNativeArrayType: ({ componentNativeType }) => {
-		return new generatorOptions.NativeType(`${componentNativeType}[]`, {
+		return new context.NativeType(`${componentNativeType}[]`, {
 			wireType: `${componentNativeType.wireType}[]`,
 		})
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType }) => {
-		return new generatorOptions.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, {
+		return new context.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`, {
 			wireType: `{ [name: ${keyNativeType.wireType}]: ${componentNativeType.wireType} }`,
 		})
 	},
@@ -188,7 +188,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 	exportTemplates: async(outputPath, doc, state) => {
 		const hbs = Handlebars.create()
 
-		registerStandardHelpers(hbs, generatorOptions, state)
+		registerStandardHelpers(hbs, context, state)
 
 		/* Convert an operation path to an express path */
 		hbs.registerHelper('expressPath', function(path: string) {
