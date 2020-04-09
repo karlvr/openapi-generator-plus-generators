@@ -6,7 +6,7 @@ import {{.}};
 {{/imports}}
 
 {{/if}}
-@javax.enterprise.context.Dependent
+{{>hooks/apiServiceImplClassAnnotations}}
 public class {{className name}}ApiServiceImpl implements {{@root/apiPackage}}.{{className name}}ApiService {
 
 {{#operations}}

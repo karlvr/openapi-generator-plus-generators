@@ -4,7 +4,7 @@ package {{apiPackage}};
 {{/imports}}
 
 @javax.ws.rs.Path("{{{path}}}")
-@javax.enterprise.context.Dependent
+{{>hooks/apiImplClassAnnotations}}
 @io.swagger.annotations.Api(description = "the {{{name}}} API")
 {{#if consumes}}
 @javax.ws.rs.Consumes({ {{#consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/consumes}} })
@@ -16,8 +16,7 @@ package {{apiPackage}};
 @java.lang.SuppressWarnings("all")
 public class {{className name}}ApiImpl implements {{apiPackage}}.{{className name}}Api {
 
-	@javax.inject.Inject
-	private {{className name}}ApiService delegate;
+	{{>util/inject interface=(concat apiPackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
 
 {{#operations}}
 	public javax.ws.rs.core.Response {{name}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {

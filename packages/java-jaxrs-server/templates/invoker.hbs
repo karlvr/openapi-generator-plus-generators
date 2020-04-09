@@ -1,6 +1,6 @@
 package {{invokerPackage}};
 
-@javax.enterprise.context.Dependent
+{{>hooks/invokerClassAnnotations}}
 @javax.ws.rs.ApplicationPath("{{basePath}}")
 public class RestApplication extends javax.ws.rs.core.Application {
 

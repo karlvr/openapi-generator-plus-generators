@@ -1,0 +1,9 @@
+{{!-- 
+Inject a dependency into an instance variable.
+Used to support a variety of different injection approaches.
+
+@param interface The interface for the dependency
+@param class A concrete class for the dependency (optional)
+@param name The name of the instance variable
+--}}
+private {{interface}} {{name}} = new {{class}}();

@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenGeneratorContext } from '@openapi-generator-plus/types'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
@@ -6,6 +6,8 @@ import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { identifierCamelCase, javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
 import { apiBasePath, commonGenerator, GroupingStrategies } from '@openapi-generator-plus/generator-common'
+
+export { CodegenOptionsJava } from './types'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -42,7 +44,13 @@ function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	return relativeSourceOutputPath
 }
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = (context) => ({
+export interface JavaGeneratorContext extends CodegenGeneratorContext {
+	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
+	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
+	additionalWatchPaths?: (config: CodegenConfig) => string[]
+}
+
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, JavaGeneratorContext> = (context) => ({
 	...context.baseGenerator(),
 	...commonGenerator(),
 	...javaLikeGenerator(),
@@ -289,6 +297,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 	watchPaths: (config) => {
 		const result = [path.resolve(__dirname, '../templates')]
+		if (context.additionalWatchPaths) {
+			result.push(...context.additionalWatchPaths(config))
+		}
 		if (config.customTemplates) {
 			result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
 		}
@@ -314,6 +325,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		registerStandardHelpers(hbs, context, state)
 
 		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+		if (context.loadAdditionalTemplates) {
+			await context.loadAdditionalTemplates(hbs)
+		}
 
 		if (state.options.customTemplatesPath) {
 			await loadTemplates(state.options.customTemplatesPath, hbs)
@@ -322,6 +336,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		const rootContext: CodegenRootContext = {
 			generatorClass: '@openapi-generator-plus/java-jaxrs-server-generator',
 			generatedDate: new Date().toISOString(),
+		}
+		if (context.customiseRootContext) {
+			await context.customiseRootContext(rootContext)
 		}
 
 		if (!outputPath.endsWith('/')) {
