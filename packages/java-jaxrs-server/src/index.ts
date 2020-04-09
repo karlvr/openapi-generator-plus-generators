@@ -34,14 +34,9 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 
 function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	const maven = config.maven
-	const defaultRelativeSourceOutputPath = maven ? 'src/main/java/' : ''
+	const defaultRelativeSourceOutputPath = maven ? path.join('src', 'main', 'java') : ''
 	
-	let relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
-	if (relativeSourceOutputPath.length && !relativeSourceOutputPath.endsWith('/')) {
-		relativeSourceOutputPath += '/'
-	}
-
-	return relativeSourceOutputPath
+	return config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
 }
 
 export interface JavaGeneratorContext extends CodegenGeneratorContext {
@@ -296,7 +291,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 	},
 
 	watchPaths: (config) => {
-		const result = [path.resolve(__dirname, '../templates')]
+		const result = [path.resolve(__dirname, '..', 'templates')]
 		if (context.additionalWatchPaths) {
 			result.push(...context.additionalWatchPaths(config))
 		}
@@ -313,9 +308,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 		const modelPackagePath = packageToPath(options.modelPackage)
 
 		return [
-			`${relativeSourceOutputPath}${apiPackagePath}/*Api.java`,
-			`${relativeSourceOutputPath}${apiPackagePath}/*ApiImpl.java`,
-			`${relativeSourceOutputPath}${modelPackagePath}/*.java`,
+			path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
+			path.join(relativeSourceOutputPath, apiPackagePath, '*ApiImpl.java'),
+			path.join(relativeSourceOutputPath, modelPackagePath, '*.java'),
 		]
 	},
 
@@ -324,7 +319,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 		
 		registerStandardHelpers(hbs, context, state)
 
-		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+		await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 		if (context.loadAdditionalTemplates) {
 			await context.loadAdditionalTemplates(hbs)
 		}
@@ -341,10 +336,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 			await context.customiseRootContext(rootContext)
 		}
 
-		if (!outputPath.endsWith('/')) {
-			outputPath += '/'
-		}
-
 		const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 
 		const apiPackagePath = packageToPath(state.options.apiPackage)
@@ -353,7 +344,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 			if (!operations.length) {
 				continue
 			}
-			await emit('api', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, 
+			await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}Api.java`), 
 				{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 		}
 
@@ -362,7 +353,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 			if (!operations.length) {
 				continue
 			}
-			await emit('apiImpl', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiImpl.java`, 
+			await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}ApiImpl.java`), 
 				{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 		}
 
@@ -371,7 +362,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 			if (!operations.length) {
 				continue
 			}
-			await emit('apiService', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiService.java`, 
+			await emit('apiService', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}ApiService.java`), 
 				{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 		}
 
@@ -381,7 +372,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 			if (!operations.length) {
 				continue
 			}
-			await emit('apiServiceImpl', `${outputPath}${relativeSourceOutputPath}${apiImplPackagePath}/${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`, 
+			await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`),
 				{ ...group, ...state.options, ...rootContext }, false, hbs)
 		}
 
@@ -390,20 +381,20 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 			const context = {
 				models: [model],
 			}
-			await emit('model', `${outputPath}${relativeSourceOutputPath}${modelPackagePath}/${state.generator.toClassName(model.name, state)}.java`, 
+			await emit('model', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${state.generator.toClassName(model.name, state)}.java`), 
 				{ ...context, ...state.options, ...rootContext }, true, hbs)
 		}
 
 		const invokerPackagePath = packageToPath(state.options.invokerPackage)
 		if (invokerPackagePath) {
 			const basePath = apiBasePath(doc.servers)
-			await emit('invoker', `${outputPath}${relativeSourceOutputPath}${invokerPackagePath}/RestApplication.java`, 
+			await emit('invoker', path.join(outputPath, relativeSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
 				{ ...doc.info, ...state.options, ...rootContext, basePath }, false, hbs)
 		}
 
 		const maven = state.options.maven
 		if (maven) {
-			await emit('pom', `${outputPath}pom.xml`, { ...maven, ...state.options, ...rootContext }, false, hbs)
+			await emit('pom', path.join(outputPath, 'pom.xml'), { ...maven, ...state.options, ...rootContext }, false, hbs)
 		}
 	},
 })

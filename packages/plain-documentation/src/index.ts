@@ -78,9 +78,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	},
 
 	watchPaths: (config) => {
-		const result = [path.resolve(__dirname, '../templates')]
-		result.push(path.resolve(__dirname, '../less'))
-		result.push(path.resolve(__dirname, '../static'))
+		const result = [path.resolve(__dirname, '..', 'templates')]
+		result.push(path.resolve(__dirname, '..', 'less'))
+		result.push(path.resolve(__dirname, '..', 'static'))
 		if (config.customTemplates) {
 			result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
 		}
@@ -152,7 +152,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 			}
 		})
 
-		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+		await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 
 		if (state.options.customTemplatesPath) {
 			await loadTemplates(state.options.customTemplatesPath, hbs)
@@ -167,10 +167,10 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 			outputPath += '/'
 		}
 
-		await emit('index', `${outputPath}index.html`, { ...doc, ...state.options, ...rootContext }, true, hbs)
+		await emit('index', path.join(outputPath, 'index.html'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 
-		emitLess('style.less', `${outputPath}main.css`)
-		copyContents(path.resolve(__dirname, '../static'), outputPath)
+		emitLess('style.less', path.join(outputPath, 'main.css'))
+		copyContents(path.resolve(__dirname, '..', 'static'), outputPath)
 	},
 })
 

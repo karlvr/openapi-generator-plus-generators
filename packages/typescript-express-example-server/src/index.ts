@@ -146,12 +146,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 	},
 	options: (config): CodegenOptionsTypescript => {
 		const npm = config.npm
-		const defaultRelativeSourceOutputPath = npm ? 'src/' : ''
+		const defaultRelativeSourceOutputPath = npm ? 'src' : ''
 		
-		let relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
-		if (relativeSourceOutputPath.length && !relativeSourceOutputPath.endsWith('/')) {
-			relativeSourceOutputPath += '/'
-		}
+		const relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
 
 		const npmConfig: NpmOptions | undefined = npm ? {
 			name: npm.name || 'typescript-express-example-server',
@@ -176,7 +173,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 	},
 
 	watchPaths: (config) => {
-		const result = [path.resolve(__dirname, '../templates')]
+		const result = [path.resolve(__dirname, '..', 'templates')]
 		if (config.customTemplates) {
 			result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
 		}
@@ -199,7 +196,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 			return path.replace(/\{([-a-zA-Z_]+)\}/g, ':$1')
 		})
 
-		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+		await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 
 		if (state.options.customTemplatesPath) {
 			await loadTemplates(state.options.customTemplatesPath, hbs)
@@ -210,20 +207,16 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 			generatedDate: new Date().toISOString(),
 		}
 
-		if (!outputPath.endsWith('/')) {
-			outputPath += '/'
-		}
-
 		const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 
-		await emit('index', `${outputPath}${relativeSourceOutputPath}index.ts`, { ...doc, ...state.options, ...rootContext }, true, hbs)
+		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 		if (state.options.npm) {
-			await emit('package', `${outputPath}package.json`, { ...state.options.npm, ...state.options, ...rootContext }, true, hbs)
+			await emit('package', path.join(outputPath, 'package.json'), { ...state.options.npm, ...state.options, ...rootContext }, true, hbs)
 		}
 		if (state.options.typescript) {
-			await emit('tsconfig', `${outputPath}tsconfig.json`, { ...state.options.typescript, ...state.options, ...rootContext }, true, hbs)
+			await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...state.options.typescript, ...state.options, ...rootContext }, true, hbs)
 		}
-		await emit('gitignore', `${outputPath}.gitignore`, { ...doc, ...state.options, ...rootContext }, true, hbs)
+		await emit('gitignore', path.join(outputPath, '.gitignore'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 	},
 })
 
