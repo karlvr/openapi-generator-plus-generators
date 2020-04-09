@@ -303,6 +303,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 
 		return [
 			`${relativeSourceOutputPath}${apiPackagePath}/*Api.java`,
+			`${relativeSourceOutputPath}${apiPackagePath}/*ApiImpl.java`,
 			`${relativeSourceOutputPath}${modelPackagePath}/*.java`,
 		]
 	},
@@ -336,6 +337,15 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 				continue
 			}
 			await emit('api', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}Api.java`, 
+				{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
+		}
+
+		for (const group of doc.groups) {
+			const operations = group.operations
+			if (!operations.length) {
+				continue
+			}
+			await emit('apiImpl', `${outputPath}${relativeSourceOutputPath}${apiPackagePath}/${state.generator.toClassName(group.name, state)}ApiImpl.java`, 
 				{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 		}
 
