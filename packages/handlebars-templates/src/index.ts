@@ -210,6 +210,19 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 	})
 
+	hbs.registerHelper('concat', function() {
+		const values = []
+		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
+			// eslint-disable-next-line prefer-rest-params
+			values.push(convertToString(arguments[i]))
+		}
+		if (values !== undefined) {
+			return values.join('')
+		} else {
+			return values[0]
+		}
+	})
+
 	/** Format the given string as a string literal, including quotes as required */
 	hbs.registerHelper('stringLiteral', function(value: string) {
 		return generator.toLiteral(value, utils.stringLiteralValueOptions(state), state)
