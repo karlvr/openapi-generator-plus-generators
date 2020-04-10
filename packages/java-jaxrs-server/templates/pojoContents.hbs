@@ -1,4 +1,5 @@
 {{>nestedModels}}
+{{#if properties}}
 {{#properties}}
 private {{{nativeType}}} {{identifier name}} = {{{defaultValue}}};
 {{#if ../vendorExtensions.x-patch}}
@@ -67,6 +68,7 @@ public void add{{capitalize (singular (identifier name))}}({{{componentNativeTyp
 {{/isArray}}
 
 {{/properties}}
+{{/if}}
 @Override
 public boolean equals(java.lang.Object o) {
 	if (this == o) {
