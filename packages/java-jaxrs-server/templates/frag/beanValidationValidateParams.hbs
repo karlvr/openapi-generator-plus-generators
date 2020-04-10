@@ -1,9 +1,15 @@
 {{#bodyParam}}
 javax.validation.ValidatorFactory __factory = javax.validation.Validation.buildDefaultValidatorFactory();
 javax.validation.Validator __validator = __factory.getValidator();
-java.util.Set<javax.validation.ConstraintViolation<{{{nativeType}}}>> __validations = __validator.validate({{identifier name}});
-if (!__validations.isEmpty()) {
+if ({{identifier name }} != null) {
+	java.util.Set<javax.validation.ConstraintViolation<{{{nativeType}}}>> __validations = __validator.validate({{identifier name}});
+	if (!__validations.isEmpty()) {
+		return __response.status(javax.ws.rs.core.Response.Status.BAD_REQUEST).build();
+	}
+{{#if required}}
+} else {
 	return __response.status(javax.ws.rs.core.Response.Status.BAD_REQUEST).build();
+{{/if}}
 }
 
 {{/bodyParam}}
