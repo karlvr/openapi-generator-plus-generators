@@ -1,0 +1,25 @@
+swagger: '2.0'
+info:
+  title: Test
+  version: '1.0'
+paths:
+  /test1:
+    get:
+      parameters:
+        - name: a
+          type: string
+          in: query
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Test1'
+definitions:
+  Test1:
+    type: object
+    properties:
+      name:
+        type: string
+      size:
+        type: integer
+
