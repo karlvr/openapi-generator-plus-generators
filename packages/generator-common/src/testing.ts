@@ -23,9 +23,10 @@ function rimrafPromise(path: string, options?: rimraf.Options): Promise<void> {
 export type TestGenerateFunc = (basePath: string) => Promise<void>
 
 /**
- * 
+ * Generate the templates for the `CodegenResult` and call `func` to test them.
  * @param result a `CodegenResult` from `createCodegenResult`
  * @param func a function to handle the generation result
+ * @param outputPath if specified, generate to the given output path instead of a temp path (must be under cwd)
  */
 export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenerateFunc, outputPath?: string) {
 	let tmpdir: string | undefined
@@ -34,7 +35,7 @@ export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenera
 		if (!outputPath.startsWith(process.cwd())) {
 			throw new Error(`Invalid output path: ${outputPath} not under cwd ${process.cwd()}`)
 		}
-		
+
 		/* Clean the output first */
 		await rimrafPromise(outputPath, { disableGlob: true })
 		await fs.mkdir(outputPath, { recursive: true })
