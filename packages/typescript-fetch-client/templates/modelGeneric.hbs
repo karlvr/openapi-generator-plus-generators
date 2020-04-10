@@ -9,7 +9,7 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	
 {{/discriminator}}
 {{#discriminatorValues}}
-	{{discriminator.name}}: {{{value}}}
+	{{model.discriminator.name}}: {{{value}}}
 
 {{/discriminatorValues}}
 {{#additionalPropertiesType}}
