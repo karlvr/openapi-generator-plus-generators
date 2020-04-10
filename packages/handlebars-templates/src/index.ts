@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase } from '@openapi-generator-plus/generator-common'
-import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType } from '@openapi-generator-plus/types'
+import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenParameter } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase } from 'change-case'
 import pluralize from 'pluralize'
 
@@ -265,6 +265,15 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			return options.fn(this)
 		} else {
 			return options.inverse(this)
+		}
+	})
+
+	/** Output the default value for the given typed object. */
+	hbs.registerHelper('defaultValue', function(typeInfo: CodegenTypeInfo) {
+		if (typeInfo !== undefined) {
+			return state.generator.toDefaultValue(undefined, typeInfo, state)
+		} else {
+			return undefined
 		}
 	})
 
