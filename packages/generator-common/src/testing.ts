@@ -27,12 +27,30 @@ export type TestGenerateFunc = (basePath: string) => Promise<void>
  * @param result a `CodegenResult` from `createCodegenResult`
  * @param func a function to handle the generation result
  */
-export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenerateFunc) {
-	const tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'openapi-generator-plus'))
+export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenerateFunc, outputPath?: string) {
+	let tmpdir: string | undefined
+	if (outputPath) {
+		outputPath = path.resolve(outputPath)
+		if (!outputPath.startsWith(process.cwd())) {
+			throw new Error(`Invalid output path: ${outputPath} not under cwd ${process.cwd()}`)
+		}
+		
+		/* Clean the output first */
+		await rimrafPromise(outputPath, { disableGlob: true })
+		await fs.mkdir(outputPath, { recursive: true })
+
+		tmpdir = undefined
+	} else {
+		tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'openapi-generator-plus'))
+		outputPath = tmpdir
+	}
+
 	try {
-		await result.state.generator.exportTemplates(tmpdir, result.doc, result.state)
-		await func(tmpdir)
+		await result.state.generator.exportTemplates(outputPath, result.doc, result.state)
+		await func(outputPath)
 	} finally {
-		await rimrafPromise(tmpdir, { disableGlob: true })
+		if (tmpdir) {
+			await rimrafPromise(tmpdir, { disableGlob: true })
+		}
 	}
 }
