@@ -3,7 +3,7 @@ import { prepare, DEFAULT_CONFIG, compileTest } from './common'
 import fs from 'fs'
 import path from 'path'
 
-const basePath = path.join(__dirname, 'specs')
+const basePath = path.join(__dirname, '..', '..', '..', '..', '__tests__', 'specs')
 const files = fs.readdirSync(basePath)
 
 for (const file of files) {
