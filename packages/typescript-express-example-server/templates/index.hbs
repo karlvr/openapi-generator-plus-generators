@@ -10,12 +10,12 @@ app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res, ne
 	{{#if defaultResponse}}
 	{{#if defaultResponse.examples}}
 	const defaultResponses: { contentType: string, body: string }[] = []
-	{{#defaultResponse.examples}}
+	{{#each defaultResponse.examples}}
 	defaultResponses.push({
 		contentType: "{{{mediaType.mediaType}}}",
 		body: {{{valueString}}},
 	})
-	{{/defaultResponse.examples}}
+	{{/each}}
 	const response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 	res.set('Content-Type', response.contentType)
 	res.send(response.body)

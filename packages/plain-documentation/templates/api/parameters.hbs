@@ -23,7 +23,7 @@
                 {{#if examples}}
                     <tr class="examples">
                         <td colspan="3">
-                            {{#examples}}
+                            {{#each examples}}
                                 <div class="example">
                                     {{#if name}}
                                         <p><strong>{name}}</strong></p>
@@ -33,7 +33,7 @@
                                         <p><span class="type">{{mediaType.mediaType}}</span></p>
                                     {{/if}}
                                 </div>
-                            {{/examples}}
+                            {{/each}}
                         </td>
                     </tr>
                 {{/if}}
