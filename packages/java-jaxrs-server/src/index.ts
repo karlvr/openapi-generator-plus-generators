@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenGeneratorContext } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenGeneratorContext, CodegenDocument, CodegenState } from '@openapi-generator-plus/types'
 import { constantCase } from 'change-case'
 import { CodegenOptionsJava, ConstantStyle } from './types'
 import path from 'path'
@@ -20,7 +20,7 @@ function escapeString(value: string) {
  * Turns a Java package name into a path
  * @param packageName Java package name
  */
-function packageToPath(packageName: string) {
+export function packageToPath(packageName: string) {
 	return packageName.replace(/\./g, path.sep)
 }
 
@@ -34,15 +34,37 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 
 function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	const maven = config.maven
-	const defaultRelativeSourceOutputPath = maven ? path.join('src', 'main', 'java') : ''
+	const defaultPath = maven ? path.join('src', 'main', 'java') : ''
 	
-	return config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
+	return config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultPath
+}
+
+function computeRelativeResourcesOutputPath(config: CodegenConfig) {
+	const maven = config.maven
+	const defaultPath = maven ? path.join('src', 'main', 'resources') : undefined
+	
+	return config.relativeResourcesOutputPath !== undefined ? config.relativeResourcesOutputPath : defaultPath
+}
+
+function computeRelativeTestOutputPath(config: CodegenConfig) {
+	const maven = config.maven
+	const defaultPath = maven ? path.join('src', 'test', 'java') : ''
+	
+	return config.relativeTestOutputPath !== undefined ? config.relativeTestOutputPath : defaultPath
+}
+
+function computeRelativeTestResourcesOutputPath(config: CodegenConfig) {
+	const maven = config.maven
+	const defaultPath = maven ? path.join('src', 'test', 'resources') : undefined
+	
+	return config.relativeTestResourcesOutputPath !== undefined ? config.relativeTestResourcesOutputPath : defaultPath
 }
 
 export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
 	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
 	additionalWatchPaths?: (config: CodegenConfig) => string[]
+	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext, state: CodegenState<CodegenOptionsJava>) => Promise<void>
 }
 
 export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, JavaGeneratorContext> = (context) => ({
@@ -270,6 +292,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 			modelPackage: config.modelPackage || `${packageName}.model`,
 			invokerPackage: config.invokerPackage || `${packageName}.app`,
 			useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
+			includeTests: config.includeTests !== undefined ? config.includeTests : false,
 			dateImplementation: config.dateImplementation || 'java.time.LocalDate',
 			timeImplementation: config.timeImplementation || 'java.time.LocalTime',
 			dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
@@ -283,6 +306,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 				version: config.maven.version || '0.0.1',
 			},
 			relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
+			relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
+			relativeTestOutputPath: computeRelativeTestOutputPath(config),
+			relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
 			customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 		}
 	},
@@ -337,6 +363,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 		}
 
 		const relativeSourceOutputPath = state.options.relativeSourceOutputPath
+		const relativeTestOutputPath = state.options.relativeTestOutputPath
 
 		const apiPackagePath = packageToPath(state.options.apiPackage)
 		for (const group of doc.groups) {
@@ -395,6 +422,21 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 		const maven = state.options.maven
 		if (maven) {
 			await emit('pom', path.join(outputPath, 'pom.xml'), { ...maven, ...state.options, ...rootContext }, false, hbs)
+		}
+		
+		if (state.options.includeTests && hbs.partials['tests/apiTest']) {
+			for (const group of doc.groups) {
+				const operations = group.operations
+				if (!operations.length) {
+					continue
+				}
+				await emit('tests/apiTest', path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}ApiTest.java`),
+					{ ...group, ...state.options, ...rootContext }, false, hbs)
+			}
+		}
+
+		if (context.additionalExportTemplates) {
+			await context.additionalExportTemplates(outputPath, doc, hbs, rootContext, state)
 		}
 	},
 })

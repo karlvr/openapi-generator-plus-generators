@@ -7,6 +7,7 @@ export interface CodegenOptionsJava {
 	modelPackage: string
 	invokerPackage: string
 	useBeanValidation: boolean
+	includeTests: boolean
 
 	dateImplementation: string
 	timeImplementation: string
@@ -20,6 +21,9 @@ export interface CodegenOptionsJava {
 
 	maven?: MavenOptions
 	relativeSourceOutputPath: string
+	relativeResourcesOutputPath?: string
+	relativeTestOutputPath: string
+	relativeTestResourcesOutputPath?: string
 	customTemplatesPath?: string
 }
 
