@@ -254,6 +254,17 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			return options.inverse(this)
 		}
 	})
+	hbs.registerHelper('ifneq', function(this: object, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
+		if (!options) {
+			throw new Error('ifneq helper must be called with two arguments')
+		}
+
+		if (a != b) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
 
 	/** Test if the first argument contains the second */
 	hbs.registerHelper('ifcontains', function(this: object, haystack: unknown[], needle: unknown, options: Handlebars.HelperOptions) {
