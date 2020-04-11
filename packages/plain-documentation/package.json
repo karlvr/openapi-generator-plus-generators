@@ -29,7 +29,7 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "file:../generator-common",
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
-    "@openapi-generator-plus/types": "0.4.0",
+    "@openapi-generator-plus/types": "^0.5.0",
     "less": "^3.11.1",
     "marked": "^0.8.0"
   },
