@@ -24,10 +24,10 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	generatorType: () => CodegenGeneratorType.DOCUMENTATION,
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {
-			return state.generator.toDefaultValue(undefined, options, state)
+			return state.generator.toDefaultValue(undefined, options, state).literalValue
 		}
 
-		return value
+		return `${value}`
 	},
 	toNativeType: ({ type, format }) => {
 		if (type === 'string') {
@@ -63,10 +63,13 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	},
 	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
-			return state.generator.toLiteral(defaultValue, options, state)
+			return {
+				value: defaultValue,
+				literalValue: state.generator.toLiteral(defaultValue, options, state),
+			}
 		}
 
-		return 'undefined'
+		return { literalValue: 'undefined' }
 	},
 	options: (config): CodegenOptionsDocumentation => {
 		return {

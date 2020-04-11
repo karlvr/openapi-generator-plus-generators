@@ -87,7 +87,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 	},
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {
-			return state.generator.toDefaultValue(undefined, options, state)
+			return state.generator.toDefaultValue(undefined, options, state).literalValue
 		}
 
 		const { type, format, required, propertyType } = options
@@ -251,35 +251,34 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 	},
 	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
-			return state.generator.toLiteral(defaultValue, options, state)
+			return {
+				value: defaultValue,
+				literalValue: state.generator.toLiteral(defaultValue, options, state),
+			}
 		}
 
 		const { type, required, propertyType, nativeType } = options
 
 		if (!required) {
-			return 'null'
+			return { value: null, literalValue: 'null' }
 		}
 
 		switch (propertyType) {
 			case CodegenPropertyType.ENUM:
-				return 'null'
 			case CodegenPropertyType.OBJECT:
-				return 'null'
-			case CodegenPropertyType.ARRAY:
-			case CodegenPropertyType.MAP:
-				return `new ${nativeType.concreteType}()`
-			case CodegenPropertyType.NUMBER:
-				return state.generator.toLiteral(0, options, state)
-			case CodegenPropertyType.BOOLEAN:
-				return state.generator.toLiteral(false, options, state)
 			case CodegenPropertyType.DATE:
 			case CodegenPropertyType.TIME:
 			case CodegenPropertyType.DATETIME:
-				return 'null'
 			case CodegenPropertyType.FILE:
-				return 'null'
 			case CodegenPropertyType.STRING:
-				return 'null'
+				return { value: null, literalValue: 'null' }
+			case CodegenPropertyType.ARRAY:
+			case CodegenPropertyType.MAP:
+				return { literalValue: `new ${nativeType.concreteType}()` }
+			case CodegenPropertyType.NUMBER:
+				return { value: 0, literalValue: state.generator.toLiteral(0, options, state) }
+			case CodegenPropertyType.BOOLEAN:
+				return { value: false, literalValue: state.generator.toLiteral(false, options, state) }
 		}
 
 		throw new Error(`Unsupported type name: ${type}`)

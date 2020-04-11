@@ -39,7 +39,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 	},
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {
-			return state.generator.toDefaultValue(undefined, options, state)
+			return state.generator.toDefaultValue(undefined, options, state).literalValue
 		}
 
 		const { type, format, required, propertyType } = options
@@ -134,29 +134,30 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 	},
 	toDefaultValue: (defaultValue, options, state) => {
 		if (defaultValue !== undefined) {
-			return state.generator.toLiteral(defaultValue, options, state)
+			return {
+				value: defaultValue,
+				literalValue: state.generator.toLiteral(defaultValue, options, state),
+			}
 		}
 
-		const { type, required } = options
+		const { propertyType, required } = options
 
 		if (!required) {
-			return 'undefined'
+			return { literalValue: 'undefined' }
 		}
 
-		switch (type) {
-			case 'integer':
-			case 'number':
-				return state.generator.toLiteral(0, options, state)
-			case 'boolean':
-				return 'false'
-			case 'string':
-			case 'object':
-			case 'array':
-			case 'file':
-				return 'undefined'
+		switch (propertyType) {
+			case CodegenPropertyType.NUMBER:
+				return { value: 0, literalValue: state.generator.toLiteral(0, options, state) }
+			case CodegenPropertyType.BOOLEAN:
+				return { value: false, literalValue: 'false' }
+			case CodegenPropertyType.ARRAY:
+				return { value: [], literalValue: '[]' }
+			case CodegenPropertyType.MAP:
+				return { value: {}, literalValue: '{}' }
+			default:
+				return { literalValue: 'undefined' }
 		}
-
-		throw new Error(`Unsupported type name: ${type}`)
 	},
 	options: (config): CodegenOptionsTypescript => {
 		const npm = config.npm
