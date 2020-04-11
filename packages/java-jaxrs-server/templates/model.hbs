@@ -10,8 +10,9 @@ package {{modelPackage}};
 {{/if}}
 {{#isEnum}}
 {{>enumClass}}
-{{/isEnum}}
-{{^isEnum}}
+{{else if isInterface}}
+{{>interface}}
+{{else}}
 {{>pojo}}
 {{/isEnum}}
 {{/models}}

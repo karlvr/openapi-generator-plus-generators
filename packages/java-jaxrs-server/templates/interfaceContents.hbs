@@ -1,0 +1,13 @@
+{{#if properties}}
+{{#properties}}
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
+{{{nativeType}}} {{#isBoolean}}is{{else}}get{{/isBoolean}}{{capitalize (identifier name)}}();
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
+void set{{capitalize (identifier name)}}({{{nativeType}}} {{identifier name}});
+
+{{/properties}}
+{{/if}}
