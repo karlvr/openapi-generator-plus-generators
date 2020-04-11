@@ -12,7 +12,16 @@ public class {{className name}}ApiServiceImpl implements {{@root/apiPackage}}.{{
 {{#operations}}
 	@Override
 	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{#unless returnNativeType}}{{#if allParams}}, {{/if}}javax.ws.rs.core.Response.ResponseBuilder response{{/unless}}) throws RuntimeException{{#responses}}{{^isDefault}}, {{{className ../name}}}{{{code}}}Exception{{/isDefault}}{{/responses}} {
-		{{#if returnNativeType}}return null;{{/if}}
+		// TODO
+{{#if returnNativeType}}
+{{#if defaultResponse.contents.[0].examples.java}}
+		return {{{defaultResponse.contents.[0].examples.java.valueLiteral}}};
+{{else if defaultResponse.examples.default}}
+		return {{{defaultResponse.contents.[0].examples.default.valueLiteral}}};
+{{else}}
+		return null;
+{{/if}}
+{{/if}}
 	}
 	
 {{/operations}}
