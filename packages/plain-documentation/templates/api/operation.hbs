@@ -12,7 +12,7 @@
 
     <div class="api-title"><span class="method operation-{{lowerCase httpMethod}}">{{upperCase httpMethod}}</span> {{fullPath}}</div>
 
-    {{>hooks/operation-header}}
+{{>hooks/operation-header}}
 
     {{#deprecated}}
     <p><strong class="operation-label -deprecated">DEPRECATED</strong></p>
@@ -21,10 +21,10 @@
     {{{md summary "true"}}}
     {{{md description}}}
 
-    {{>api/security-requirements}}
-    {{>api/request-body}}
-    {{>api/parameters parameters=parameters}}
-    {{>api/responses}}
+{{>api/security-requirements}}
+{{>api/request-body}}
+{{>api/parameters parameters=parameters}}
+{{>api/responses}}
 
-    {{>hooks/operation-footer}}
+{{>hooks/operation-footer}}
 </section>
