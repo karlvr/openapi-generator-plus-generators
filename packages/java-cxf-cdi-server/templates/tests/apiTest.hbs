@@ -1,0 +1,65 @@
+package {{apiPackage}};
+
+import java.util.ArrayList;
+
+import javax.ws.rs.core.Response;
+
+import org.apache.cxf.endpoint.Server;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.spring.JAXRSServerFactoryBeanDefinitionParser.SpringJAXRSServerFactoryBean;
+import org.apache.cxf.transport.local.LocalConduit;
+import org.jboss.weld.junit5.EnableWeld;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+
+@TestInstance(Lifecycle.PER_CLASS)
+@EnableWeld
+public class {{className name}}ApiTest {
+	
+	private static final String ENDPOINT_ADDRESS = "local://api";
+
+	@WeldSetup
+	private WeldInitiator weld = WeldInitiator.from(WeldInitiator.createWeld()
+			.addPackages({{apiPackage}}.{{className name}}Api.class, {{apiServiceImplPackage}}.{{className name}}ApiServiceImpl.class)
+			.addBeanClasses({{invokerPackage}}.RestApplication.class)
+			.addBeanClasses(TestConfiguration.class)
+			.addExtension(new org.apache.cxf.cdi.JAXRSCdiResourceExtension()))
+	.build();
+
+	private {{apiPackage}}.{{className name}}Api api;
+
+	@BeforeAll
+	public void setup() throws Exception {
+		api = JAXRSClientFactory.create(TestConfiguration.ENDPOINT_ADDRESS, {{apiPackage}}.{{className name}}Api.class, TestConfiguration.defaultProviders());
+		WebClient.getConfig(api).getRequestContext().put(LocalConduit.DIRECT_DISPATCH, Boolean.TRUE);
+	}
+	
+{{#operations}}
+	@Test
+	public void {{identifier name}}Test() {
+		{{#allParams}}
+		{{nativeType}} {{identifier name}} = {{#if examples.java}}{{{examples.java.valueLiteral}}}{{else if examples.default}}{{examples.default.valueLiteral}}{{else}}{{defaultValue .}}{{/if}};
+		{{/allParams}}
+
+		Response response = this.api.{{identifier name}}({{#allParams}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+		Assertions.assertNotNull(response);
+		{{#if returnNativeType}}
+		{{returnNativeType}} result = response.readEntity({{returnNativeType.literalType}}.class);
+		Assertions.assertNotNull(result);
+		{{/if}}
+	}
+
+{{/operations}}
+	
+}

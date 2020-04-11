@@ -5,7 +5,7 @@ import path from 'path'
 import { CodegenOptionsJava } from '@openapi-generator-plus/java-jaxrs-server-generator'
 import { CodegenConfig } from '@openapi-generator-plus/types'
 
-const DEFAULT_CONFIG: CodegenConfig = {
+export const DEFAULT_CONFIG: CodegenConfig = {
 	maven: {},
 }
 
@@ -19,4 +19,12 @@ export async function compile(basePath: string): Promise<void> {
 		quiet: true,
 	})
 	await mvn.execute('compile')
+}
+
+export async function compileTest(basePath: string): Promise<void> {
+	const mvn = Maven.create({
+		cwd: basePath,
+		quiet: true,
+	})
+	await mvn.execute('test')
 }

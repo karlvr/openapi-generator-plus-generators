@@ -1,0 +1,36 @@
+package {{apiPackage}};
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.enterprise.context.Dependent;
+
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.ext.JAXRSServerFactoryCustomizationExtension;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+
+/**
+ * Configures the environment for testing.
+ */
+@Dependent
+public class TestConfiguration implements JAXRSServerFactoryCustomizationExtension {
+
+	public static final String ENDPOINT_ADDRESS = "local://api";
+
+	/**
+	 * Configures the {@link JAXRSServerFactoryBean} so that it uses the local connection
+	 * for testing, which is higher performance than using a servlet server.
+	 */
+	@Override
+	public void customize(JAXRSServerFactoryBean bean) {
+		bean.setAddress(ENDPOINT_ADDRESS);
+	}
+
+	public static List<Object> defaultProviders() {
+		List<Object> providers = new ArrayList<>();
+		providers.add(new JacksonJaxbJsonProvider());
+		return providers;
+	}
+
+}
