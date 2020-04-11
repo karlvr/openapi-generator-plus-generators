@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase } from '@openapi-generator-plus/generator-common'
-import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenParameter } from '@openapi-generator-plus/types'
+import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenParameter, CodegenResponse, CodegenRequestBody } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase } from 'change-case'
 import pluralize from 'pluralize'
 
@@ -313,6 +313,23 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	registerPropertyTypeHelper('isDate', CodegenPropertyType.DATE, hbs)
 	registerPropertyTypeHelper('isTime', CodegenPropertyType.TIME, hbs)
 	registerPropertyTypeHelper('isFile', CodegenPropertyType.FILE, hbs)
+
+	function isEmpty(ob: object) {
+		for (const name in ob) {
+			return false
+		}
+
+		return true
+	}
+
+	/** Block helper for CodegenResponse or CodegenRequestBody to check if it has examples */
+	hbs.registerHelper('hasExamples', function(this: object, target: CodegenResponse | CodegenRequestBody, options: Handlebars.HelperOptions) {
+		if (target.contents && target.contents.find(c => c.examples && !isEmpty(c.examples))) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
 }
 
 function registerPropertyTypeHelper(name: string, propertyType: CodegenPropertyType, hbs: typeof Handlebars) {
