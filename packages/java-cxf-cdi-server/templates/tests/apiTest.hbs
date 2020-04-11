@@ -27,8 +27,6 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 @EnableWeld
 public class {{className name}}ApiTest {
 	
-	private static final String ENDPOINT_ADDRESS = "local://api";
-
 	@WeldSetup
 	private WeldInitiator weld = WeldInitiator.from(WeldInitiator.createWeld()
 			.addPackages({{apiPackage}}.{{className name}}Api.class, {{apiServiceImplPackage}}.{{className name}}ApiServiceImpl.class)
@@ -61,5 +59,4 @@ public class {{className name}}ApiTest {
 	}
 
 {{/operations}}
-	
 }
