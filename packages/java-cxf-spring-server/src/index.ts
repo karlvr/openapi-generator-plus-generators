@@ -1,7 +1,7 @@
 import { CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import path from 'path'
-import { loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { CodegenOptionsJava } from '@openapi-generator-plus/java-jaxrs-server-generator'
+import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
+import javaGenerator, { CodegenOptionsJava, packageToPath } from '@openapi-generator-plus/java-jaxrs-server-generator'
 
 export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = (context) => ({
 	...javaGenerator({
@@ -14,6 +14,14 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = 
 		},
 		customiseRootContext: async(rootContext) => {
 			rootContext.generatorClass = '@openapi-generator-plus/java-cxf-spring-server-generator'
+		},
+		additionalExportTemplates: async(outputPath, doc, hbs, rootContext, state) => {
+			if (state.options.includeTests) {
+				const relativeTestOutputPath = state.options.relativeTestOutputPath
+				const apiPackagePath = packageToPath(state.options.apiPackage)
+
+				await emit('tests/TestConfiguration', path.join(outputPath, relativeTestOutputPath, apiPackagePath, 'TestConfiguration.java'), { ...state.options, ...rootContext }, false, hbs)
+			}
 		},
 	}),
 })

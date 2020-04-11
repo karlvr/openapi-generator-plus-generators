@@ -1,0 +1,58 @@
+package {{apiPackage}};
+
+import javax.ws.rs.core.Response;
+
+import org.apache.cxf.endpoint.Server;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.spring.JAXRSServerFactoryBeanDefinitionParser.SpringJAXRSServerFactoryBean;
+import org.apache.cxf.transport.local.LocalConduit;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { TestConfiguration.class })
+public class {{className name}}ApiTest {
+	
+	private static Server server;
+	private {{apiPackage}}.{{className name}}Api api;
+	
+	@Autowired
+	private SpringJAXRSServerFactoryBean serverFactory;
+
+	@Before
+	public void setup() throws Exception {
+		server = serverFactory.create();
+		api = JAXRSClientFactory.create(TestConfiguration.ENDPOINT_ADDRESS, {{apiPackage}}.{{className name}}Api.class, TestConfiguration.defaultProviders());
+		WebClient.getConfig(api).getRequestContext().put(LocalConduit.DIRECT_DISPATCH, Boolean.TRUE);
+	}
+	
+	@After
+	public void destroy() throws Exception {
+		server.stop();
+		server.destroy();
+	}
+	
+{{#operations}}
+	@Test
+	public void {{identifier name}}Test() {
+		{{#allParams}}
+		{{nativeType}} {{identifier name}} = {{#if examples.java}}{{{examples.java.valueLiteral}}}{{else if examples.default}}{{examples.default.valueLiteral}}{{else}}{{undefinedValueLiteral .}}{{/if}};
+		{{/allParams}}
+
+		Response response = this.api.{{identifier name}}({{#allParams}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+		Assert.assertNotNull(response);
+		{{#if returnNativeType}}
+		{{returnNativeType}} result = response.readEntity({{returnNativeType.literalType}}.class);
+		Assert.assertNotNull(result);
+		{{/if}}
+	}
+
+{{/operations}}
+}
