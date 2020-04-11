@@ -49,7 +49,7 @@ public class {{className name}}ApiTest {
 	@Test
 	public void {{identifier name}}Test() {
 		{{#allParams}}
-		{{nativeType}} {{identifier name}} = {{#if examples.java}}{{{examples.java.valueLiteral}}}{{else if examples.default}}{{examples.default.valueLiteral}}{{else}}{{defaultValue .}}{{/if}};
+		{{nativeType}} {{identifier name}} = {{#if examples.java}}{{{examples.java.valueLiteral}}}{{else if examples.default}}{{examples.default.valueLiteral}}{{else}}{{undefinedValueLiteral .}}{{/if}};
 		{{/allParams}}
 
 		Response response = this.api.{{identifier name}}({{#allParams}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/allParams}});

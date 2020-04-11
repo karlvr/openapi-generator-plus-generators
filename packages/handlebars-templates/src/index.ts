@@ -279,10 +279,13 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 	})
 
-	/** Output the default value for the given typed object. */
-	hbs.registerHelper('defaultValue', function(typeInfo: CodegenTypeInfo) {
+	/** Output the undefined value literal for the given typed object. */
+	hbs.registerHelper('undefinedValueLiteral', function(typeInfo: CodegenTypeInfo, options: Handlebars.HelperOptions) {
 		if (typeInfo !== undefined) {
-			return state.generator.toDefaultValue(undefined, typeInfo, state)
+			if (typeInfo.propertyType === undefined || typeInfo.nativeType === undefined) {
+				throw new Error('undefinedValueLiteral helper must be called with a CodegenTypeInfo argument')
+			}
+			return state.generator.toDefaultValue(undefined, typeInfo, state).literalValue
 		} else {
 			return undefined
 		}
