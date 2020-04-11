@@ -303,6 +303,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 				groupId: config.maven.groupId || 'com.example',
 				artifactId: config.maven.artifactId || 'api-server',
 				version: config.maven.version || '0.0.1',
+				versions: config.maven.versions || {},
 			},
 			relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
 			relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),

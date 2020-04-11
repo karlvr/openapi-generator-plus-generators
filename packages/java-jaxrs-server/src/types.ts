@@ -37,4 +37,7 @@ export interface MavenOptions {
 	groupId: string
 	artifactId: string
 	version: string
+	versions: {
+		[name: string]: string
+	}
 }

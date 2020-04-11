@@ -54,6 +54,7 @@ The available config file properties are:
 |`groupId`|`string`|The Maven module groupId|`com.example`|
 |`artifactId`|`string`|The Maven module artifactId|`api-server`|
 |`version`|`string`|The Maven module version|`0.0.1`|
+|`versions`|`{ name: version }`|Custom dependency versions (see `pom.hbs`)|`undefined`|
 
 ### General
 
