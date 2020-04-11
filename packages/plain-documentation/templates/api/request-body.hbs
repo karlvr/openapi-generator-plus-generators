@@ -9,20 +9,22 @@
 
             <p class="meta">{{>model/datatype anchor='/definitions'}}</p>
 
-            {{#if examples}}
+            {{#hasExamples .}}
                 <p><a href="#" class="example-trigger">Examples</a></p>
                 <div class="examples">
+                {{#each contents}}
                     {{#each examples}}
                         {{#if name}}
-                            <p><strong>{name}}</strong></p>
+                            <p><strong>{{name}}</strong></p>
                         {{/if}}
                         <pre>{{valuePretty}}</pre>
                         {{#if mediaType}}
                             <p><span class="type">{{mediaType.mediaType}}</span></p>
                         {{/if}}
                     {{/each}}
+                {{/each}}
                 </div>
-            {{/if}}
+            {{/hasExamples}}
 
             {{#if ../consumes}}
             <p>{{#each ../consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>

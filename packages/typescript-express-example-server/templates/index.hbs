@@ -8,13 +8,15 @@ const app = express()
 {{#operations}}
 app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res, next) {
 	{{#if defaultResponse}}
-	{{#if defaultResponse.examples}}
+	{{#hasExamples defaultResponse}}
 	const defaultResponses: { contentType: string, body: string }[] = []
-	{{#each defaultResponse.examples}}
+	{{#each defaultResponse.contents}}
+	{{#each examples}}
 	defaultResponses.push({
 		contentType: "{{{mediaType.mediaType}}}",
 		body: {{{valueString}}},
 	})
+	{{/each}}
 	{{/each}}
 	const response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 	res.set('Content-Type', response.contentType)
@@ -22,7 +24,7 @@ app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res, ne
 	{{else}}
 	//TODO
 	res.status(503).send('Unimplemented')
-	{{/if}}
+	{{/hasExamples}}
 	{{else}}
 	//TODO
 	res.status(503).send('Unimplemented')

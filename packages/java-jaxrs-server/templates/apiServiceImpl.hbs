@@ -16,7 +16,7 @@ public class {{className name}}ApiServiceImpl implements {{@root/apiPackage}}.{{
 {{#if returnNativeType}}
 {{#if defaultResponse.contents.[0].examples.java}}
 		return {{{defaultResponse.contents.[0].examples.java.valueLiteral}}};
-{{else if defaultResponse.examples.default}}
+{{else if defaultResponse.contents.[0].examples.default}}
 		return {{{defaultResponse.contents.[0].examples.default.valueLiteral}}};
 {{else}}
 		return null;

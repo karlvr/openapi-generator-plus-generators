@@ -12,27 +12,29 @@
         <table>
             {{#each responses}}
                 <tr>
-                    <td class="code">{{code}} {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}</td>
+                    <td class="code">{{code}} {{#hasExamples .}}<a href="#" class="example-trigger">Examples</a>{{/hasExamples}}</td>
                     <td class="resp">{{{md description}}}</td>
                     <td class="desc">{{>model/datatype anchor='/definitions'}}</td>
                 </tr>
-                {{#if examples}}
+                {{#hasExamples .}}
                     <tr class="examples">
                         <td colspan="3">
-                            {{#examples}}
+                            {{#each contents}}
+                            {{#each examples}}
                                 <div class="example">
                                     {{#if name}}
-                                        <p><strong>{name}}</strong></p>
+                                        <p><strong>{{name}}</strong></p>
                                     {{/if}}
                                     <pre>{{valuePretty}}</pre>
                                     {{#if mediaType}}
                                         <p><span class="type">{{mediaType.mediaType}}</span></p>
                                     {{/if}}
                                 </div>
-                            {{/examples}}
+                            {{/each}}
+                            {{/each}}
                         </td>
                     </tr>
-                {{/if}}
+                {{/hasExamples}}
             {{/each}}
         </table>
 
