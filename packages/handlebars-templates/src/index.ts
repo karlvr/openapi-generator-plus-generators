@@ -64,8 +64,7 @@ export async function emit(templateName: string, outputPath: string, context: ob
 			allowProtoPropertiesByDefault: true,
 		})
 	} catch (error) {
-		console.error(`Failed to generate template "${templateName}": ${error.message}`)
-		return
+		throw new Error(`Failed to generate template: "${templateName}": ${error.message}`)
 	}
 
 	if (outputPath === '-') {
