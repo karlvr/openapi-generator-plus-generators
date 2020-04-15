@@ -5,9 +5,6 @@ export * from './http-methods'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
-import * as allGroupingStrategies from './operation-grouping'
-export const GroupingStrategies = allGroupingStrategies
-
 export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName' | 'toModelNameFromPropertyName'> {
 	return {
 

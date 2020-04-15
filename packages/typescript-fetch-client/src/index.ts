@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, pascalCase, GroupingStrategies } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, pascalCase } from '@openapi-generator-plus/generator-common'
 
 function escapeString(value: string) {
 	value = value.replace(/\\/g, '\\\\')
@@ -188,7 +188,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypescri
 		}
 	},
 	operationGroupingStrategy: () => {
-		return GroupingStrategies.addToGroupsByTagOrPath
+		return context.operationGroupingStrategies.addToGroupsByTagOrPath
 	},
 
 	postProcessModel: (model) => {

@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, compareHttpMethods, GroupingStrategies } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, compareHttpMethods } from '@openapi-generator-plus/generator-common'
 import marked from 'marked'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
@@ -77,7 +77,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 		}
 	},
 	operationGroupingStrategy: () => {
-		return GroupingStrategies.addToGroupsByTagOrPath
+		return context.operationGroupingStrategies.addToGroupsByTagOrPath
 	},
 
 	watchPaths: (config) => {

@@ -5,7 +5,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { identifierCamelCase, javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { apiBasePath, commonGenerator, GroupingStrategies } from '@openapi-generator-plus/generator-common'
+import { apiBasePath, commonGenerator } from '@openapi-generator-plus/generator-common'
 
 export { CodegenOptionsJava } from './types'
 
@@ -313,7 +313,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 		}
 	},
 	operationGroupingStrategy: () => {
-		return GroupingStrategies.addToGroupsByPath
+		return context.operationGroupingStrategies.addToGroupsByPath
 	},
 
 	watchPaths: (config) => {
