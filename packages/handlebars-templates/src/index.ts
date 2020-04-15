@@ -108,7 +108,8 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		if (name !== undefined) {
 			return generator.toClassName(convertToString(name), state)
 		} else {
-			throw new Error(`className helper has invalid name parameter: ${name}`)
+			console.warn(`className helper has invalid parameter: ${name}`)
+			return name
 		}
 	})
 
@@ -117,7 +118,8 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		if (name !== undefined) {
 			return generator.toIdentifier(convertToString(name), state)
 		} else {
-			throw new Error(`identifier helper has invalid parameter: ${name}`)
+			console.warn(`identifier helper has invalid parameter: ${name}`)
+			return name
 		}
 	})
 
@@ -126,7 +128,8 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		if (name !== undefined) {
 			return generator.toConstantName(convertToString(name), state)
 		} else {
-			throw new Error(`constantName helper has invalid parameter: ${name}`)
+			console.warn(`constantName helper has invalid parameter: ${name}`)
+			return name
 		}
 	})
 
