@@ -16,6 +16,14 @@ renders a model without the surrounding panel.
     {{>model/inherited parent anchor=anchor}}
 {{/if}}
 
+{{#if isInterface}}
+    {{>model/interface anchor=anchor}}
+{{/if}}
+
+{{#if implements}}
+    {{>model/implements anchor=anchor}}
+{{/if}}
+
 {{#if properties}}
     {{>model/properties anchor=anchor}}
 {{/if}}

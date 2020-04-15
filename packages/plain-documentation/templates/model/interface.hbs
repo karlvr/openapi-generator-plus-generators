@@ -1,0 +1,17 @@
+<div class="interface">
+    <h5>Implemented by</h5>
+    <div class="detail">
+       {{#each implementors}}
+            <p><a class="model-ref" href="#{{../anchor}}/{{htmlId nativeType}}">{{nativeType}}</a></p>
+        {{/each}}
+    </div>
+
+    {{#if properties}}
+        <div class="params -inherited-properties">
+            <h5>Inherited Properties</h5>
+            <table>
+                {{>model/frag/inherited}}
+            </table>
+        </div>
+    {{/if}}
+</div>

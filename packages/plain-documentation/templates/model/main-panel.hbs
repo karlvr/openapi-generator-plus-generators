@@ -5,12 +5,13 @@
 }}
 
                 <section class="summary" data-class-title="{{name}}">
+                    {{#if anchor}}<a name="{{anchor}}/{{htmlId nativeType}}"></a>{{/if}}
                     {{#if name}}
-                        {{#if anchor}}
-                            <h4><a name="{{anchor}}/{{htmlId nativeType}}"></a>{{nativeType}} {{#each allOf}}{{#if $ref}}<span class="type">&lt; {{>model/reference $ref}}</span>{{/if}}{{/each}}</h4>
-                        {{else}}
-                            <h4>{{nativeType}}</h4>
-                        {{/if}}
+                        <h4>
+                            {{nativeType}} 
+                            {{#if isInterface}}<span class="type">INTERFACE</span>{{/if}}
+                            {{#each allOf}}{{#if $ref}}<span class="type">&lt; {{>model/reference $ref}}</span>{{/if}}{{/each}}
+                        </h4>
                     {{/if}}
 
                     {{>model/body anchor=anchor}}
