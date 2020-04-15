@@ -1,6 +1,8 @@
 {{#models}}
 {{#isEnum}}
 {{>enumNested}}
+{{else if isInterface}}
+{{>interfaceNested}}
 {{else}}
 {{>pojoNested}}
 {{/isEnum}}
