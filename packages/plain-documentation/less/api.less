@@ -88,21 +88,21 @@ body.api-docs {
 		}
 
 		.summary {
-			margin: (@base * 3) 0;
+			margin-top: @base * 6;
 
 			h4 {
-				font-size: @fs;
-				line-height: @lh;
+				font-size: @fs-title4 * 0.75;
+				line-height: @lh-title4;
 			}
 		}
 	}
 
-	.params, .request, .response, .values, .security, .parent, .children {
-		margin-top: @base * 5;
+	.params, .request, .response, .values, .security, .parent, .children, .interface, .implements {
+		margin-top: @base * 4;
 	}
 
-	.params + .summary {
-		margin-top: @base * 3;
+	.detail {
+		margin: @base * 2 0 @base * 5;
 	}
 
 	span.type {
