@@ -47,7 +47,7 @@ public interface {{className name}}Api {
 		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = "{{{description}}}", response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
 	})
-	public javax.ws.rs.core.Response {{name}}({{#each allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if allParams}}, {{/if}}{{>bodyParam}}{{/if}});
+	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
 
 {{/each}}
 }

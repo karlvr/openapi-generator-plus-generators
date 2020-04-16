@@ -42,11 +42,11 @@ public class {{className name}}ApiTest {
 {{#each operations}}
 	@Test
 	public void {{identifier name}}Test() {
-		{{#each allParams}}
+		{{#each parameters}}
 		{{nativeType}} {{identifier name}} = {{#if examples.java}}{{{examples.java.valueLiteral}}}{{else if examples.default}}{{examples.default.valueLiteral}}{{else}}{{undefinedValueLiteral .}}{{/if}};
 		{{/each}}
 
-		Response response = this.api.{{identifier name}}({{#each allParams}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});
+		Response response = this.api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});
 		Assert.assertNotNull(response);
 		{{#if returnNativeType}}
 		{{returnNativeType}} result = response.readEntity({{returnNativeType.literalType}}.class);
