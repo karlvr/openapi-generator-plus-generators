@@ -32,7 +32,7 @@
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
     "@openapi-generator-plus/java-jaxrs-server-generator": "file:../java-jaxrs-server",
-    "@openapi-generator-plus/types": "^0.6.0"
+    "@openapi-generator-plus/types": "^0.7.0"
   },
   "publishConfig": {
     "access": "public"
