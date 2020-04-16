@@ -104,48 +104,64 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 			}
 		})
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		hbs.registerHelper('eachSorted', function(this: object, collection: Array<any>, options: Handlebars.HelperOptions) {
-			if (collection) {
-				let result = ''
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				for (const item of collection.sort(function(a: any, b: any) {
-					if (a === b) {
-						return 0
-					}
-					if (typeof a === 'string' && typeof b === 'string') {
-						return a.localeCompare(b)
-					} else if (typeof a === 'number' && typeof b === 'number') {
-						return a < b ? -1 : a > b ? 1 : 0
-					} else if (typeof a === 'object' && typeof b === 'object') {
-						if (a === null) {
-							return 1
-						} else if (b === null) {
-							return -1
-						}
-						
-						if (a.httpMethod && b.httpMethod) {
-							/* Sort CodegenOperations by http method and then by name */
-							const result = compareHttpMethods(a.httpMethod, b.httpMethod)
-							if (result !== 0) {
-								return result
-							}
-						}
-						
-						if (a.name && b.name) {
-							return a.name.localeCompare(b.name)
-						}
-
-						return 0
-					} else {
-						return 0
-					}
-				})) {
-					result += options.fn(item)
-				}
-				return result
-			} else {
+		hbs.registerHelper('eachSorted', function(this: object, context: Array<any> | object | Map<any, any>, options: Handlebars.HelperOptions) {
+			if (!context) {
 				return options.inverse(this)
 			}
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let collection: any[]
+			if (context instanceof Map) {
+				collection = [...context.values()]
+			} else if (Array.isArray(context)) {
+				collection = context
+			} else if (typeof context === 'object') {
+				collection = []
+				for (const key in context) {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					collection.push((context as any)[key])
+				}
+			} else {
+				collection = [context]
+			}
+			
+			let result = ''
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			for (const item of collection.sort(function(a: any, b: any) {
+				if (a === b) {
+					return 0
+				}
+				if (typeof a === 'string' && typeof b === 'string') {
+					return a.localeCompare(b)
+				} else if (typeof a === 'number' && typeof b === 'number') {
+					return a < b ? -1 : a > b ? 1 : 0
+				} else if (typeof a === 'object' && typeof b === 'object') {
+					if (a === null) {
+						return 1
+					} else if (b === null) {
+						return -1
+					}
+					
+					if (a.httpMethod && b.httpMethod) {
+						/* Sort CodegenOperations by http method and then by name */
+						const result = compareHttpMethods(a.httpMethod, b.httpMethod)
+						if (result !== 0) {
+							return result
+						}
+					}
+					
+					if (a.name && b.name) {
+						return a.name.localeCompare(b.name)
+					}
+
+					return 0
+				} else {
+					return 0
+				}
+			})) {
+				result += options.fn(item)
+			}
+			return result
 		})
 		hbs.registerHelper('htmlId', function(value: string) {
 			if (value !== undefined) {
