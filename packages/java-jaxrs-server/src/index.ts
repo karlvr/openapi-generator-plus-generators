@@ -404,7 +404,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 		}
 
 		const modelPackagePath = packageToPath(state.options.modelPackage)
-		for (const model of doc.models) {
+		for (const model of context.utils.values(doc.models)) {
 			const context = {
 				models: [model],
 			}
