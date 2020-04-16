@@ -17,19 +17,19 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 	{{>util/inject interface=(concat apiPackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
 
 {{#each operations}}
-	public javax.ws.rs.core.Response {{name}}({{#each allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}) {
+	public javax.ws.rs.core.Response {{name}}({{#each allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if allParams}}, {{/if}}{{>serviceBodyParam}}{{/if}}) {
 		{{#each responses}}{{#isDefault}}final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));{{/isDefault}}{{/each}}
 		try {
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
-			{{#defaultResponse}}
-			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../allParams}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#unless nativeType}}{{#if ../allParams}}, {{/if}}__response{{/unless}});
+			{{#with defaultResponse}}
+			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../allParams}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody}}{{#if ../allParams}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless nativeType}}{{#or ../allParams ../requestBody}}, {{/or}}__response{{/unless}});
 			{{#if nativeType}}
 			__response.entity(__entity);
 			{{/if}}
 			return __response.build();
-			{{/defaultResponse}}
+			{{/with}}
 		{{#each responses}}
 		{{^isDefault}}
 		} catch ({{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {

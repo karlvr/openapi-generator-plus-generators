@@ -147,7 +147,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
 
 	{{/if}}
-	{{#bodyParam}}
+	{{#with requestBody}}
 			{{^consumes}}
 			localVarHeaderParameter['Content-Type'] = 'application/json';
 			{{/consumes}}
@@ -157,7 +157,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{/if}}
 			{{/each}}
 
-	{{/bodyParam}}
+	{{/with}}
 			localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
 			// fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
 			delete localVarUrlObj.search;
@@ -165,7 +165,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{#if formParams}}
 			localVarRequestOptions.body = localVarFormParams.toString();
 	{{/if}}
-	{{#bodyParam}}
+	{{#with requestBody}}
 		{{^consumes}}
 			localVarRequestOptions.body =  JSON.stringify({{identifier name}} || {});
 		{{/consumes}}
@@ -188,7 +188,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{/ifeq}}
 		{{/if}}
 		{{/each}}
-	{{/bodyParam}}
+	{{/with}}
 
 			return {
 				url: url.format(localVarUrlObj),

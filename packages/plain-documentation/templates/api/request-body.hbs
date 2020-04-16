@@ -2,7 +2,7 @@
     Renders the request-body section of an operation.
 --}}
 
-{{#bodyParam}}
+{{#with requestBody}}
     <div class="request">
         <h5>Request</h5>
             {{{md description}}}
@@ -32,4 +32,4 @@
             <p>{{#each ../consumes}}<span class="type">{{mediaType}}</span> {{/each}}</p>
             {{/if}}
     </div>
-{{/bodyParam}}
+{{/with}}

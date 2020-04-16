@@ -267,6 +267,41 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			return options.inverse(this)
 		}
 	})
+	
+	hbs.registerHelper('or', function(this: object) {
+		const values = []
+		// eslint-disable-next-line prefer-rest-params
+		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
+		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
+			// eslint-disable-next-line prefer-rest-params
+			values.push(convertToString(arguments[i]))
+		}
+
+		for (const value of values) {
+			if (value) {
+				return options.fn(this)
+			}
+		}
+
+		return options.inverse(this)
+	})
+	hbs.registerHelper('and', function(this: object) {
+		const values = []
+		// eslint-disable-next-line prefer-rest-params
+		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
+		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
+			// eslint-disable-next-line prefer-rest-params
+			values.push(convertToString(arguments[i]))
+		}
+
+		for (const value of values) {
+			if (!value) {
+				return options.inverse(this)
+			}
+		}
+
+		return options.fn(this)
+	})
 
 	/** Test if the first argument contains the second */
 	hbs.registerHelper('ifcontains', function(this: object, haystack: unknown[], needle: unknown, options: Handlebars.HelperOptions) {

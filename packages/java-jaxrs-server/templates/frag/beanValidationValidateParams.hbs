@@ -1,4 +1,4 @@
-{{#bodyParam}}
+{{#with requestBody}}
 javax.validation.ValidatorFactory __factory = javax.validation.Validation.buildDefaultValidatorFactory();
 javax.validation.Validator __validator = __factory.getValidator();
 if ({{identifier name }} != null) {
@@ -12,4 +12,4 @@ if ({{identifier name }} != null) {
 {{/if}}
 }
 
-{{/bodyParam}}
+{{/with}}

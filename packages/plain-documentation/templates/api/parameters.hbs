@@ -4,11 +4,11 @@
     @api public
 --}}
 
-{{#if nonBodyParams}}
+{{#if allParams}}
     <div class="params">
         <h5>Parameters</h5>
         <table>
-            {{#each nonBodyParams}}
+            {{#each allParams}}
                 <tr>
                     <td class="name">{{name}} {{#if required}}<span class="type">Required</span>{{/if}} {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}</td>
                     <td class="type">
