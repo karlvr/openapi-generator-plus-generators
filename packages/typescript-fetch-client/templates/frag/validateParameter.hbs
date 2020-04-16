@@ -1,0 +1,13 @@
+{{#if required}}
+{{#unless nullable}}
+		// verify required parameter '{{identifier name}}' is not null or undefined
+		if ({{identifier name}} === null || {{identifier name}} === undefined) {
+			throw new RequiredError('{{identifier name}}', 'Required parameter {{identifier name}} was null or undefined when calling {{identifier operation/name}}.');
+		}
+{{else}}
+		// verify required parameter '{{identifier name}}' is not undefined
+		if ({{identifier name}} === undefined) {
+			throw new RequiredError('{{identifier name}}', 'Required parameter {{identifier name}} was undefined when calling {{identifier operation/name}}.');
+		}
+{{/unless}}
+{{/if}}

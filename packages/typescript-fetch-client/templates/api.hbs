@@ -23,29 +23,23 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		 * @summary {{&summary}}
 		 {{/if}}
 		 {{#each parameters}}
-		 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
+		 * {{>frag/parameterDocumentation}}
 		 {{/each}}
+		 {{#with requestBody}}
+		 * {{>frag/parameterDocumentation}}
+		 {{/with}}
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options: any = {}): FetchArgs {
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options: any = {}): FetchArgs {
 	{{#each parameters}}
-	{{#if required}}
-	{{#unless nullable}}
-			// verify required parameter '{{identifier name}}' is not null or undefined
-			if ({{identifier name}} === null || {{identifier name}} === undefined) {
-				throw new RequiredError('{{identifier name}}', 'Required parameter {{identifier name}} was null or undefined when calling {{identifier ../name}}.');
-			}
-	{{else}}
-			// verify required parameter '{{identifier name}}' is not undefined
-			if ({{identifier name}} === undefined) {
-				throw new RequiredError('{{identifier name}}', 'Required parameter {{identifier name}} was undefined when calling {{identifier ../name}}.');
-			}
-	{{/unless}}
-	{{/if}}
+	{{>frag/validateParameter operation=..}}
 	{{/each}}
-			const localVarPath = `{{{../path}}}{{{path}}}`{{#pathParams}}
-				.replace('{{safe '{'}}{{{name}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/pathParams}};
+	{{#with requestBody}}
+	{{>frag/validateParameter operation=..}}
+	{{/with}}
+			const localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
+				.replace('{{safe '{'}}{{{name}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/each}};
 			const localVarUrlObj = url.parse(localVarPath, true);
 			const localVarRequestOptions = Object.assign({ method: '{{httpMethod}}' }, options);
 			const localVarHeaderParameter = {} as any;
@@ -213,13 +207,16 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 		 * @summary {{&summary}}
 		 {{/if}}
 		 {{#each parameters}}
-		 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
+		 * {{>frag/parameterDocumentation}}
 		 {{/each}}
+		 {{#with requestBody}}
+		 * {{>frag/parameterDocumentation}}
+		 {{/with}}
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.wireType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
-			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}options);
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.wireType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
+			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options);
 			return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
 				return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
 					if (response.status >= 200 && response.status < 300) {
@@ -248,13 +245,16 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 		 * @summary {{&summary}}
 		 {{/if}}
 		 {{#each parameters}}
-		 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
+		 * {{>frag/parameterDocumentation}}
 		 {{/each}}
+		 {{#with requestBody}}
+		 * {{>frag/parameterDocumentation}}
+		 {{/with}}
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any) {
-			return {{className ../name}}ApiFp(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}options)(fetch, basePath);
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: any) {
+			return {{className ../name}}ApiFp(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options)(fetch, basePath);
 		},
 	{{/each}}
 	};
@@ -306,14 +306,17 @@ export class {{className name}}Api extends BaseAPI {
 	 * @summary {{&summary}}
 	 {{/if}}
 	 {{#each parameters}}
-	 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
+	 * {{>frag/parameterDocumentation}}
 	 {{/each}}
+	 {{#with requestBody}}
+	 * {{>frag/parameterDocumentation}}
+	 {{/with}}
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}Api
 	 */
-	public {{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any) {
-		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}options)(this.fetch, this.basePath);
+	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: any) {
+		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options)(this.fetch, this.basePath);
 	}
 
 	{{/each}}
