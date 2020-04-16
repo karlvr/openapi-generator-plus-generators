@@ -1,8 +1,7 @@
 package {{modelPackage}};
 
-{{#imports}}import {{.}};
-{{/imports}}
-{{#models}}
+{{>frag/imports}}
+{{#each models}}
 {{#if description}}
 /**
  * {{description}}
@@ -15,4 +14,4 @@ package {{modelPackage}};
 {{else}}
 {{>pojo}}
 {{/isEnum}}
-{{/models}}
+{{/each}}

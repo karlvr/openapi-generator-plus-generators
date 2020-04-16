@@ -8,7 +8,7 @@ import { Configuration } from "./configuration";
 import { BASE_PATH, COLLECTION_FORMATS, FetchAPI, FetchArgs, BaseAPI, RequiredError } from "./runtime";
 import { Api } from "./models";
 
-{{#groups}}
+{{#each groups}}
 /**
  * {{className name}}Api - fetch parameter creator{{#if description}}
  * {{&description}}{{/if}}
@@ -16,20 +16,20 @@ import { Api } from "./models";
  */
 export const {{className name}}ApiFetchParamCreator = function (configuration?: Configuration) {
 	return {
-	{{#operations}}
+	{{#each operations}}
 		/**
 		 * {{&description}}
 		 {{#if summary}}
 		 * @summary {{&summary}}
 		 {{/if}}
-		 {{#allParams}}
+		 {{#each allParams}}
 		 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
-		 {{/allParams}}
+		 {{/each}}
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options: any = {}): FetchArgs {
-	{{#allParams}}
+		{{identifier name}}({{#each allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options: any = {}): FetchArgs {
+	{{#each allParams}}
 	{{#if required}}
 	{{#unless nullable}}
 			// verify required parameter '{{identifier name}}' is not null or undefined
@@ -43,7 +43,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			}
 	{{/unless}}
 	{{/if}}
-	{{/allParams}}
+	{{/each}}
 			const localVarPath = `{{{../path}}}{{{path}}}`{{#pathParams}}
 				.replace('{{safe '{'}}{{{name}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/pathParams}};
 			const localVarUrlObj = url.parse(localVarPath, true);
@@ -54,7 +54,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			const localVarFormParams = new URLSearchParams();
 	{{/if}}
 
-	{{#securityRequirements}}
+	{{#each securityRequirements}}
 			// authentication {{scheme.name}} required
 			{{#if scheme.isApiKey}}
 			{{#if scheme.isInHeader}}
@@ -84,14 +84,14 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			// oauth required
 			if (configuration && configuration.accessToken) {
 				const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
-					? configuration.accessToken("{{scheme.name}}", [{{#scopes}}"{{{name}}}"{{#unless @last}}, {{/unless}}{{/scopes}}])
+					? configuration.accessToken("{{scheme.name}}", [{{#each scopes}}"{{{name}}}"{{#unless @last}}, {{/unless}}{{/each}}])
 					: configuration.accessToken;
 				localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
 			}
 			{{/if}}
 
-	{{/securityRequirements}}
-	{{#queryParams}}
+	{{/each}}
+	{{#each queryParams}}
 			{{#if isListContainer}}
 			if ({{identifier name}}) {
 			{{#if isCollectionFormatMulti}}
@@ -112,8 +112,8 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			}
 			{{/if}}
 
-	{{/queryParams}}
-	{{#headerParams}}
+	{{/each}}
+	{{#each headerParams}}
 			{{#if isListContainer}}
 			if ({{identifier name}}) {
 				localVarHeaderParameter['{{name}}'] = {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
@@ -124,8 +124,8 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			}
 			{{/if}}
 
-	{{/headerParams}}
-	{{#formParams}}
+	{{/each}}
+	{{#each formParams}}
 			{{#if isListContainer}}
 			if ({{identifier name}}) {
 			{{#if isCollectionFormatMulti}}
@@ -142,7 +142,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			}
 			{{/if}}
 
-	{{/formParams}}
+	{{/each}}
 	{{#if formParams}}
 			localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
 
@@ -151,11 +151,11 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{^consumes}}
 			localVarHeaderParameter['Content-Type'] = 'application/json';
 			{{/consumes}}
-			{{#consumes}}
+			{{#each consumes}}
 			{{#if @first}}
 			localVarHeaderParameter['Content-Type'] = '{{{mediaType}}}';
 			{{/if}}
-			{{/consumes}}
+			{{/each}}
 
 	{{/bodyParam}}
 			localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
@@ -169,7 +169,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		{{^consumes}}
 			localVarRequestOptions.body =  JSON.stringify({{identifier name}} || {});
 		{{/consumes}}
-		{{#consumes}}
+		{{#each consumes}}
 		{{#if @first}}
 			{{#ifeq mimeType 'application/x-www-form-urlencoded'}}
 			const localVarFormParams = new URLSearchParams();
@@ -187,7 +187,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			localVarRequestOptions.body =  ({{identifier ../name}} || "");
 			{{/ifeq}}
 		{{/if}}
-		{{/consumes}}
+		{{/each}}
 	{{/bodyParam}}
 
 			return {
@@ -195,7 +195,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				options: localVarRequestOptions,
 			};
 		},
-	{{/operations}}
+	{{/each}}
 	}
 };
 
@@ -206,20 +206,20 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
  */
 export const {{className name}}ApiFp = function(configuration?: Configuration) {
 	return {
-	{{#operations}}
+	{{#each operations}}
 		/**
 		 * {{&description}}
 		 {{#if summary}}
 		 * @summary {{&summary}}
 		 {{/if}}
-		 {{#allParams}}
+		 {{#each allParams}}
 		 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
-		 {{/allParams}}
+		 {{/each}}
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.wireType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
-			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#allParams}}{{identifier name}}, {{/allParams}}options);
+		{{identifier name}}({{#each allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.wireType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
+			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each allParams}}{{identifier name}}, {{/each}}options);
 			return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
 				return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
 					if (response.status >= 200 && response.status < 300) {
@@ -230,7 +230,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 				});
 			};
 		},
-	{{/operations}}
+	{{/each}}
 	}
 };
 
@@ -241,22 +241,22 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
  */
 export const {{className name}}ApiFactory = function (configuration?: Configuration, fetch?: FetchAPI, basePath?: string) {
 	return {
-	{{#operations}}
+	{{#each operations}}
 		/**
 		 * {{&description}}
 		 {{#if summary}}
 		 * @summary {{&summary}}
 		 {{/if}}
-		 {{#allParams}}
+		 {{#each allParams}}
 		 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
-		 {{/allParams}}
+		 {{/each}}
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any) {
-			return {{className ../name}}ApiFp(configuration).{{identifier name}}({{#allParams}}{{identifier name}}, {{/allParams}}options)(fetch, basePath);
+		{{identifier name}}({{#each allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any) {
+			return {{className ../name}}ApiFp(configuration).{{identifier name}}({{#each allParams}}{{identifier name}}, {{/each}}options)(fetch, basePath);
 		},
-	{{/operations}}
+	{{/each}}
 	};
 };
 
@@ -268,22 +268,22 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
  * @interface {{className name}}Api
  */
 export interface {{className name}}ApiInterface {
-{{#operations}}
+{{#each operations}}
 	/**
 	 * {{&description}}
 	 {{#summary}}
 	 * @summary {{&summary}}
 	 {{/summary}}
-	 {{#allParams}}
+	 {{#each allParams}}
 	 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
-	 {{/allParams}}
+	 {{/each}}
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}ApiInterface
 	 */
-	{{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
+	{{identifier name}}({{#each allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
 
-{{/operations}}
+{{/each}}
 }
 
 {{/withInterfaces}}
@@ -299,23 +299,23 @@ export class {{className name}}Api extends BaseAPI implements {{className name}}
 {{else}}
 export class {{className name}}Api extends BaseAPI {
 {{/if}}
-	{{#operations}}
+	{{#each operations}}
 	/**
 	 * {{&description}}
 	 {{#if summary}}
 	 * @summary {{&summary}}
 	 {{/if}}
-	 {{#allParams}}
+	 {{#each allParams}}
 	 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
-	 {{/allParams}}
+	 {{/each}}
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}Api
 	 */
-	public {{identifier name}}({{#allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/allParams}}options?: any) {
-		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#allParams}}{{identifier name}}, {{/allParams}}options)(this.fetch, this.basePath);
+	public {{identifier name}}({{#each allParams}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any) {
+		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each allParams}}{{identifier name}}, {{/each}}options)(this.fetch, this.basePath);
 	}
 
-	{{/operations}}
+	{{/each}}
 }
-{{/groups}}
+{{/each}}

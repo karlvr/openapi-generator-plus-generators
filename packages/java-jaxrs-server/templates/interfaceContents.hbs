@@ -1,5 +1,5 @@
 {{#if properties}}
-{{#properties}}
+{{#each properties}}
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
@@ -9,5 +9,5 @@
 {{/if}}
 void set{{capitalize (identifier name)}}({{{nativeType}}} {{identifier name}});
 
-{{/properties}}
+{{/each}}
 {{/if}}

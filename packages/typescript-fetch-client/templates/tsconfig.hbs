@@ -6,9 +6,9 @@
 		"noImplicitAny": true,
 		"outDir": "dist",
 		"lib": [
-			{{#libs}}
+			{{#each libs}}
 			"{{{.}}}"{{#hasMore}},{{/hasMore}}
-			{{/libs}}
+			{{/each}}
 		]
 	},
 	"include": [

@@ -3,9 +3,9 @@ import getopts from 'getopts'
 
 const app = express()
 
-{{#groups}}
+{{#each groups}}
 /* {{{name}}} */
-{{#operations}}
+{{#each operations}}
 app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res, next) {
 	{{#if defaultResponse}}
 	{{#hasExamples defaultResponse}}
@@ -30,9 +30,9 @@ app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res, ne
 	res.status(503).send('Unimplemented')
 	{{/if}}
 })
-{{/operations}}
+{{/each}}
 
-{{/groups}}
+{{/each}}
 const options = getopts(process.argv.slice(2), {
 	alias: {
 		port: 'p',

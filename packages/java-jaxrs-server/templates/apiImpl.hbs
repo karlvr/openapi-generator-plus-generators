@@ -1,16 +1,14 @@
 package {{apiPackage}};
 
-{{#imports}}import {{.}};
-{{/imports}}
-
+{{>frag/imports}}
 @javax.ws.rs.Path("{{{path}}}")
 {{>hooks/apiImplClassAnnotations}}
 @io.swagger.annotations.Api(description = "the {{{name}}} API")
 {{#if consumes}}
-@javax.ws.rs.Consumes({ {{#consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/consumes}} })
+@javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 {{#if produces}}
-@javax.ws.rs.Produces({ {{#produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/produces}} })
+@javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 {{>generatedAnnotation}}
 @java.lang.SuppressWarnings("all")
@@ -18,21 +16,21 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 
 	{{>util/inject interface=(concat apiPackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
 
-{{#operations}}
-	public javax.ws.rs.core.Response {{name}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {
-		{{#responses}}{{#isDefault}}final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));{{/isDefault}}{{/responses}}
+{{#each operations}}
+	public javax.ws.rs.core.Response {{name}}({{#each allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}) {
+		{{#each responses}}{{#isDefault}}final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));{{/isDefault}}{{/each}}
 		try {
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#defaultResponse}}
-			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#../allParams}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/../allParams}}{{#unless nativeType}}{{#if ../allParams}}, {{/if}}__response{{/unless}});
+			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../allParams}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#unless nativeType}}{{#if ../allParams}}, {{/if}}__response{{/unless}});
 			{{#if nativeType}}
 			__response.entity(__entity);
 			{{/if}}
 			return __response.build();
 			{{/defaultResponse}}
-		{{#responses}}
+		{{#each responses}}
 		{{^isDefault}}
 		} catch ({{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
 			__response.status({{code}});
@@ -41,11 +39,11 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{/if}}
 			return __response.build();
 		{{/isDefault}}
-		{{/responses}}
+		{{/each}}
 		} finally {
 		
 		}
 	}
 
-{{/operations}}
+{{/each}}
 }

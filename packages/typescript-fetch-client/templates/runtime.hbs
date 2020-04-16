@@ -4,14 +4,14 @@ import * as url from "url";
 import * as portableFetch from "portable-fetch";
 import { Configuration } from "./configuration";
 
-{{#servers}}
+{{#each servers}}
 {{#if @first}}
 export const BASE_PATH = "{{{url}}}".replace(/\/+$/, "");
 {{/if}}
-{{/servers}}
-{{^servers}}
+{{/each}}
+{{#unless servers}}
 export const BASE_PATH = "";
-{{/servers}}
+{{/unless}}
 
 /**
  *

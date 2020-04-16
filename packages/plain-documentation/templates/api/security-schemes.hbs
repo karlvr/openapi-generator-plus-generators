@@ -2,9 +2,9 @@
 	<article id="auth" class="content">
 		<section class="summary">
 			<h2>Authentication</h2>
-			{{#securitySchemes}}
+			{{#each securitySchemes}}
 				{{>api/security-scheme}}
-			{{/securitySchemes}}
+			{{/each}}
 		</section>
 	</article>
 {{/if}}

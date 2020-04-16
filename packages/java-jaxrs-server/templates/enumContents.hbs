@@ -1,7 +1,6 @@
-{{#enumValues}}
+{{#each enumValues}}
 @javax.xml.bind.annotation.XmlEnumValue({{{literalValue}}}) {{{name}}}({{{literalValue}}}){{#unless @last}}, {{else}};{{/unless}}
-{{/enumValues}}
-
+{{/each}}
 
 private {{enumValueNativeType}} value;
 

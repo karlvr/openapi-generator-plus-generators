@@ -1,17 +1,15 @@
 package {{apiPackage}};
 
-{{#imports}}import {{.}};
-{{/imports}}
-
+{{>frag/imports}}
 {{>generatedAnnotation}}
 @java.lang.SuppressWarnings("all")
 public interface {{className name}}ApiService {
-	{{#operations}}
-	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{#unless returnNativeType}}{{#if allParams}}, {{/if}}javax.ws.rs.core.Response.ResponseBuilder response{{/unless}}) throws RuntimeException{{#responses}}{{^isDefault}}, {{{className ../name}}}{{{code}}}Exception{{/isDefault}}{{/responses}};
-	{{/operations}}
+	{{#each operations}}
+	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each allParams}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceBodyParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#unless returnNativeType}}{{#if allParams}}, {{/if}}javax.ws.rs.core.Response.ResponseBuilder response{{/unless}}) throws RuntimeException{{#each responses}}{{^isDefault}}, {{{className ../name}}}{{{code}}}Exception{{/isDefault}}{{/each}};
+	{{/each}}
 	
-	{{#operations}}
-	{{#responses}}
+	{{#each operations}}
+	{{#each responses}}
 	{{^isDefault}}
 	public static class {{{className ../name}}}{{{code}}}Exception extends Exception {
 		{{#unless nativeType}}
@@ -34,6 +32,6 @@ public interface {{className name}}ApiService {
 	}
 
 	{{/isDefault}}
-	{{/responses}}
-	{{/operations}}
+	{{/each}}
+	{{/each}}
 }

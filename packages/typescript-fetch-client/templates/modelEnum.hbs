@@ -4,7 +4,7 @@
  * @enum {string}
  */
 export enum {{className name}} {
-{{#enumValues}}
+{{#each enumValues}}
 	{{{name}}} = {{{literalValue}}}{{#hasMore}},{{/hasMore}}
-{{/enumValues}}
+{{/each}}
 }

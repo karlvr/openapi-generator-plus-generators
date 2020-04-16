@@ -26,10 +26,10 @@
 	"devDependencies": {
 		"@types/node": "^8.0.9",
 		"typescript": "^3.0"
-	{{#repository}}
+	{{#if repository}}
 	},
 	"publishConfig": {
 		"registry": "{{{repository}}}"
-	{{/repository}}
+	{{/if}}
 	}
 }

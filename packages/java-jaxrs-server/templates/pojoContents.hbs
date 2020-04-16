@@ -1,13 +1,13 @@
 {{>nestedModels}}
 {{#if properties}}
-{{#properties}}
+{{#each properties}}
 private {{{nativeType}}} {{identifier name}} = {{{defaultValue.literalValue}}};
 {{#if ../vendorExtensions.x-patch}}
 private boolean __patched{{capitalize (identifier name)}} = false;
 {{/if}}
-{{/properties}}
+{{/each}}
 
-{{#properties}}
+{{#each properties}}
 /**
  {{#if description}}
  * {{description}}
@@ -67,7 +67,7 @@ public void add{{capitalize (singular (identifier name))}}({{{componentNativeTyp
 }
 {{/isArray}}
 
-{{/properties}}
+{{/each}}
 {{/if}}
 @Override
 public boolean equals(java.lang.Object o) {
@@ -84,8 +84,8 @@ public boolean equals(java.lang.Object o) {
 	{{/if}}
 	{{#if properties}}
 	{{className name}} {{identifier name}} = ({{className name}}) o;
-	return {{#properties}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}} &&
-			{{/hasMore}}{{/properties}};
+	return {{#each properties}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}} &&
+			{{/hasMore}}{{/each}};
 	{{else}}
 	return true;
 	{{/if}}
@@ -93,7 +93,7 @@ public boolean equals(java.lang.Object o) {
 
 @Override
 public int hashCode() {
-	return {{#if parentNativeType}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/properties}});
+	return {{#if parentNativeType}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#each properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});
 }
 
 @Override
@@ -101,8 +101,8 @@ public String toString() {
 	StringBuilder sb = new StringBuilder();
 	sb.append("class {{className name}} {\n");
 	{{#if parentNativeType}}sb.append("    ").append(toIndentedString(super.toString())).append("\n");{{/if}}
-	{{#properties}}sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
-	{{/properties}}sb.append("}");
+	{{#each properties}}sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
+	{{/each}}sb.append("}");
 	return sb.toString();
 }
 

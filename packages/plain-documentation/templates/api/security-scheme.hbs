@@ -31,7 +31,7 @@
 			</tbody>
 		</table>
 	{{else if isOAuth}}
-		{{#flows}}
+		{{#each flows}}
 			<h4>{{capitalize type}} flow</h4>
 			<table>
 				<tbody>
@@ -61,7 +61,7 @@
 					{{/if}}
 				</tbody>
 			</table>
-		{{/flows}}
+		{{/each}}
 	{{else if isOpenIdConnect}}
 		<table>
 			<tbody>

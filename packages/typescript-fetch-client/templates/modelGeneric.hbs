@@ -8,22 +8,22 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	{{name}}: {{{nativeType.wireType}}};
 	
 {{/discriminator}}
-{{#discriminatorValues}}
+{{#each discriminatorValues}}
 	{{model.discriminator.name}}: {{{value}}}
 
-{{/discriminatorValues}}
+{{/each}}
 {{#additionalPropertiesType}}
 	[key: string]: {{{additionalPropertiesType}}}{{#if properties}} | any{{/if}};
 
 {{/additionalPropertiesType}}
-{{#properties}}
+{{#each properties}}
 	/**
 	 * {{{description}}}
 	 * @type {{safe '{'}}{{{nativeType}}}{{safe '}'}}
 	 * @memberof {{className ../name}}
 	 */
 	{{name}}{{^required}}?{{/required}}: {{{nativeType.wireType}}}{{#if nullable}} | null{{/if}};
-{{/properties}}
+{{/each}}
 }
 {{#if models}}
 
@@ -32,13 +32,13 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
  * @namespace {{className name}}
  */
 export namespace {{className name}} {
-{{#models}}
+{{#each models}}
 	{{#isEnum}}
 	{{>modelEnum}}
 	{{/isEnum}}
 	{{^isEnum}}
 	{{>modelGeneric}}
 	{{/isEnum}}
-{{/models}}
+{{/each}}
 }
 {{/if}}

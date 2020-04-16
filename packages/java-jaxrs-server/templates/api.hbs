@@ -1,21 +1,19 @@
 package {{apiPackage}};
 
-{{#imports}}import {{.}};
-{{/imports}}
-
+{{>frag/imports}}
 @javax.ws.rs.Path("{{{path}}}")
 @io.swagger.annotations.Api(description = "the {{{name}}} API")
 {{#if consumes}}
-@javax.ws.rs.Consumes({ {{#consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/consumes}} })
+@javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 {{#if produces}}
-@javax.ws.rs.Produces({ {{#produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/produces}} })
+@javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 {{>generatedAnnotation}}
 @java.lang.SuppressWarnings("all")
 public interface {{className name}}Api {
 
-{{#operations}}
+{{#each operations}}
 	{{>nestedModels}}
 	@javax.ws.rs.{{httpMethod}}
 	{{#if securityRequirements}}
@@ -30,26 +28,26 @@ public interface {{className name}}Api {
 	@javax.ws.rs.Path("{{{path}}}")
 	{{/if}}
 	{{#if consumes}}
-	@javax.ws.rs.Consumes({ {{#consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/consumes}} })
+	@javax.ws.rs.Consumes({ {{#each consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	{{/if}}
 	{{#if produces}}
-	@javax.ws.rs.Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} })
+	@javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	{{/if}}
 	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if notes}}, notes = {{{stringLiteral notes}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if securityRequirements}}, authorizations = {
-		{{#securityRequirements}}
+		{{#each securityRequirements}}
 		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
-			{{#scopes}}
+			{{#each scopes}}
 			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = "{{description}}"){{#hasMore}},{{/hasMore}}
-			{{/scopes}}
+			{{/each}}
 		}{{/scheme.isOAuth}}){{#hasMore}},{{/hasMore}}
-		{{/securityRequirements}}
-	}{{/if}}, tags={ {{#tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/tags}} })
+		{{/each}}
+	}{{/if}}, tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	@io.swagger.annotations.ApiResponses(value = {
-		{{#responses}}
+		{{#each responses}}
 		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = "{{{description}}}", response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}){{#hasMore}},{{/hasMore}}
-		{{/responses}}
+		{{/each}}
 	})
-	public javax.ws.rs.core.Response {{name}}({{#allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+	public javax.ws.rs.core.Response {{name}}({{#each allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}});
 
-{{/operations}}
+{{/each}}
 }

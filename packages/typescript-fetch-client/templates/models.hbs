@@ -1,17 +1,17 @@
 {{>header}}
 
 export namespace Api {
-	{{#models}}
+{{#each models}}
 	{{#isEnum}}
 	{{>modelEnum}}
 	{{else}}
 	{{>modelGeneric}}
 	{{/isEnum}}
 
-{{/models}}
+{{/each}}
 }
 
-{{#models}}
+{{#each models}}
 {{#isEnum}}
 /**
  * {{{description}}}
@@ -28,4 +28,4 @@ export import {{className name}} = Api.{{className name}}
 export type {{className name}} = Api.{{className name}}
 {{/isEnum}}
 
-{{/models}}
+{{/each}}

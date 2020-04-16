@@ -7,9 +7,9 @@
                 <tr>
                     <td><a href="#/security/{{htmlId scheme.name}}">{{capitalize scheme.type}}</a></td>
                     <td>
-                        {{#scopes}}
+                        {{#each scopes}}
                             {{name}}{{#hasMore}},{{/hasMore}}
-                        {{/scopes}}
+                        {{/each}}
                     </td>
                 </tr>
             {{/each}}
