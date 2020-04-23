@@ -336,6 +336,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 		return [
 			path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
 			path.join(relativeSourceOutputPath, apiPackagePath, '*ApiImpl.java'),
+			path.join(relativeSourceOutputPath, apiPackagePath, '*ApiService.java'),
 			path.join(relativeSourceOutputPath, modelPackagePath, '*.java'),
 		]
 	},
