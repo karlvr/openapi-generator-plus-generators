@@ -1,11 +1,11 @@
-import { CodegenGenerator, CodegenServer } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenServer, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
 import { camelCase } from './case-transforms'
 export * from './case-transforms'
 export * from './http-methods'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
-export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName' | 'toModelNameFromPropertyName'> {
+export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName' | 'toModelName'> {
 	return {
 
 		/** Create a default operation name for operations that lack an operationId */
@@ -17,8 +17,12 @@ export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName
 			return camelCase(sanitizedCombined)
 		},
 		
-		toModelNameFromPropertyName: (name, state) => {
-			return state.generator.toClassName(pluralize.singular(name), state)
+		toModelName: (name, options, state) => {
+			if (options.purpose === CodegenSchemaPurpose.ARRAY_ITEM || options.purpose === CodegenSchemaPurpose.MAP_VALUE) {
+				return state.generator.toClassName(pluralize.singular(name), state)
+			} else {
+				return state.generator.toClassName(name, state)
+			}
 		},
 
 	}
