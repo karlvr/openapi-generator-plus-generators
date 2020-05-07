@@ -38,8 +38,8 @@ export function javaLikeGenerator<O>(): Pick<CodegenGenerator<O>, 'toClassName' 
 		toConstantName: (name) => {
 			return constantCase(name)
 		},
-		toEnumName: (name) => {
-			return classCamelCase(name) + 'Enum'
+		toEnumName: (name, options, state) => {
+			return state.generator.toModelName(`${name}_enum`, options, state)
 		},
 	}
 }
