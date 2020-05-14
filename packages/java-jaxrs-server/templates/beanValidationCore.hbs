@@ -75,9 +75,11 @@ Not Integer, not Long => we have a decimal value!
 {{!
 Email addresses
 }}
-{{#if vendorExtensions.x-email}}
+{{#ifeq format 'email'}}
 @javax.validation.constraints.Email{{#if vendorExtensions.x-email-message}}(message="{{&vendorExtensions.x-email-message}}"){{/if}}
-{{/if}}
+{{else if vendorExtensions.x-email}}
+@javax.validation.constraints.Email{{#if vendorExtensions.x-email-message}}(message="{{&vendorExtensions.x-email-message}}"){{/if}}
+{{/ifeq}}
 {{!
 Not blank
 }}
