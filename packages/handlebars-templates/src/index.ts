@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
-import { camelCase, capitalize, pascalCase } from '@openapi-generator-plus/generator-common'
-import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenParameter, CodegenResponse, CodegenRequestBody } from '@openapi-generator-plus/types'
+import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited } from '@openapi-generator-plus/generator-common'
+import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase } from 'change-case'
 import pluralize from 'pluralize'
 
@@ -365,6 +365,19 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			return options.fn(this)
 		} else {
 			return options.inverse(this)
+		}
+	})
+
+	/** Return an array of inherited properties for the current model. */
+	hbs.registerHelper('inheritedProperties', function(this: CodegenModel, options: Handlebars.HelperOptions) {
+		if (!options) {
+			throw new Error('inheritedProperties helper must be called with no arguments')
+		}
+
+		if (this.parent) {
+			return uniquePropertiesIncludingInherited(this.parent)
+		} else {
+			return []
 		}
 	})
 }

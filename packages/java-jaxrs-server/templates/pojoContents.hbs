@@ -7,6 +7,27 @@ private boolean __patched{{capitalize (identifier name)}} = false;
 {{/if}}
 {{/each}}
 
+{{#each (inheritedProperties)}}
+/**
+ {{#if description}}
+ * {{description}}
+ {{/if}}
+ {{#if minimum}}
+ * minimum: {{minimum}}
+ {{/if}}
+ {{#if maximum}}
+ * maximum: {{maximum}}
+ {{/if}}
+ */
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
+public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
+	set{{capitalize (identifier name)}}({{identifier name}});
+	return this;
+}
+{{/each}}
+
 {{#each properties}}
 /**
  {{#if description}}

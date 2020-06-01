@@ -2,6 +2,7 @@ import { CodegenGenerator, CodegenServer, CodegenSchemaPurpose } from '@openapi-
 import { camelCase } from './case-transforms'
 export * from './case-transforms'
 export * from './http-methods'
+export * from './utils'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
