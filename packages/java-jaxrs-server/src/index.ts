@@ -225,7 +225,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 	},
 	toNativeArrayType: ({ componentNativeType, uniqueItems }) => {
 		if (uniqueItems) {
-			// TODO should we use a LinkedHashSet here
 			return new context.FullTransformingNativeType(componentNativeType, {
 				nativeType: (nativeTypeString) => `java.util.List<${nativeTypeString}>`,
 				literalType: () => 'java.util.List',
