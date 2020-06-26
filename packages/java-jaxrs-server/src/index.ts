@@ -226,26 +226,23 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava, Ja
 	toNativeArrayType: ({ componentNativeType, uniqueItems }) => {
 		if (uniqueItems) {
 			return new context.FullTransformingNativeType(componentNativeType, {
-				nativeType: (nativeTypeString) => `java.util.List<${nativeTypeString}>`,
+				nativeType: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
 				literalType: () => 'java.util.List',
-				concreteType: (nativeTypeString) => `java.util.ArrayList<${nativeTypeString}>`,
-				transform: (nativeType) => nativeType.componentType || nativeType,
+				concreteType: (nativeType) => `java.util.ArrayList<${(nativeType.componentType || nativeType).nativeType}>`,
 			})
 		} else {
 			return new context.FullTransformingNativeType(componentNativeType, {
-				nativeType: (nativeTypeString) => `java.util.List<${nativeTypeString}>`,
+				nativeType: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
 				literalType: () => 'java.util.List',
-				concreteType: (nativeTypeString) => `java.util.ArrayList<${nativeTypeString}>`,
-				transform: (nativeType) => nativeType.componentType || nativeType,
+				concreteType: (nativeType) => `java.util.ArrayList<${(nativeType.componentType || nativeType).nativeType}>`,
 			})
 		}
 	},
 	toNativeMapType: ({ keyNativeType, componentNativeType }) => {
 		return new context.FullComposingNativeType([keyNativeType, componentNativeType], {
-			nativeType: ([keyNativeTypeString, componentNativeTypeString]) => `java.util.Map<${keyNativeTypeString}, ${componentNativeTypeString}>`,
+			nativeType: ([keyNativeType, componentNativeType]) => `java.util.Map<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
 			literalType: () => 'java.util.Map',
-			concreteType: ([keyNativeTypeString, componentNativeTypeString]) => `java.util.HashMap<${keyNativeTypeString}, ${componentNativeTypeString}>`,
-			transform: (nativeType) => nativeType.componentType || nativeType,
+			concreteType: ([keyNativeType, componentNativeType]) => `java.util.HashMap<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
 		})
 	},
 	toDefaultValue: (defaultValue, options, state) => {
