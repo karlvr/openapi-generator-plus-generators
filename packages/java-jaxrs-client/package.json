@@ -1,0 +1,43 @@
+{
+  "name": "@openapi-generator-plus/java-jaxrs-client-generator",
+  "version": "0.5.4",
+  "description": "An OpenAPI Generator+ module for a Java API client using JAX-RS",
+  "keywords": [
+    "openapi-generator-plus",
+    "openapi-generator-plus-generator",
+    "openapi",
+    "openapi-generator",
+    "java",
+    "jax-rs",
+    "client"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "clean": "../../node_modules/.bin/rimraf dist",
+    "watch": "../../node_modules/.bin/tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
+  "author": "Karl von Randow",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
+  "dependencies": {
+    "@openapi-generator-plus/generator-common": "file:../generator-common",
+    "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
+    "@openapi-generator-plus/java-like-generator-helper": "file:../java-like",
+    "@openapi-generator-plus/java-jaxrs-common-generator": "file:../java-jaxrs-common",
+    "@openapi-generator-plus/types": "^0.8.0",
+    "change-case": "^4.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "4d7336969427733ca316dfb48219f166adb9182a"
+}

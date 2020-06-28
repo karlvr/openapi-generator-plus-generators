@@ -1,0 +1,53 @@
+package {{apiPackage}};
+
+{{>frag/imports}}
+@javax.ws.rs.Path("{{{path}}}")
+@io.swagger.annotations.Api(description = "the {{{name}}} API")
+{{#if consumes}}
+@javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
+{{/if}}
+{{#if produces}}
+@javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
+{{/if}}
+{{>generatedAnnotation}}
+@java.lang.SuppressWarnings("all")
+public interface {{className name}}Api {
+
+{{#each operations}}
+	{{>nestedModels}}
+	@javax.ws.rs.{{httpMethod}}
+	{{#if securityRequirements}}
+	{{#if @root.authenticatedOperationAnnotation}}
+	{{@root.authenticatedOperationAnnotation}}
+	{{/if}}
+	{{/if}}
+	{{#if deprecated}}
+	@java.lang.Deprecated
+	{{/if}}
+	{{#if path}}
+	@javax.ws.rs.Path("{{{path}}}")
+	{{/if}}
+	{{#if consumes}}
+	@javax.ws.rs.Consumes({ {{#each consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
+	{{/if}}
+	{{#if produces}}
+	@javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
+	{{/if}}
+	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if notes}}, notes = {{{stringLiteral notes}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if securityRequirements}}, authorizations = {
+		{{#each securityRequirements}}
+		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
+			{{#each scopes}}
+			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{stringLiteral description}}){{#hasMore}},{{/hasMore}}
+			{{/each}}
+		}{{/scheme.isOAuth}}){{#hasMore}},{{/hasMore}}
+		{{/each}}
+	}{{/if}}, tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
+	@io.swagger.annotations.ApiResponses(value = {
+		{{#each responses}}
+		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = {{{stringLiteral description}}}, response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}){{#hasMore}},{{/hasMore}}
+		{{/each}}
+	})
+	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
+
+{{/each}}
+}

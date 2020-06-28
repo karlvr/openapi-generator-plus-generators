@@ -38,6 +38,7 @@
     "@openapi-generator-plus/java-cxf-cdi-server-generator": "file:packages/java-cxf-cdi-server",
     "@openapi-generator-plus/java-cxf-spring-server-generator": "file:packages/java-cxf-spring-server",
     "@openapi-generator-plus/java-like-generator-helper": "file:packages/java-like",
+    "@openapi-generator-plus/java-jaxrs-client-generator": "file:packages/java-jaxrs-client",
     "@openapi-generator-plus/java-jaxrs-common-generator": "file:packages/java-jaxrs-common",
     "@openapi-generator-plus/java-jaxrs-server-generator": "file:packages/java-jaxrs-server",
     "@openapi-generator-plus/plain-documentation-generator": "file:packages/plain-documentation",
