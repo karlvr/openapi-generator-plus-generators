@@ -1,9 +1,9 @@
 import { CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { CodegenOptionsJava, packageToPath } from '@openapi-generator-plus/java-jaxrs-server-generator'
+import javaGenerator, { CodegenOptionsJavaServer, packageToPath } from '@openapi-generator-plus/java-jaxrs-server-generator'
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = (context) => ({
+export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServer> = (context) => ({
 	...javaGenerator({
 		...context,
 		loadAdditionalTemplates: async(hbs) => {

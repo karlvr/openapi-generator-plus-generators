@@ -37,17 +37,17 @@ public interface {{className name}}Api {
 		{{#each securityRequirements}}
 		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
 			{{#each scopes}}
-			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = "{{description}}"){{#hasMore}},{{/hasMore}}
+			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{stringLiteral description}}){{#hasMore}},{{/hasMore}}
 			{{/each}}
 		}{{/scheme.isOAuth}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
 	}{{/if}}, tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	@io.swagger.annotations.ApiResponses(value = {
 		{{#each responses}}
-		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = "{{{description}}}", response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}){{#hasMore}},{{/hasMore}}
+		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = {{{stringLiteral description}}}, response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
 	})
-	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
+	public javax.ws.rs.core.Response {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
 
 {{/each}}
 }
