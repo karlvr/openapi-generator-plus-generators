@@ -42,11 +42,22 @@ export interface TypeScriptGeneratorContext<O extends CodegenOptionsTypeScript> 
 	generatorClassName: (state: CodegenState<O>) => string
 }
 
+/* https://github.com/microsoft/TypeScript/issues/2536 */
+const RESERVED_WORDS = [
+	'break', 'case', 'catch', 'class', 'const', 'continue', 'debugger', 'default', 'delete', 'do',
+	'else', 'enum', 'export', 'extends', 'false', 'finally', 'for', 'function', 'if', 'import',
+	'in', 'instanceof', 'new', 'null', 'return', 'super', 'switch', 'this', 'throw', 'true',
+	'try', 'typeof', 'var', 'void', 'while', 'with',
+	'as', 'implements', 'interface', 'let', 'package', 'private', 'protected', 'public', 'static', 'yield',
+	'any', 'boolean', 'constructor', 'declare', 'get', 'module', 'require', 'number', 'set', 'string', 'symbol', 'type', 'from', 'of',
+]
+
 export default function createGenerator<O extends CodegenOptionsTypeScript>(context: TypeScriptGeneratorContext<O>): Omit<CodegenGenerator<O>, 'generatorType'> {
 	return {
 		...context.baseGenerator(),
 		...commonGenerator(),
 		...javaLikeGenerator({
+			reservedWords: () => RESERVED_WORDS,
 		}),
 		toConstantName: (name) => {
 			return pascalCase(name)
