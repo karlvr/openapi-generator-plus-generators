@@ -1,4 +1,4 @@
-import { CodegenGenerator } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenState } from '@openapi-generator-plus/types'
 import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 
@@ -27,13 +27,22 @@ export function identifierCamelCase(value: string) {
 	return camelCase(identifierSafe(value))
 }
 
-export function javaLikeGenerator<O>(): Pick<CodegenGenerator<O>, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toEnumName'> {
+export interface JavaLikeContext<O> {
+	reservedWords?: (state: CodegenState<O>) => string[]
+}
+
+export function javaLikeGenerator<O>(context: JavaLikeContext<O>): Pick<CodegenGenerator<O>, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toEnumName'> {
 	return {
 		toClassName: (name) => {
 			return classCamelCase(name)
 		},
-		toIdentifier: (name) => {
-			return identifierCamelCase(name)
+		toIdentifier: (name, state) => {
+			let result = identifierCamelCase(name)
+			const reservedWords = context.reservedWords ? context.reservedWords(state) : []
+			while (reservedWords.indexOf(result) !== -1) {
+				result = identifierCamelCase(`a_${name}`)
+			}
+			return result
 		},
 		toConstantName: (name) => {
 			return constantCase(name)
