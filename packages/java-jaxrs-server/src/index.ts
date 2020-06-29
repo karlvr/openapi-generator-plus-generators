@@ -2,9 +2,9 @@ import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-gene
 import path from 'path'
 import { apiBasePath } from '@openapi-generator-plus/generator-common'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-common-generator'
+import javaGenerator, { packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaServer } from './types'
-export { packageToPath } from '@openapi-generator-plus/java-jaxrs-common-generator'
+export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 export { CodegenOptionsJavaServer } from './types'
 
 export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServer, JavaGeneratorContext<CodegenOptionsJavaServer>> = (context) => {

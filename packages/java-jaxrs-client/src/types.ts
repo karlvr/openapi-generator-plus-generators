@@ -1,4 +1,4 @@
-import { CodegenOptionsJava as CommonCodegenOptions } from '@openapi-generator-plus/java-jaxrs-common-generator'
+import { CodegenOptionsJava as CommonCodegenOptions } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
 export interface CodegenOptionsJavaClient extends CommonCodegenOptions {
 	

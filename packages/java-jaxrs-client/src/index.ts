@@ -1,7 +1,7 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-common-generator'
+import javaGenerator, { JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaClient } from './types'
 export { CodegenOptionsJavaClient } from './types'
 
