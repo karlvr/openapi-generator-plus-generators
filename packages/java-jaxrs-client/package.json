@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-jaxrs-client-generator",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "An OpenAPI Generator+ module for a Java API client using JAX-RS",
   "keywords": [
     "openapi-generator-plus",
@@ -31,8 +31,8 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "file:../generator-common",
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
-    "@openapi-generator-plus/java-like-generator-helper": "file:../java-like",
     "@openapi-generator-plus/java-jaxrs-generator-common": "file:../java-jaxrs-common",
+    "@openapi-generator-plus/java-like-generator-helper": "file:../java-like",
     "@openapi-generator-plus/types": "^0.9.0",
     "change-case": "^4.1.1"
   },
