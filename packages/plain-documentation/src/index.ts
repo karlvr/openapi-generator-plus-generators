@@ -20,7 +20,7 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocumentation> = (context) => ({
 	...context.baseGenerator(),
 	...commonGenerator(),
-	...javaLikeGenerator(),
+	...javaLikeGenerator({}),
 	generatorType: () => CodegenGeneratorType.DOCUMENTATION,
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {
