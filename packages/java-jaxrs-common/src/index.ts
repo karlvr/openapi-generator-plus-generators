@@ -68,11 +68,25 @@ export interface JavaGeneratorContext<O extends CodegenOptionsJava> extends Code
 	transformOptions?: (config: CodegenConfig, options: CodegenOptionsJava) => O
 }
 
+const RESERVED_WORDS = [
+	'abstract', 'assert', 'boolean', 'break', 'byte', 'case',
+	'catch', 'char', 'class', 'const', 'continue', 'default',
+	'double', 'do', 'else', 'enum', 'extends', 'false',
+	'final', 'finally', 'float', 'for', 'goto', 'if',
+	'implements', 'import', 'instanceof', 'int', 'interface', 'long',
+	'native', 'new', 'null', 'package', 'private', 'protected',
+	'public', 'return', 'short', 'static', 'strictfp', 'super',
+	'switch', 'synchronized', 'this', 'throw', 'throws', 'transient',
+	'true', 'try', 'void', 'volatile', 'while',
+]
+
 export default function createGenerator<O extends CodegenOptionsJava>(context: JavaGeneratorContext<O>): Omit<CodegenGenerator<O>, 'generatorType'> {
 	return {
 		...context.baseGenerator(),
 		...commonGenerator(),
-		...javaLikeGenerator(),
+		...javaLikeGenerator({
+			reservedWords: () => RESERVED_WORDS,
+		}),
 		toConstantName: (name, state) => {
 			const constantStyle = state.options.constantStyle
 			switch (constantStyle) {
