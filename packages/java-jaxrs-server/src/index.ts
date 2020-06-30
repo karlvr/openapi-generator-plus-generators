@@ -79,6 +79,12 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 			}
 			return result
 		},
+		customiseRootContext: async(rootContext) => {
+			rootContext.generatorClass = '@openapi-generator-plus/java-jaxrs-server-generator'
+			if (context.customiseRootContext) {
+				context.customiseRootContext(rootContext)
+			}
+		},
 	})
 	return {
 		...base,
