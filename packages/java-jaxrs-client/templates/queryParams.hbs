@@ -1,0 +1,1 @@
+{{#if isQueryParam}}{{#if @root/useBeanValidation}}{{>beanValidationQueryParams}}{{/if}}@javax.ws.rs.QueryParam("{{name}}") {{{nativeType}}} {{identifier name}}{{/if}}

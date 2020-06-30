@@ -54,7 +54,7 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{#if vendorExtensions.x-extra-annotation}}
 {{{vendorExtensions.x-extra-annotation}}}
 {{/if}}
-@io.swagger.annotations.ApiModelProperty({{#if example}}example = {{{stringLiteral example}}}, {{/if}}{{#if required}}required = {{required}}, {{/if}}{{#if description}}value = {{{stringLiteral description}}}{{else}}value = ""{{/if}})
+{{>hooks/pojoPropertyAnnotations}}
 @com.fasterxml.jackson.annotation.JsonProperty("{{name}}")
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}

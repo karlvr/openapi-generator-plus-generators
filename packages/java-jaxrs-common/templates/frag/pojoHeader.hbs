@@ -1,4 +1,4 @@
-@io.swagger.annotations.ApiModel(value = "{{{name}}}"{{#if description}}, description = {{{stringLiteral description}}}{{/if}}{{#if discriminator}}, discriminator="{{{discriminator.name}}}"{{/if}})
+{{>hooks/pojoHeaderAnnotations}}
 {{#if discriminator}}
 @com.fasterxml.jackson.annotation.JsonTypeInfo(use=com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include=com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY, property="{{{discriminator.name}}}")
 {{#if discriminator.references}}
