@@ -41,6 +41,7 @@
     "@openapi-generator-plus/java-jaxrs-client-generator": "file:packages/java-jaxrs-client",
     "@openapi-generator-plus/java-jaxrs-generator-common": "file:packages/java-jaxrs-common",
     "@openapi-generator-plus/java-jaxrs-server-generator": "file:packages/java-jaxrs-server",
+    "@openapi-generator-plus/java-retrofit-client-generator": "file:packages/java-retrofit-client",
     "@openapi-generator-plus/plain-documentation-generator": "file:packages/plain-documentation",
     "@openapi-generator-plus/typescript-generator-common": "file:packages/typescript-common",
     "@openapi-generator-plus/typescript-fetch-client-generator": "file:packages/typescript-fetch-client",

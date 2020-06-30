@@ -1,0 +1,1 @@
+{{#if isQueryParam}}{{#if @root/useBeanValidation}}{{>beanValidationQueryParams}}{{/if}}@retrofit2.http.Query("{{name}}") {{{nativeType}}} {{identifier name}}{{/if}}

@@ -1,0 +1,40 @@
+{
+  "name": "@openapi-generator-plus/java-retrofit-client-generator",
+  "version": "0.1.0",
+  "description": "An OpenAPI Generator+ module for a Java API client using Retrofit",
+  "keywords": [
+    "openapi-generator-plus",
+    "openapi-generator-plus-generator",
+    "openapi",
+    "openapi-generator",
+    "java",
+    "retrofit",
+    "client"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "clean": "../../node_modules/.bin/rimraf dist",
+    "watch": "../../node_modules/.bin/tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
+  "author": "Karl von Randow",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
+  "dependencies": {
+    "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
+    "@openapi-generator-plus/java-jaxrs-client-generator": "file:../java-jaxrs-client",
+    "@openapi-generator-plus/types": "^0.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "4d7336969427733ca316dfb48219f166adb9182a"
+}
