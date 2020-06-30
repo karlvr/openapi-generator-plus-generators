@@ -9,7 +9,6 @@
 	<properties>
 		<java.version>{{coalesce maven.versions.java '1.8'}}</java.version>
 		<jaxrs.version>{{coalesce maven.versions.jaxrs '2.1.1'}}</jaxrs.version>
-		<jsr305.version>{{coalesce maven.versions.jsr305 '3.0.2'}}</jsr305.version>
 		<jackson.version>{{coalesce maven.versions.jackson '2.10.2'}}</jackson.version>
 		{{#useBeanValidation}}
 		<javax.validation.version>{{coalesce maven.versions.javax_validation '2.0.0.Final'}}</javax.validation.version>
@@ -17,12 +16,6 @@
 	</properties>
 
     <dependencies>
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<version>${jsr305.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
