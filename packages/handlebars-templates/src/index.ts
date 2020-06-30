@@ -5,6 +5,7 @@ import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited }
 import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase } from 'change-case'
 import pluralize from 'pluralize'
+import * as idx from '@openapi-generator-plus/core/dist/indexed-type'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
 	const templateSource = await fs.readFile(templatePath, 'UTF-8')
@@ -371,14 +372,20 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 	})
 
-	/** Return an array of inherited properties for the current model. */
+	/** Return an array of unique and not shadowed inherited properties for the current model. */
 	hbs.registerHelper('inheritedProperties', function(this: CodegenModel, options: Handlebars.HelperOptions) {
 		if (!options) {
 			throw new Error('inheritedProperties helper must be called with no arguments')
 		}
 
 		if (this.parent) {
-			return uniquePropertiesIncludingInherited(this.parent)
+			const parentProperties = uniquePropertiesIncludingInherited(this.parent)
+			if (this.properties) {
+				const myProperties = this.properties
+				return parentProperties.filter(p => !idx.get(myProperties, p.name))
+			} else {
+				return parentProperties
+			}
 		} else {
 			return []
 		}
