@@ -274,7 +274,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
-			values.push(convertToString(arguments[i]))
+			values.push(arguments[i])
 		}
 
 		for (const value of values) {
@@ -291,7 +291,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
-			values.push(convertToString(arguments[i]))
+			values.push(arguments[i])
 		}
 
 		for (const value of values) {
