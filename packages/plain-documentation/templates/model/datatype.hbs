@@ -2,20 +2,20 @@
     {{#if discriminator}}<span class="type">Discriminator</span>{{/if}}
     
     {{#if anchor}}
-        {{#isObject}}
+        {{#if (isObject)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
-        {{else isMap}}
+        {{else if (isMap)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId componentNativeType}}">{{nativeType}}</a>
-        {{else isArray}}
+        {{else if (isArray)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId componentNativeType}}">{{nativeType}}</a>
-        {{else isEnum}}
+        {{else if (isEnum)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
         {{else}}
             {{nativeType}}
             {{#if nativeType.wireType}}
             ({{nativeType.wireType}})
             {{/if}}
-        {{/isObject}}
+        {{/if}}
     {{else}}
         {{nativeType}}
     {{/if}}

@@ -393,16 +393,12 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 }
 
 function registerPropertyTypeHelper(name: string, propertyType: CodegenPropertyType, hbs: typeof Handlebars) {
-	hbs.registerHelper(name, function(this: CodegenTypeInfo, options: Handlebars.HelperOptions) {
+	hbs.registerHelper(name, function(this: CodegenTypeInfo) {
 		const aPropertyType = this.propertyType
 		if (propertyType === undefined) {
 			throw new Error(`${name} helper used without propertyType in the context`)
 		}
 
-		if (aPropertyType === propertyType) {
-			return options.fn(this)
-		} else {
-			return options.inverse(this)
-		}
+		return (aPropertyType === propertyType)
 	})
 }

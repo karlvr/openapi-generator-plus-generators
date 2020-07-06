@@ -1,10 +1,10 @@
 {{#each models}}
-{{#isEnum}}
+{{#if (isEnum)}}
 {{>enumNested}}
 {{else if isInterface}}
 {{>interfaceNested}}
 {{else}}
 {{>pojoNested}}
-{{/isEnum}}
+{{/if}}
 
 {{/each}}

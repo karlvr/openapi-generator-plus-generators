@@ -53,25 +53,25 @@ minLength not set, maxLength set
 check for integer or long / all others=decimal type with @Decimal*
 isInteger set
 }}
-{{#isNumber}}
+{{#if (isNumber)}}
 {{#if minimum}}
 @javax.validation.constraints.Min({{minimum}}{{#if vendorExtensions.x-minimum-message}}, message="{{&vendorExtensions.x-minimum-message}}"{{/if}})
 {{/if}}
 {{#if maximum}}
 @javax.validation.constraints.Max({{maximum}}{{#if vendorExtensions.x-maximum-message}}, message="{{&vendorExtensions.x-maximum-message}}"{{/if}})
 {{/if}}
-{{/isNumber}}
+{{/if}}
 {{!
 Not Integer, not Long => we have a decimal value!
 }}
-{{^isNumber}}
+{{#unless (isNumber)}}
 {{#if minimum}}
 @javax.validation.constraints.DecimalMin("{{minimum}}"{{#if vendorExtensions.x-minimum-message}}, message="{{&vendorExtensions.x-minimum-message}}"{{/if}})
 {{/if}}
 {{#if maximum}}
 @javax.validation.constraints.DecimalMax("{{maximum}}"{{#if vendorExtensions.x-maximum-message}}, message="{{&vendorExtensions.x-maximum-message}}"{{/if}})
 {{/if}}
-{{/isNumber}}
+{{/unless}}
 {{!
 Email addresses
 }}

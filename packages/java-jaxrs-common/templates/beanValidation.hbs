@@ -1,10 +1,10 @@
-{{#isObject}}
+{{#if (isObject)}}
 @javax.validation.Valid
-{{else isArray}}
+{{else if (isArray)}}
 @javax.validation.Valid
-{{else isMap}}
+{{else if (isMap)}}
 @javax.validation.Valid
-{{/isObject}}
+{{/if}}
 {{#if required}}
 {{#unless vendorExtensions.x-not-blank}}
 {{#unless vendorExtensions.x-not-empty}}

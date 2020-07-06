@@ -33,12 +33,11 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
  */
 export namespace {{className name}} {
 {{#each models}}
-	{{#isEnum}}
+	{{#if (isEnum)}}
 	{{>modelEnum}}
-	{{/isEnum}}
-	{{^isEnum}}
+	{{else}}
 	{{>modelGeneric}}
-	{{/isEnum}}
+	{{/if}}
 {{/each}}
 }
 {{/if}}

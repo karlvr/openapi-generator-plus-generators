@@ -28,9 +28,9 @@ renders a model without the surrounding panel.
     {{>model/properties anchor=anchor}}
 {{/if}}
 
-{{#isEnum}}
+{{#if (isEnum)}}
     {{>model/enum}}
-{{/isEnum}}
+{{/if}}
 
 {{#if children}}
     {{>model/children anchor=anchor}}

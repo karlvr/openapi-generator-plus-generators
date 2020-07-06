@@ -59,7 +59,7 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}
 {{/if}}
-public {{{nativeType}}} {{#isBoolean}}is{{else}}get{{/isBoolean}}{{capitalize (identifier name)}}() {
+public {{{nativeType}}} {{#if (isBoolean)}}is{{else}}get{{/if}}{{capitalize (identifier name)}}() {
 	return this.{{identifier name}};
 }
 {{#if deprecated}}
@@ -76,7 +76,7 @@ public boolean patched{{capitalize (identifier name)}}() {
 	return this.__patched{{capitalize (identifier name)}};
 }
 {{/if}}
-{{#isArray}}
+{{#if (isArray)}}
 public void add{{capitalize (singular (identifier name))}}({{{componentNativeType}}} {{identifier (singular name)}}) {
 	if (this.{{identifier name}} == null) {
 		this.{{identifier name}} = new {{{nativeType.concreteType}}}();
@@ -86,7 +86,7 @@ public void add{{capitalize (singular (identifier name))}}({{{componentNativeTyp
 	this.__patched{{capitalize (identifier name)}} = true;
 	{{/if}}
 }
-{{/isArray}}
+{{/if}}
 
 {{/each}}
 {{/if}}

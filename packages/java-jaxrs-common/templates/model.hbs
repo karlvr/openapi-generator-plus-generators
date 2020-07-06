@@ -6,11 +6,11 @@ package {{modelPackage}};
  * {{description}}
  */
 {{/if}}
-{{#isEnum}}
+{{#if (isEnum)}}
 {{>enumClass}}
 {{else if isInterface}}
 {{>interface}}
 {{else}}
 {{>pojo}}
-{{/isEnum}}
+{{/if}}
 {{/each}}

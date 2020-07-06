@@ -24,7 +24,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#with defaultResponse}}
-			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{#isFile}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/isFile}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless nativeType}}{{#or ../parameters ../requestBody}}, {{/or}}__response{{/unless}});
+			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless nativeType}}{{#or ../parameters ../requestBody}}, {{/or}}__response{{/unless}});
 			{{#if nativeType}}
 			__response.entity(__entity);
 			{{/if}}
