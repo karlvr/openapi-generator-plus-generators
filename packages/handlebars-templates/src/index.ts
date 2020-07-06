@@ -304,7 +304,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		return options.fn(this)
 	})
 	hbs.registerHelper('not', function(this: object, value: unknown) {
-		return !!value
+		return !value
 	})
 
 	/** Test if the first argument contains the second */
