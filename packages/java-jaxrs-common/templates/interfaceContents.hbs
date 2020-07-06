@@ -3,7 +3,7 @@
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
-{{{nativeType}}} {{#if (isBoolean)}}is{{else}}get{{/if}}{{capitalize (identifier name)}}();
+{{{nativeType}}} {{#and (isBoolean) required}}is{{else}}get{{/and}}{{capitalize (identifier name)}}();
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}

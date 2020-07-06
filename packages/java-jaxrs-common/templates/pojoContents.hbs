@@ -59,7 +59,7 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}
 {{/if}}
-public {{{nativeType}}} {{#if (isBoolean)}}is{{else}}get{{/if}}{{capitalize (identifier name)}}() {
+public {{{nativeType}}} {{#and (isBoolean) required}}is{{else}}get{{/and}}{{capitalize (identifier name)}}() {
 	return this.{{identifier name}};
 }
 {{#if deprecated}}
