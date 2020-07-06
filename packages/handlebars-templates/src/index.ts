@@ -326,7 +326,10 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			if (typeInfo.propertyType === undefined || typeInfo.nativeType === undefined) {
 				throw new Error('undefinedValueLiteral helper must be called with a CodegenTypeInfo argument')
 			}
-			return state.generator.toDefaultValue(undefined, typeInfo, state).literalValue
+			return state.generator.toDefaultValue(undefined, {
+				...typeInfo,
+				required: false,
+			}, state).literalValue
 		} else {
 			return undefined
 		}
