@@ -30,7 +30,7 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
-    "@openapi-generator-plus/types": "^0.9.0",
+    "@openapi-generator-plus/types": "^0.10.0",
     "@openapi-generator-plus/typescript-generator-common": "file:../typescript-common"
   },
   "publishConfig": {

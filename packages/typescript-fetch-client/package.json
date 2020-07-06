@@ -32,7 +32,7 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "file:../generator-common",
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
-    "@openapi-generator-plus/types": "^0.9.0",
+    "@openapi-generator-plus/types": "^0.10.0",
     "@openapi-generator-plus/typescript-generator-common": "file:../typescript-common",
     "change-case": "^4.1.1"
   },
