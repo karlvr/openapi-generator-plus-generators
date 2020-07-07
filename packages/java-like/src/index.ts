@@ -57,7 +57,7 @@ export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeCo
 			if (options.schemaType === CodegenSchemaType.ENUM) {
 				name = `${name}_enum`
 			}
-			const result = cg.toSchemaName(name, options, state)
+			let result = cg.toSchemaName(name, options, state)
 			if (options.schemaType === CodegenSchemaType.OBJECT && state.options.modelClassPrefix) {
 				result = state.options.modelClassPrefix + result
 			}
