@@ -3,7 +3,7 @@ import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited } from '@openapi-generator-plus/generator-common'
 import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel } from '@openapi-generator-plus/types'
-import { snakeCase, constantCase } from 'change-case'
+import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import * as idx from '@openapi-generator-plus/core/dist/indexed-type'
 
@@ -192,6 +192,22 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	hbs.registerHelper('allCapsSnakeCase', function(value: string) {
 		if (value !== undefined) {
 			return constantCase(convertToString(value))
+		} else {
+			return value
+		}
+	})
+
+	hbs.registerHelper('sentenceCase', function(value: string) {
+		if (value !== undefined) {
+			return sentenceCase(convertToString(value))
+		} else {
+			return value
+		}
+	})
+
+	hbs.registerHelper('capitalCase', function(value: string) {
+		if (value !== undefined) {
+			return capitalCase(convertToString(value))
 		} else {
 			return value
 		}
