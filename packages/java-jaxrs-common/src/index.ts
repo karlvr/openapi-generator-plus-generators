@@ -299,6 +299,7 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 			const options: CodegenOptionsJava = {
 				apiPackage: config.apiPackage || `${packageName}`,
 				modelPackage: config.modelPackage || `${packageName}.model`,
+				modelClassPrefix: config.modelClassPrefix,
 				useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
 				includeTests: config.includeTests !== undefined ? config.includeTests : false,
 				dateImplementation: config.dateImplementation || 'java.time.LocalDate',

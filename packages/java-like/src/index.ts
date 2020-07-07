@@ -29,6 +29,7 @@ export function identifierCamelCase(value: string) {
 }
 
 export interface JavaLikeOptions {
+	modelClassPrefix?: string
 }
 
 export interface JavaLikeContext<O extends JavaLikeOptions> {
@@ -57,6 +58,9 @@ export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeCo
 				name = `${name}_enum`
 			}
 			const result = cg.toSchemaName(name, options, state)
+			if (options.schemaType === CodegenSchemaType.OBJECT && state.options.modelClassPrefix) {
+				result = state.options.modelClassPrefix + result
+			}
 			return result
 		},
 		toOperationGroupName: (name, state) => {
