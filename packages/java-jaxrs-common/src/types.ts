@@ -1,7 +1,9 @@
+import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
+
 /**
  * Options specific to Java that the user can provide to the code generation process.
  */
-export interface CodegenOptionsJava {
+export interface CodegenOptionsJava extends JavaLikeOptions {
 	apiPackage: string
 	modelPackage: string
 	useBeanValidation: boolean

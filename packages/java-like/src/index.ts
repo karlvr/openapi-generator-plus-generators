@@ -1,6 +1,7 @@
-import { CodegenGenerator, CodegenState } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenState, CodegenSchemaType } from '@openapi-generator-plus/types'
 import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
+import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 /** Returns the string converted to a string that is safe as an identifier in java-like languages */
 function identifierSafe(value: string) {
@@ -27,11 +28,15 @@ export function identifierCamelCase(value: string) {
 	return camelCase(identifierSafe(value))
 }
 
-export interface JavaLikeContext<O> {
+export interface JavaLikeOptions {
+}
+
+export interface JavaLikeContext<O extends JavaLikeOptions> {
 	reservedWords?: (state: CodegenState<O>) => string[]
 }
 
-export function javaLikeGenerator<O>(context: JavaLikeContext<O>): Pick<CodegenGenerator<O>, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toEnumName'> {
+export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeContext<O>): Pick<CodegenGenerator<O>, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toOperationGroupName'> {
+	const cg = commonGenerator<O>()
 	return {
 		toClassName: (name) => {
 			return classCamelCase(name)
@@ -47,8 +52,15 @@ export function javaLikeGenerator<O>(context: JavaLikeContext<O>): Pick<CodegenG
 		toConstantName: (name) => {
 			return constantCase(name)
 		},
-		toEnumName: (name, options, state) => {
-			return state.generator.toModelName(`${name}_enum`, options, state)
+		toSchemaName: (name, options, state) => {
+			if (options.schemaType === CodegenSchemaType.ENUM) {
+				name = `${name}_enum`
+			}
+			const result = cg.toSchemaName(name, options, state)
+			return result
+		},
+		toOperationGroupName: (name, state) => {
+			return state.generator.toClassName(name, state)
 		},
 	}
 }

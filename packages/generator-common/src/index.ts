@@ -6,9 +6,8 @@ export * from './utils'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
-export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName' | 'toModelName'> {
+export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName' | 'toSchemaName'> {
 	return {
-
 		/** Create a default operation name for operations that lack an operationId */
 		toOperationName: (path: string, method: string): string => {
 			/* Remove path variables from the path */
@@ -18,7 +17,11 @@ export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName
 			return camelCase(sanitizedCombined)
 		},
 		
-		toModelName: (name, options, state) => {
+		toSchemaName: (name, options, state) => {
+			if (options.nameSpecified) {
+				return state.generator.toClassName(name, state)
+			}
+			
 			if (options.purpose === CodegenSchemaPurpose.ARRAY_ITEM || options.purpose === CodegenSchemaPurpose.MAP_VALUE) {
 				return state.generator.toClassName(pluralize.singular(name), state)
 			} else {

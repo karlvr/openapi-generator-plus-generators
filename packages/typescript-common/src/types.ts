@@ -1,7 +1,9 @@
+import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
+
 /**
  * Options specific to the template that the user can provide to the code generation process.
  */
-export interface CodegenOptionsTypeScript {
+export interface CodegenOptionsTypeScript extends JavaLikeOptions {
 	relativeSourceOutputPath: string
 	npm?: NpmOptions
 	typescript?: TypeScriptOptions
