@@ -71,6 +71,9 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 
 		return { literalValue: 'undefined' }
 	},
+	toOperationGroupName: (name) => {
+		return name
+	},
 	options: (config): CodegenOptionsDocumentation => {
 		return {
 			customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
