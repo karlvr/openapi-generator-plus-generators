@@ -3,7 +3,7 @@ package {{apiPackage}};
 {{>frag/imports}}
 @javax.ws.rs.Path("{{{path}}}")
 {{>hooks/apiImplClassAnnotations}}
-@io.swagger.annotations.Api(description = "the {{{name}}} API")
+@io.swagger.annotations.Api(description = "the {{{capitalCase name}}} API")
 {{#if consumes}}
 @javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
