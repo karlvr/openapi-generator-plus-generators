@@ -22,6 +22,7 @@ private boolean __patched{{capitalize (identifier name)}} = false;
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
+@java.lang.Override
 public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	set{{capitalize (identifier name)}}({{identifier name}});
 	return this;
