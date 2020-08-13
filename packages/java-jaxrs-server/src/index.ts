@@ -58,7 +58,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 					{ ...group, ...state.options, ...rootContext }, false, hbs)
 			}
 
-			const invokerPackagePath = packageToPath(state.options.invokerPackage)
+			const invokerPackagePath = state.options.invokerPackage ? packageToPath(state.options.invokerPackage) : undefined
 			if (invokerPackagePath) {
 				const basePath = apiBasePath(doc.servers)
 				await emit('invoker', path.join(outputPath, relativeSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
@@ -74,7 +74,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 			const result: CodegenOptionsJavaServer = {
 				...options,
 				apiServiceImplPackage: config.apiServiceImplPackage || `${config.apiPackage || packageName}.impl`,
-				invokerPackage: config.invokerPackage || `${packageName}.app`,
+				invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
 				authenticatedOperationAnnotation: config.authenticatedOperationAnnotation,
 			}
 			return result

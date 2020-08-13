@@ -27,7 +27,7 @@ The available config file properties are:
 |`apiPackage`|`string`|Package for API service interfaces.|`"${package}"`|
 |`apiServiceImplPackage`|`string`|Package for API service implementation classes.|`"${apiPackage}.impl"`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
-|`invokerPackage`|`string`|Package for API invoker classes.|`"${package}.app"`|
+|`invokerPackage`|`string | null`|Package for API invoker classes.|`"${package}.app"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|
 
 ### Code style
