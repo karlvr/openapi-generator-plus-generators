@@ -215,28 +215,30 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 				if (typeof config.typescript.target === 'string') {
 					typeScriptOptions.target = config.typescript.target
 				}
-			} else if (typeof config.typescript === 'boolean' && config.typescript) {
-				typeScriptOptions = defaultTypeScriptOptions
-			} else {
+				if (config.typescript.libs) {
+					typeScriptOptions.libs = config.typescript.libs
+				}
+			} else if (typeof config.typescript === 'boolean') {
+				if (config.typescript) {
+					typeScriptOptions = defaultTypeScriptOptions
+				} else {
+					typeScriptOptions = undefined
+				}
+			} else if (!npm) {
+				/* If we haven't configured an npm package, then assume we don't want tsconfig either */
 				typeScriptOptions = undefined
+			} else {
+				typeScriptOptions = defaultTypeScriptOptions
 			}
 
 			if (typeScriptOptions) {
 				typeScriptOptions.libs = typeScriptOptions.libs.map(lib => lib === '$target' ? typeScriptOptions!.target : lib)
 			}
 
-			const typescriptOptions: TypeScriptOptions | undefined = typeof config.typescript === 'object' ? {
-				target: config.typescript.target || defaultTypeScriptOptions.target,
-				libs: config.typescript.libs || defaultTypeScriptOptions.libs,
-			} : (typeof config.typescript === 'boolean' && !config.typescript) ? undefined : {
-				target: defaultTypeScriptOptions.target,
-				libs: defaultTypeScriptOptions.libs,
-			}
-
 			const options: CodegenOptionsTypeScript = {
 				relativeSourceOutputPath,
 				npm: npmConfig,
-				typescript: typescriptOptions,
+				typescript: typeScriptOptions,
 				customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 			}
 
@@ -326,12 +328,12 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 
 			if (state.options.npm) {
 				await emit('package', path.join(outputPath, 'package.json'), { ...state.options.npm, ...state.options, ...rootContext }, true, hbs)
+				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 			}
 			
 			if (state.options.typescript) {
 				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...state.options.typescript, ...state.options, ...rootContext }, true, hbs)
 			}
-			await emit('gitignore', path.join(outputPath, '.gitignore'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 	
 			if (context.additionalExportTemplates) {
 				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext, state)
