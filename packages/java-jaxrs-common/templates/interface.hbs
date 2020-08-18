@@ -1,4 +1,5 @@
 {{>frag/pojoHeader}}
+{{>generatedAnnotation}}
 public interface {{className name}} {{>interfaceExtends}}{{#if parent.isInterface}}, {{{parentNativeType.concreteType}}}{{/if}} {
 
 	{{>nestedModels}}
