@@ -244,7 +244,11 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 
 	/** Format the given string as a string literal, including quotes as required */
 	hbs.registerHelper('stringLiteral', function(value: string) {
-		return generator.toLiteral(value, utils.stringLiteralValueOptions(state), state)
+		if (value === null || value === undefined || typeof value === 'string') {
+			return generator.toLiteral(value, utils.stringLiteralValueOptions(state), state)
+		} else {
+			throw new Error(`Unexpected argument type to stringLiteral helper: ${typeof value} (${value})`)
+		}
 	})
 
 	/** Block helper that evaluates if there are more items in the current iteration context */
