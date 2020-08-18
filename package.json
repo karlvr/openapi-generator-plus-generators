@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run build",
-    "clean": "lerna clean --yes && lerna run clean",
+    "clean": "lerna run clean",
     "link": "lerna clean --yes && npm link @openapi-generator-plus/core @openapi-generator-plus/types openapi-generator-plus && lerna exec --concurrency 1 -- npm link && lerna clean --yes && rimraf packages/*/package-lock.json",
     "release": "npm run clean && npm run build && npm test && lerna publish",
     "test": "lerna run test",
