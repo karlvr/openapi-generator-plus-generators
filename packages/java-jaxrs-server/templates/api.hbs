@@ -37,7 +37,7 @@ public interface {{className name}}Api {
 		{{#each securityRequirements}}
 		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
 			{{#each scopes}}
-			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{stringLiteral description}}){{#hasMore}},{{/hasMore}}
+			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{#if description}}{{{stringLiteral description}}}{{else}}""{{/if}}){{#hasMore}},{{/hasMore}}
 			{{/each}}
 		}{{/scheme.isOAuth}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
