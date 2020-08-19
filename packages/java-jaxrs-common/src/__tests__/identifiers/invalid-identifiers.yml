@@ -1,0 +1,16 @@
+---
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: Example
+paths: {}
+components:
+  schemas:
+    NumericProperties:
+      type: object
+      properties:
+        1:
+          type: string
+    NumericEnum:
+      type: string
+      enum: [2, 3]
