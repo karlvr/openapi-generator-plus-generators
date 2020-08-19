@@ -5,8 +5,10 @@ import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 /** Returns the string converted to a string that is safe as an identifier in java-like languages */
 function identifierSafe(value: string) {
-	/* Remove invalid leading characters */
-	value = value.replace(/^[^a-zA-Z_]*/, '')
+	/* Add a prefix if the identifier starts with illegal characters */
+	if (value.match(/^[^a-zA-Z_]/)) {
+		value = `_${value}`
+	}
 
 	/* Convert any illegal characters to underscores */
 	value = value.replace(/[^a-zA-Z0-9_]/g, '_')
@@ -21,11 +23,11 @@ function identifierSafe(value: string) {
  * @param value string to be turned into a class name
  */
 export function classCamelCase(value: string) {
-	return pascalCase(identifierSafe(value))
+	return identifierSafe(pascalCase(identifierSafe(value)))
 }
 
 export function identifierCamelCase(value: string) {
-	return camelCase(identifierSafe(value))
+	return identifierSafe(camelCase(identifierSafe(value)))
 }
 
 export const enum ConstantStyle {
@@ -70,13 +72,13 @@ export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeCo
 			const constantStyle = state.options.constantStyle
 			switch (constantStyle) {
 				case ConstantStyle.allCaps:
-					return constantCase(name).replace(/_/g, '')
+					return identifierSafe(constantCase(identifierSafe(name)).replace(/_/g, ''))
 				case ConstantStyle.camelCase:
 					return identifierCamelCase(name)
 				case ConstantStyle.allCapsSnake:
-					return constantCase(name)
+					return identifierSafe(constantCase(identifierSafe(name)))
 				case ConstantStyle.pascalCase:
-					return pascalCase(name)
+					return identifierSafe(pascalCase(identifierSafe(name)))
 				default:
 					throw new Error(`Invalid valid for constantStyle: ${constantStyle}`)
 			}
