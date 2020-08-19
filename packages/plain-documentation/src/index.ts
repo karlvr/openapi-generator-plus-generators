@@ -3,7 +3,7 @@ import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
-import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
+import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator, compareHttpMethods } from '@openapi-generator-plus/generator-common'
 import marked from 'marked'
 import { emit as emitLess } from './less-utils'
@@ -17,10 +17,14 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
+const javaLikeContext: JavaLikeContext<CodegenOptionsDocumentation> = {
+	defaultConstantStyle: ConstantStyle.allCapsSnake,
+}
+
 export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocumentation> = (context) => ({
 	...context.baseGenerator(),
 	...commonGenerator(),
-	...javaLikeGenerator({}),
+	...javaLikeGenerator(javaLikeContext),
 	generatorType: () => CodegenGeneratorType.DOCUMENTATION,
 	toLiteral: (value, options, state) => {
 		if (value === undefined) {
@@ -76,6 +80,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 	},
 	options: (config): CodegenOptionsDocumentation => {
 		return {
+			...javaLikeOptions(config, javaLikeContext),
 			customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 		}
 	},

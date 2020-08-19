@@ -13,7 +13,6 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	timeImplementation: string
 	dateTimeImplementation: string
 
-	constantStyle: ConstantStyle
 	imports?: string[]
 
 	hideGenerationTimestamp: boolean
@@ -24,12 +23,6 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	relativeTestOutputPath: string
 	relativeTestResourcesOutputPath?: string
 	customTemplatesPath?: string
-}
-
-export const enum ConstantStyle {
-	allCapsSnake = 'snake',
-	allCaps = 'allCaps',
-	camelCase = 'camelCase',
 }
 
 export interface MavenOptions {

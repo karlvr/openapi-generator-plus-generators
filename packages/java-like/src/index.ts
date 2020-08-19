@@ -1,4 +1,4 @@
-import { CodegenGenerator, CodegenState, CodegenSchemaType } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenState, CodegenSchemaType, CodegenConfig } from '@openapi-generator-plus/types'
 import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
@@ -28,12 +28,28 @@ export function identifierCamelCase(value: string) {
 	return camelCase(identifierSafe(value))
 }
 
+export const enum ConstantStyle {
+	allCapsSnake = 'snake',
+	allCaps = 'allCaps',
+	camelCase = 'camelCase',
+	pascalCase = 'pascalCase',
+}
+
 export interface JavaLikeOptions {
 	modelClassPrefix?: string
+	constantStyle: ConstantStyle
+}
+
+export function options<O extends JavaLikeOptions>(config: CodegenConfig, context: JavaLikeContext<O>): JavaLikeOptions {
+	const result: JavaLikeOptions = {
+		constantStyle: config.constantStyle || context.defaultConstantStyle,
+	}
+	return result
 }
 
 export interface JavaLikeContext<O extends JavaLikeOptions> {
 	reservedWords?: (state: CodegenState<O>) => string[]
+	defaultConstantStyle: ConstantStyle
 }
 
 export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeContext<O>): Pick<CodegenGenerator<O>, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toOperationGroupName'> {
@@ -50,8 +66,20 @@ export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeCo
 			}
 			return result
 		},
-		toConstantName: (name) => {
-			return constantCase(name)
+		toConstantName: (name, state) => {
+			const constantStyle = state.options.constantStyle
+			switch (constantStyle) {
+				case ConstantStyle.allCaps:
+					return constantCase(name).replace(/_/g, '')
+				case ConstantStyle.camelCase:
+					return identifierCamelCase(name)
+				case ConstantStyle.allCapsSnake:
+					return constantCase(name)
+				case ConstantStyle.pascalCase:
+					return pascalCase(name)
+				default:
+					throw new Error(`Invalid valid for constantStyle: ${constantStyle}`)
+			}
 		},
 		toSchemaName: (name, options, state) => {
 			if (!options.nameSpecified && options.schemaType === CodegenSchemaType.ENUM) {

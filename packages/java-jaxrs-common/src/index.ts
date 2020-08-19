@@ -1,10 +1,9 @@
 import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenState, CodegenGenerator } from '@openapi-generator-plus/types'
-import { constantCase } from 'change-case'
-import { CodegenOptionsJava, ConstantStyle } from './types'
+import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
-import { identifierCamelCase, javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
+import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 export { CodegenOptionsJava } from './types'
@@ -81,25 +80,15 @@ const RESERVED_WORDS = [
 ]
 
 export default function createGenerator<O extends CodegenOptionsJava>(context: JavaGeneratorContext<O>): Omit<CodegenGenerator<O>, 'generatorType'> {
+	const javaLikeContext: JavaLikeContext<O> = {
+		reservedWords: () => RESERVED_WORDS,
+		defaultConstantStyle: ConstantStyle.allCapsSnake,
+	}
+
 	return {
 		...context.baseGenerator(),
 		...commonGenerator(),
-		...javaLikeGenerator({
-			reservedWords: () => RESERVED_WORDS,
-		}),
-		toConstantName: (name, state) => {
-			const constantStyle = state.options.constantStyle
-			switch (constantStyle) {
-				case ConstantStyle.allCaps:
-					return constantCase(name).replace(/_/g, '')
-				case ConstantStyle.camelCase:
-					return identifierCamelCase(name)
-				case ConstantStyle.allCapsSnake:
-					return constantCase(name)
-				default:
-					throw new Error(`Invalid valid for constantStyle: ${constantStyle}`)
-			}
-		},
+		...javaLikeGenerator(javaLikeContext),
 		toLiteral: (value, options, state) => {
 			if (value === undefined) {
 				return state.generator.toDefaultValue(undefined, options, state).literalValue
@@ -297,6 +286,7 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 		options: (config): O => {
 			const packageName = config.package || 'com.example'
 			const options: CodegenOptionsJava = {
+				...javaLikeOptions(config, javaLikeContext),
 				apiPackage: config.apiPackage || `${packageName}`,
 				modelPackage: config.modelPackage || `${packageName}.model`,
 				modelClassPrefix: config.modelClassPrefix,
@@ -305,7 +295,6 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 				dateImplementation: config.dateImplementation || 'java.time.LocalDate',
 				timeImplementation: config.timeImplementation || 'java.time.LocalTime',
 				dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
-				constantStyle: config.constantStyle || ConstantStyle.allCapsSnake,
 				hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
 				imports: config.imports,
 				maven: config.maven && {

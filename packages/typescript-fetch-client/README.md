@@ -17,6 +17,12 @@ The available config file properties are:
 |--------|----|-----------|-------|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src` if `npm` is specified.|
 
+### Code style
+
+|Property|Type|Description|Default|
+|--------|----|-----------|-------|
+|`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"|"pascalCase"`|The style to use for constant naming.|`"pascalCase"`|
+
 ### TypeScript
 
 A `tsconfig.json` file will be output if you specify any of the TypeScript config options.

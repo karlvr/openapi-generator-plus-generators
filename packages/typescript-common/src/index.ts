@@ -3,8 +3,8 @@ import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
-import { javaLikeGenerator } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, pascalCase } from '@openapi-generator-plus/generator-common'
+import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
+import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 
@@ -53,15 +53,15 @@ const RESERVED_WORDS = [
 ]
 
 export default function createGenerator<O extends CodegenOptionsTypeScript>(context: TypeScriptGeneratorContext<O>): Omit<CodegenGenerator<O>, 'generatorType'> {
+	const javaLikeContext: JavaLikeContext<O> = {
+		reservedWords: () => RESERVED_WORDS,
+		defaultConstantStyle: ConstantStyle.pascalCase,
+	}
+
 	return {
 		...context.baseGenerator(),
 		...commonGenerator(),
-		...javaLikeGenerator({
-			reservedWords: () => RESERVED_WORDS,
-		}),
-		toConstantName: (name) => {
-			return pascalCase(name)
-		},
+		...javaLikeGenerator(javaLikeContext),
 		toLiteral: (value, options, state) => {
 			if (value === undefined) {
 				return state.generator.toDefaultValue(undefined, options, state).literalValue
@@ -236,6 +236,7 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 			}
 
 			const options: CodegenOptionsTypeScript = {
+				...javaLikeOptions(config, javaLikeContext),
 				relativeSourceOutputPath,
 				npm: npmConfig,
 				typescript: typeScriptOptions,
