@@ -5,6 +5,10 @@ import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 /** Returns the string converted to a string that is safe as an identifier in java-like languages */
 function identifierSafe(value: string) {
+	if (typeof value !== 'string') {
+		throw new Error(`identifierSafe called with non-string: ${typeof value} (${value})`)
+	}
+
 	/* Add a prefix if the identifier starts with illegal characters */
 	if (value.match(/^[^a-zA-Z_]/)) {
 		value = `_${value}`

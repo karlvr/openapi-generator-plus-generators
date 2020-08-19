@@ -9,6 +9,10 @@ import { commonGenerator } from '@openapi-generator-plus/generator-common'
 export { CodegenOptionsJava } from './types'
 
 function escapeString(value: string) {
+	if (typeof value !== 'string') {
+		throw new Error(`escapeString called with non-string: ${typeof value} (${value})`)
+	}
+
 	value = value.replace(/\\/g, '\\\\')
 	value = value.replace(/"/g, '\\"')
 	value = value.replace(/\n/g, '\\n')
@@ -102,6 +106,10 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 	
 			switch (type) {
 				case 'integer': {
+					if (typeof value !== 'number') {
+						throw new Error(`toLiteral with type integer called with non-number: ${typeof value} (${value})`)
+					}
+
 					if (format === 'int32' || format === undefined) {
 						return !required ? `java.lang.Integer.valueOf(${value})` : `${value}`
 					} else if (format === 'int64') {
@@ -111,6 +119,10 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 					}
 				}
 				case 'number': {
+					if (typeof value !== 'number') {
+						throw new Error(`toLiteral with type number called with non-number: ${typeof value} (${value})`)
+					}
+
 					if (format === undefined) {
 						return `new java.math.BigDecimal("${value}")`
 					} else if (format === 'float') {
@@ -122,6 +134,10 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 					}
 				}
 				case 'string': {
+					if (typeof value !== 'string') {
+						throw new Error(`toLiteral with type string called with non-string: ${typeof value} (${value})`)
+					}
+
 					if (format === 'byte') {
 						return !required ? `java.lang.Byte.valueOf(${value}b)` : `${value}b`
 					} else if (format === 'binary') {
@@ -137,6 +153,10 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 					}
 				}
 				case 'boolean':
+					if (typeof value !== 'boolean') {
+						throw new Error(`toLiteral with type boolean called with non-boolean: ${typeof value} (${value})`)
+					}
+
 					return !required ? `java.lang.Boolean.valueOf(${value})` : `${value}`
 				case 'object':
 				case 'file':

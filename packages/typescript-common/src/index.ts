@@ -9,6 +9,10 @@ import { commonGenerator } from '@openapi-generator-plus/generator-common'
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 
 function escapeString(value: string) {
+	if (typeof value !== 'string') {
+		throw new Error(`escapeString called with non-string: ${typeof value} (${value})`)
+	}
+	
 	value = value.replace(/\\/g, '\\\\')
 	value = value.replace(/'/g, '\\\'')
 	value = value.replace(/\n/g, '\\n')
