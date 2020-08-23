@@ -48,6 +48,7 @@ export interface JavaLikeOptions {
 
 export function options<O extends JavaLikeOptions>(config: CodegenConfig, context: JavaLikeContext<O>): JavaLikeOptions {
 	const result: JavaLikeOptions = {
+		modelClassPrefix: config.modelClassPrefix,
 		constantStyle: config.constantStyle || context.defaultConstantStyle,
 	}
 	return result
