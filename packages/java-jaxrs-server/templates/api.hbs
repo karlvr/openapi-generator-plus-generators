@@ -10,7 +10,6 @@ package {{apiPackage}};
 @javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 {{>generatedAnnotation}}
-@java.lang.SuppressWarnings("all")
 public interface {{className name}}Api {
 
 {{#each operations}}

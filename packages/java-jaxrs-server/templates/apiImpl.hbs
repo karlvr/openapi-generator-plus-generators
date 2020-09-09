@@ -11,7 +11,6 @@ package {{apiPackage}};
 @javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 {{>generatedAnnotation}}
-@java.lang.SuppressWarnings("all")
 public class {{className name}}ApiImpl implements {{apiPackage}}.{{className name}}Api {
 
 	{{>util/inject interface=(concat apiPackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
