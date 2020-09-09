@@ -4,14 +4,15 @@
   "scripts": {
     "build": "lerna run build",
     "clean": "lerna run clean",
-    "link": "lerna clean --yes && npm link @openapi-generator-plus/core @openapi-generator-plus/types openapi-generator-plus && lerna exec --concurrency 1 -- npm link && lerna clean --yes && rimraf packages/*/package-lock.json",
+    "link": "lerna clean --yes && npm link @openapi-generator-plus/core @openapi-generator-plus/types @openapi-generator-plus/indexed-type @openapi-generator-plus/testing openapi-generator-plus && lerna exec --concurrency 1 -- npm link && lerna clean --yes && rimraf packages/*/package-lock.json",
     "release": "npm run clean && npm run build && npm test && lerna publish",
     "test": "lerna run test",
     "watch": "lerna run --parallel watch"
   },
   "devDependencies": {
-    "@openapi-generator-plus/core": "^0.11.1",
-    "@openapi-generator-plus/types": "^0.11.1",
+    "@openapi-generator-plus/core": "^0.12.1",
+    "@openapi-generator-plus/types": "^0.12.1",
+    "@openapi-generator-plus/testing": "^0.12.1",
     "@types/jest": "^25.1.2",
     "@types/less": "^3.0.1",
     "@types/lodash": "^4.14.149",

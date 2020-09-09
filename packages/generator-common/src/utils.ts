@@ -1,5 +1,5 @@
 import { CodegenModel, CodegenProperties, CodegenProperty } from '@openapi-generator-plus/types'
-import * as idx from '@openapi-generator-plus/core/dist/indexed-type'
+import { idx } from '@openapi-generator-plus/core'
 
 /**
  * Return an object containing all of the unique properties, including inherited properties, for a model, where properties

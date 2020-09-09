@@ -1,5 +1,5 @@
 import Maven from 'maven'
-import { createCodegenResult, CodegenResult } from '@openapi-generator-plus/core/dist/testing'
+import { createCodegenResult, CodegenResult } from '@openapi-generator-plus/testing'
 import createGenerator from '..'
 import path from 'path'
 import { CodegenOptionsJavaServer } from '@openapi-generator-plus/java-jaxrs-server-generator'

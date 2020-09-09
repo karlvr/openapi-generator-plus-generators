@@ -1,4 +1,4 @@
-import { createCodegenResult } from '@openapi-generator-plus/core/dist/testing'
+import { createCodegenResult } from '@openapi-generator-plus/testing'
 import { testGenerate } from '@openapi-generator-plus/generator-common/dist/testing'
 import path from 'path'
 import createGenerator from '..'

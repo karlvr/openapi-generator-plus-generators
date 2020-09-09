@@ -1,4 +1,4 @@
-import { CodegenResult } from '@openapi-generator-plus/core/dist/testing'
+import { CodegenResult } from '@openapi-generator-plus/testing'
 import { promises as fs } from 'fs'
 import path from 'path'
 import os from 'os'

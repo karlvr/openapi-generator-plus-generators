@@ -5,7 +5,7 @@ import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited }
 import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
-import * as idx from '@openapi-generator-plus/core/dist/indexed-type'
+import { idx } from '@openapi-generator-plus/core'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
 	const templateSource = await fs.readFile(templatePath, 'UTF-8')
