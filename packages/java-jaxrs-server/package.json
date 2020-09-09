@@ -34,7 +34,6 @@
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
     "@openapi-generator-plus/java-jaxrs-generator-common": "file:../java-jaxrs-common",
     "@openapi-generator-plus/java-like-generator-helper": "file:../java-like",
-    "@openapi-generator-plus/types": "^0.11.1",
     "change-case": "^4.1.1"
   },
   "publishConfig": {

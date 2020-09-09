@@ -20,11 +20,12 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/core": "^0.11.1",
     "@openapi-generator-plus/generator-common": "file:../generator-common",
-    "@openapi-generator-plus/types": "^0.11.1",
     "handlebars": "^4.7.6",
     "pluralize": "^8.0.0"
+  },
+  "peerDependencies": {
+    "@openapi-generator-plus/core": "^0.11.1"
   },
   "publishConfig": {
     "access": "public"
