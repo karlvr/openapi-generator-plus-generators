@@ -13,6 +13,7 @@
 		{{#useBeanValidation}}
 		<javax.validation.version>{{coalesce maven.versions.javax_validation '2.0.0.Final'}}</javax.validation.version>
 		{{/useBeanValidation}}
+		{{>hooks/pomProperties}}
 	</properties>
 
     <dependencies>
@@ -42,6 +43,7 @@
 			<version>${javax.validation.version}</version>
 		</dependency>
 		{{/useBeanValidation}}
+		{{>hooks/pomDependencies}}
     </dependencies>
 
 	<dependencyManagement>
