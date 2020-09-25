@@ -1,12 +1,14 @@
-import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenGeneratorType, CodegenGenerator } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator, { JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaClient } from './types'
 export { CodegenOptionsJavaClient } from './types'
+export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaClient, JavaGeneratorContext<CodegenOptionsJavaClient>> = (context) => {
-	const base = javaGenerator<CodegenOptionsJavaClient>({
+export default function createGenerator<O extends CodegenOptionsJavaClient>(context: JavaGeneratorContext<O>): CodegenGenerator<O> {
+
+	const base = javaGenerator<O>({
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
@@ -28,7 +30,12 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaClie
 			const result: CodegenOptionsJavaClient = {
 				...options,
 			}
-			return result
+			
+			if (context.transformOptions) {
+				return context.transformOptions(config, options)
+			} else {
+				return result as O
+			}
 		},
 		customiseRootContext: async(rootContext) => {
 			rootContext.generatorClass = '@openapi-generator-plus/java-jaxrs-client-generator'
@@ -43,5 +50,3 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaClie
 		generatorType: () => CodegenGeneratorType.CLIENT,
 	}
 }
-
-export default createGenerator

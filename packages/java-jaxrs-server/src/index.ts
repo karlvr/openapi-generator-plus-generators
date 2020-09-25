@@ -77,7 +77,12 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 				invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
 				authenticatedOperationAnnotation: config.authenticatedOperationAnnotation,
 			}
-			return result
+			
+			if (context.transformOptions) {
+				return context.transformOptions(config, options)
+			} else {
+				return result
+			}
 		},
 		customiseRootContext: async(rootContext) => {
 			rootContext.generatorClass = '@openapi-generator-plus/java-jaxrs-server-generator'
