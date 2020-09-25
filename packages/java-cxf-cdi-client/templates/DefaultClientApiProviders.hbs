@@ -1,0 +1,15 @@
+package {{invokerImplPackage}};
+
+/**
+ * Creates a list of {@link javax.ws.rs.ext.Provider} implementations for the JAX-RS client to use.
+ */
+@javax.enterprise.context.Dependent
+public class DefaultClientApiProviders implements {{invokerPackage}}.ClientApiProviders {
+	
+	public java.util.List<?> createProviders() {
+		java.util.List<Object> result = new java.util.ArrayList<>();
+		result.add(new com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider());
+		return result;
+	}
+
+}
