@@ -13,6 +13,7 @@ public class DefaultClientApi implements {{invokerPackage}}.ClientApi {
 
 	{{#each apis}}
 	@java.lang.Override
+	@javax.enterprise.inject.Produces
 	public {{@root.apiPackage}}.{{className name}}Api get{{className name}}Api() {
 		if ({{identifier name}}Api == null) {
 			synchronized (this) {
