@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited } from '@openapi-generator-plus/generator-common'
-import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel } from '@openapi-generator-plus/types'
+import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel, CodegenOperation } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -397,7 +397,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 
 	/** Return an array of unique and not shadowed inherited properties for the current model. */
 	hbs.registerHelper('inheritedProperties', function(this: CodegenModel, options: Handlebars.HelperOptions) {
-		if (!options) {
+		if (!options || !options.hash) {
 			throw new Error('inheritedProperties helper must be called with no arguments')
 		}
 
@@ -409,6 +409,18 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			} else {
 				return parentProperties
 			}
+		} else {
+			return []
+		}
+	})
+
+	hbs.registerHelper('nonDefaultResponses', function(this: CodegenOperation, options: Handlebars.HelperOptions) {
+		if (!options || !options.hash) {
+			throw new Error('nonDefaultResponses helper must be called with no arguments')
+		}
+
+		if (this.responses) {
+			return idx.allValues(this.responses).filter(response => !response.isDefault)
 		} else {
 			return []
 		}
