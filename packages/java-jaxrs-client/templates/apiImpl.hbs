@@ -1,0 +1,27 @@
+package {{apiImplPackage}};
+
+{{>frag/imports}}
+{{>hooks/apiImplHeader}}
+{{>generatedAnnotation}}
+public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{className name}}Api {
+
+	{{>hooks/injectApi group=. name='api'}}
+
+	{{>hooks/apiImplClassBody}}
+{{#each operations}}
+	@Override
+	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>serviceBodyParam}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{{className ../name}}}{{{code}}}Exception{{/each}} {
+		try {
+			{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{identifier requestBody.name}}{{/if}});
+		} catch (javax.ws.rs.WebApplicationException __e) {
+			{{#each (nonDefaultResponses)}}
+			if (__e.getResponse().getStatus() == {{code}}) {
+				throw new {{className ../name}}{{code}}Exception({{#if nativeType}}__e.getResponse().readEntity({{nativeType}}.class){{/if}});
+			}
+			{{/each}}
+			throw __e;
+		}
+	}
+	
+{{/each}}
+}

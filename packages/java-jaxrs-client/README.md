@@ -22,7 +22,9 @@ The available config file properties are:
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`package`|`string`|Base package name that other default package names will be based on.|`"com.example"`|
-|`apiPackage`|`string`|Package for API service interfaces.|`"${package}"`|
+|`apiPackage`|`string`|Package for API interfaces.|`"${package}"`|
+|`apiImplPackage`|`string`|Package for API implementation classes.|`"${package}.impl"`|
+|`apiSpecPackage`|`string`|Package for JAX-RS API interfaces.|`"${package}.spec"`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|
 

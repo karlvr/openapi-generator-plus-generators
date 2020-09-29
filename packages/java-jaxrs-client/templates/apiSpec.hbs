@@ -1,0 +1,41 @@
+package {{apiSpecPackage}};
+
+{{>frag/imports}}
+/**
+ * The JAX-RS API client interface.
+ * {{{md description}}}
+ */
+@javax.ws.rs.Path("{{{path}}}")
+{{#if consumes}}
+@javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
+{{/if}}
+{{#if produces}}
+@javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
+{{/if}}
+{{>generatedAnnotation}}
+public interface {{className name}}ApiSpec {
+
+{{#each operations}}
+	{{>nestedModels}}
+	@javax.ws.rs.{{httpMethod}}
+	{{#if securityRequirements}}
+	{{#if @root.authenticatedOperationAnnotation}}
+	{{@root.authenticatedOperationAnnotation}}
+	{{/if}}
+	{{/if}}
+	{{#if deprecated}}
+	@java.lang.Deprecated
+	{{/if}}
+	{{#if path}}
+	@javax.ws.rs.Path("{{{path}}}")
+	{{/if}}
+	{{#if consumes}}
+	@javax.ws.rs.Consumes({ {{#each consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
+	{{/if}}
+	{{#if produces}}
+	@javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
+	{{/if}}
+	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
+
+{{/each}}
+}

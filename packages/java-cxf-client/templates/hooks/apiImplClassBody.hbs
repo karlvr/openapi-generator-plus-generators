@@ -1,0 +1,22 @@
+public {{className name}}ApiImpl() {
+	this({{apiPackage}}.ApiConstants.BASE_ADDRESS, {{apiPackage}}.ApiConstants.defaultProviders());
+}
+
+public {{className name}}ApiImpl(String baseAddress) {
+	this(baseAddress, {{apiPackage}}.ApiConstants.defaultProviders());
+}
+
+public {{className name}}ApiImpl(java.lang.String baseAddress, java.util.List<?> providers) {
+	this.api = org.apache.cxf.jaxrs.client.JAXRSClientFactory.create(baseAddress, {{@root.apiSpecPackage}}.{{className name}}ApiSpec.class, providers);
+}
+
+@java.lang.Override
+public void authorize(java.lang.String headerValue) {
+	org.apache.cxf.jaxrs.client.WebClient.client(api).header("Authorization", headerValue);
+}
+
+@java.lang.Override
+public org.apache.cxf.jaxrs.client.Client client() {
+	return org.apache.cxf.jaxrs.client.WebClient.client(api);
+}
+

@@ -1,11 +1,11 @@
-# Java CXF + CDI Client API generator for OpenAPI Generator+
+# Java CXF Client API generator for OpenAPI Generator+
 
-An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) module for a Java API server using CXF and CDI annotations
+An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) module for a Java API server using CXF
 
 See [java-jaxrs-client-generator](https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-jaxrs-client) for documentation.
 
-The Java CXF + CDI client API includes interfaces and default implementations to invoke the API. These are created
-in the `invokerPackage` package.
+The Java CXF client API includes interfaces and default implementations to invoke the API. These are created
+in the `impl` package.
 
 ## Config file
 

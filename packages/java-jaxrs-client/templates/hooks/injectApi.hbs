@@ -1,0 +1,7 @@
+{{!--
+Inject the API group.
+
+@param group the api operation group
+@param name the property name
+--}}
+{{>util/inject interface=(concat @root/apiSpecPackage '.' (className group.name) 'ApiSpec') name=name}}
