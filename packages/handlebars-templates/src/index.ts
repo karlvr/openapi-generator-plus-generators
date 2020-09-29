@@ -429,7 +429,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 
 	hbs.registerHelper('md', function(value: string) {
 		if (typeof value === 'string') {
-			return marked(value)
+			return marked(value).trim()
 		} else {
 			return value
 		}
