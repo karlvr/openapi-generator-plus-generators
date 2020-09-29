@@ -1,1 +1,1 @@
-{{#with requestBody}}{{{nativeType}}} {{name}}{{/with}}
+{{#with requestBody}}{{#ifeq consumes.[0].mimeType 'application/x-www-form-urlencoded'}}javax.ws.rs.core.Form{{else}}{{{nativeType}}}{{/ifeq}} {{identifier name}}{{/with}}
