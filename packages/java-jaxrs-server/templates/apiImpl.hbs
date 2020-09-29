@@ -33,7 +33,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{/with}}
 		{{#each responses}}
 		{{^isDefault}}
-		} catch ({{apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
+		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
 			__response.status({{code}});
 			{{#if nativeType}}
 			__response.entity(__e.getEntity());
