@@ -29,15 +29,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 		additionalExportTemplates: async(outputPath, doc, hbs, rootContext, state) => {
 			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 			const apiPackagePath = packageToPath(state.options.apiPackage)
-			
-			for (const group of doc.groups) {
-				const operations = group.operations
-				if (!operations.length) {
-					continue
-				}
-				await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}ApiImpl.java`), 
-					{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
-			}
 	
 			for (const group of doc.groups) {
 				const operations = group.operations
@@ -71,9 +62,11 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 		},
 		transformOptions: (config, options) => {
 			const packageName = config.package || 'com.example'
+			const apiServicePackage = config.apiServicePackage || `${options.apiPackage}.service`
 			const result: CodegenOptionsJavaServer = {
 				...options,
-				apiServiceImplPackage: config.apiServiceImplPackage || `${config.apiPackage || packageName}.impl`,
+				apiServicePackage,
+				apiServiceImplPackage: config.apiServiceImplPackage || `${apiServicePackage}.impl`,
 				invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
 				authenticatedOperationAnnotation: config.authenticatedOperationAnnotation,
 			}
@@ -89,6 +82,19 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 			if (context.customiseRootContext) {
 				context.customiseRootContext(rootContext)
 			}
+		},
+		additionalCleanPathPatterns: (options) => {
+			const relativeSourceOutputPath = options.relativeSourceOutputPath
+			
+			const apiServicePackagePath = packageToPath(options.apiServicePackage)
+
+			const result = [
+				path.join(relativeSourceOutputPath, apiServicePackagePath, '*ApiService.java'),
+			]
+			if (context.additionalCleanPathPatterns) {
+				result.push(...context.additionalCleanPathPatterns(options))
+			}
+			return result
 		},
 	})
 	return {

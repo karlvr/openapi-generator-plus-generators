@@ -68,6 +68,7 @@ export interface JavaGeneratorContext<O extends CodegenOptionsJava> extends Code
 	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
 	additionalWatchPaths?: (config: CodegenConfig) => string[]
 	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext, state: CodegenState<O>) => Promise<void>
+	additionalCleanPathPatterns?: (options: O) => string[]
 	transformOptions?: (config: CodegenConfig, options: CodegenOptionsJava) => O
 }
 
@@ -305,9 +306,11 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 		},
 		options: (config): O => {
 			const packageName = config.package || 'com.example'
+			const apiPackage = config.apiPackage || `${packageName}`
 			const options: CodegenOptionsJava = {
 				...javaLikeOptions(config, javaLikeContext),
-				apiPackage: config.apiPackage || `${packageName}`,
+				apiPackage,
+				apiImplPackage: config.apiImplPackage || `${apiPackage}.impl`,
 				modelPackage: config.modelPackage || `${packageName}.model`,
 				useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
 				includeTests: config.includeTests !== undefined ? config.includeTests : false,
@@ -355,14 +358,18 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 			const relativeSourceOutputPath = options.relativeSourceOutputPath
 			
 			const apiPackagePath = packageToPath(options.apiPackage)
+			const apiImplPackagePath = packageToPath(options.apiImplPackage)
 			const modelPackagePath = packageToPath(options.modelPackage)
 	
-			return [
+			const result = [
 				path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
-				path.join(relativeSourceOutputPath, apiPackagePath, '*ApiImpl.java'),
-				path.join(relativeSourceOutputPath, apiPackagePath, '*ApiService.java'),
+				path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
 				path.join(relativeSourceOutputPath, modelPackagePath, '*.java'),
 			]
+			if (context.additionalCleanPathPatterns) {
+				result.push(...context.additionalCleanPathPatterns(options))
+			}
+			return result
 		},
 	
 		exportTemplates: async(outputPath, doc, state) => {
@@ -397,6 +404,16 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 					continue
 				}
 				await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}Api.java`), 
+					{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
+			}
+			
+			const apiImplPackagePath = packageToPath(state.options.apiImplPackage)
+			for (const group of doc.groups) {
+				const operations = group.operations
+				if (!operations.length) {
+					continue
+				}
+				await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${state.generator.toClassName(group.name, state)}ApiImpl.java`), 
 					{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 			}
 	

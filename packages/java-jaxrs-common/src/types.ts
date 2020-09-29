@@ -5,6 +5,7 @@ import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-hel
  */
 export interface CodegenOptionsJava extends JavaLikeOptions {
 	apiPackage: string
+	apiImplPackage: string
 	modelPackage: string
 	useBeanValidation: boolean
 	includeTests: boolean

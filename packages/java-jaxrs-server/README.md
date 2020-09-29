@@ -24,8 +24,10 @@ The available config file properties are:
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`package`|`string`|Base package name that other default package names will be based on.|`"com.example"`|
-|`apiPackage`|`string`|Package for API service interfaces.|`"${package}"`|
-|`apiServiceImplPackage`|`string`|Package for API service implementation classes.|`"${apiPackage}.impl"`|
+|`apiPackage`|`string`|Package for API interfaces.|`"${package}"`|
+|`apiImplPackage`|`string`|Package for API implementation classes.|`"${package}.impl"`|
+|`apiServicePackage`|`string`|Package for API service interfaces.|`"${package}.service"`|
+|`apiServiceImplPackage`|`string`|Package for API service implementation classes.|`"${apiPackage}.service.impl"`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
 |`invokerPackage`|`string | null`|Package for API invoker classes.|`"${package}.app"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|

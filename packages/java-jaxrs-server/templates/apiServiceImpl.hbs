@@ -2,7 +2,7 @@ package {{apiServiceImplPackage}};
 
 {{>frag/imports}}
 {{>hooks/apiServiceImplClassAnnotations}}
-public class {{className name}}ApiServiceImpl implements {{@root/apiPackage}}.{{className name}}ApiService {
+public class {{className name}}ApiServiceImpl implements {{@root/apiServicePackage}}.{{className name}}ApiService {
 
 {{#each operations}}
 	@Override
