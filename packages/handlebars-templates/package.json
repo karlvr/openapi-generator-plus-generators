@@ -22,6 +22,7 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "file:../generator-common",
     "handlebars": "^4.7.6",
+    "marked": "^0.8.0",
     "pluralize": "^8.0.0"
   },
   "peerDependencies": {

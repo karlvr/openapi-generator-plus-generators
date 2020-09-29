@@ -5,7 +5,6 @@ import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator, compareHttpMethods } from '@openapi-generator-plus/generator-common'
-import marked from 'marked'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
 
@@ -104,13 +103,6 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsDocument
 		const hbs = Handlebars.create()
 
 		registerStandardHelpers(hbs, context, state)
-		hbs.registerHelper('md', function(value: string) {
-			if (typeof value === 'string') {
-				return marked(value)
-			} else {
-				return value
-			}
-		})
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		hbs.registerHelper('eachSorted', function(this: object, context: Array<any> | object | Map<any, any>, options: Handlebars.HelperOptions) {
 			if (!context) {

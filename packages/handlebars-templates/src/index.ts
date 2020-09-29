@@ -6,6 +6,7 @@ import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenProperty
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
+import marked from 'marked'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
 	const templateSource = await fs.readFile(templatePath, 'UTF-8')
@@ -423,6 +424,14 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			return idx.allValues(this.responses).filter(response => !response.isDefault)
 		} else {
 			return []
+		}
+	})
+
+	hbs.registerHelper('md', function(value: string) {
+		if (typeof value === 'string') {
+			return marked(value)
+		} else {
+			return value
 		}
 	})
 }
