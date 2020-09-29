@@ -72,7 +72,7 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 			}
 			
 			if (context.transformOptions) {
-				return context.transformOptions(config, options)
+				return context.transformOptions(config, result)
 			} else {
 				return result
 			}
