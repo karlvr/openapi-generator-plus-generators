@@ -28,24 +28,24 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 		},
 		additionalExportTemplates: async(outputPath, doc, hbs, rootContext, state) => {
 			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
-			const apiPackagePath = packageToPath(state.options.apiPackage)
 	
+			const apiServicePackagePath = packageToPath(state.options.apiServicePackage)
 			for (const group of doc.groups) {
 				const operations = group.operations
 				if (!operations.length) {
 					continue
 				}
-				await emit('apiService', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}ApiService.java`), 
+				await emit('apiService', path.join(outputPath, relativeSourceOutputPath, apiServicePackagePath, `${state.generator.toClassName(group.name, state)}ApiService.java`), 
 					{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 			}
 
-			const apiImplPackagePath = packageToPath(state.options.apiServiceImplPackage)
+			const apiServiceImplPackagePath = packageToPath(state.options.apiServiceImplPackage)
 			for (const group of doc.groups) {
 				const operations = group.operations
 				if (!operations.length) {
 					continue
 				}
-				await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`),
+				await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiServiceImplPackagePath, `${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`),
 					{ ...group, ...state.options, ...rootContext }, false, hbs)
 			}
 
