@@ -1,15 +1,10 @@
 package {{apiPackage}};
 
-import org.jboss.weld.junit5.EnableWeld;
-import org.jboss.weld.junit5.WeldInitiator;
-import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 public class {{className name}}ApiTest {
 
-	{{>hooks/inject interface=(concat apiPackage '.' (className name) 'Api') class=(concat apiImplPackage '.' (className name) 'ApiImpl') name='api'}}
+	{{>util/inject interface=(concat apiPackage '.' (className name) 'Api') class=(concat apiImplPackage '.' (className name) 'ApiImpl') name='api'}}
 
 	@Test
 	public void test() throws Exception {
