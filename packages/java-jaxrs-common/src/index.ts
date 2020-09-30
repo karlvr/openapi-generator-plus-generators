@@ -166,7 +166,13 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 	
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeType: ({ type, format, required }, state) => {
+		toNativeType: ({ type, format, required, vendorExtensions }, state) => {
+			if (vendorExtensions && vendorExtensions['x-java-type']) {
+				return new context.NativeType(vendorExtensions['x-java-type'], {
+					componentType: new context.NativeType(vendorExtensions['x-java-type']),
+				})
+			}
+			
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (type) {
 				case 'integer': {
