@@ -25,7 +25,7 @@
     "url-parse": "^1.4.7"
   },
   "peerDependencies": {
-    "@openapi-generator-plus/core": "^0.12.1"
+    "@openapi-generator-plus/core": "^0.13.0"
   },
   "publishConfig": {
     "access": "public"
