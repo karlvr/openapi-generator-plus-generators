@@ -19,7 +19,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 				throw new {{className ../name}}{{code}}Exception({{#if nativeType}}__e.getResponse().readEntity({{nativeType}}.class){{/if}});
 			}
 			{{/each}}
-			throw __e;
+			throw new {{{className name}}}UnexpectedResponseException(__e.getResponse());
 		}
 	}
 	
