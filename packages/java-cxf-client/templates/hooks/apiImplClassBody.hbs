@@ -1,9 +1,9 @@
 public {{className name}}ApiImpl() {
-	this({{apiPackage}}.ApiConstants.BASE_ADDRESS, {{apiPackage}}.ApiConstants.defaultProviders());
+	this({{apiPackage}}.ApiConstants.DEFAULT_SERVER, {{apiPackage}}.ApiProviders.defaultProviders());
 }
 
 public {{className name}}ApiImpl(String baseAddress) {
-	this(baseAddress, {{apiPackage}}.ApiConstants.defaultProviders());
+	this(baseAddress, {{apiPackage}}.ApiProviders.defaultProviders());
 }
 
 public {{className name}}ApiImpl(java.lang.String baseAddress, java.util.List<?> providers) {

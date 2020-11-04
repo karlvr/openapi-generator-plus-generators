@@ -2,8 +2,25 @@ package {{apiPackage}};
 
 public interface ApiConstants {
 
-	public static String BASE_ADDRESS = {{{stringLiteral server.url}}};
+	{{#if server.description}}
+	/**
+	 * {{{md server.description}}}
+	 */
+	{{/if}}
+	public static String DEFAULT_SERVER = {{{stringLiteral server.url}}};
 
+	{{#each servers}}
+	{{#if description}}
+	/**
+	 * {{{md description}}}
+	 */
+	{{/if}}
+	{{#if vendorExtensions.x-name}}
+	public static String {{constantName (concat vendorExtensions.x-name 'Server')}} = {{{stringLiteral url}}};
+	{{else}}
+	public static String {{constantName (concat 'Server' '_' @index)}} = {{{stringLiteral url}}};
+	{{/if}}
+
+	{{/each}}
 	{{>hooks/apiConstantsBody}}
-
 }

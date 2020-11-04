@@ -49,8 +49,8 @@ export default function createGenerator<O extends CodegenOptionsJavaClient>(cont
 
 			const apiPackagePath = packageToPath(state.options.apiPackage)
 			await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
-				server: doc.servers && doc.servers.length ? doc.servers[0] : undefined, ...state.options, ...rootContext,
-			}, false, hbs)
+				servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined, ...state.options, ...rootContext,
+			}, true, hbs)
 			await emit('ApiInvoker', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), 
 				{ ...state.options, ...rootContext }, true, hbs)
 
