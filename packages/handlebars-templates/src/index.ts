@@ -290,6 +290,30 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 	})
 	
+	hbs.registerHelper('ifdef', function(this: object, value: unknown, options: Handlebars.HelperOptions) {
+		if (!options) {
+			throw new Error('ifdef helper must be called with one argument')
+		}
+
+		if (value !== undefined) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
+	
+	hbs.registerHelper('ifndef', function(this: object, value: unknown, options: Handlebars.HelperOptions) {
+		if (!options) {
+			throw new Error('ifndef helper must be called with one argument')
+		}
+
+		if (value === undefined) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
+
 	hbs.registerHelper('or', function(this: object) {
 		const values = []
 		// eslint-disable-next-line prefer-rest-params
