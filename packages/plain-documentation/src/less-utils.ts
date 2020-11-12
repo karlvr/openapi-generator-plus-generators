@@ -8,9 +8,9 @@ export async function emit(fileName: string, outputPath: string) {
 		filename: resolvedFileName,
 	}
 
-	const templateSource = await fs.readFile(resolvedFileName, 'UTF-8')
+	const templateSource = await fs.readFile(resolvedFileName, { encoding: 'utf-8' })
 	const result = await less.render(templateSource as string, lessOptions)
 
 	await fs.mkdir(path.dirname(outputPath), { recursive: true })
-	await fs.writeFile(outputPath, result.css, 'UTF-8')
+	await fs.writeFile(outputPath, result.css, { encoding: 'utf-8' })
 }

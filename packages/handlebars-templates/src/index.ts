@@ -9,7 +9,7 @@ import { idx } from '@openapi-generator-plus/core'
 import marked from 'marked'
 
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
-	const templateSource = await fs.readFile(templatePath, 'UTF-8')
+	const templateSource = await fs.readFile(templatePath, { encoding: 'utf-8' })
 	return hbs.compile(templateSource)
 }
 
@@ -82,7 +82,7 @@ export async function emit(templateName: string, outputPath: string, context: ob
 			}
 		}
 		await fs.mkdir(path.dirname(outputPath), { recursive: true })
-		await fs.writeFile(outputPath, outputString, 'UTF-8')
+		await fs.writeFile(outputPath, outputString, { encoding: 'utf-8' })
 	}
 }
 
