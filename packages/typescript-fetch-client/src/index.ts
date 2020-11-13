@@ -1,10 +1,11 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
-import typescriptGenerator, { CodegenOptionsTypeScript } from '@openapi-generator-plus/typescript-generator-common'
+import typescriptGenerator from '@openapi-generator-plus/typescript-generator-common'
+import { CodegenOptionsTypeScriptFetchClient } from './types'
 
-const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScript> = (context) => {
-	const base = typescriptGenerator<CodegenOptionsTypeScript>({
+const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScriptFetchClient> = (context) => {
+	const base = typescriptGenerator<CodegenOptionsTypeScriptFetchClient>({
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
@@ -23,8 +24,9 @@ const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScript> = (
 			await emit('README', path.join(outputPath, 'README.md'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 		},
 		transformOptions: (config, options) => {
-			const result: CodegenOptionsTypeScript = {
+			const result: CodegenOptionsTypeScriptFetchClient = {
 				...options,
+				legacyUnnamespacedModelSupport: !!config.legacyUnnamespacedModelSupport,
 			}
 			return result
 		},

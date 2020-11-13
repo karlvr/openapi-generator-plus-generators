@@ -22,6 +22,7 @@ The available config file properties are:
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"|"pascalCase"`|The style to use for constant naming.|`"pascalCase"`|
+|`legacyUnnamespacedModelSupport`|`boolean`|Generate unnamespaced versions of the models.|`false`|
 
 ### TypeScript
 
