@@ -30,6 +30,7 @@ export type TestGenerateFunc = (basePath: string) => Promise<void>
  */
 export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenerateFunc, outputPath?: string) {
 	let tmpdir: string | undefined
+	let deleteOutput = false
 	if (outputPath) {
 		outputPath = path.resolve(outputPath)
 		if (!outputPath.startsWith(process.cwd())) {
@@ -44,13 +45,14 @@ export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenera
 	} else {
 		tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'openapi-generator-plus'))
 		outputPath = tmpdir
+		deleteOutput = true
 	}
 
 	try {
 		await result.state.generator.exportTemplates(outputPath, result.doc, result.state)
 		await func(outputPath)
 	} finally {
-		if (tmpdir) {
+		if (tmpdir && deleteOutput) {
 			await rimrafPromise(tmpdir, { disableGlob: true })
 		}
 	}
