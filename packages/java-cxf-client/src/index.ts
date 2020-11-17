@@ -1,12 +1,11 @@
 import { CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import path from 'path'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator from '@openapi-generator-plus/java-jaxrs-client-generator'
-import { CodegenOptionsCxfCdiClient } from './types'
+import javaGenerator, { options as javaGeneratorOptions } from '@openapi-generator-plus/java-jaxrs-client-generator'
 import { packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsCxfCdiClient> = (context: JavaGeneratorContext<CodegenOptionsCxfCdiClient>) => ({
-	...javaGenerator<CodegenOptionsCxfCdiClient>({
+export const createGenerator: CodegenGeneratorConstructor = (config, context: JavaGeneratorContext) => {
+	const myContext: JavaGeneratorContext = {
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
@@ -14,22 +13,34 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsCxfCdiCl
 		additionalWatchPaths: () => {
 			return [path.resolve(__dirname, '../templates')]
 		},
-		customiseRootContext: async(rootContext) => {
-			rootContext.generatorClass = '@openapi-generator-plus/java-cxf-client-generator'
-		},
-		additionalExportTemplates: async(outputPath, doc, hbs, rootContext, state) => {
-			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
-			const apiPackagePath = packageToPath(state.options.apiPackage)
+	}
 
-			await emit('ApiProviders', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
-				servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined, ...state.options, ...rootContext,
-			}, false, hbs)
+	const generatorOptions = javaGeneratorOptions(config, myContext)
 
-			if (context.additionalExportTemplates) {
-				context.additionalExportTemplates(outputPath, doc, hbs, rootContext, state)
+	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
+
+		await emit('ApiProviders', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
+			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
+		}, false, hbs)
+
+		if (context.additionalExportTemplates) {
+			context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+		}
+	}
+
+	const base = javaGenerator(config, myContext)
+	return {
+		...base,
+		templateRootContext: () => {
+			return {
+				...base.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-cxf-client-generator',
 			}
 		},
-	}),
-})
+	}
+}
 
 export default createGenerator

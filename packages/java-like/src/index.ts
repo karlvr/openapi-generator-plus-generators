@@ -1,4 +1,4 @@
-import { CodegenGenerator, CodegenState, CodegenSchemaType, CodegenConfig } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenSchemaType, CodegenConfig, CodegenGeneratorContext } from '@openapi-generator-plus/types'
 import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
@@ -26,11 +26,11 @@ function identifierSafe(value: string) {
  * e.g. "FAQSection" remains "FAQSection", and "faqSection" will become "FaqSection" 
  * @param value string to be turned into a class name
  */
-export function classCamelCase(value: string) {
+export function classCamelCase(value: string): string {
 	return identifierSafe(pascalCase(identifierSafe(value)))
 }
 
-export function identifierCamelCase(value: string) {
+export function identifierCamelCase(value: string): string {
 	return identifierSafe(camelCase(identifierSafe(value)))
 }
 
@@ -46,7 +46,7 @@ export interface JavaLikeOptions {
 	constantStyle: ConstantStyle
 }
 
-export function options<O extends JavaLikeOptions>(config: CodegenConfig, context: JavaLikeContext<O>): JavaLikeOptions {
+export function options(config: CodegenConfig, context: JavaLikeContext): JavaLikeOptions {
 	const result: JavaLikeOptions = {
 		modelClassPrefix: config.modelClassPrefix,
 		constantStyle: config.constantStyle || context.defaultConstantStyle,
@@ -54,27 +54,29 @@ export function options<O extends JavaLikeOptions>(config: CodegenConfig, contex
 	return result
 }
 
-export interface JavaLikeContext<O extends JavaLikeOptions> {
-	reservedWords?: (state: CodegenState<O>) => string[]
+export interface JavaLikeContext extends CodegenGeneratorContext {
+	reservedWords?: () => string[]
 	defaultConstantStyle: ConstantStyle
 }
 
-export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeContext<O>): Pick<CodegenGenerator<O>, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toOperationGroupName'> {
-	const cg = commonGenerator<O>()
+export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContext): Pick<CodegenGenerator, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toOperationGroupName'> {
+	const generatorOptions = options(config, context)
+
+	const cg = commonGenerator(config, context)
 	return {
 		toClassName: (name) => {
 			return classCamelCase(name)
 		},
-		toIdentifier: (name, state) => {
+		toIdentifier: (name) => {
 			let result = identifierCamelCase(name)
-			const reservedWords = context.reservedWords ? context.reservedWords(state) : []
+			const reservedWords = context.reservedWords ? context.reservedWords() : []
 			while (reservedWords.indexOf(result) !== -1) {
 				result = identifierCamelCase(`a_${name}`)
 			}
 			return result
 		},
-		toConstantName: (name, state) => {
-			const constantStyle = state.options.constantStyle
+		toConstantName: (name) => {
+			const constantStyle = generatorOptions.constantStyle
 			switch (constantStyle) {
 				case ConstantStyle.allCaps:
 					return identifierSafe(constantCase(identifierSafe(name)).replace(/_/g, ''))
@@ -88,18 +90,18 @@ export function javaLikeGenerator<O extends JavaLikeOptions>(context: JavaLikeCo
 					throw new Error(`Invalid valid for constantStyle: ${constantStyle}`)
 			}
 		},
-		toSchemaName: (name, options, state) => {
+		toSchemaName: (name, options) => {
 			if (!options.nameSpecified && options.schemaType === CodegenSchemaType.ENUM) {
 				name = `${name}_enum`
 			}
-			let result = cg.toSchemaName(name, options, state)
-			if (options.schemaType === CodegenSchemaType.OBJECT && state.options.modelClassPrefix) {
-				result = state.options.modelClassPrefix + result
+			let result = cg.toSchemaName(name, options)
+			if (options.schemaType === CodegenSchemaType.OBJECT && generatorOptions.modelClassPrefix) {
+				result = generatorOptions.modelClassPrefix + result
 			}
 			return result
 		},
-		toOperationGroupName: (name, state) => {
-			return state.generator.toClassName(name, state)
+		toOperationGroupName: (name) => {
+			return context.generator().toClassName(name)
 		},
 	}
 }

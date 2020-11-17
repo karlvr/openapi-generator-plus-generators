@@ -2,14 +2,13 @@ import Maven from 'maven'
 import { createCodegenResult, CodegenResult } from '@openapi-generator-plus/testing'
 import createGenerator from '..'
 import path from 'path'
-import { CodegenOptionsJavaServer } from '@openapi-generator-plus/java-jaxrs-server-generator'
 import { CodegenConfig } from '@openapi-generator-plus/types'
 
 export const DEFAULT_CONFIG: CodegenConfig = {
 	maven: {},
 }
 
-export async function prepare(spec: string, config?: CodegenConfig): Promise<CodegenResult<CodegenOptionsJavaServer>> {
+export async function prepare(spec: string, config?: CodegenConfig): Promise<CodegenResult> {
 	return createCodegenResult(path.resolve(__dirname, spec), config || DEFAULT_CONFIG, createGenerator)
 }
 

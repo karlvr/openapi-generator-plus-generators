@@ -3,10 +3,9 @@ import { idx } from '@openapi-generator-plus/core'
 import path from 'path'
 import createGenerator from '..'
 import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
-import { CodegenOptionsJava } from '../types'
 
-const myCreateGenerator: CodegenGeneratorConstructor<CodegenOptionsJava> = (context) => ({
-	...createGenerator(context),
+const myCreateGenerator: CodegenGeneratorConstructor = (config, context) => ({
+	...createGenerator(config, context),
 	generatorType: () => CodegenGeneratorType.SERVER,
 })
 

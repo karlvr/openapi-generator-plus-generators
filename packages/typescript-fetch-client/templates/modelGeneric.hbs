@@ -3,7 +3,8 @@
  * @export
  * @interface {{className name}}
  */
-export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{
+export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{{!--
+--}}{{#if implements}}{{#unless parentNativeType}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
 {{#discriminator}}
 	{{name}}: {{{nativeType.wireType}}};
 	

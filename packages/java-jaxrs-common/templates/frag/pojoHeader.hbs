@@ -1,6 +1,6 @@
 {{>hooks/pojoHeaderAnnotations}}
-{{#if wireName}}
-@javax.xml.bind.annotation.XmlRootElement(name = "{{{wireName}}}")
+{{#if serializedName}}
+@javax.xml.bind.annotation.XmlRootElement(name = "{{{serializedName}}}")
 {{/if}}
 {{#if discriminator}}
 @com.fasterxml.jackson.annotation.JsonTypeInfo(use=com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include=com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY, property="{{{discriminator.name}}}")
