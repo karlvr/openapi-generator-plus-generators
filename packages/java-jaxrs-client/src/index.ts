@@ -34,12 +34,6 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 			return result
 		},
-		customiseRootContext: async(rootContext) => {
-			rootContext.generatorClass = '@openapi-generator-plus/java-jaxrs-client-generator'
-			if (context.customiseRootContext) {
-				context.customiseRootContext(rootContext)
-			}
-		},
 	}
 
 	const generatorOptions = options(config, javaGeneratorContext)
@@ -49,10 +43,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 		await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
-			servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined, ...generatorOptions, ...rootContext,
+			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
 		}, true, hbs)
 		await emit('ApiInvoker', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), 
-			{ ...generatorOptions, ...rootContext }, true, hbs)
+			{ ...rootContext }, true, hbs)
 
 		const apiSpecPackagePath = packageToPath(generatorOptions.apiSpecPackage)
 		for (const group of doc.groups) {
@@ -61,7 +55,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				continue
 			}
 			await emit('apiSpec', path.join(outputPath, relativeSourceOutputPath, apiSpecPackagePath, `${context.generator().toClassName(group.name)}ApiSpec.java`), 
-				{ ...group, operations, ...generatorOptions, ...rootContext }, true, hbs)
+				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 
 		if (context.additionalExportTemplates) {
@@ -70,9 +64,15 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	}
 
 	const base = javaGenerator(config, javaGeneratorContext)
-
 	return {
 		...base,
+		templateRootContext: () => {
+			return {
+				...base.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-jaxrs-client-generator',
+			}
+		},
 		generatorType: () => CodegenGeneratorType.CLIENT,
 	}
 }

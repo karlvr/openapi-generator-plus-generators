@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument } from '@openapi-generator-plus/types'
+import { CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -37,12 +37,10 @@ function toSafeTypeForComposing(nativeType: string): string {
 
 export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
-	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
 	additionalWatchPaths?: () => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext) => Promise<void>
+	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
 	defaultNpmOptions?: (config: CodegenConfig) => NpmOptions
 	defaultTypeScriptOptions?: (config: CodegenConfig) => TypeScriptOptions
-	generatorClassName: () => string
 }
 
 /* https://github.com/microsoft/TypeScript/issues/2536 */
@@ -129,9 +127,10 @@ function createJavaLikeContext(context: TypeScriptGeneratorContext): JavaLikeCon
 export default function createGenerator(config: CodegenConfig, context: TypeScriptGeneratorContext): Omit<CodegenGenerator, 'generatorType'> {
 	const generatorOptions = options(config, context)
 
+	const aCommonGenerator = commonGenerator(config, context)
 	return {
 		...context.baseGenerator(config, context),
-		...commonGenerator(config, context),
+		...aCommonGenerator,
 		...javaLikeGenerator(config, createJavaLikeContext(context)),
 		toLiteral: (value, options) => {
 			if (value === undefined) {
@@ -294,6 +293,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 						model.propertyNativeType.componentType.concreteType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 					}
 				}
+				// } else if (model.implements && !model.properties) {
+				
 			}
 		},
 
@@ -310,6 +311,13 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 		cleanPathPatterns: () => undefined,
 
+		templateRootContext: () => {
+			return {
+				...aCommonGenerator.templateRootContext(),
+				...generatorOptions,
+			}
+		},
+
 		exportTemplates: async(outputPath, doc) => {
 			const hbs = Handlebars.create()
 
@@ -324,21 +332,15 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 
-			const rootContext: CodegenRootContext = {
-				generatorClass: context.generatorClassName(),
-				generatedDate: new Date().toISOString(),
-			}
-			if (context.customiseRootContext) {
-				await context.customiseRootContext(rootContext)
-			}
+			const rootContext = context.generator().templateRootContext()
 
 			if (generatorOptions.npm) {
-				await emit('package', path.join(outputPath, 'package.json'), { ...generatorOptions.npm, ...generatorOptions, ...rootContext }, true, hbs)
-				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...doc, ...generatorOptions, ...rootContext }, true, hbs)
+				await emit('package', path.join(outputPath, 'package.json'), { ...rootContext, ...generatorOptions.npm }, true, hbs)
+				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...rootContext, ...doc }, true, hbs)
 			}
 			
 			if (generatorOptions.typescript) {
-				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...generatorOptions.typescript, ...generatorOptions, ...rootContext }, true, hbs)
+				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...rootContext, ...generatorOptions.typescript }, true, hbs)
 			}
 	
 			if (context.additionalExportTemplates) {

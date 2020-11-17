@@ -13,9 +13,6 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context: Ja
 		additionalWatchPaths: () => {
 			return [path.resolve(__dirname, '../templates')]
 		},
-		customiseRootContext: async(rootContext) => {
-			rootContext.generatorClass = '@openapi-generator-plus/java-cxf-client-generator'
-		},
 	}
 
 	const generatorOptions = javaGeneratorOptions(config, myContext)
@@ -25,7 +22,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context: Ja
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 
 		await emit('ApiProviders', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
-			servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined, ...generatorOptions, ...rootContext,
+			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
 		}, false, hbs)
 
 		if (context.additionalExportTemplates) {
@@ -33,8 +30,16 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context: Ja
 		}
 	}
 
+	const base = javaGenerator(config, myContext)
 	return {
-		...javaGenerator(config, myContext),
+		...base,
+		templateRootContext: () => {
+			return {
+				...base.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-cxf-client-generator',
+			}
+		},
 	}
 }
 

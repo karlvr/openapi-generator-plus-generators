@@ -6,7 +6,7 @@ export * from './utils'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
-export function commonGenerator(config: CodegenConfig, context: CodegenGeneratorContext): Pick<CodegenGenerator, 'toOperationName' | 'toSchemaName'> {
+export function commonGenerator(config: CodegenConfig, context: CodegenGeneratorContext): Pick<CodegenGenerator, 'toOperationName' | 'toSchemaName' | 'templateRootContext'> {
 	return {
 		/** Create a default operation name for operations that lack an operationId */
 		toOperationName: (path: string, method: string): string => {
@@ -26,6 +26,12 @@ export function commonGenerator(config: CodegenConfig, context: CodegenGenerator
 				return context.generator().toClassName(pluralize.singular(name))
 			} else {
 				return context.generator().toClassName(name)
+			}
+		},
+
+		templateRootContext: () => {
+			return {
+				generatedDate: new Date().toISOString(),
 			}
 		},
 

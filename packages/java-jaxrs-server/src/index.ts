@@ -42,12 +42,6 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 
 			return result
 		},
-		customiseRootContext: async(rootContext) => {
-			rootContext.generatorClass = '@openapi-generator-plus/java-jaxrs-server-generator'
-			if (context.customiseRootContext) {
-				context.customiseRootContext(rootContext)
-			}
-		},
 	}
 
 	const generatorOptions = options(config, myContext)
@@ -62,7 +56,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 				continue
 			}
 			await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
-				{ ...group, operations, ...generatorOptions, ...rootContext }, true, hbs)
+				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 		
 		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
@@ -72,7 +66,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 				continue
 			}
 			await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
-				{ ...group, operations, ...generatorOptions, ...rootContext }, true, hbs)
+				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 
 		const apiServicePackagePath = packageToPath(generatorOptions.apiServicePackage)
@@ -82,7 +76,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 				continue
 			}
 			await emit('apiService', path.join(outputPath, relativeSourceOutputPath, apiServicePackagePath, `${context.generator().toClassName(group.name)}ApiService.java`), 
-				{ ...group, operations, ...generatorOptions, ...rootContext }, true, hbs)
+				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 
 		const apiServiceImplPackagePath = packageToPath(generatorOptions.apiServiceImplPackage)
@@ -92,14 +86,14 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 				continue
 			}
 			await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiServiceImplPackagePath, `${context.generator().toClassName(group.name)}ApiServiceImpl.java`),
-				{ ...group, ...generatorOptions, ...rootContext }, false, hbs)
+				{ ...rootContext, ...group }, false, hbs)
 		}
 
 		const invokerPackagePath = generatorOptions.invokerPackage ? packageToPath(generatorOptions.invokerPackage) : undefined
 		if (invokerPackagePath) {
 			const basePath = apiBasePath(doc.servers)
 			await emit('invoker', path.join(outputPath, relativeSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
-				{ ...doc.info, ...generatorOptions, ...rootContext, basePath }, false, hbs)
+				{ ...rootContext, ...doc.info, basePath }, false, hbs)
 		}
 
 		if (context.additionalExportTemplates) {
@@ -124,6 +118,13 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 	const base = javaGenerator(config, myContext)
 	return {
 		...base,
+		templateRootContext: () => {
+			return {
+				...base.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-jaxrs-server-generator',
+			}
+		},
 		generatorType: () => CodegenGeneratorType.SERVER,
 	}
 }

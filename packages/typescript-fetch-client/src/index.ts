@@ -4,30 +4,14 @@ import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-template
 import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
 import { CodegenOptionsTypeScriptFetchClient } from './types'
 
-const DEFAULT_OPTIONS = undefined as unknown as CodegenOptionsTypeScriptFetchClient
-
 const createGenerator: CodegenGeneratorConstructor = (config, context) => {
-	const state: { options: CodegenOptionsTypeScriptFetchClient } = {
-		options: DEFAULT_OPTIONS,
-	}
-
-	const typescriptGeneratorContext: TypeScriptGeneratorContext = {
+	const myContext: TypeScriptGeneratorContext = {
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 		},
 		additionalWatchPaths: () => {
 			return [path.resolve(__dirname, '../templates')]
-		},
-		additionalExportTemplates: async(outputPath, doc, hbs, rootContext) => {
-			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
-			await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-			await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-			await emit('runtime', path.join(outputPath, relativeSourceOutputPath, 'runtime.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-			await emit('configuration', path.join(outputPath, relativeSourceOutputPath, 'configuration.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-			await emit('custom.d', path.join(outputPath, relativeSourceOutputPath, 'custom.d.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-			await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-			await emit('README', path.join(outputPath, 'README.md'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 		},
 		defaultNpmOptions: () => ({
 			name: 'typescript-fetch-api',
@@ -37,18 +21,35 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 			target: 'ES5',
 			libs: ['$target', 'DOM'],
 		}),
-		generatorClassName: () => '@openapi-generator-plus/typescript-fetch-client-generator',
 	}
-	
-	state.options = {
-		...typescriptCommonOptions(config, typescriptGeneratorContext),
+
+	const generatorOptions: CodegenOptionsTypeScriptFetchClient = {
+		...typescriptCommonOptions(config, myContext),
 		legacyUnnamespacedModelSupport: !!config.legacyUnnamespacedModelSupport,
 	}
 
-	const base = typescriptGenerator(config, typescriptGeneratorContext)
+	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api.ts'), { ...rootContext, ...doc }, true, hbs)
+		await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), { ...rootContext, ...doc }, true, hbs)
+		await emit('runtime', path.join(outputPath, relativeSourceOutputPath, 'runtime.ts'), { ...rootContext, ...doc }, true, hbs)
+		await emit('configuration', path.join(outputPath, relativeSourceOutputPath, 'configuration.ts'), { ...rootContext, ...doc }, true, hbs)
+		await emit('custom.d', path.join(outputPath, relativeSourceOutputPath, 'custom.d.ts'), { ...rootContext, ...doc }, true, hbs)
+		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...rootContext, ...doc }, true, hbs)
+		await emit('README', path.join(outputPath, 'README.md'), { ...rootContext, ...doc }, true, hbs)
+	}
+
+	const base = typescriptGenerator(config, myContext)
 
 	return {
 		...base,
+		templateRootContext: () => {
+			return {
+				...base.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/typescript-fetch-client-generator',
+			}
+		},
 		generatorType: () => CodegenGeneratorType.CLIENT,
 	}
 }

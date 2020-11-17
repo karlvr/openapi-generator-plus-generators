@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator } from '@openapi-generator-plus/types'
+import { CodegenPropertyType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -65,9 +65,8 @@ function computeRelativeTestResourcesOutputPath(config: CodegenConfig) {
 
 export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
-	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
 	additionalWatchPaths?: () => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext) => Promise<void>
+	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
 	additionalCleanPathPatterns?: () => string[]
 }
 
@@ -126,9 +125,11 @@ function createJavaLikeContext(context: JavaGeneratorContext): JavaLikeContext {
 export default function createGenerator(config: CodegenConfig, context: JavaGeneratorContext): Omit<CodegenGenerator, 'generatorType'> {
 	const generatorOptions = options(config, context)
 
+	const aCommonGenerator = commonGenerator(config, context)
+
 	return {
 		...context.baseGenerator(config, context),
-		...commonGenerator(config, context),
+		...aCommonGenerator,
 		...javaLikeGenerator(config, createJavaLikeContext(context)),
 		toLiteral: (value, options) => {
 			if (value === undefined) {
@@ -379,6 +380,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 			return result
 		},
+
+		templateRootContext: () => {
+			return {
+				...aCommonGenerator.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-jaxrs-generator',
+			}
+		},
 	
 		exportTemplates: async(outputPath, doc) => {
 			const hbs = Handlebars.create()
@@ -394,13 +403,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 	
-			const rootContext: CodegenRootContext = {
-				generatorClass: '@openapi-generator-plus/java-jaxrs-generator',
-				generatedDate: new Date().toISOString(),
-			}
-			if (context.customiseRootContext) {
-				await context.customiseRootContext(rootContext)
-			}
+			const rootContext = context.generator().templateRootContext()
 	
 			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
@@ -411,12 +414,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					models: [model],
 				}
 				await emit('model', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(model.name)}.java`), 
-					{ ...modelContext, ...generatorOptions, ...rootContext }, true, hbs)
+					{ ...rootContext, ...modelContext }, true, hbs)
 			}
 	
 			const maven = generatorOptions.maven
 			if (maven) {
-				await emit('pom', path.join(outputPath, 'pom.xml'), { ...maven, ...generatorOptions, ...rootContext }, false, hbs)
+				await emit('pom', path.join(outputPath, 'pom.xml'), { ...rootContext, ...maven }, false, hbs)
 			}
 			
 			if (generatorOptions.includeTests && hbs.partials['tests/apiTest']) {
@@ -427,7 +430,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						continue
 					}
 					await emit('tests/apiTest', path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}ApiTest.java`),
-						{ ...group, ...generatorOptions, ...rootContext }, false, hbs)
+						{ ...rootContext, ...group }, false, hbs)
 				}
 			}
 	

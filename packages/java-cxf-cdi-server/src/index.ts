@@ -13,9 +13,6 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 		additionalWatchPaths: () => {
 			return [path.resolve(__dirname, '../templates')]
 		},
-		customiseRootContext: async(rootContext) => {
-			rootContext.generatorClass = '@openapi-generator-plus/java-cxf-cdi-server-generator'
-		},
 	}
 
 	const generatorOptions = javaGeneratorOptions(config, myContext)
@@ -23,19 +20,27 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeResourcesOutputPath = generatorOptions.relativeResourcesOutputPath
 		if (relativeResourcesOutputPath) {
-			await emit('beans.xml', path.join(outputPath, relativeResourcesOutputPath, 'META-INF', 'beans.xml'), { ...generatorOptions, ...rootContext }, false, hbs)
+			await emit('beans.xml', path.join(outputPath, relativeResourcesOutputPath, 'META-INF', 'beans.xml'), { ...rootContext }, false, hbs)
 		}
 
 		if (generatorOptions.includeTests) {
 			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
 			const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 
-			await emit('tests/TestConfiguration', path.join(outputPath, relativeTestOutputPath, apiPackagePath, 'TestConfiguration.java'), { ...generatorOptions, ...rootContext }, false, hbs)
+			await emit('tests/TestConfiguration', path.join(outputPath, relativeTestOutputPath, apiPackagePath, 'TestConfiguration.java'), { ...rootContext }, false, hbs)
 		}
 	}
 
+	const aJavaGenerator = javaGenerator(config, myContext)
 	return {
-		...javaGenerator(config, myContext),
+		...aJavaGenerator,
+		templateRootContext: () => {
+			return {
+				...aJavaGenerator.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-cxf-cdi-server-generator',
+			}
+		},
 	}
 }
 

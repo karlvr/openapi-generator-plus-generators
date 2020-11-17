@@ -13,9 +13,6 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 		additionalWatchPaths: () => {
 			return [path.resolve(__dirname, '../templates')]
 		},
-		customiseRootContext: async(rootContext) => {
-			rootContext.generatorClass = '@openapi-generator-plus/java-cxf-spring-server-generator'
-		},
 		
 	}
 
@@ -26,12 +23,20 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
 			const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 
-			await emit('tests/TestConfiguration', path.join(outputPath, relativeTestOutputPath, apiPackagePath, 'TestConfiguration.java'), { ...generatorOptions, ...rootContext }, false, hbs)
+			await emit('tests/TestConfiguration', path.join(outputPath, relativeTestOutputPath, apiPackagePath, 'TestConfiguration.java'), { ...rootContext }, false, hbs)
 		}
 	}
 
+	const base = javaGenerator(config, myContext)
 	return {
-		...javaGenerator(config, myContext),
+		...base,
+		templateRootContext: () => {
+			return {
+				...base.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-cxf-spring-server-generator',
+			}
+		},
 	}
 }
 

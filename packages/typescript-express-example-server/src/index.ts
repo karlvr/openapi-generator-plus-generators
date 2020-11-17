@@ -28,20 +28,26 @@ const createGenerator: CodegenGeneratorConstructor<TypeScriptGeneratorContext> =
 			target: 'ES2015',
 			libs: ['$target', 'DOM'],
 		}),
-		generatorClassName: () => '@openapi-generator-plus/typescript-node-express-server-generator',
 	}
 
 	const generatorOptions = typescriptGeneratorOptions(config, myContext)
 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
-		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...doc, ...generatorOptions, ...rootContext }, true, hbs)
+		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...rootContext, ...doc }, true, hbs)
 	}
 
 	const base = typescriptGenerator(config, myContext)
 
 	return {
 		...base,
+		templateRootContext: () => {
+			return {
+				...base.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/typescript-node-express-server-generator',
+			}
+		},
 		generatorType: () => CodegenGeneratorType.SERVER,
 	}
 }

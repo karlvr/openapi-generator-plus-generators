@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -27,9 +27,11 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 	}
 
+	const aCommonGenerator = commonGenerator(config, context)
+
 	return {
 		...context.baseGenerator(config, context),
-		...commonGenerator(config, context),
+		...aCommonGenerator,
 		...javaLikeGenerator(config, javaLikeContext),
 		generatorType: () => CodegenGeneratorType.DOCUMENTATION,
 		toLiteral: (value, options) => {
@@ -99,6 +101,14 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		},
 
 		cleanPathPatterns: () => undefined,
+
+		templateRootContext: () => {
+			return {
+				...aCommonGenerator.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/plain-documentation-generator',
+			}
+		},
 
 		exportTemplates: async(outputPath, doc) => {
 			const hbs = Handlebars.create()
@@ -178,16 +188,13 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 
-			const rootContext: CodegenRootContext = {
-				generatorClass: '@openapi-generator-plus/plain-documentation-generator',
-				generatedDate: new Date().toISOString(),
-			}
+			const rootContext = context.generator().templateRootContext()
 
 			if (!outputPath.endsWith('/')) {
 				outputPath += '/'
 			}
 
-			await emit('index', path.join(outputPath, 'index.html'), { ...doc, ...generatorOptions, ...rootContext }, true, hbs)
+			await emit('index', path.join(outputPath, 'index.html'), { ...rootContext, ...doc }, true, hbs)
 
 			emitLess('style.less', path.join(outputPath, 'main.css'))
 			copyContents(path.resolve(__dirname, '..', 'static'), outputPath)
