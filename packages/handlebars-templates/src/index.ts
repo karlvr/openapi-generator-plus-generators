@@ -8,6 +8,8 @@ import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
 import marked from 'marked'
 
+type UnknownObject = Record<string, unknown>
+
 async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
 	const templateSource = await fs.readFile(templatePath, { encoding: 'utf-8' })
 	return hbs.compile(templateSource)
@@ -53,7 +55,7 @@ export async function loadTemplates(templateDirPath: string, hbs: typeof Handleb
  * @param replace Whether to replace an existing file if one exists
  * @param hbs Handlebars instance
  */
-export async function emit(templateName: string, outputPath: string, context: object, replace: boolean, hbs: typeof Handlebars): Promise<void> {
+export async function emit(templateName: string, outputPath: string, context: UnknownObject, replace: boolean, hbs: typeof Handlebars): Promise<void> {
 	const template: Handlebars.TemplateDelegate = hbs.partials[templateName]
 	if (!template) {
 		throw new Error(`Unknown template: ${templateName}`)
@@ -253,7 +255,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	})
 
 	/** Block helper that evaluates if there are more items in the current iteration context */
-	hbs.registerHelper('hasMore', function(this: object, options: HelperOptions) {
+	hbs.registerHelper('hasMore', function(this: UnknownObject, options: HelperOptions) {
 		if (options.data.last === false) {
 			return options.fn(this)
 		} else {
@@ -267,7 +269,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	})
 
 	/** Test if two arguments are equal */
-	hbs.registerHelper('ifeq', function(this: object, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
+	hbs.registerHelper('ifeq', function(this: UnknownObject, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
 		if (!options) {
 			throw new Error('ifeq helper must be called with two arguments')
 		}
@@ -278,7 +280,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			return options.inverse(this)
 		}
 	})
-	hbs.registerHelper('ifneq', function(this: object, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
+	hbs.registerHelper('ifneq', function(this: UnknownObject, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
 		if (!options) {
 			throw new Error('ifneq helper must be called with two arguments')
 		}
@@ -290,7 +292,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 	})
 	
-	hbs.registerHelper('ifdef', function(this: object, value: unknown, options: Handlebars.HelperOptions) {
+	hbs.registerHelper('ifdef', function(this: UnknownObject, value: unknown, options: Handlebars.HelperOptions) {
 		if (!options) {
 			throw new Error('ifdef helper must be called with one argument')
 		}
@@ -302,7 +304,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 	})
 	
-	hbs.registerHelper('ifndef', function(this: object, value: unknown, options: Handlebars.HelperOptions) {
+	hbs.registerHelper('ifndef', function(this: UnknownObject, value: unknown, options: Handlebars.HelperOptions) {
 		if (!options) {
 			throw new Error('ifndef helper must be called with one argument')
 		}
@@ -314,7 +316,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 		}
 	})
 
-	hbs.registerHelper('or', function(this: object) {
+	hbs.registerHelper('or', function(this: UnknownObject) {
 		const values = []
 		// eslint-disable-next-line prefer-rest-params
 		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
@@ -331,7 +333,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 
 		return options.inverse(this)
 	})
-	hbs.registerHelper('and', function(this: object) {
+	hbs.registerHelper('and', function(this: UnknownObject) {
 		const values = []
 		// eslint-disable-next-line prefer-rest-params
 		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
@@ -348,12 +350,12 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 
 		return options.fn(this)
 	})
-	hbs.registerHelper('not', function(this: object, value: unknown) {
+	hbs.registerHelper('not', function(this: UnknownObject, value: unknown) {
 		return !value
 	})
 
 	/** Test if the first argument contains the second */
-	hbs.registerHelper('ifcontains', function(this: object, haystack: unknown[], needle: unknown, options: Handlebars.HelperOptions) {
+	hbs.registerHelper('ifcontains', function(this: UnknownObject, haystack: unknown[], needle: unknown, options: Handlebars.HelperOptions) {
 		if (!options) {
 			throw new Error('ifcontains helper must be called with two arguments')
 		}
@@ -403,7 +405,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	registerPropertyTypeHelper('isTime', CodegenPropertyType.TIME, hbs)
 	registerPropertyTypeHelper('isFile', CodegenPropertyType.FILE, hbs)
 
-	function isEmpty(ob: object) {
+	function isEmpty(ob: UnknownObject) {
 		for (const name in ob) {
 			return false
 		}
@@ -412,7 +414,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	}
 
 	/** Block helper for CodegenResponse or CodegenRequestBody to check if it has examples */
-	hbs.registerHelper('hasExamples', function(this: object, target: CodegenResponse | CodegenRequestBody, options: Handlebars.HelperOptions) {
+	hbs.registerHelper('hasExamples', function(this: UnknownObject, target: CodegenResponse | CodegenRequestBody, options: Handlebars.HelperOptions) {
 		if (target.contents && target.contents.find(c => c.examples && !isEmpty(c.examples))) {
 			return options.fn(this)
 		} else {
