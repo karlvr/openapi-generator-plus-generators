@@ -1,10 +1,10 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
-import typescriptGenerator, { CodegenOptionsTypeScript } from '@openapi-generator-plus/typescript-generator-common'
+import typescriptGenerator, { options as typescriptGeneratorOptions, TypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
 
-const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScript> = (context) => {
-	const base = typescriptGenerator<CodegenOptionsTypeScript>({
+const createGenerator: CodegenGeneratorConstructor<TypeScriptGeneratorContext> = (config, context) => {
+	const myContext: TypeScriptGeneratorContext = {
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			/* Convert an operation path to an express path */
@@ -20,16 +20,6 @@ const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScript> = (
 		additionalWatchPaths: () => {
 			return [path.resolve(__dirname, '../templates')]
 		},
-		additionalExportTemplates: async(outputPath, doc, hbs, rootContext, state) => {
-			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
-			await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-		},
-		transformOptions: (config, options) => {
-			const result: CodegenOptionsTypeScript = {
-				...options,
-			}
-			return result
-		},
 		defaultNpmOptions: () => ({
 			name: 'typescript-express-example-server',
 			version: '0.0.1',
@@ -39,7 +29,16 @@ const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScript> = (
 			libs: ['$target', 'DOM'],
 		}),
 		generatorClassName: () => '@openapi-generator-plus/typescript-node-express-server-generator',
-	})
+	}
+
+	const generatorOptions = typescriptGeneratorOptions(config, myContext)
+
+	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...doc, ...generatorOptions, ...rootContext }, true, hbs)
+	}
+
+	const base = typescriptGenerator(config, myContext)
 
 	return {
 		...base,

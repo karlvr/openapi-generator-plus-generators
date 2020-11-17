@@ -1,11 +1,17 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
-import typescriptGenerator from '@openapi-generator-plus/typescript-generator-common'
+import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
 import { CodegenOptionsTypeScriptFetchClient } from './types'
 
-const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScriptFetchClient> = (context) => {
-	const base = typescriptGenerator<CodegenOptionsTypeScriptFetchClient>({
+const DEFAULT_OPTIONS = undefined as unknown as CodegenOptionsTypeScriptFetchClient
+
+const createGenerator: CodegenGeneratorConstructor = (config, context) => {
+	const state: { options: CodegenOptionsTypeScriptFetchClient } = {
+		options: DEFAULT_OPTIONS,
+	}
+
+	const typescriptGeneratorContext: TypeScriptGeneratorContext = {
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
@@ -13,7 +19,7 @@ const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScriptFetch
 		additionalWatchPaths: () => {
 			return [path.resolve(__dirname, '../templates')]
 		},
-		additionalExportTemplates: async(outputPath, doc, hbs, rootContext, state) => {
+		additionalExportTemplates: async(outputPath, doc, hbs, rootContext) => {
 			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
 			await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 			await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
@@ -22,13 +28,6 @@ const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScriptFetch
 			await emit('custom.d', path.join(outputPath, relativeSourceOutputPath, 'custom.d.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 			await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...doc, ...state.options, ...rootContext }, true, hbs)
 			await emit('README', path.join(outputPath, 'README.md'), { ...doc, ...state.options, ...rootContext }, true, hbs)
-		},
-		transformOptions: (config, options) => {
-			const result: CodegenOptionsTypeScriptFetchClient = {
-				...options,
-				legacyUnnamespacedModelSupport: !!config.legacyUnnamespacedModelSupport,
-			}
-			return result
 		},
 		defaultNpmOptions: () => ({
 			name: 'typescript-fetch-api',
@@ -39,7 +38,14 @@ const createGenerator: CodegenGeneratorConstructor<CodegenOptionsTypeScriptFetch
 			libs: ['$target', 'DOM'],
 		}),
 		generatorClassName: () => '@openapi-generator-plus/typescript-fetch-client-generator',
-	})
+	}
+	
+	state.options = {
+		...typescriptCommonOptions(config, typescriptGeneratorContext),
+		legacyUnnamespacedModelSupport: !!config.legacyUnnamespacedModelSupport,
+	}
+
+	const base = typescriptGenerator(config, typescriptGeneratorContext)
 
 	return {
 		...base,

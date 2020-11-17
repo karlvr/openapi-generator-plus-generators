@@ -1,4 +1,4 @@
-import { CodegenGenerator, CodegenServer, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenServer, CodegenSchemaPurpose, CodegenGeneratorContext, CodegenConfig } from '@openapi-generator-plus/types'
 import { camelCase } from './case-transforms'
 export * from './case-transforms'
 export * from './http-methods'
@@ -6,7 +6,7 @@ export * from './utils'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
-export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName' | 'toSchemaName'> {
+export function commonGenerator(config: CodegenConfig, context: CodegenGeneratorContext): Pick<CodegenGenerator, 'toOperationName' | 'toSchemaName'> {
 	return {
 		/** Create a default operation name for operations that lack an operationId */
 		toOperationName: (path: string, method: string): string => {
@@ -17,15 +17,15 @@ export function commonGenerator<O>(): Pick<CodegenGenerator<O>, 'toOperationName
 			return camelCase(sanitizedCombined)
 		},
 		
-		toSchemaName: (name, options, state) => {
+		toSchemaName: (name, options) => {
 			if (options.nameSpecified) {
-				return state.generator.toClassName(name, state)
+				return context.generator().toClassName(name)
 			}
 			
 			if (options.purpose === CodegenSchemaPurpose.ARRAY_ITEM || options.purpose === CodegenSchemaPurpose.MAP_VALUE) {
-				return state.generator.toClassName(pluralize.singular(name), state)
+				return context.generator().toClassName(pluralize.singular(name))
 			} else {
-				return state.generator.toClassName(name, state)
+				return context.generator().toClassName(name)
 			}
 		},
 

@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenState, CodegenDocument } from '@openapi-generator-plus/types'
+import { CodegenRootContext, CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -35,15 +35,15 @@ function toSafeTypeForComposing(nativeType: string): string {
 	}
 }
 
-export interface TypeScriptGeneratorContext<O extends CodegenOptionsTypeScript> extends CodegenGeneratorContext {
+export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
 	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
-	additionalWatchPaths?: (config: CodegenConfig) => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext, state: CodegenState<O>) => Promise<void>
-	transformOptions?: (config: CodegenConfig, options: CodegenOptionsTypeScript) => O
+	additionalWatchPaths?: () => string[]
+	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext) => Promise<void>
+	transformOptions?: (config: CodegenConfig, options: CodegenOptionsTypeScript) => CodegenOptionsTypeScript
 	defaultNpmOptions?: (config: CodegenConfig) => NpmOptions
 	defaultTypeScriptOptions?: (config: CodegenConfig) => TypeScriptOptions
-	generatorClassName: (state: CodegenState<O>) => string
+	generatorClassName: () => string
 }
 
 /* https://github.com/microsoft/TypeScript/issues/2536 */
@@ -56,25 +56,97 @@ const RESERVED_WORDS = [
 	'any', 'boolean', 'constructor', 'declare', 'get', 'module', 'require', 'number', 'set', 'string', 'symbol', 'type', 'from', 'of',
 ]
 
-export default function createGenerator<O extends CodegenOptionsTypeScript>(context: TypeScriptGeneratorContext<O>): Omit<CodegenGenerator<O>, 'generatorType'> {
-	const javaLikeContext: JavaLikeContext<O> = {
+export function options(config: CodegenConfig, context: TypeScriptGeneratorContext): CodegenOptionsTypeScript {
+	const npm = config.npm
+	const defaultRelativeSourceOutputPath = npm ? 'src' : ''
+	
+	const relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
+
+	const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config) : {
+		name: 'typescript-gen',
+		version: '0.0.1',
+	}
+	const npmConfig: NpmOptions | undefined = npm ? {
+		name: npm.name || defaultNpmOptions.name,
+		version: npm.version || defaultNpmOptions.version,
+		repository: npm.repository || defaultNpmOptions.repository,
+		private: npm.private || defaultNpmOptions.private,
+	} : undefined
+
+	const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config) : typeof config.typescript === 'object' ? {
+		target: 'ES5',
+		libs: ['$target', 'DOM'],
+	} : {
+		target: 'ES5',
+		libs: ['$target', 'DOM'],
+	}
+
+	let typeScriptOptions: TypeScriptOptions | undefined
+	if (typeof config.typescript === 'object') {
+		typeScriptOptions = defaultTypeScriptOptions
+		if (typeof config.typescript.target === 'string') {
+			typeScriptOptions.target = config.typescript.target
+		}
+		if (config.typescript.libs) {
+			typeScriptOptions.libs = config.typescript.libs
+		}
+	} else if (typeof config.typescript === 'boolean') {
+		if (config.typescript) {
+			typeScriptOptions = defaultTypeScriptOptions
+		} else {
+			typeScriptOptions = undefined
+		}
+	} else if (!npm) {
+		/* If we haven't configured an npm package, then assume we don't want tsconfig either */
+		typeScriptOptions = undefined
+	} else {
+		typeScriptOptions = defaultTypeScriptOptions
+	}
+
+	if (typeScriptOptions) {
+		typeScriptOptions.libs = typeScriptOptions.libs.map(lib => lib === '$target' ? typeScriptOptions!.target : lib)
+	}
+
+	const options: CodegenOptionsTypeScript = {
+		...javaLikeOptions(config, createJavaLikeContext(context)),
+		relativeSourceOutputPath,
+		npm: npmConfig,
+		typescript: typeScriptOptions,
+		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
+	}
+
+	if (context.transformOptions) {
+		return context.transformOptions(config, options)
+	} else {
+		return options
+	}
+}
+
+function createJavaLikeContext(context: TypeScriptGeneratorContext): JavaLikeContext {
+	const javaLikeContext: JavaLikeContext = {
+		...context,
 		reservedWords: () => RESERVED_WORDS,
 		defaultConstantStyle: ConstantStyle.pascalCase,
 	}
+	return javaLikeContext
+}
+
+export default function createGenerator(config: CodegenConfig, context: TypeScriptGeneratorContext): Omit<CodegenGenerator, 'generatorType'> {
+	const generatorOptions = options(config, context)
 
 	return {
-		...context.baseGenerator(),
-		...commonGenerator(),
-		...javaLikeGenerator(javaLikeContext),
-		toLiteral: (value, options, state) => {
+		...context.baseGenerator(config, context),
+		...commonGenerator(config, context),
+		...javaLikeGenerator(config, createJavaLikeContext(context)),
+		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return state.generator.toDefaultValue(undefined, options, state).literalValue
+				return context.generator().toDefaultValue(undefined, options).literalValue
 			}
 
 			const { type, format, required, propertyType } = options
 
 			if (propertyType === CodegenPropertyType.ENUM) {
-				return `${options.nativeType.toString()}.${state.generator.toEnumMemberName(value, state)}`
+				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
 			}
 
 			switch (type) {
@@ -144,10 +216,10 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeObjectType: function({ modelNames }, state) {
+		toNativeObjectType: function({ modelNames }) {
 			let modelName = 'Api'
 			for (const name of modelNames) {
-				modelName += `.${state.generator.toClassName(name, state)}`
+				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName)
 		},
@@ -161,11 +233,11 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 				return `{ [name: ${nativeTypeStrings[0]}]: ${nativeTypeStrings[1]} }`
 			})
 		},
-		toDefaultValue: (defaultValue, options, state) => {
+		toDefaultValue: (defaultValue, options) => {
 			if (defaultValue !== undefined) {
 				return {
 					value: defaultValue,
-					literalValue: state.generator.toLiteral(defaultValue, options, state),
+					literalValue: context.generator().toLiteral(defaultValue, options),
 				}
 			}
 
@@ -177,7 +249,7 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 
 			switch (propertyType) {
 				case CodegenPropertyType.NUMBER:
-					return { value: 0, literalValue: state.generator.toLiteral(0, options, state) }
+					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
 				case CodegenPropertyType.BOOLEAN:
 					return { value: false, literalValue: 'false' }
 				case CodegenPropertyType.ARRAY:
@@ -186,72 +258,6 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 					return { value: {}, literalValue: '{}' }
 				default:
 					return { literalValue: 'undefined' }
-			}
-		},
-		options: (config): O => {
-			const npm = config.npm
-			const defaultRelativeSourceOutputPath = npm ? 'src' : ''
-			
-			const relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
-
-			const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config) : {
-				name: 'typescript-gen',
-				version: '0.0.1',
-			}
-			const npmConfig: NpmOptions | undefined = npm ? {
-				name: npm.name || defaultNpmOptions.name,
-				version: npm.version || defaultNpmOptions.version,
-				repository: npm.repository || defaultNpmOptions.repository,
-				private: npm.private || defaultNpmOptions.private,
-			} : undefined
-
-			const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config) : typeof config.typescript === 'object' ? {
-				target: 'ES5',
-				libs: ['$target', 'DOM'],
-			} : {
-				target: 'ES5',
-				libs: ['$target', 'DOM'],
-			}
-
-			let typeScriptOptions: TypeScriptOptions | undefined
-			if (typeof config.typescript === 'object') {
-				typeScriptOptions = defaultTypeScriptOptions
-				if (typeof config.typescript.target === 'string') {
-					typeScriptOptions.target = config.typescript.target
-				}
-				if (config.typescript.libs) {
-					typeScriptOptions.libs = config.typescript.libs
-				}
-			} else if (typeof config.typescript === 'boolean') {
-				if (config.typescript) {
-					typeScriptOptions = defaultTypeScriptOptions
-				} else {
-					typeScriptOptions = undefined
-				}
-			} else if (!npm) {
-				/* If we haven't configured an npm package, then assume we don't want tsconfig either */
-				typeScriptOptions = undefined
-			} else {
-				typeScriptOptions = defaultTypeScriptOptions
-			}
-
-			if (typeScriptOptions) {
-				typeScriptOptions.libs = typeScriptOptions.libs.map(lib => lib === '$target' ? typeScriptOptions!.target : lib)
-			}
-
-			const options: CodegenOptionsTypeScript = {
-				...javaLikeOptions(config, javaLikeContext),
-				relativeSourceOutputPath,
-				npm: npmConfig,
-				typescript: typeScriptOptions,
-				customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
-			}
-
-			if (context.transformOptions) {
-				return context.transformOptions(config, options)
-			} else {
-				/* We must assume that our options are sufficient for the requirements of O as a transformOptions function was not provided */
-				return options as O
 			}
 		},
 		operationGroupingStrategy: () => {
@@ -296,10 +302,10 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 			}
 		},
 
-		watchPaths: (config) => {
+		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
 			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths(config))
+				result.push(...context.additionalWatchPaths())
 			}
 			if (config.customTemplates) {
 				result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
@@ -309,39 +315,39 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 
 		cleanPathPatterns: () => undefined,
 
-		exportTemplates: async(outputPath, doc, state) => {
+		exportTemplates: async(outputPath, doc) => {
 			const hbs = Handlebars.create()
 
-			registerStandardHelpers(hbs, context, state)
+			registerStandardHelpers(hbs, context)
 
 			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 			if (context.loadAdditionalTemplates) {
 				await context.loadAdditionalTemplates(hbs)
 			}
 
-			if (state.options.customTemplatesPath) {
-				await loadTemplates(state.options.customTemplatesPath, hbs)
+			if (generatorOptions.customTemplatesPath) {
+				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 
 			const rootContext: CodegenRootContext = {
-				generatorClass: context.generatorClassName(state),
+				generatorClass: context.generatorClassName(),
 				generatedDate: new Date().toISOString(),
 			}
 			if (context.customiseRootContext) {
 				await context.customiseRootContext(rootContext)
 			}
 
-			if (state.options.npm) {
-				await emit('package', path.join(outputPath, 'package.json'), { ...state.options.npm, ...state.options, ...rootContext }, true, hbs)
-				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...doc, ...state.options, ...rootContext }, true, hbs)
+			if (generatorOptions.npm) {
+				await emit('package', path.join(outputPath, 'package.json'), { ...generatorOptions.npm, ...generatorOptions, ...rootContext }, true, hbs)
+				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...doc, ...generatorOptions, ...rootContext }, true, hbs)
 			}
 			
-			if (state.options.typescript) {
-				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...state.options.typescript, ...state.options, ...rootContext }, true, hbs)
+			if (generatorOptions.typescript) {
+				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...generatorOptions.typescript, ...generatorOptions, ...rootContext }, true, hbs)
 			}
 	
 			if (context.additionalExportTemplates) {
-				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext, state)
+				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
 			}
 		},
 	}

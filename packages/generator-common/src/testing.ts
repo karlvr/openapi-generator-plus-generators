@@ -28,7 +28,7 @@ export type TestGenerateFunc = (basePath: string) => Promise<void>
  * @param func a function to handle the generation result
  * @param outputPath if specified, generate to the given output path instead of a temp path (must be under cwd)
  */
-export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenerateFunc, outputPath?: string) {
+export async function testGenerate(result: CodegenResult, func: TestGenerateFunc, outputPath?: string): Promise<void> {
 	let tmpdir: string | undefined
 	let deleteOutput = false
 	if (outputPath) {
@@ -49,7 +49,7 @@ export async function testGenerate<O>(result: CodegenResult<O>, func: TestGenera
 	}
 
 	try {
-		await result.state.generator.exportTemplates(outputPath, result.doc, result.state)
+		await result.state.generator.exportTemplates(outputPath, result.doc)
 		await func(outputPath)
 	} finally {
 		if (tmpdir && deleteOutput) {

@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited } from '@openapi-generator-plus/generator-common'
-import { CodegenState, CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel, CodegenOperation } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel, CodegenOperation } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -88,9 +88,7 @@ export async function emit(templateName: string, outputPath: string, context: Un
 	}
 }
 
-export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: CodegenGeneratorContext, state: CodegenState<O>): void {
-	const generator = state.generator
-
+export function registerStandardHelpers(hbs: typeof Handlebars, { generator, utils }: CodegenGeneratorContext): void {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function convertToString(value: any) {
 		if (value === undefined) {
@@ -110,7 +108,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	/** Convert the string argument to a class name using the generator */
 	hbs.registerHelper('className', function(name: string) {
 		if (name !== undefined) {
-			return generator.toClassName(convertToString(name), state)
+			return generator().toClassName(convertToString(name))
 		} else {
 			console.warn(`className helper has invalid parameter: ${name}`)
 			return name
@@ -120,7 +118,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	/** Convert the given name to be a safe, appropriately named identifier for the language */
 	hbs.registerHelper('identifier', function(name: string) {
 		if (name !== undefined) {
-			return generator.toIdentifier(convertToString(name), state)
+			return generator().toIdentifier(convertToString(name))
 		} else {
 			console.warn(`identifier helper has invalid parameter: ${name}`)
 			return name
@@ -130,7 +128,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	/** Convert the given name to a constant name */
 	hbs.registerHelper('constantName', function(name: string) {
 		if (name !== undefined) {
-			return generator.toConstantName(convertToString(name), state)
+			return generator().toConstantName(convertToString(name))
 		} else {
 			console.warn(`constantName helper has invalid parameter: ${name}`)
 			return name
@@ -248,7 +246,7 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 	/** Format the given string as a string literal, including quotes as required */
 	hbs.registerHelper('stringLiteral', function(value: string) {
 		if (value === null || value === undefined || typeof value === 'string') {
-			return generator.toLiteral(value, utils.stringLiteralValueOptions(state), state)
+			return generator().toLiteral(value, utils.stringLiteralValueOptions())
 		} else {
 			throw new Error(`Unexpected argument type to stringLiteral helper: ${typeof value} (${value})`)
 		}
@@ -373,10 +371,10 @@ export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: Co
 			if (typeInfo.propertyType === undefined || typeInfo.nativeType === undefined) {
 				throw new Error('undefinedValueLiteral helper must be called with a CodegenTypeInfo argument')
 			}
-			return state.generator.toDefaultValue(undefined, {
+			return generator().toDefaultValue(undefined, {
 				...typeInfo,
 				required: false,
-			}, state).literalValue
+			}).literalValue
 		} else {
 			return undefined
 		}

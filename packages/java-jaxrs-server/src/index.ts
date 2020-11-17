@@ -1,14 +1,30 @@
-import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { apiBasePath } from '@openapi-generator-plus/generator-common'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaServer } from './types'
 export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 export { CodegenOptionsJavaServer } from './types'
 
-export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServer, JavaGeneratorContext<CodegenOptionsJavaServer>> = (context) => {
-	const base = javaGenerator<CodegenOptionsJavaServer>({
+export function options(config: CodegenConfig, context: JavaGeneratorContext): CodegenOptionsJavaServer {
+	const options = javaGeneratorOptions(config, context)
+
+	const packageName = config.package || 'com.example'
+	const apiServicePackage = config.apiServicePackage || `${options.apiPackage}.service`
+	const result: CodegenOptionsJavaServer = {
+		...options,
+		apiServicePackage,
+		apiServiceImplPackage: config.apiServiceImplPackage || `${apiServicePackage}.impl`,
+		invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
+		authenticatedOperationAnnotation: config.authenticatedOperationAnnotation,
+	}
+	
+	return result
+}
+
+export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> = (config, context) => {
+	const myContext: JavaGeneratorContext = {
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
@@ -17,65 +33,14 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 				await context.loadAdditionalTemplates(hbs)
 			}
 		},
-		additionalWatchPaths: (config) => {
+		additionalWatchPaths: () => {
 			const result = [path.resolve(__dirname, '../templates')]
 			
 			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths(config))
+				result.push(...context.additionalWatchPaths())
 			}
 
 			return result
-		},
-		additionalExportTemplates: async(outputPath, doc, hbs, rootContext, state) => {
-			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
-	
-			const apiServicePackagePath = packageToPath(state.options.apiServicePackage)
-			for (const group of doc.groups) {
-				const operations = group.operations
-				if (!operations.length) {
-					continue
-				}
-				await emit('apiService', path.join(outputPath, relativeSourceOutputPath, apiServicePackagePath, `${state.generator.toClassName(group.name, state)}ApiService.java`), 
-					{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
-			}
-
-			const apiServiceImplPackagePath = packageToPath(state.options.apiServiceImplPackage)
-			for (const group of doc.groups) {
-				const operations = group.operations
-				if (!operations.length) {
-					continue
-				}
-				await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiServiceImplPackagePath, `${state.generator.toClassName(group.name, state)}ApiServiceImpl.java`),
-					{ ...group, ...state.options, ...rootContext }, false, hbs)
-			}
-
-			const invokerPackagePath = state.options.invokerPackage ? packageToPath(state.options.invokerPackage) : undefined
-			if (invokerPackagePath) {
-				const basePath = apiBasePath(doc.servers)
-				await emit('invoker', path.join(outputPath, relativeSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
-					{ ...doc.info, ...state.options, ...rootContext, basePath }, false, hbs)
-			}
-
-			if (context.additionalExportTemplates) {
-				context.additionalExportTemplates(outputPath, doc, hbs, rootContext, state)
-			}
-		},
-		transformOptions: (config, options) => {
-			const packageName = config.package || 'com.example'
-			const apiServicePackage = config.apiServicePackage || `${options.apiPackage}.service`
-			const result: CodegenOptionsJavaServer = {
-				...options,
-				apiServicePackage,
-				apiServiceImplPackage: config.apiServiceImplPackage || `${apiServicePackage}.impl`,
-				invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
-				authenticatedOperationAnnotation: config.authenticatedOperationAnnotation,
-			}
-			
-			if (context.transformOptions) {
-				return context.transformOptions(config, result)
-			} else {
-				return result
-			}
 		},
 		customiseRootContext: async(rootContext) => {
 			rootContext.generatorClass = '@openapi-generator-plus/java-jaxrs-server-generator'
@@ -83,20 +48,80 @@ export const createGenerator: CodegenGeneratorConstructor<CodegenOptionsJavaServ
 				context.customiseRootContext(rootContext)
 			}
 		},
-		additionalCleanPathPatterns: (options) => {
-			const relativeSourceOutputPath = options.relativeSourceOutputPath
-			
-			const apiServicePackagePath = packageToPath(options.apiServicePackage)
+	}
 
-			const result = [
-				path.join(relativeSourceOutputPath, apiServicePackagePath, '*ApiService.java'),
-			]
-			if (context.additionalCleanPathPatterns) {
-				result.push(...context.additionalCleanPathPatterns(options))
+	const generatorOptions = options(config, myContext)
+
+	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+	
+		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
+		for (const group of doc.groups) {
+			const operations = group.operations
+			if (!operations.length) {
+				continue
 			}
-			return result
-		},
-	})
+			await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
+				{ ...group, operations, ...generatorOptions, ...rootContext }, true, hbs)
+		}
+		
+		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
+		for (const group of doc.groups) {
+			const operations = group.operations
+			if (!operations.length) {
+				continue
+			}
+			await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
+				{ ...group, operations, ...generatorOptions, ...rootContext }, true, hbs)
+		}
+
+		const apiServicePackagePath = packageToPath(generatorOptions.apiServicePackage)
+		for (const group of doc.groups) {
+			const operations = group.operations
+			if (!operations.length) {
+				continue
+			}
+			await emit('apiService', path.join(outputPath, relativeSourceOutputPath, apiServicePackagePath, `${context.generator().toClassName(group.name)}ApiService.java`), 
+				{ ...group, operations, ...generatorOptions, ...rootContext }, true, hbs)
+		}
+
+		const apiServiceImplPackagePath = packageToPath(generatorOptions.apiServiceImplPackage)
+		for (const group of doc.groups) {
+			const operations = group.operations
+			if (!operations.length) {
+				continue
+			}
+			await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiServiceImplPackagePath, `${context.generator().toClassName(group.name)}ApiServiceImpl.java`),
+				{ ...group, ...generatorOptions, ...rootContext }, false, hbs)
+		}
+
+		const invokerPackagePath = generatorOptions.invokerPackage ? packageToPath(generatorOptions.invokerPackage) : undefined
+		if (invokerPackagePath) {
+			const basePath = apiBasePath(doc.servers)
+			await emit('invoker', path.join(outputPath, relativeSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
+				{ ...doc.info, ...generatorOptions, ...rootContext, basePath }, false, hbs)
+		}
+
+		if (context.additionalExportTemplates) {
+			context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+		}
+	}
+	
+	myContext.additionalCleanPathPatterns = () => {
+		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		
+		const apiServicePackagePath = packageToPath(generatorOptions.apiServicePackage)
+
+		const result = [
+			path.join(relativeSourceOutputPath, apiServicePackagePath, '*ApiService.java'),
+		]
+		if (context.additionalCleanPathPatterns) {
+			result.push(...context.additionalCleanPathPatterns())
+		}
+		return result
+	}
+
+	const base = javaGenerator(config, myContext)
 	return {
 		...base,
 		generatorType: () => CodegenGeneratorType.SERVER,
