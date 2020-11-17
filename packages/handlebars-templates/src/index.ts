@@ -18,7 +18,7 @@ async function compileTemplate(templatePath: string, hbs: typeof Handlebars) {
  * @param templateDirPath path to template dir
  * @param hbs Handlebars instance
  */
-export async function loadTemplates(templateDirPath: string, hbs: typeof Handlebars, prefix = '') {
+export async function loadTemplates(templateDirPath: string, hbs: typeof Handlebars, prefix = ''): Promise<void> {
 	const files = await fs.readdir(templateDirPath)
 	
 	for (const file of files) {
@@ -53,7 +53,7 @@ export async function loadTemplates(templateDirPath: string, hbs: typeof Handleb
  * @param replace Whether to replace an existing file if one exists
  * @param hbs Handlebars instance
  */
-export async function emit(templateName: string, outputPath: string, context: object, replace: boolean, hbs: typeof Handlebars) {
+export async function emit(templateName: string, outputPath: string, context: object, replace: boolean, hbs: typeof Handlebars): Promise<void> {
 	const template: Handlebars.TemplateDelegate = hbs.partials[templateName]
 	if (!template) {
 		throw new Error(`Unknown template: ${templateName}`)
@@ -86,7 +86,7 @@ export async function emit(templateName: string, outputPath: string, context: ob
 	}
 }
 
-export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: CodegenGeneratorContext, state: CodegenState<O>) {
+export function registerStandardHelpers<O>(hbs: typeof Handlebars, { utils }: CodegenGeneratorContext, state: CodegenState<O>): void {
 	const generator = state.generator
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
