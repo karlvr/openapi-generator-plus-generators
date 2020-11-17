@@ -69,7 +69,6 @@ export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	additionalWatchPaths?: () => string[]
 	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext) => Promise<void>
 	additionalCleanPathPatterns?: () => string[]
-	transformOptions?: (config: CodegenConfig, options: CodegenOptionsJava) => CodegenOptionsJava
 }
 
 const RESERVED_WORDS = [
@@ -112,11 +111,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 	}
 
-	if (context.transformOptions) {
-		return context.transformOptions(config, options)
-	} else {
-		return options
-	}
+	return options
 }
 
 function createJavaLikeContext(context: JavaGeneratorContext): JavaLikeContext {

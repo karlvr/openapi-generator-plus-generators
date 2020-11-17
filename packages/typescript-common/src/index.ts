@@ -40,7 +40,6 @@ export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
 	additionalWatchPaths?: () => string[]
 	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext) => Promise<void>
-	transformOptions?: (config: CodegenConfig, options: CodegenOptionsTypeScript) => CodegenOptionsTypeScript
 	defaultNpmOptions?: (config: CodegenConfig) => NpmOptions
 	defaultTypeScriptOptions?: (config: CodegenConfig) => TypeScriptOptions
 	generatorClassName: () => string
@@ -115,11 +114,7 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 	}
 
-	if (context.transformOptions) {
-		return context.transformOptions(config, options)
-	} else {
-		return options
-	}
+	return options
 }
 
 function createJavaLikeContext(context: TypeScriptGeneratorContext): JavaLikeContext {
