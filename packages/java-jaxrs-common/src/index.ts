@@ -23,7 +23,7 @@ function escapeString(value: string) {
  * Turns a Java package name into a path
  * @param packageName Java package name
  */
-export function packageToPath(packageName: string) {
+export function packageToPath(packageName: string): string {
 	return packageName.replace(/\./g, path.sep)
 }
 

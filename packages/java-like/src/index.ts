@@ -26,11 +26,11 @@ function identifierSafe(value: string) {
  * e.g. "FAQSection" remains "FAQSection", and "faqSection" will become "FaqSection" 
  * @param value string to be turned into a class name
  */
-export function classCamelCase(value: string) {
+export function classCamelCase(value: string): string {
 	return identifierSafe(pascalCase(identifierSafe(value)))
 }
 
-export function identifierCamelCase(value: string) {
+export function identifierCamelCase(value: string): string {
 	return identifierSafe(camelCase(identifierSafe(value)))
 }
 
