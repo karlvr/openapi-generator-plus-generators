@@ -1,11 +1,8 @@
-import { createCodegenResult } from '@openapi-generator-plus/testing'
 import { testGenerate } from '@openapi-generator-plus/generator-common/dist/testing'
-import path from 'path'
-import createGenerator from '..'
-import { compile } from './common'
+import { compile, prepare } from './common'
 
 test('one of no discriminator', async() => {
-	const result = await createCodegenResult(path.resolve(__dirname, 'one-of/one-of-no-discriminator.yml'), { legacyUnnamespacedModelSupport: true }, createGenerator)
+	const result = await prepare('one-of/one-of-no-discriminator.yml', { legacyUnnamespacedModelSupport: true })
 
-	await testGenerate(result, compile, "test-output")
+	await testGenerate(result, compile, 'test-output/one-of')
 }, 20000)
