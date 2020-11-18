@@ -1,3 +1,6 @@
+{{#if vendorExtensions.convert-to-literal-type}}
+export type {{className name}} = {{{propertyNativeType}}}
+{{else}}
 /**
  * {{{description}}}
  * @export
@@ -26,6 +29,7 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	{{name}}{{^required}}?{{/required}}: {{{nativeType.wireType}}}{{#if nullable}} | null{{/if}};
 {{/each}}
 }
+{{/if}}
 {{#if models}}
 
 /**

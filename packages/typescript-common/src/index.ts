@@ -314,6 +314,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 							model.propertyNativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
 							model.propertyNativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 						}
+
+						tryToConvertModelToLiteralType(model)
 					}
 				}
 			} else if (model.implementors && !model.properties && !model.parent) {
@@ -333,6 +335,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 						model.propertyNativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
 						model.propertyNativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 					}
+
+					tryToConvertModelToLiteralType(model)
 				}
 			}
 		},
@@ -388,3 +392,38 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 	}
 }
+
+/**
+ * If a model ends up being just a placeholder, such as just representing a type disjunction, in TypeScript
+ * we can declare it as a literal type rather than an interface.
+ * e.g. `type X = A | B | C` rather than `interface X {}`
+ * @param model 
+ */
+function tryToConvertModelToLiteralType(model: CodegenModel) {
+	if (!model.properties && !model.implements && !model.parent) {
+		if (!model.vendorExtensions) {
+			model.vendorExtensions = idx.create()
+		}
+		idx.set(model.vendorExtensions, 'convert-to-literal-type', true)
+
+		if (model.implementors) {
+			for (const other of idx.values(model.implementors)) {
+				if (other.implements) {
+					idx.remove(other.implements, model.name)
+					if (idx.isEmpty(other.implements)) {
+						other.implements = undefined
+					}
+				}
+			}
+		}
+		if (model.children) {
+			for (const other of idx.values(model.children)) {
+				if (other.parent == model) {
+					other.parent = undefined
+					other.parentNativeType = undefined
+				}
+			}
+		}
+	}
+}
+
