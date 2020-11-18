@@ -12,6 +12,6 @@ for (const file of files) {
 			...DEFAULT_CONFIG,
 			includeTests: true,
 		})
-		await testGenerate(result, compile, path.join('output', file))
+		await testGenerate(result, compile, path.join('test-output', file))
 	}, 20000)
 }

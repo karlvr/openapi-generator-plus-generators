@@ -22,7 +22,7 @@ export async function compile(basePath: string): Promise<void> {
 	await mvn.execute('compile')
 }
 
-export async function compileTest(basePath: string): Promise<void> {
+export async function compileAndTest(basePath: string): Promise<void> {
 	const mvn = Maven.create({
 		cwd: basePath,
 		quiet: true,
