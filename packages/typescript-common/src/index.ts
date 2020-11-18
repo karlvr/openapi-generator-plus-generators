@@ -1,10 +1,11 @@
-import { CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument } from '@openapi-generator-plus/types'
+import { CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenModel } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import * as idx from '@openapi-generator-plus/indexed-type'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 
@@ -259,7 +260,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 
 		postProcessModel: (model) => {
-			function toDisjunction(references: CodegenModelReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+			function modelReferencesToDisjunction(references: CodegenModelReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
 				const result = references.reduce((result, reference) => {
 					const r = transform(reference.model.propertyNativeType)
 					if (!r) {
@@ -278,23 +279,61 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				}
 			}
 
-			/* If this model has a discriminator then we change its propertyNativeType to a disjunction */
+			function modelsToDisjunction(models: CodegenModel[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+				const result = models.reduce((result, model) => {
+					const r = transform(model.propertyNativeType)
+					if (!r) {
+						return result
+					}
+					if (result) {
+						return `${result} | ${toSafeTypeForComposing(r)}`
+					} else {
+						return toSafeTypeForComposing(r)
+					}
+				}, '')
+				if (result) {
+					return result
+				} else {
+					return undefined
+				}
+			}
+
 			if (model.discriminator) {
+				/* If this model has a discriminator then we change its propertyNativeType to a disjunction */
 				if (model.discriminator.references) {
-					model.propertyNativeType.nativeType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.nativeType)!
-					model.propertyNativeType.wireType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.wireType)
-					model.propertyNativeType.literalType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
-					model.propertyNativeType.concreteType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
-					
-					if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
-						model.propertyNativeType.componentType.nativeType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-						model.propertyNativeType.componentType.wireType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
-						model.propertyNativeType.componentType.literalType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-						model.propertyNativeType.componentType.concreteType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+					const newNativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.nativeType)
+					if (newNativeType) {
+						model.propertyNativeType.nativeType = newNativeType
+						model.propertyNativeType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.wireType)
+						model.propertyNativeType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
+						model.propertyNativeType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
+						
+						if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
+							model.propertyNativeType.componentType.nativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+							model.propertyNativeType.componentType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
+							model.propertyNativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+							model.propertyNativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+						}
 					}
 				}
-				// } else if (model.implements && !model.properties) {
-				
+			} else if (model.implementors && !model.properties && !model.parent) {
+				/* If this model is a parent interface for others, but has no properties of its own, then we can convert it to a disjunction */
+				const implementors = idx.allValues(model.implementors)
+
+				const newNativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.nativeType)
+				if (newNativeType) {
+					model.propertyNativeType.nativeType = newNativeType
+					model.propertyNativeType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.wireType)
+					model.propertyNativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
+					model.propertyNativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
+					
+					if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
+						model.propertyNativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+						model.propertyNativeType.componentType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
+						model.propertyNativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+						model.propertyNativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+					}
+				}
 			}
 		},
 
