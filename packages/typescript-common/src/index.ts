@@ -303,19 +303,19 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				if (model.discriminator.references) {
 					const newNativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.nativeType)
 					if (newNativeType) {
-						model.propertyNativeType.nativeType = newNativeType
-						model.propertyNativeType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.wireType)
-						model.propertyNativeType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
-						model.propertyNativeType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
-						
-						if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
-							model.propertyNativeType.componentType.nativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-							model.propertyNativeType.componentType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
-							model.propertyNativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-							model.propertyNativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+						if (!tryToConvertModelToLiteralType(model, newNativeType)) {
+							model.propertyNativeType.nativeType = newNativeType
+							model.propertyNativeType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.wireType)
+							model.propertyNativeType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
+							model.propertyNativeType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
+							
+							if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
+								model.propertyNativeType.componentType.nativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+								model.propertyNativeType.componentType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
+								model.propertyNativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+								model.propertyNativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+							}
 						}
-
-						tryToConvertModelToLiteralType(model)
 					}
 				}
 			} else if (model.implementors && !model.properties && !model.parent) {
@@ -324,19 +324,19 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 				const newNativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.nativeType)
 				if (newNativeType) {
-					model.propertyNativeType.nativeType = newNativeType
-					model.propertyNativeType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.wireType)
-					model.propertyNativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
-					model.propertyNativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
-					
-					if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
-						model.propertyNativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-						model.propertyNativeType.componentType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
-						model.propertyNativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-						model.propertyNativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+					if (!tryToConvertModelToLiteralType(model, newNativeType)) {
+						model.propertyNativeType.nativeType = newNativeType
+						model.propertyNativeType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.wireType)
+						model.propertyNativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
+						model.propertyNativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
+						
+						if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
+							model.propertyNativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+							model.propertyNativeType.componentType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
+							model.propertyNativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+							model.propertyNativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+						}
 					}
-
-					tryToConvertModelToLiteralType(model)
 				}
 			}
 		},
@@ -398,13 +398,14 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
  * we can declare it as a literal type rather than an interface.
  * e.g. `type X = A | B | C` rather than `interface X {}`
  * @param model 
+ * @param literalType
  */
-function tryToConvertModelToLiteralType(model: CodegenModel) {
+function tryToConvertModelToLiteralType(model: CodegenModel, literalType: string) {
 	if (!model.properties && !model.implements && !model.parent) {
 		if (!model.vendorExtensions) {
 			model.vendorExtensions = idx.create()
 		}
-		idx.set(model.vendorExtensions, 'convert-to-literal-type', true)
+		idx.set(model.vendorExtensions, 'convert-to-literal-type', literalType)
 
 		if (model.implementors) {
 			for (const other of idx.values(model.implementors)) {
@@ -424,6 +425,10 @@ function tryToConvertModelToLiteralType(model: CodegenModel) {
 				}
 			}
 		}
+
+		return true
+	} else {
+		return false
 	}
 }
 

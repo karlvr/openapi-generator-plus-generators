@@ -1,5 +1,5 @@
 {{#if vendorExtensions.convert-to-literal-type}}
-export type {{className name}} = {{{propertyNativeType}}}
+export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
 {{else}}
 /**
  * {{{description}}}
