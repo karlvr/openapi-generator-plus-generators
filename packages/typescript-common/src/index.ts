@@ -192,7 +192,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 						case 'date-time':
 							/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
 							return new context.NativeType('Date', {
-								wireType: 'string',
+								serializedType: 'string',
 							})
 						default:
 							return new context.NativeType('string')
@@ -202,9 +202,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					return new context.NativeType('boolean')
 				}
 				case 'file': {
-					/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a wireType */
+					/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a serializedType */
 					return new context.NativeType('File', {
-						wireType: null,
+						serializedType: null,
 					})
 				}
 			}
@@ -305,13 +305,13 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					if (newNativeType) {
 						if (!tryToConvertModelToLiteralType(model, newNativeType)) {
 							model.propertyNativeType.nativeType = newNativeType
-							model.propertyNativeType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.wireType)
+							model.propertyNativeType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.serializedType)
 							model.propertyNativeType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
 							model.propertyNativeType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
 							
 							if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
 								model.propertyNativeType.componentType.nativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-								model.propertyNativeType.componentType.wireType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
+								model.propertyNativeType.componentType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
 								model.propertyNativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
 								model.propertyNativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 							}
@@ -326,13 +326,13 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				if (newNativeType) {
 					if (!tryToConvertModelToLiteralType(model, newNativeType)) {
 						model.propertyNativeType.nativeType = newNativeType
-						model.propertyNativeType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.wireType)
+						model.propertyNativeType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.serializedType)
 						model.propertyNativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
 						model.propertyNativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
 						
 						if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
 							model.propertyNativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-							model.propertyNativeType.componentType.wireType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
+							model.propertyNativeType.componentType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
 							model.propertyNativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
 							model.propertyNativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 						}

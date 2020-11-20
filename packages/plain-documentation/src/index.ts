@@ -45,19 +45,19 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 			if (type === 'string') {
 				if (format) {
 					return new context.NativeType(format, {
-						wireType: 'string',
+						serializedType: 'string',
 					})
 				}
 			} else if (type === 'integer') {
 				if (format) {
 					return new context.NativeType(format, {
-						wireType: 'number',
+						serializedType: 'number',
 					})
 				}
 			}
 
 			return new context.NativeType(type, {
-				wireType: null,
+				serializedType: null,
 			})
 		},
 		toNativeObjectType: function({ modelNames }) {

@@ -244,29 +244,29 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (format === 'byte') {
 						return new context.NativeType(!required ? 'java.lang.Byte' : 'byte', {
 							componentType: new context.NativeType('java.lang.Byte'),
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'binary') {
 						return new context.NativeType('java.lang.String')
 					} else if (format === 'date') {
 						return new context.NativeType(generatorOptions.dateImplementation, {
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'time') {
 						return new context.NativeType(generatorOptions.timeImplementation, {
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'date-time') {
 						return new context.NativeType(generatorOptions.dateTimeImplementation, {
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'uuid') {
 						return new context.NativeType('java.util.UUID', {
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'url') {
 						return new context.NativeType('java.net.URL', {
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else {
 						return new context.NativeType('java.lang.String')

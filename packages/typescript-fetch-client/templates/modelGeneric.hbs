@@ -9,7 +9,7 @@ export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
 export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{{!--
 --}}{{#if implements}}{{#unless parentNativeType}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
 {{#discriminator}}
-	{{name}}: {{{nativeType.wireType}}};
+	{{name}}: {{{nativeType.serializedType}}};
 	
 {{/discriminator}}
 {{#each discriminatorValues}}
@@ -26,7 +26,7 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	 * @type {{safe '{'}}{{{nativeType}}}{{safe '}'}}
 	 * @memberof {{className ../name}}
 	 */
-	{{name}}{{^required}}?{{/required}}: {{{nativeType.wireType}}}{{#if nullable}} | null{{/if}};
+	{{name}}{{^required}}?{{/required}}: {{{nativeType.serializedType}}}{{#if nullable}} | null{{/if}};
 {{/each}}
 }
 {{/if}}
