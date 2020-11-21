@@ -68,7 +68,7 @@ export async function emit(templateName: string, outputPath: string, context: Un
 			allowProtoPropertiesByDefault: true,
 		})
 	} catch (error) {
-		throw new Error(`Failed to generate template: "${templateName}": ${error.message}`)
+		throw new Error(`Failed to generate template "${templateName}": ${error.message}`)
 	}
 
 	if (outputPath === '-') {
@@ -88,7 +88,48 @@ export async function emit(templateName: string, outputPath: string, context: Un
 	}
 }
 
+interface ActualHelperOptions extends Handlebars.HelperOptions {
+	/* The helper name */
+	name: string
+	loc: {
+		start: hbs.AST.Position
+		end: hbs.AST.Position
+	}
+	lookupProperty: (object: unknown, propertyName: string) => unknown
+}
+
+/**
+ * Return the current source position as a string
+ * @param options the Handlebars helper options
+ */
+function sourcePosition(options: ActualHelperOptions): string {
+	if (options.loc.start.line !== options.loc.end.line) {
+		return `${options.loc.start.line}:${options.loc.start.column} - ${options.loc.end.line}:${options.loc.end.column}`
+	} else if (options.loc.start.column !== options.loc.end.column) {
+		return `${options.loc.start.line}:${options.loc.start.column}-${options.loc.end.column}`
+	} else {
+		return `${options.loc.start.line}:${options.loc.start.column}`
+	}
+}
+
 export function registerStandardHelpers(hbs: typeof Handlebars, { generator, utils }: CodegenGeneratorContext): void {
+	/* Reject unknown helpers or properties to aid debugging */
+	hbs.registerHelper('helperMissing', function(...helperArguments: unknown[]) {
+		const options = helperArguments[arguments.length - 1] as ActualHelperOptions
+		const args = Array.prototype.slice.call(helperArguments, 0, helperArguments.length - 1)
+
+		if (args.length) {
+			throw new Error(`Unknown helper ${options.name}(${args}) @ ${sourcePosition(options)}`)
+		} else {
+			throw new Error(`Unknown helper or property "${options.name}" is not defined @ ${sourcePosition(options)}`)
+		}
+	})
+	hbs.registerHelper('blockHelperMissing', function(...helperArguments: unknown[]) {
+		const options = helperArguments[arguments.length - 1] as ActualHelperOptions
+
+		throw new Error(`Unsupported block helper syntax for property "${options.name}" @ ${sourcePosition(options)}. Use {{#if ${options.name}}, {{#unless ${options.name}}} or {{#with ${options.name}}} instead.`)
+	})
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function convertToString(value: any) {
 		if (value === undefined) {
@@ -117,20 +158,24 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 
 	/** Convert the given name to be a safe, appropriately named identifier for the language */
 	hbs.registerHelper('identifier', function(name: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (name !== undefined) {
 			return generator().toIdentifier(convertToString(name))
 		} else {
-			console.warn(`identifier helper has invalid parameter: ${name}`)
+			console.warn(`identifier helper has invalid parameter "${name}" @ ${sourcePosition(options)}`)
 			return name
 		}
 	})
 
 	/** Convert the given name to a constant name */
 	hbs.registerHelper('constantName', function(name: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (name !== undefined) {
 			return generator().toConstantName(convertToString(name))
 		} else {
-			console.warn(`constantName helper has invalid parameter: ${name}`)
+			console.warn(`constantName helper has invalid parameter "${name}" @ ${sourcePosition(options)}`)
 			return name
 		}
 	})
@@ -245,10 +290,12 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 
 	/** Format the given string as a string literal, including quotes as required */
 	hbs.registerHelper('stringLiteral', function(value: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (value === null || value === undefined || typeof value === 'string') {
 			return generator().toLiteral(value, utils.stringLiteralValueOptions())
 		} else {
-			throw new Error(`Unexpected argument type to stringLiteral helper: ${typeof value} (${value})`)
+			throw new Error(`Unexpected argument type to stringLiteral helper "${value}" of type ${typeof value} @ ${sourcePosition(options)}`)
 		}
 	})
 
@@ -267,9 +314,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 
 	/** Test if two arguments are equal */
-	hbs.registerHelper('ifeq', function(this: UnknownObject, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
-		if (!options) {
-			throw new Error('ifeq helper must be called with two arguments')
+	hbs.registerHelper('ifeq', function(this: UnknownObject, a: unknown, b: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3) {
+			throw new Error(`ifeq helper must be called with two arguments @ ${sourcePosition(options)}`)
 		}
 
 		if (a == b) {
@@ -278,9 +327,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			return options.inverse(this)
 		}
 	})
-	hbs.registerHelper('ifneq', function(this: UnknownObject, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
-		if (!options) {
-			throw new Error('ifneq helper must be called with two arguments')
+	hbs.registerHelper('ifneq', function(this: UnknownObject, a: unknown, b: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3) {
+			throw new Error(`ifneq helper must be called with two arguments @ ${sourcePosition(options)}`)
 		}
 
 		if (a != b) {
@@ -290,9 +341,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 	})
 	
-	hbs.registerHelper('ifdef', function(this: UnknownObject, value: unknown, options: Handlebars.HelperOptions) {
-		if (!options) {
-			throw new Error('ifdef helper must be called with one argument')
+	hbs.registerHelper('ifdef', function(this: UnknownObject, value: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`ifdef helper must be called with one argument @ ${sourcePosition(options)}`)
 		}
 
 		if (value !== undefined) {
@@ -302,9 +355,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 	})
 	
-	hbs.registerHelper('ifndef', function(this: UnknownObject, value: unknown, options: Handlebars.HelperOptions) {
-		if (!options) {
-			throw new Error('ifndef helper must be called with one argument')
+	hbs.registerHelper('ifndef', function(this: UnknownObject, value: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`ifndef helper must be called with one argument @ ${sourcePosition(options)}`)
 		}
 
 		if (value === undefined) {
@@ -315,9 +370,10 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 
 	hbs.registerHelper('or', function(this: UnknownObject) {
-		const values = []
 		// eslint-disable-next-line prefer-rest-params
-		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+
+		const values = []
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
 			values.push(arguments[i])
@@ -332,9 +388,10 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		return options.inverse(this)
 	})
 	hbs.registerHelper('and', function(this: UnknownObject) {
-		const values = []
 		// eslint-disable-next-line prefer-rest-params
-		const options: Handlebars.HelperOptions = arguments[arguments.length - 1]
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+
+		const values = []
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
 			values.push(arguments[i])
@@ -353,9 +410,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 
 	/** Test if the first argument contains the second */
-	hbs.registerHelper('ifcontains', function(this: UnknownObject, haystack: unknown[], needle: unknown, options: Handlebars.HelperOptions) {
-		if (!options) {
-			throw new Error('ifcontains helper must be called with two arguments')
+	hbs.registerHelper('ifcontains', function(this: UnknownObject, haystack: unknown[], needle: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3) {
+			throw new Error(`ifcontains helper must be called with two arguments @ ${sourcePosition(options)}`)
 		}
 
 		if (haystack && haystack.indexOf(needle) !== -1) {
@@ -367,9 +426,12 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 
 	/** Output the undefined value literal for the given typed object. */
 	hbs.registerHelper('undefinedValueLiteral', function(typeInfo: CodegenTypeInfo) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+
 		if (typeInfo !== undefined) {
 			if (typeInfo.schemaType === undefined || typeInfo.nativeType === undefined) {
-				throw new Error('undefinedValueLiteral helper must be called with a CodegenTypeInfo argument')
+				throw new Error(`undefinedValueLiteral helper must be called with a CodegenTypeInfo argument @ ${sourcePosition(options)}`)
 			}
 			return generator().toDefaultValue(undefined, {
 				...typeInfo,
@@ -421,9 +483,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 
 	/** Return an array of unique and not shadowed inherited properties for the current model. */
-	hbs.registerHelper('inheritedProperties', function(this: CodegenModel, options: Handlebars.HelperOptions) {
-		if (!options || !options.hash) {
-			throw new Error('inheritedProperties helper must be called with no arguments')
+	hbs.registerHelper('inheritedProperties', function(this: CodegenModel) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 1) {
+			throw new Error(`inheritedProperties helper must be called with no arguments @ ${sourcePosition(options)}`)
 		}
 
 		if (this.parent) {
@@ -439,9 +503,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 	})
 
-	hbs.registerHelper('nonDefaultResponses', function(this: CodegenOperation, options: Handlebars.HelperOptions) {
-		if (!options || !options.hash) {
-			throw new Error('nonDefaultResponses helper must be called with no arguments')
+	hbs.registerHelper('nonDefaultResponses', function(this: CodegenOperation) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 1) {
+			throw new Error(`nonDefaultResponses helper must be called with no arguments @ ${sourcePosition(options)}`)
 		}
 
 		if (this.responses) {
@@ -462,9 +528,12 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars) {
 	hbs.registerHelper(name, function(this: CodegenTypeInfo) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+
 		const aPropertyType = this.schemaType
 		if (schemaType === undefined) {
-			throw new Error(`${name} helper used without schemaType in the context`)
+			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}`)
 		}
 
 		return (aPropertyType === schemaType)

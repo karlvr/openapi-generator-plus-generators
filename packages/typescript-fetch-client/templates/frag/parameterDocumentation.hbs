@@ -1,1 +1,1 @@
-@param {{safe '{'}}{{{nativeType}}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
+@param {{safe '{'}}{{{nativeType}}}{{safe '}'}} {{#unless required}}[{{/unless}}{{identifier name}}{{#unless required}}]{{/unless}}{{#if description}} {{description}}{{/if}}

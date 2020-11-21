@@ -2,31 +2,39 @@
 export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
 {{else}}
 /**
+{{#if description}}
  * {{{description}}}
+{{/if}}
  * @export
  * @interface {{className name}}
  */
 export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{{!--
 --}}{{#if implements}}{{#unless parentNativeType}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
-{{#discriminator}}
+{{#if discriminator}}
+{{#with discriminator}}
 	{{name}}: {{{nativeType.serializedType}}};
 	
-{{/discriminator}}
+{{/with}}
+{{/if}}
 {{#each discriminatorValues}}
 	{{model.discriminator.name}}: {{{value}}}
 
 {{/each}}
-{{#additionalPropertiesType}}
+{{#if additionalPropertiesType}}
+{{#with additionalPropertiesType}}
 	[key: string]: {{{additionalPropertiesType}}}{{#if properties}} | any{{/if}};
 
-{{/additionalPropertiesType}}
+{{/with}}
+{{/if}}
 {{#each properties}}
 	/**
+	{{#if description}}
 	 * {{{description}}}
+	{{/if}}
 	 * @type {{safe '{'}}{{{nativeType}}}{{safe '}'}}
 	 * @memberof {{className ../name}}
 	 */
-	{{name}}{{^required}}?{{/required}}: {{{nativeType.serializedType}}}{{#if nullable}} | null{{/if}};
+	{{name}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}}{{#if nullable}} | null{{/if}};
 {{/each}}
 }
 {{/if}}

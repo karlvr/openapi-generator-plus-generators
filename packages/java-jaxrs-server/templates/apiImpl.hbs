@@ -18,7 +18,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 {{#each operations}}
 	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>serviceBodyParam}}{{/if}}) {
 		{{#with defaultResponse}}
-		final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));
+		final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{#unless vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/unless}}"));
 		{{/with}}
 		try {
 			{{#if @root.useBeanValidation}}
@@ -32,14 +32,14 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			return __response.build();
 			{{/with}}
 		{{#each responses}}
-		{{^isDefault}}
+		{{#unless isDefault}}
 		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
 			__response.status({{code}});
 			{{#if nativeType}}
 			__response.entity(__e.getEntity());
 			{{/if}}
 			return __response.build();
-		{{/isDefault}}
+		{{/unless}}
 		{{/each}}
 		} finally {
 		

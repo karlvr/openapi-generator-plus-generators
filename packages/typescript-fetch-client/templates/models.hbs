@@ -22,7 +22,9 @@ export namespace Api {
 export import {{className name}} = Api.{{className name}}
 {{else}}
 /**
+{{#if description}}
  * {{{description}}}
+{{/if}}
  * @export
  * @interface {{className name}}
  */

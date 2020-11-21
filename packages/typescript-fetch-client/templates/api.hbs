@@ -18,7 +18,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	return {
 	{{#each operations}}
 		/**
+		 {{#if description}}
 		 * {{{description}}}
+		 {{/if}}
 		 {{#if summary}}
 		 * @summary {{{summary}}}
 		 {{/if}}
@@ -202,7 +204,9 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 	return {
 	{{#each operations}}
 		/**
+		 {{#if description}}
 		 * {{{description}}}
+		 {{/if}}
 		 {{#if summary}}
 		 * @summary {{{summary}}}
 		 {{/if}}
@@ -240,7 +244,9 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 	return {
 	{{#each operations}}
 		/**
+		 {{#if description}}
 		 * {{{description}}}
+		 {{/if}}
 		 {{#if summary}}
 		 * @summary {{{summary}}}
 		 {{/if}}
@@ -260,7 +266,7 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 	};
 };
 
-{{#withInterfaces}}
+{{#if withInterfaces}}
 /**
  * {{className name}}Api - interface{{#if description}}
  * {{{description}}}{{/if}}
@@ -286,7 +292,7 @@ export interface {{className name}}ApiInterface {
 {{/each}}
 }
 
-{{/withInterfaces}}
+{{/if}}
 /**
  * {{className name}}Api - object-oriented interface{{#if description}}
  * {{{description}}}{{/if}}
@@ -301,7 +307,9 @@ export class {{className name}}Api extends BaseAPI {
 {{/if}}
 	{{#each operations}}
 	/**
+	 {{#if description}}
 	 * {{{description}}}
+	 {{/if}}
 	 {{#if summary}}
 	 * @summary {{{summary}}}
 	 {{/if}}

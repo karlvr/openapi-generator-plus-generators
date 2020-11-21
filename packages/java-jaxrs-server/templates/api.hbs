@@ -33,7 +33,7 @@ public interface {{className name}}Api {
 	{{#if produces}}
 	@javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	{{/if}}
-	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if notes}}, notes = {{{stringLiteral notes}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if securityRequirements}}, authorizations = {
+	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if notes}}, notes = {{{stringLiteral notes}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#if returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/if}}{{#if securityRequirements}}, authorizations = {
 		{{#each securityRequirements}}
 		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
 			{{#each scopes}}
