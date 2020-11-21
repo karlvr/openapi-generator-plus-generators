@@ -11,16 +11,16 @@ import { Api } from "./models";
 {{#each groups}}
 /**
  * {{className name}}Api - fetch parameter creator{{#if description}}
- * {{&description}}{{/if}}
+ * {{{description}}}{{/if}}
  * @export
  */
 export const {{className name}}ApiFetchParamCreator = function (configuration?: Configuration) {
 	return {
 	{{#each operations}}
 		/**
-		 * {{&description}}
+		 * {{{description}}}
 		 {{#if summary}}
-		 * @summary {{&summary}}
+		 * @summary {{{summary}}}
 		 {{/if}}
 		 {{#each parameters}}
 		 * {{>frag/parameterDocumentation}}
@@ -202,9 +202,9 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 	return {
 	{{#each operations}}
 		/**
-		 * {{&description}}
+		 * {{{description}}}
 		 {{#if summary}}
-		 * @summary {{&summary}}
+		 * @summary {{{summary}}}
 		 {{/if}}
 		 {{#each parameters}}
 		 * {{>frag/parameterDocumentation}}
@@ -233,16 +233,16 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 
 /**
  * {{className name}}Api - factory interface{{#if description}}
- * {{&description}}{{/if}}
+ * {{{description}}}{{/if}}
  * @export
  */
 export const {{className name}}ApiFactory = function (configuration?: Configuration, fetch?: FetchAPI, basePath?: string) {
 	return {
 	{{#each operations}}
 		/**
-		 * {{&description}}
+		 * {{{description}}}
 		 {{#if summary}}
-		 * @summary {{&summary}}
+		 * @summary {{{summary}}}
 		 {{/if}}
 		 {{#each parameters}}
 		 * {{>frag/parameterDocumentation}}
@@ -263,19 +263,19 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 {{#withInterfaces}}
 /**
  * {{className name}}Api - interface{{#if description}}
- * {{&description}}{{/if}}
+ * {{{description}}}{{/if}}
  * @export
  * @interface {{className name}}Api
  */
 export interface {{className name}}ApiInterface {
 {{#each operations}}
 	/**
-	 * {{&description}}
+	 * {{{description}}}
 	 {{#summary}}
-	 * @summary {{&summary}}
+	 * @summary {{{summary}}}
 	 {{/summary}}
 	 {{#each parameters}}
-	 * @param {{safe '{'}}{{&nativeType}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
+	 * @param {{safe '{'}}{{{nativeType}}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
 	 {{/each}}
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
@@ -301,9 +301,9 @@ export class {{className name}}Api extends BaseAPI {
 {{/if}}
 	{{#each operations}}
 	/**
-	 * {{&description}}
+	 * {{{description}}}
 	 {{#if summary}}
-	 * @summary {{&summary}}
+	 * @summary {{{summary}}}
 	 {{/if}}
 	 {{#each parameters}}
 	 * {{>frag/parameterDocumentation}}

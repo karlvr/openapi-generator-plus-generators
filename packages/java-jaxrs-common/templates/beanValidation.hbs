@@ -9,7 +9,7 @@
 {{#unless vendorExtensions.x-not-blank}}
 {{#unless vendorExtensions.x-not-empty}}
 {{#unless nullable}}
-@javax.validation.constraints.NotNull{{#if vendorExtensions.x-required-message}}(message="{{&vendorExtensions.x-required-message}}"){{/if}}
+@javax.validation.constraints.NotNull{{#if vendorExtensions.x-required-message}}(message="{{{vendorExtensions.x-required-message}}}"){{/if}}
 {{/unless}}
 {{/unless}}
 {{/unless}}
