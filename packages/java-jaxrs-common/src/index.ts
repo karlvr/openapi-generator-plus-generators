@@ -1,4 +1,4 @@
-import { CodegenPropertyType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -136,9 +136,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				return context.generator().toDefaultValue(undefined, options).literalValue
 			}
 	
-			const { type, format, required, propertyType } = options
+			const { type, format, required, schemaType } = options
 	
-			if (propertyType === CodegenPropertyType.ENUM) {
+			if (schemaType === CodegenSchemaType.ENUM) {
 				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
 			}
 	
@@ -321,27 +321,27 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
-			const { type, required, propertyType, nativeType } = options
+			const { type, required, schemaType, nativeType } = options
 	
 			if (!required) {
 				return { value: null, literalValue: 'null' }
 			}
 	
-			switch (propertyType) {
-				case CodegenPropertyType.ENUM:
-				case CodegenPropertyType.OBJECT:
-				case CodegenPropertyType.DATE:
-				case CodegenPropertyType.TIME:
-				case CodegenPropertyType.DATETIME:
-				case CodegenPropertyType.FILE:
-				case CodegenPropertyType.STRING:
+			switch (schemaType) {
+				case CodegenSchemaType.ENUM:
+				case CodegenSchemaType.OBJECT:
+				case CodegenSchemaType.DATE:
+				case CodegenSchemaType.TIME:
+				case CodegenSchemaType.DATETIME:
+				case CodegenSchemaType.FILE:
+				case CodegenSchemaType.STRING:
 					return { value: null, literalValue: 'null' }
-				case CodegenPropertyType.ARRAY:
-				case CodegenPropertyType.MAP:
+				case CodegenSchemaType.ARRAY:
+				case CodegenSchemaType.MAP:
 					return { literalValue: `new ${nativeType.concreteType}()` }
-				case CodegenPropertyType.NUMBER:
+				case CodegenSchemaType.NUMBER:
 					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
-				case CodegenPropertyType.BOOLEAN:
+				case CodegenSchemaType.BOOLEAN:
 					return { value: false, literalValue: context.generator().toLiteral(false, options) }
 			}
 	

@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenTypeInfo, CodegenPropertyType, CodegenResponse, CodegenRequestBody, CodegenModel, CodegenOperation } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenModel, CodegenOperation } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -368,7 +368,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	/** Output the undefined value literal for the given typed object. */
 	hbs.registerHelper('undefinedValueLiteral', function(typeInfo: CodegenTypeInfo) {
 		if (typeInfo !== undefined) {
-			if (typeInfo.propertyType === undefined || typeInfo.nativeType === undefined) {
+			if (typeInfo.schemaType === undefined || typeInfo.nativeType === undefined) {
 				throw new Error('undefinedValueLiteral helper must be called with a CodegenTypeInfo argument')
 			}
 			return generator().toDefaultValue(undefined, {
@@ -391,17 +391,17 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 
 	/* Property type helpers */
-	registerPropertyTypeHelper('isObject', CodegenPropertyType.OBJECT, hbs)
-	registerPropertyTypeHelper('isMap', CodegenPropertyType.MAP, hbs)
-	registerPropertyTypeHelper('isArray', CodegenPropertyType.ARRAY, hbs)
-	registerPropertyTypeHelper('isBoolean', CodegenPropertyType.BOOLEAN, hbs)
-	registerPropertyTypeHelper('isNumber', CodegenPropertyType.NUMBER, hbs)
-	registerPropertyTypeHelper('isEnum', CodegenPropertyType.ENUM, hbs)
-	registerPropertyTypeHelper('isString', CodegenPropertyType.STRING, hbs)
-	registerPropertyTypeHelper('isDateTime', CodegenPropertyType.DATETIME, hbs)
-	registerPropertyTypeHelper('isDate', CodegenPropertyType.DATE, hbs)
-	registerPropertyTypeHelper('isTime', CodegenPropertyType.TIME, hbs)
-	registerPropertyTypeHelper('isFile', CodegenPropertyType.FILE, hbs)
+	registerPropertyTypeHelper('isObject', CodegenSchemaType.OBJECT, hbs)
+	registerPropertyTypeHelper('isMap', CodegenSchemaType.MAP, hbs)
+	registerPropertyTypeHelper('isArray', CodegenSchemaType.ARRAY, hbs)
+	registerPropertyTypeHelper('isBoolean', CodegenSchemaType.BOOLEAN, hbs)
+	registerPropertyTypeHelper('isNumber', CodegenSchemaType.NUMBER, hbs)
+	registerPropertyTypeHelper('isEnum', CodegenSchemaType.ENUM, hbs)
+	registerPropertyTypeHelper('isString', CodegenSchemaType.STRING, hbs)
+	registerPropertyTypeHelper('isDateTime', CodegenSchemaType.DATETIME, hbs)
+	registerPropertyTypeHelper('isDate', CodegenSchemaType.DATE, hbs)
+	registerPropertyTypeHelper('isTime', CodegenSchemaType.TIME, hbs)
+	registerPropertyTypeHelper('isFile', CodegenSchemaType.FILE, hbs)
 
 	function isEmpty(ob: UnknownObject) {
 		for (const name in ob) {
@@ -460,13 +460,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 }
 
-function registerPropertyTypeHelper(name: string, propertyType: CodegenPropertyType, hbs: typeof Handlebars) {
+function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars) {
 	hbs.registerHelper(name, function(this: CodegenTypeInfo) {
-		const aPropertyType = this.propertyType
-		if (propertyType === undefined) {
-			throw new Error(`${name} helper used without propertyType in the context`)
+		const aPropertyType = this.schemaType
+		if (schemaType === undefined) {
+			throw new Error(`${name} helper used without schemaType in the context`)
 		}
 
-		return (aPropertyType === propertyType)
+		return (aPropertyType === schemaType)
 	})
 }

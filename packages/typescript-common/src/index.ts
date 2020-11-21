@@ -1,4 +1,4 @@
-import { CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenModel } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenModel } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -138,9 +138,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				return context.generator().toDefaultValue(undefined, options).literalValue
 			}
 
-			const { type, format, propertyType } = options
+			const { type, format, schemaType } = options
 
-			if (propertyType === CodegenPropertyType.ENUM) {
+			if (schemaType === CodegenSchemaType.ENUM) {
 				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
 			}
 
@@ -236,20 +236,20 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				}
 			}
 
-			const { propertyType, required } = options
+			const { schemaType, required } = options
 
 			if (!required) {
 				return { literalValue: 'undefined' }
 			}
 
-			switch (propertyType) {
-				case CodegenPropertyType.NUMBER:
+			switch (schemaType) {
+				case CodegenSchemaType.NUMBER:
 					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
-				case CodegenPropertyType.BOOLEAN:
+				case CodegenSchemaType.BOOLEAN:
 					return { value: false, literalValue: 'false' }
-				case CodegenPropertyType.ARRAY:
+				case CodegenSchemaType.ARRAY:
 					return { value: [], literalValue: '[]' }
-				case CodegenPropertyType.MAP:
+				case CodegenSchemaType.MAP:
 					return { value: {}, literalValue: '{}' }
 				default:
 					return { literalValue: 'undefined' }
