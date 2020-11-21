@@ -138,7 +138,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				return context.generator().toDefaultValue(undefined, options).literalValue
 			}
 
-			const { type, format, required, propertyType } = options
+			const { type, format, propertyType } = options
 
 			if (propertyType === CodegenPropertyType.ENUM) {
 				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
@@ -168,7 +168,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					}
 				}
 				case 'boolean':
-					return !required ? `java.lang.Boolean.valueOf(${value})` : `${value}`
+					return `${value}`
 				case 'object':
 				case 'file':
 					throw new Error(`Cannot format literal for type ${type}`)
