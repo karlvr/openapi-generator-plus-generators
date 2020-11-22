@@ -608,6 +608,44 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		return value
 	})
 
+	/**
+	 * Like the lookup helper, but performs a series of lookups, so that you can safely traverse an object hierarchy
+	 * where there are multiple unsafe lookups (such as looking for whether a property exists).
+	 */
+	hbs.registerHelper('lookupseries', function() {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+
+		let result: unknown | null = null
+
+		for (let i = 0; i < arguments.length - 1; i += 2) {
+			// eslint-disable-next-line prefer-rest-params
+			const context = arguments[i]
+			if (i + 1 < arguments.length - 1) {
+				// eslint-disable-next-line prefer-rest-params
+				const field = arguments[i + 1]
+
+				if (context === undefined) {
+					throw new Error(`lookupseries helper called with undefined context argument ${i + 1} @ ${sourcePosition(options)}`)
+				}
+				if (field === undefined) {
+					throw new Error(`lookupseries helper called with undefined field argument ${i + 2} @ ${sourcePosition(options)}`)
+				}
+
+				const value = context !== null ? context[field] : undefined
+				if (value === undefined) {
+					return null
+				} else {
+					result = value
+				}
+			} else {
+				throw new Error(`lookupseries helper called with an uneven number of arguments @ ${sourcePosition(options)}`)
+			}
+		}
+
+		return result
+	})
+
 	/* Property type helpers */
 	registerPropertyTypeHelper('isObject', CodegenSchemaType.OBJECT, hbs)
 	registerPropertyTypeHelper('isMap', CodegenSchemaType.MAP, hbs)
