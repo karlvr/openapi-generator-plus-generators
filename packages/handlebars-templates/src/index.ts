@@ -469,17 +469,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 
-		const values = []
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
 			const value = arguments[i]
 			if (value === undefined) {
 				throw new Error(`or helper called with undefined argument ${i + 1} @ ${sourcePosition(options)}`)
 			}
-			values.push(value)
-		}
 
-		for (const value of values) {
 			if (value) {
 				return options.fn(this)
 			}
@@ -491,17 +487,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 
-		const values = []
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
 			const value = arguments[i]
 			if (value === undefined) {
 				throw new Error(`and helper called with undefined argument ${i + 1} @ ${sourcePosition(options)}`)
 			}
-			values.push(value)
-		}
 
-		for (const value of values) {
 			if (!value) {
 				return options.inverse(this)
 			}
