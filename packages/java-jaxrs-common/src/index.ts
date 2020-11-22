@@ -135,6 +135,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			if (value === undefined) {
 				return context.generator().toDefaultValue(undefined, options).literalValue
 			}
+			if (value === null) {
+				return 'null'
+			}
 	
 			const { type, format, required, schemaType } = options
 	

@@ -139,6 +139,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			if (value === undefined) {
 				return context.generator().toDefaultValue(undefined, options).literalValue
 			}
+			if (value === null) {
+				return 'null'
+			}
 
 			const { type, format, schemaType } = options
 
