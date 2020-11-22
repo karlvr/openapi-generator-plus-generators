@@ -84,6 +84,18 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		}
 	}
 
+	myContext.additionalCleanPathPatterns = () => {
+		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		const apiSpecPackagePath = packageToPath(generatorOptions.apiSpecPackage)
+		const result = [
+			path.join(relativeSourceOutputPath, apiSpecPackagePath, '*ApiSpec.java'),
+		]
+		if (context.additionalCleanPathPatterns) {
+			result.push(...context.additionalCleanPathPatterns())
+		}
+		return result
+	}
+
 	const base = javaGenerator(config, myContext)
 	return {
 		...base,
