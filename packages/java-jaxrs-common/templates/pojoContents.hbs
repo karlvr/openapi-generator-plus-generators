@@ -1,7 +1,7 @@
 {{>nestedModels}}
 {{#if properties}}
 {{#each properties}}
-private {{{nativeType}}} {{identifier name}} = {{{defaultValue.literalValue}}};
+private {{{nativeType}}} {{identifier name}}{{#if initialValue}} = {{{initialValue.literalValue}}}{{/if}};
 {{#if (lookup ../vendorExtensions 'x-patch')}}
 private boolean __patched{{capitalize (identifier name)}} = false;
 {{/if}}
