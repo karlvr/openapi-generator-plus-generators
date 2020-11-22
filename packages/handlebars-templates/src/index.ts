@@ -331,7 +331,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			throw new Error(`if helper called with undefined argument @ ${sourcePosition(options)}`)
 		}
 
-		if (condition) {
+		if (!Handlebars.Utils.isEmpty(condition)) {
 			return options.fn(this)
 		} else {
 			return options.inverse(this)
@@ -350,7 +350,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			throw new Error(`unless helper called with undefined argument @ ${sourcePosition(options)}`)
 		}
 
-		if (condition) {
+		if (!Handlebars.Utils.isEmpty(condition)) {
 			return options.inverse(this)
 		} else {
 			return options.fn(this)
