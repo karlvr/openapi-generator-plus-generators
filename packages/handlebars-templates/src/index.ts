@@ -589,6 +589,10 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		if (arguments.length !== 3 && arguments.length !== 4) {
 			throw new Error(`lookup helper must be called with two or three arguments @ ${sourcePosition(options)}`)
 		}
+		if (arguments.length === 3) {
+			/* The last argument is the options, not the defaultValue as expected */
+			defaultValue = undefined
+		}
 
 		if (context === undefined) {
 			throw new Error(`lookup helper called with undefined first argument @ ${sourcePosition(options)}`)
