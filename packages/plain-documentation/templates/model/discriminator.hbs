@@ -1,0 +1,20 @@
+{{!Renders model discriminator}}
+<div class="params -discriminator">
+    <h5>Discriminator</h5>
+    <table>
+		<thead>
+			<tr>
+				<th>Value</th>
+				<th>Reference</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each discriminator.references}}
+			<tr>
+				<td>{{name}}</td>
+				<td><a class="model-ref" href="#{{../anchor}}/{{htmlId model.nativeType}}">{{model.nativeType}}</a></td>
+			</tr>
+			{{/each}}
+		</tbody>
+    </table>
+</div>

@@ -1,6 +1,4 @@
 <span class="model-property-type">
-    {{#if discriminator}}<span class="type">Discriminator</span>{{/if}}
-    
     {{#if anchor}}
         {{#if (isObject)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
@@ -12,14 +10,14 @@
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
         {{else}}
             {{nativeType}}
-            {{#if nativeType.serializedType}}
+            {{#ifdef nativeType.serializedType}}
             ({{nativeType.serializedType}})
-            {{/if}}
+            {{/ifdef}}
         {{/if}}
     {{else}}
         {{nativeType}}
     {{/if}}
 </span>
-{{#if default}}
-    <span class="model-property-default-value">{{default}}</span>
+{{#if defaultValue}}
+    <span class="model-property-default-value">{{defaultValue.value}}</span>
 {{/if}}

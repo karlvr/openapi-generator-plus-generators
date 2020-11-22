@@ -7,16 +7,16 @@
     @api public
 --}}
 
-<section class="summary operation{{#deprecated}} -deprecated{{/deprecated}}" data-path="{{fullPath}}" data-method="{{method}}" id="operation-{{htmlId httpMethod}}-{{htmlId fullPath}}">
+<section class="summary operation{{#if deprecated}} -deprecated{{/if}}" data-path="{{fullPath}}" data-method="{{httpMethod}}" id="operation-{{htmlId httpMethod}}-{{htmlId fullPath}}">
     <h4>{{name}}</h4>
 
     <div class="api-title"><span class="method operation-{{lowerCase httpMethod}}">{{upperCase httpMethod}}</span> {{fullPath}}</div>
 
 {{>hooks/operation-header}}
 
-    {{#deprecated}}
+    {{#if deprecated}}
     <p><strong class="operation-label -deprecated">DEPRECATED</strong></p>
-    {{/deprecated}}
+    {{/if}}
 
     {{{md summary "true"}}}
     {{{md description}}}

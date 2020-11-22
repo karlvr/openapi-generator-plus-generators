@@ -3,14 +3,9 @@
 		<td class="name">
 			{{name}}
 			{{#if required}}<span class="type">Required</span>{{/if}}
-			{{#if discriminator}}<span class="type">Discriminator</span>{{/if}}
 		</td>
 		<td class="type">
-			{{#if discriminator}}
-				{{>model/discriminators}}
-			{{else}}
-				{{>model/datatype anchor=../anchor}}
-			{{/if}}
+			{{>model/datatype anchor=../anchor}}
 		</td>
 		<td class="desc">
 			{{{md description}}}

@@ -14,7 +14,7 @@
                 <tr>
                     <td class="code">{{code}} {{#hasExamples .}}<a href="#" class="example-trigger">Examples</a>{{/hasExamples}}</td>
                     <td class="resp">{{{md description}}}</td>
-                    <td class="desc">{{>model/datatype anchor='/definitions'}}</td>
+                    <td class="desc">{{#if defaultContent}}{{>model/datatype defaultContent anchor='/definitions'}}{{/if}}</td>
                 </tr>
                 {{#hasExamples .}}
                     <tr class="examples">
