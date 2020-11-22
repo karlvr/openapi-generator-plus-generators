@@ -151,9 +151,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 	{{/if}}
 	{{#with requestBody}}
-			{{^consumes}}
+			{{#unless consumes}}
 			localVarHeaderParameter['Content-Type'] = 'application/json';
-			{{/consumes}}
+			{{/unless}}
 			{{#each consumes}}
 			{{#if @first}}
 			localVarHeaderParameter['Content-Type'] = '{{{mediaType}}}';
@@ -169,9 +169,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			localVarRequestOptions.body = localVarFormParams.toString();
 	{{/if}}
 	{{#with requestBody}}
-		{{^consumes}}
+		{{#unless consumes}}
 			localVarRequestOptions.body =  JSON.stringify({{identifier name}} || {});
-		{{/consumes}}
+		{{/unless}}
 		{{#each consumes}}
 		{{#if @first}}
 			{{#ifeq mimeType 'application/x-www-form-urlencoded'}}
@@ -288,13 +288,13 @@ export interface {{className name}}ApiInterface {
 	 * @summary {{{summary}}}
 	 {{/summary}}
 	 {{#each parameters}}
-	 * @param {{safe '{'}}{{{nativeType}}}{{safe '}'}} {{^required}}[{{/required}}{{identifier name}}{{^required}}]{{/required}} {{description}}
+	 * @param {{safe '{'}}{{{nativeType}}}{{safe '}'}} {{#unless required}}[{{/unless}}{{identifier name}}{{#unless required}}]{{/unless}} {{#if description}}{{description}}{{/if}}
 	 {{/each}}
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}ApiInterface
 	 */
-	{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{^required}} | undefined{{/required}}, {{/each}}options?: any): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
+	{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{#unless required}} | undefined{{/unless}}, {{/each}}options?: any): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
 
 {{/each}}
 }
