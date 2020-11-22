@@ -14,11 +14,11 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	timeImplementation: string
 	dateTimeImplementation: string
 
-	imports?: string[]
+	imports: string[] | null
 
 	hideGenerationTimestamp: boolean
 
-	maven?: MavenOptions
+	maven: MavenOptions | null
 	relativeSourceOutputPath: string
 	relativeResourcesOutputPath?: string
 	relativeTestOutputPath: string

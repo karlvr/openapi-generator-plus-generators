@@ -63,12 +63,14 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config) : {
 		name: 'typescript-gen',
 		version: '0.0.1',
+		private: true,
+		repository: null,
 	}
 	const npmConfig: NpmOptions | undefined = npm ? {
 		name: npm.name || defaultNpmOptions.name,
 		version: npm.version || defaultNpmOptions.version,
 		repository: npm.repository || defaultNpmOptions.repository,
-		private: npm.private || defaultNpmOptions.private,
+		private: npm.private !== undefined ? npm.private : defaultNpmOptions.private,
 	} : undefined
 
 	const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config) : typeof config.typescript === 'object' ? {
@@ -108,8 +110,8 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	const options: CodegenOptionsTypeScript = {
 		...javaLikeOptions(config, createJavaLikeContext(context)),
 		relativeSourceOutputPath,
-		npm: npmConfig,
-		typescript: typeScriptOptions,
+		npm: npmConfig || null,
+		typescript: typeScriptOptions || null,
 		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
 	}
 
@@ -239,7 +241,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			const { schemaType, required } = options
 
 			if (!required) {
-				return { literalValue: 'undefined' }
+				return { value: null, literalValue: 'undefined' }
 			}
 
 			switch (schemaType) {
@@ -252,7 +254,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case CodegenSchemaType.MAP:
 					return { value: {}, literalValue: '{}' }
 				default:
-					return { literalValue: 'undefined' }
+					return { value: null, literalValue: 'undefined' }
 			}
 		},
 		operationGroupingStrategy: () => {
@@ -412,7 +414,7 @@ function tryToConvertModelToLiteralType(model: CodegenModel, literalType: string
 				if (other.implements) {
 					idx.remove(other.implements, model.name)
 					if (idx.isEmpty(other.implements)) {
-						other.implements = undefined
+						other.implements = null
 					}
 				}
 			}
@@ -420,8 +422,8 @@ function tryToConvertModelToLiteralType(model: CodegenModel, literalType: string
 		if (model.children) {
 			for (const other of idx.values(model.children)) {
 				if (other.parent == model) {
-					other.parent = undefined
-					other.parentNativeType = undefined
+					other.parent = null
+					other.parentNativeType = null
 				}
 			}
 		}

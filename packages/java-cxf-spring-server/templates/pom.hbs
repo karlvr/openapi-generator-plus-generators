@@ -9,17 +9,17 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>{{coalesce maven.versions.java '1.8'}}</java.version>
-		<spring.version>{{coalesce maven.versions.spring '5.2.5.RELEASE'}}</spring.version>
-		<swagger.version>{{coalesce maven.versions.swagger '1.5.24'}}</swagger.version>
-		<cxf.version>{{coalesce maven.versions.cxf '3.3.5'}}</cxf.version>
-		<jaxrs.version>{{coalesce maven.versions.jaxrs '2.1.1'}}</jaxrs.version>
-		<jackson.version>{{coalesce maven.versions.jackson '2.10.2'}}</jackson.version>
+		<java.version>{{lookup maven.versions 'java' '1.8'}}</java.version>
+		<spring.version>{{lookup maven.versions 'spring' '5.2.5.RELEASE'}}</spring.version>
+		<swagger.version>{{lookup maven.versions 'swagger' '1.5.24'}}</swagger.version>
+		<cxf.version>{{lookup maven.versions 'cxf' '3.3.5'}}</cxf.version>
+		<jaxrs.version>{{lookup maven.versions 'jaxrs' '2.1.1'}}</jaxrs.version>
+		<jackson.version>{{lookup maven.versions 'jackson' '2.10.2'}}</jackson.version>
 		{{#if useBeanValidation}}
-		<javax.validation.version>{{coalesce maven.versions.javax_validation '2.0.0.Final'}}</javax.validation.version>
+		<javax.validation.version>{{lookup maven.versions 'javax_validation' '2.0.0.Final'}}</javax.validation.version>
 		{{/if}}
 		{{#if includeTests}}
-		<junit.version>{{coalesce maven.versions.junit '4.13'}}</junit.version>
+		<junit.version>{{lookup maven.versions 'junit' '4.13'}}</junit.version>
 		{{/if}}
 	</properties>
 
@@ -131,7 +131,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>{{coalesce maven.versions.maven-compiler-plugin '3.8.1'}}</version>
+				<version>{{lookup maven.versions 'maven-compiler-plugin' '3.8.1'}}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -144,7 +144,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>{{coalesce maven.versions.maven-surefire-plugin '3.0.0-M4'}}</version>
+					<version>{{lookup maven.versions 'maven-surefire-plugin' '3.0.0-M4'}}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

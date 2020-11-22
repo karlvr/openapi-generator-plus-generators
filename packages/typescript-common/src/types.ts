@@ -5,9 +5,9 @@ import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-hel
  */
 export interface CodegenOptionsTypeScript extends JavaLikeOptions {
 	relativeSourceOutputPath: string
-	npm?: NpmOptions
-	typescript?: TypeScriptOptions
-	customTemplatesPath?: string
+	npm: NpmOptions | null
+	typescript: TypeScriptOptions | null
+	customTemplatesPath: string | null
 }
 
 export interface TypeScriptOptions {
@@ -18,6 +18,6 @@ export interface TypeScriptOptions {
 export interface NpmOptions {
 	name: string
 	version: string
-	repository?: string
-	private?: boolean
+	repository: string | null
+	private: boolean | null
 }

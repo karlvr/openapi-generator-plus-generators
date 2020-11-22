@@ -23,6 +23,8 @@ const createGenerator: CodegenGeneratorConstructor<TypeScriptGeneratorContext> =
 		defaultNpmOptions: () => ({
 			name: 'typescript-express-example-server',
 			version: '0.0.1',
+			private: true,
+			repository: null,
 		}),
 		defaultTypeScriptOptions: () => ({
 			target: 'ES2015',

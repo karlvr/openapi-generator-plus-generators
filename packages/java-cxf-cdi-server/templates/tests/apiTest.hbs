@@ -47,7 +47,7 @@ public class {{className name}}ApiTest {
 	@Test
 	public void {{identifier name}}Test() {
 		{{#each parameters}}
-		{{nativeType}} {{identifier name}} = {{#if examples.java}}{{{examples.java.valueLiteral}}}{{else if examples.default}}{{examples.default.valueLiteral}}{{else}}{{undefinedValueLiteral .}}{{/if}};
+		{{nativeType}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{examples.default.valueLiteral}}{{else}}{{undefinedValueLiteral .}}{{/ifeg}};
 		{{/each}}
 
 		Response response = this.api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});

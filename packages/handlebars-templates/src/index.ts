@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
-import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenModel, CodegenOperation } from '@openapi-generator-plus/types'
+import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, stringify } from '@openapi-generator-plus/generator-common'
+import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenModel, CodegenOperation, CodegenVendorExtensions, CodegenExamples } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -103,6 +103,9 @@ interface ActualHelperOptions extends Handlebars.HelperOptions {
  * @param options the Handlebars helper options
  */
 function sourcePosition(options: ActualHelperOptions): string {
+	if (!options || !options.loc) {
+		return 'unknown'
+	}
 	if (options.loc.start.line !== options.loc.end.line) {
 		return `${options.loc.start.line}:${options.loc.start.column} - ${options.loc.end.line}:${options.loc.end.column}`
 	} else if (options.loc.start.column !== options.loc.end.column) {
@@ -313,12 +316,96 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		return new Handlebars.SafeString(convertToString(value))
 	})
 
+	/** A custom 'if' helper that detects errors in template usage */
+	hbs.registerHelper('if', function(this: UnknownObject, condition: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`if helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+		if (condition === undefined) {
+			// eslint-disable-next-line prefer-rest-params
+			// console.log(this, arguments)
+			throw new Error(`if helper called with undefined argument @ ${sourcePosition(options)}`)
+		}
+
+		if (condition) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
+	/** A custom 'unless' helper that detects errors in template usage */
+	hbs.registerHelper('unless', function(this: UnknownObject, condition: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`unless helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+		if (condition === undefined) {
+			// eslint-disable-next-line prefer-rest-params
+			// console.log(this, arguments)
+			throw new Error(`unless helper called with undefined argument @ ${sourcePosition(options)}`)
+		}
+
+		if (condition) {
+			return options.inverse(this)
+		} else {
+			return options.fn(this)
+		}
+	})
+	/** A custom helper to check for vendor extensions */
+	hbs.registerHelper('ifvex', function(this: UnknownObject, extensionName: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`ifvex helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+
+		const vendorExtensions: CodegenVendorExtensions = this.vendorExtensions as CodegenVendorExtensions
+		if (vendorExtensions === undefined) {
+			throw new Error(`ifvex helper called with an object that doesn't support vendor extensions @ ${sourcePosition(options)}: ${stringify(this)}`)
+		}
+
+		if (vendorExtensions && vendorExtensions[extensionName]) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
+	/** A custom helper to check for examples by name */
+	hbs.registerHelper('ifeg', function(this: UnknownObject, exampleName: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`ifeg helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+
+		const examples: CodegenExamples = this.examples as CodegenExamples
+		if (examples === undefined) {
+			throw new Error(`ifeg helper called with an object that doesn't support examples @ ${sourcePosition(options)}: ${stringify(this)}`)
+		}
+
+		if (examples && examples[exampleName]) {
+			return options.fn(this)
+		} else {
+			return options.inverse(this)
+		}
+	})
+
 	/** Test if two arguments are equal */
 	hbs.registerHelper('ifeq', function(this: UnknownObject, a: unknown, b: unknown) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (arguments.length !== 3) {
 			throw new Error(`ifeq helper must be called with two arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (a === undefined) {
+			throw new Error(`ifeq helper called with undefined first argument @ ${sourcePosition(options)}`)
+		}
+		if (b === undefined) {
+			throw new Error(`ifeq helper called with undefined second argument @ ${sourcePosition(options)}`)
 		}
 
 		if (a == b) {
@@ -332,6 +419,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (arguments.length !== 3) {
 			throw new Error(`ifneq helper must be called with two arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (a === undefined) {
+			throw new Error(`ifneq helper called with undefined first argument @ ${sourcePosition(options)}`)
+		}
+		if (b === undefined) {
+			throw new Error(`ifneq helper called with undefined second argument @ ${sourcePosition(options)}`)
 		}
 
 		if (a != b) {
@@ -376,7 +470,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		const values = []
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
-			values.push(arguments[i])
+			const value = arguments[i]
+			if (value === undefined) {
+				throw new Error(`or helper called with undefined argument ${i + 1} @ ${sourcePosition(options)}`)
+			}
+			values.push(value)
 		}
 
 		for (const value of values) {
@@ -394,7 +492,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		const values = []
 		for (let i = 0; i < arguments.length - 1; i++) { /* Remove HelperOptions */
 			// eslint-disable-next-line prefer-rest-params
-			values.push(arguments[i])
+			const value = arguments[i]
+			if (value === undefined) {
+				throw new Error(`and helper called with undefined argument ${i + 1} @ ${sourcePosition(options)}`)
+			}
+			values.push(value)
 		}
 
 		for (const value of values) {
@@ -406,6 +508,16 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		return options.fn(this)
 	})
 	hbs.registerHelper('not', function(this: UnknownObject, value: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`not helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+
+		if (value === undefined) {
+			throw new Error(`not helper called with undefined argument @ ${sourcePosition(options)}`)
+		}
+
 		return !value
 	})
 
@@ -415,6 +527,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (arguments.length !== 3) {
 			throw new Error(`ifcontains helper must be called with two arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (haystack === undefined) {
+			throw new Error(`ifcontains helper called with undefined first argument @ ${sourcePosition(options)}`)
+		}
+		if (needle === undefined) {
+			throw new Error(`ifcontains helper called with undefined second argument @ ${sourcePosition(options)}`)
 		}
 
 		if (haystack && haystack.indexOf(needle) !== -1) {
@@ -442,14 +561,53 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 	})
 
-	/** Output the first parameter, unless it's undefined, in which case output the second (default) paramter. */
+	/** Output the first parameter, unless it's null, in which case output the second (default) paramter. */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	hbs.registerHelper('coalesce', function(value: any, defaultValue: any) {
-		if (value !== undefined) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3) {
+			throw new Error(`ifcontains helper must be called with two arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (value === undefined) {
+			throw new Error(`coalesce helper called with undefined first argument @ ${sourcePosition(options)}`)
+		}
+		if (defaultValue === undefined) {
+			throw new Error(`coalesce helper called with undefined second argument @ ${sourcePosition(options)}`)
+		}
+
+		if (value !== null) {
 			return value
 		} else {
 			return defaultValue
 		}
+	})
+
+	/**
+	 * A helper for looking up a named key that may or may not appear in an object. If the key
+	 * doesn't appear, `null` (or the defaultValue if defined) is returned rather than `undefined` in order not to trigger errors
+	 * from other helpers due to the `undefined` value.
+	 */
+	hbs.registerHelper('lookup', function(context: Record<string, unknown>, field: string, defaultValue: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3 && arguments.length !== 4) {
+			throw new Error(`lookup helper must be called with two or three arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (context === undefined) {
+			throw new Error(`lookup helper called with undefined first argument @ ${sourcePosition(options)}`)
+		}
+		if (field === undefined) {
+			throw new Error(`lookup helper called with undefined second argument @ ${sourcePosition(options)}`)
+		}
+
+		const value = context[field]
+		if (value === undefined) {
+			return defaultValue || null
+		}
+		return value
 	})
 
 	/* Property type helpers */

@@ -1,4 +1,4 @@
-{{#if vendorExtensions.convert-to-literal-type}}
+{{#ifvex convert-to-literal-type}}
 export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
 {{else}}
 /**
@@ -20,12 +20,13 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	{{model.discriminator.name}}: {{{value}}}
 
 {{/each}}
-{{#if additionalPropertiesType}}
+{{!-- TODO --}}
+{{!--#if additionalPropertiesType}}
 {{#with additionalPropertiesType}}
 	[key: string]: {{{additionalPropertiesType}}}{{#if properties}} | any{{/if}};
 
 {{/with}}
-{{/if}}
+{{/if--}}
 {{#each properties}}
 	/**
 	{{#if description}}
@@ -37,7 +38,7 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	{{name}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}}{{#if nullable}} | null{{/if}};
 {{/each}}
 }
-{{/if}}
+{{/ifvex}}
 {{#if models}}
 
 /**

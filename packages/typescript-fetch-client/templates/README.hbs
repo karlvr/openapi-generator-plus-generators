@@ -1,5 +1,5 @@
-{{#if npmName}}
-## {{npmName}}@{{npmVersion}}
+{{#if npm.name}}
+## {{npm.name}}@{{npm.version}}
 {{else}}
 ## API
 {{/if}}
@@ -37,9 +37,9 @@ First build the package then run ```npm publish```
 
 Navigate to the folder of your consuming project and run one of the following commands:
 
-{{#if npmName}}
+{{#if npm.name}}
 ```shell
-npm install {{npmName}}@{{npmVersion}} --save
+npm install {{npm.name}}@{{npm.version}} --save
 ```
 {{else}}
 ```shell

@@ -16,6 +16,8 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		defaultNpmOptions: () => ({
 			name: 'typescript-fetch-api',
 			version: '0.0.1',
+			private: true,
+			repository: null,
 		}),
 		defaultTypeScriptOptions: () => ({
 			target: 'ES5',
@@ -26,6 +28,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 	const generatorOptions: CodegenOptionsTypeScriptFetchClient = {
 		...typescriptCommonOptions(config, myContext),
 		legacyUnnamespacedModelSupport: !!config.legacyUnnamespacedModelSupport,
+		withInterfaces: !!config.withInterfaces,
 	}
 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {

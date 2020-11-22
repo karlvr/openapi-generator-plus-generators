@@ -81,7 +81,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				}
 			}
 
-			return { literalValue: 'undefined' }
+			return { value: null, literalValue: 'undefined' }
 		},
 		toOperationGroupName: (name) => {
 			return name

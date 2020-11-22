@@ -10,8 +10,10 @@ import { Api } from "./models";
 
 {{#each groups}}
 /**
- * {{className name}}Api - fetch parameter creator{{#if description}}
- * {{{description}}}{{/if}}
+ * {{className name}}Api - fetch parameter creator
+ {{#if description}}
+ * {{md description}}
+ {{/if}}
  * @export
  */
 export const {{className name}}ApiFetchParamCreator = function (configuration?: Configuration) {
@@ -19,7 +21,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{#each operations}}
 		/**
 		 {{#if description}}
-		 * {{{description}}}
+		 * {{md description}}
 		 {{/if}}
 		 {{#if summary}}
 		 * @summary {{{summary}}}
@@ -88,6 +90,8 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 	{{/each}}
 	{{#each queryParams}}
+		{{!-- TODO --}}
+		{{!--
 			{{#if isListContainer}}
 			if ({{identifier name}}) {
 			{{#if isCollectionFormatMulti}}
@@ -97,6 +101,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{/if}}
 			}
 			{{else}}
+		--}}
 			if ({{identifier name}} !== undefined) {
 {{#if (isDateTime)}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString();
@@ -106,7 +111,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				localVarQueryParameter['{{name}}'] = {{identifier name}};
 {{/if}}
 			}
+		{{!--
 			{{/if}}
+		--}}
 
 	{{/each}}
 	{{#each headerParams}}
@@ -266,7 +273,7 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 	};
 };
 
-{{#if withInterfaces}}
+{{#if @root.withInterfaces}}
 /**
  * {{className name}}Api - interface{{#if description}}
  * {{{description}}}{{/if}}
@@ -300,7 +307,7 @@ export interface {{className name}}ApiInterface {
  * @class {{className name}}Api
  * @extends {BaseAPI}
  */
-{{#if withInterfaces}}
+{{#if @root.withInterfaces}}
 export class {{className name}}Api extends BaseAPI implements {{className name}}ApiInterface {
 {{else}}
 export class {{className name}}Api extends BaseAPI {

@@ -96,13 +96,13 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		timeImplementation: config.timeImplementation || 'java.time.LocalTime',
 		dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
 		hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
-		imports: config.imports,
-		maven: config.maven && {
+		imports: config.imports || null,
+		maven: config.maven ? {
 			groupId: config.maven.groupId || 'com.example',
 			artifactId: config.maven.artifactId || 'api',
 			version: config.maven.version || '0.0.1',
 			versions: config.maven.versions || {},
-		},
+		} : null,
 		relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
 		relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
 		relativeTestOutputPath: computeRelativeTestOutputPath(config),
@@ -148,7 +148,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						throw new Error(`toLiteral with type integer called with non-number: ${typeof value} (${value})`)
 					}
 
-					if (format === 'int32' || format === undefined) {
+					if (format === 'int32' || !format) {
 						return !required ? `java.lang.Integer.valueOf(${value})` : `${value}`
 					} else if (format === 'int64') {
 						return !required ? `java.lang.Long.valueOf(${value}l)` : `${value}l`
@@ -161,7 +161,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						throw new Error(`toLiteral with type number called with non-number: ${typeof value} (${value})`)
 					}
 
-					if (format === undefined) {
+					if (!format) {
 						return `new java.math.BigDecimal("${value}")`
 					} else if (format === 'float') {
 						return !required ? `java.lang.Float.valueOf(${value}f)` : `${value}f`
@@ -213,7 +213,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (type) {
 				case 'integer': {
-					if (format === 'int32' || format === undefined) {
+					if (format === 'int32' || !format) {
 						return new context.NativeType(!required ? 'java.lang.Integer' : 'int', {
 							componentType: new context.NativeType('java.lang.Integer'),
 						})
@@ -226,7 +226,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 				}
 				case 'number': {
-					if (format === undefined) {
+					if (!format) {
 						return new context.NativeType('java.math.BigDecimal')
 					} else if (format === 'float') {
 						return new context.NativeType(!required ? 'java.lang.Float' : 'float', {
@@ -337,8 +337,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.STRING:
 					return { value: null, literalValue: 'null' }
 				case CodegenSchemaType.ARRAY:
+					return { value: [], literalValue: `new ${nativeType.concreteType}()` }
 				case CodegenSchemaType.MAP:
-					return { literalValue: `new ${nativeType.concreteType}()` }
+					return { value: {}, literalValue: `new ${nativeType.concreteType}()` }
 				case CodegenSchemaType.NUMBER:
 					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
 				case CodegenSchemaType.BOOLEAN:

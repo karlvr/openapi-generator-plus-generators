@@ -38,7 +38,7 @@ export function commonGenerator(config: CodegenConfig, context: CodegenGenerator
 	}
 }
 
-export function apiBasePath(servers: CodegenServer[] | undefined): string {
+export function apiBasePath(servers: CodegenServer[] | null): string {
 	if (!servers || !servers.length) {
 		return '/'
 	}
