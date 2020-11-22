@@ -35,11 +35,11 @@ public interface {{className name}}Api {
 	{{/if}}
 	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}}, notes = {{{stringLiteral description}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{!--{{#if returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/if}}--}}{{#if securityRequirements}}, authorizations = {
 		{{#each securityRequirements}}
-		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
+		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#if scheme.isOAuth}}, scopes = {
 			{{#each scopes}}
 			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{#if description}}{{{stringLiteral description}}}{{else}}""{{/if}}){{#hasMore}},{{/hasMore}}
 			{{/each}}
-		}{{/scheme.isOAuth}}){{#hasMore}},{{/hasMore}}
+		}{{/if}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
 	}{{/if}}, tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	@io.swagger.annotations.ApiResponses(value = {

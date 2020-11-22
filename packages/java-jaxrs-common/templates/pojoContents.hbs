@@ -2,7 +2,7 @@
 {{#if properties}}
 {{#each properties}}
 private {{{nativeType}}} {{identifier name}} = {{{defaultValue.literalValue}}};
-{{#if ../vendorExtensions.x-patch}}
+{{#if (lookup ../vendorExtensions 'x-patch')}}
 private boolean __patched{{capitalize (identifier name)}} = false;
 {{/if}}
 {{/each}}
@@ -12,11 +12,11 @@ private boolean __patched{{capitalize (identifier name)}} = false;
  {{#if description}}
  * {{description}}
  {{/if}}
- {{#if minimum}}
- * minimum: {{minimum}}
+ {{#if schema.minimum}}
+ * minimum: {{schema.minimum}}
  {{/if}}
- {{#if maximum}}
- * maximum: {{maximum}}
+ {{#if schema.maximum}}
+ * maximum: {{schema.maximum}}
  {{/if}}
  */
 {{#if deprecated}}
@@ -68,11 +68,11 @@ public {{{nativeType}}} {{#and (isBoolean) required}}is{{else}}get{{/and}}{{capi
 {{/if}}
 public void set{{capitalize (identifier name)}}({{{nativeType}}} {{identifier name}}) {
 	this.{{identifier name}} = {{identifier name}};
-	{{#if ../vendorExtensions.x-patch}}
+	{{#if (lookup ../vendorExtensions 'x-patch')}}
 	this.__patched{{capitalize (identifier name)}} = true;
 	{{/if}}
 }
-{{#if ../vendorExtensions.x-patch}}
+{{#if (lookup ../vendorExtensions 'x-patch')}}
 public boolean patched{{capitalize (identifier name)}}() {
 	return this.__patched{{capitalize (identifier name)}};
 }
@@ -83,7 +83,7 @@ public void add{{capitalize (singular (identifier name))}}({{{componentSchema.na
 		this.{{identifier name}} = new {{{nativeType.concreteType}}}();
 	}
 	this.{{identifier name}}.add({{identifier (singular name)}});
-	{{#if ../vendorExtensions.x-patch}}
+	{{#if (lookup ../vendorExtensions 'x-patch')}}
 	this.__patched{{capitalize (identifier name)}} = true;
 	{{/if}}
 }
