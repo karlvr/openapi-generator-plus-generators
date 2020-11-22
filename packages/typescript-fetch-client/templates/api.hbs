@@ -12,7 +12,7 @@ import { Api } from "./models";
 /**
  * {{className name}}Api - fetch parameter creator
  {{#if description}}
- * {{md description}}
+ * {{{md description}}}
  {{/if}}
  * @export
  */
@@ -21,7 +21,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{#each operations}}
 		/**
 		 {{#if description}}
-		 * {{md description}}
+		 * {{{md description}}}
 		 {{/if}}
 		 {{#if summary}}
 		 * @summary {{{summary}}}
@@ -203,8 +203,10 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 };
 
 /**
- * {{className name}}Api - functional programming interface{{#if description}}
- * {{{description}}}{{/if}}
+ * {{className name}}Api - functional programming interface
+ {{#if description}}
+ * {{{md description}}}
+ {{/if}}
  * @export
  */
 export const {{className name}}ApiFp = function(configuration?: Configuration) {
@@ -212,7 +214,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 	{{#each operations}}
 		/**
 		 {{#if description}}
-		 * {{{description}}}
+		 * {{{md description}}}
 		 {{/if}}
 		 {{#if summary}}
 		 * @summary {{{summary}}}
@@ -243,8 +245,10 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 };
 
 /**
- * {{className name}}Api - factory interface{{#if description}}
- * {{{description}}}{{/if}}
+ * {{className name}}Api - factory interface
+ {{#if description}}
+ * {{{md description}}}
+ {{/if}}
  * @export
  */
 export const {{className name}}ApiFactory = function (configuration?: Configuration, fetch?: FetchAPI, basePath?: string) {
@@ -252,7 +256,7 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 	{{#each operations}}
 		/**
 		 {{#if description}}
-		 * {{{description}}}
+		 * {{{md description}}}
 		 {{/if}}
 		 {{#if summary}}
 		 * @summary {{{summary}}}
@@ -275,15 +279,19 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 
 {{#if @root.withInterfaces}}
 /**
- * {{className name}}Api - interface{{#if description}}
- * {{{description}}}{{/if}}
+ * {{className name}}Api - interface
+ {{#if description}}
+ * {{{md description}}}
+ {{/if}}
  * @export
  * @interface {{className name}}Api
  */
 export interface {{className name}}ApiInterface {
 {{#each operations}}
 	/**
-	 * {{{description}}}
+	 {{#if description}}
+	 * {{{md description}}}
+	 {{/if}}
 	 {{#summary}}
 	 * @summary {{{summary}}}
 	 {{/summary}}
@@ -301,8 +309,10 @@ export interface {{className name}}ApiInterface {
 
 {{/if}}
 /**
- * {{className name}}Api - object-oriented interface{{#if description}}
- * {{{description}}}{{/if}}
+ * {{className name}}Api - object-oriented interface
+ {{#if description}}
+ * {{{md description}}}
+ {{/if}}
  * @export
  * @class {{className name}}Api
  * @extends {BaseAPI}
@@ -315,7 +325,7 @@ export class {{className name}}Api extends BaseAPI {
 	{{#each operations}}
 	/**
 	 {{#if description}}
-	 * {{{description}}}
+	 * {{{md description}}}
 	 {{/if}}
 	 {{#if summary}}
 	 * @summary {{{summary}}}

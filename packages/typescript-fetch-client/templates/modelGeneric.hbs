@@ -3,7 +3,7 @@ export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
 {{else}}
 /**
 {{#if description}}
- * {{{description}}}
+ * {{{md description}}}
 {{/if}}
  * @export
  * @interface {{className name}}
@@ -27,7 +27,7 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 {{#each properties}}
 	/**
 	{{#if description}}
-	 * {{{description}}}
+	 * {{{md description}}}
 	{{/if}}
 	 * @type {{safe '{'}}{{{nativeType}}}{{safe '}'}}
 	 * @memberof {{className ../name}}
