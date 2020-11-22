@@ -34,11 +34,11 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
  {{#if description}}
  * {{description}}
  {{/if}}
- {{#if minimum}}
- * minimum: {{minimum}}
+ {{#if schema.minimum}}
+ * minimum: {{schema.minimum}}
  {{/if}}
- {{#if maximum}}
- * maximum: {{maximum}}
+ {{#if schema.maximum}}
+ * maximum: {{schema.maximum}}
  {{/if}}
  */
 {{#if deprecated}}
@@ -52,8 +52,8 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
-{{#if vendorExtensions.x-extra-annotation}}
-{{{vendorExtensions.x-extra-annotation}}}
+{{#if (lookup schema.vendorExtensions 'x-extra-annotation')}}
+{{{schema.vendorExtensions.x-extra-annotation}}}
 {{/if}}
 {{>hooks/pojoPropertyAnnotations}}
 @com.fasterxml.jackson.annotation.JsonProperty("{{name}}")

@@ -1,1 +1,1 @@
-@io.swagger.annotations.ApiModelProperty({{#if example}}example = {{{example.valueString}}}, {{/if}}{{#if required}}required = {{required}}, {{/if}}{{#if description}}value = {{{stringLiteral description}}}{{else}}value = ""{{/if}})
+@io.swagger.annotations.ApiModelProperty({{#ifeg 'java'}}example = {{{examples.java.valueString}}}, {{else ifeg 'default'}}example = {{{examples.default.valueString}}}, {{/ifeg}}{{#if required}}required = {{required}}, {{/if}}{{#if description}}value = {{{stringLiteral description}}}{{else}}value = ""{{/if}})

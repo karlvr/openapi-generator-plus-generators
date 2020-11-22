@@ -107,11 +107,11 @@ function sourcePosition(options: ActualHelperOptions): string {
 		return 'unknown'
 	}
 	if (options.loc.start.line !== options.loc.end.line) {
-		return `${options.loc.start.line}:${options.loc.start.column} - ${options.loc.end.line}:${options.loc.end.column}`
+		return `${options.loc.start.line}:${options.loc.start.column + 1} - ${options.loc.end.line}:${options.loc.end.column + 1}`
 	} else if (options.loc.start.column !== options.loc.end.column) {
-		return `${options.loc.start.line}:${options.loc.start.column}-${options.loc.end.column}`
+		return `${options.loc.start.line}:${options.loc.start.column + 1}-${options.loc.end.column + 1}`
 	} else {
-		return `${options.loc.start.line}:${options.loc.start.column}`
+		return `${options.loc.start.line}:${options.loc.start.column + 1}`
 	}
 }
 
@@ -151,10 +151,12 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	}
 	/** Convert the string argument to a class name using the generator */
 	hbs.registerHelper('className', function(name: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (name !== undefined) {
 			return generator().toClassName(convertToString(name))
 		} else {
-			console.warn(`className helper has invalid parameter: ${name}`)
+			throw new Error(`className helper has invalid parameter "${name}" @ ${sourcePosition(options)}`)
 			return name
 		}
 	})
@@ -603,7 +605,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			throw new Error(`lookup helper called with undefined second argument @ ${sourcePosition(options)}`)
 		}
 
-		const value = context[field]
+		const value = context !== null ? context[field] : undefined
 		if (value === undefined) {
 			return defaultValue || null
 		}
