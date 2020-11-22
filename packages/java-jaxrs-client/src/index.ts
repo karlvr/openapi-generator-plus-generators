@@ -16,7 +16,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 }
 
 export default function createGenerator(config: CodegenConfig, context: JavaGeneratorContext): CodegenGenerator {
-	const javaGeneratorContext: JavaGeneratorContext = {
+	const myContext: JavaGeneratorContext = {
 		...context,
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
@@ -36,12 +36,33 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		},
 	}
 
-	const generatorOptions = options(config, javaGeneratorContext)
+	const generatorOptions = options(config, myContext)
 
-	context.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
+	
+		for (const group of doc.groups) {
+			const operations = group.operations
+			if (!operations.length) {
+				continue
+			}
+
+			await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
+				{ ...rootContext, ...group, operations }, true, hbs)
+		}
+		
+		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
+		for (const group of doc.groups) {
+			const operations = group.operations
+			if (!operations.length) {
+				continue
+			}
+			await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
+				{ ...rootContext, ...group, operations }, true, hbs)
+		}
+
 		await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
 			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
 		}, true, hbs)
@@ -63,7 +84,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		}
 	}
 
-	const base = javaGenerator(config, javaGeneratorContext)
+	const base = javaGenerator(config, myContext)
 	return {
 		...base,
 		templateRootContext: () => {
