@@ -59,7 +59,7 @@ export interface JavaLikeContext extends CodegenGeneratorContext {
 	defaultConstantStyle: ConstantStyle
 }
 
-export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContext): Pick<CodegenGenerator, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toOperationGroupName'> {
+export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContext): Pick<CodegenGenerator, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toSuggestedSchemaName' | 'toOperationGroupName'> {
 	const generatorOptions = options(config, context)
 
 	const cg = commonGenerator(config, context)
@@ -91,14 +91,17 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			}
 		},
 		toSchemaName: (name, options) => {
-			if (!options.nameSpecified && options.schemaType === CodegenSchemaType.ENUM) {
-				name = `${name}_enum`
-			}
 			let result = cg.toSchemaName(name, options)
 			if (options.schemaType === CodegenSchemaType.OBJECT && generatorOptions.modelClassPrefix) {
 				result = generatorOptions.modelClassPrefix + result
 			}
 			return result
+		},
+		toSuggestedSchemaName: (name, options) => {
+			if (options.schemaType === CodegenSchemaType.ENUM) {
+				name = `${name}_enum`
+			}
+			return name
 		},
 		toOperationGroupName: (name) => {
 			return context.generator().toClassName(name)

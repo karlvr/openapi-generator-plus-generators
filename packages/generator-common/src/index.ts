@@ -6,7 +6,7 @@ export * from './utils'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
-export function commonGenerator(config: CodegenConfig, context: CodegenGeneratorContext): Pick<CodegenGenerator, 'toOperationName' | 'toSchemaName' | 'templateRootContext'> {
+export function commonGenerator(config: CodegenConfig, context: CodegenGeneratorContext): Pick<CodegenGenerator, 'toOperationName' | 'toSchemaName' | 'toSuggestedSchemaName' | 'templateRootContext'> {
 	return {
 		/** Create a default operation name for operations that lack an operationId */
 		toOperationName: (path: string, method: string): string => {
@@ -17,15 +17,15 @@ export function commonGenerator(config: CodegenConfig, context: CodegenGenerator
 			return camelCase(sanitizedCombined)
 		},
 		
-		toSchemaName: (name, options) => {
-			if (options.nameSpecified) {
-				return context.generator().toClassName(name)
-			}
-			
+		toSchemaName: (name) => {
+			return name
+		},
+
+		toSuggestedSchemaName: (name, options) => {
 			if (options.purpose === CodegenSchemaPurpose.ARRAY_ITEM || options.purpose === CodegenSchemaPurpose.MAP_VALUE) {
-				return context.generator().toClassName(pluralize.singular(name))
+				return pluralize.singular(name)
 			} else {
-				return context.generator().toClassName(name)
+				return name
 			}
 		},
 
