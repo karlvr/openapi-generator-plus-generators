@@ -64,7 +64,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		}
 
 		await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
-			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
+			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : null,
 		}, true, hbs)
 		await emit('ApiInvoker', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), 
 			{ ...rootContext }, true, hbs)
