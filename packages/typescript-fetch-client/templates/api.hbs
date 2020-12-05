@@ -129,21 +129,21 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 	{{/each}}
 	{{#each formParams}}
-			{{#if isListContainer}}
+			{{#ifdef isListContainer}}
 			if ({{identifier name}}) {
-			{{#if isCollectionFormatMulti}}
+			{{#ifdef isCollectionFormatMulti}}
 				{{identifier name}}.forEach((element) => {
 					localVarFormParams.append('{{name}}', element as any);
 				})
 			{{else}}
 					localVarFormParams.set('{{name}}', {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
-			{{/if}}
+			{{/ifdef}}
 			}
 			{{else}}
 			if ({{identifier name}} !== undefined) {
 				localVarFormParams.set('{{name}}', {{identifier name}} as any);
 			}
-			{{/if}}
+			{{/ifdef}}
 
 	{{/each}}
 	{{#if formParams}}
