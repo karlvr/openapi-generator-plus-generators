@@ -357,14 +357,35 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 	})
 	/** A custom helper to check for vendor extensions */
-	hbs.registerHelper('ifvex', function(this: UnknownObject, extensionName: string) {
+	hbs.registerHelper('ifvex', function(this: UnknownObject, extensionName: string, nestedProperty?: string) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
-		if (arguments.length !== 2) {
-			throw new Error(`ifvex helper must be called with one argument @ ${sourcePosition(options)}`)
+		if (arguments.length !== 2 && arguments.length !== 3) {
+			throw new Error(`ifvex helper must be called with one or two arguments @ ${sourcePosition(options)}`)
 		}
 
-		const vendorExtensions: CodegenVendorExtensions = this.vendorExtensions as CodegenVendorExtensions
+		if (arguments.length === 2) {
+			nestedProperty = undefined
+		}
+
+		if (extensionName === undefined) {
+			throw new Error(`ifvex helper called with undefined extension name, perhaps missing quotes around the extension name @ ${sourcePosition(options)}`)
+		}
+
+		let source: UnknownObject
+		if (nestedProperty) {
+			source = options.lookupProperty(this, nestedProperty) as UnknownObject
+			if (source === null) {
+				return options.inverse(this)
+			}
+			if (source === undefined) {
+				throw new Error(`ifvex helper couldn't find nested object "${nestedProperty} @ ${sourcePosition(options)}: ${stringify(this)}`)
+			}
+		} else {
+			source = this
+		}
+
+		const vendorExtensions: CodegenVendorExtensions = source.vendorExtensions as CodegenVendorExtensions
 		if (vendorExtensions === undefined) {
 			throw new Error(`ifvex helper called with an object that doesn't support vendor extensions @ ${sourcePosition(options)}: ${stringify(this)}`)
 		}
