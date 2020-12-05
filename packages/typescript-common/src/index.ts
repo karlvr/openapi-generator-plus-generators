@@ -267,7 +267,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		postProcessModel: (model) => {
 			function modelReferencesToDisjunction(references: CodegenModelReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
 				const result = references.reduce((result, reference) => {
-					const r = transform(reference.model.propertyNativeType)
+					const r = transform(reference.model.nativeType)
 					if (!r) {
 						return result
 					}
@@ -286,7 +286,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			function modelsToDisjunction(models: CodegenModel[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
 				const result = models.reduce((result, model) => {
-					const r = transform(model.propertyNativeType)
+					const r = transform(model.nativeType)
 					if (!r) {
 						return result
 					}
@@ -309,16 +309,16 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					const newNativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.nativeType)
 					if (newNativeType) {
 						if (!tryToConvertModelToLiteralType(model, newNativeType)) {
-							model.propertyNativeType.nativeType = newNativeType
-							model.propertyNativeType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.serializedType)
-							model.propertyNativeType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
-							model.propertyNativeType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
+							model.nativeType.nativeType = newNativeType
+							model.nativeType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.serializedType)
+							model.nativeType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
+							model.nativeType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
 							
-							if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
-								model.propertyNativeType.componentType.nativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-								model.propertyNativeType.componentType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
-								model.propertyNativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-								model.propertyNativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+							if (model.nativeType.componentType && model.nativeType.componentType !== model.nativeType) {
+								model.nativeType.componentType.nativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+								model.nativeType.componentType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
+								model.nativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+								model.nativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 							}
 						}
 					}
@@ -330,16 +330,16 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				const newNativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.nativeType)
 				if (newNativeType) {
 					if (!tryToConvertModelToLiteralType(model, newNativeType)) {
-						model.propertyNativeType.nativeType = newNativeType
-						model.propertyNativeType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.serializedType)
-						model.propertyNativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
-						model.propertyNativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
+						model.nativeType.nativeType = newNativeType
+						model.nativeType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.serializedType)
+						model.nativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
+						model.nativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
 						
-						if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
-							model.propertyNativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-							model.propertyNativeType.componentType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
-							model.propertyNativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-							model.propertyNativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+						if (model.nativeType.componentType && model.nativeType.componentType !== model.nativeType) {
+							model.nativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+							model.nativeType.componentType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
+							model.nativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+							model.nativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 						}
 					}
 				}
