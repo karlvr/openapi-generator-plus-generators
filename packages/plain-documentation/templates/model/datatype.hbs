@@ -10,9 +10,9 @@
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
         {{else}}
             {{nativeType}}
-            {{#ifdef nativeType.serializedType}}
+            {{#if nativeType.serializedType}}
             ({{nativeType.serializedType}})
-            {{/ifdef}}
+            {{/if}}
         {{/if}}
     {{else}}
         {{nativeType}}
