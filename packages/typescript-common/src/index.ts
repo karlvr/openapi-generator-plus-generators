@@ -249,6 +249,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			switch (schemaType) {
 				case CodegenSchemaType.NUMBER:
+					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
+				case CodegenSchemaType.INTEGER:
 					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
 				case CodegenSchemaType.BOOLEAN:
 					return { value: false, literalValue: 'false' }

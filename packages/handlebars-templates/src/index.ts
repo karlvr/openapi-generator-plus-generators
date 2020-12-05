@@ -651,7 +651,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	registerPropertyTypeHelper('isMap', CodegenSchemaType.MAP, hbs)
 	registerPropertyTypeHelper('isArray', CodegenSchemaType.ARRAY, hbs)
 	registerPropertyTypeHelper('isBoolean', CodegenSchemaType.BOOLEAN, hbs)
+	registerPropertyTypeHelper('isNumeric', [CodegenSchemaType.NUMBER, CodegenSchemaType.INTEGER], hbs)
 	registerPropertyTypeHelper('isNumber', CodegenSchemaType.NUMBER, hbs)
+	registerPropertyTypeHelper('isInteger', CodegenSchemaType.INTEGER, hbs)
 	registerPropertyTypeHelper('isEnum', CodegenSchemaType.ENUM, hbs)
 	registerPropertyTypeHelper('isString', CodegenSchemaType.STRING, hbs)
 	registerPropertyTypeHelper('isDateTime', CodegenSchemaType.DATETIME, hbs)
@@ -720,7 +722,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 }
 
-function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars) {
+function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars): void
+function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType[], hbs: typeof Handlebars): void
+function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType | CodegenSchemaType[], hbs: typeof Handlebars): void {
 	hbs.registerHelper(name, function(this: CodegenTypeInfo) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
@@ -730,6 +734,16 @@ function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType,
 			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}`)
 		}
 
-		return (aPropertyType === schemaType)
+		if (typeof schemaType === 'string') {
+			return (aPropertyType === schemaType)
+		} else {
+			for (const aSchemaType of schemaType) {
+				if (aPropertyType === aSchemaType) {
+					return true
+				}
+			}
+			return false
+		}
+		
 	})
 }

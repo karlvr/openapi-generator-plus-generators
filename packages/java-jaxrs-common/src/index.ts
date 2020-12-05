@@ -344,6 +344,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.MAP:
 					return { value: {}, literalValue: `new ${nativeType.concreteType}()` }
 				case CodegenSchemaType.NUMBER:
+					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
+				case CodegenSchemaType.INTEGER:
 					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
 				case CodegenSchemaType.BOOLEAN:
 					return { value: false, literalValue: context.generator().toLiteral(false, options) }
