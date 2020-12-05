@@ -34,18 +34,18 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 
 		private static final long serialVersionUID = 1L;
 		
-		{{#unless nativeType}}
+		{{#unless defaultContent.nativeType}}
 		public {{{className ../name}}}{{{code}}}Exception() {
 			
 		}
 		{{else}}
-		private {{{nativeType}}} entity;
+		private {{{defaultContent.nativeType}}} entity;
 		
-		public {{{className ../name}}}{{{code}}}Exception({{{nativeType}}} entity) {
+		public {{{className ../name}}}{{{code}}}Exception({{{defaultContent.nativeType}}} entity) {
 			this.entity = entity;
 		}
 		
-		public {{{nativeType}}} getEntity() {
+		public {{{defaultContent.nativeType}}} getEntity() {
 			return this.entity;
 		}
 		{{/unless}}
