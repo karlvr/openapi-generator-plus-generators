@@ -22,6 +22,7 @@ renders a model without the surrounding panel.
     {{/each}}
 {{/if}}
 
+{{#if (isObject)}}
 {{#if parent}}
     {{>model/inherited parent anchor=anchor}}
 {{/if}}
@@ -38,16 +39,17 @@ renders a model without the surrounding panel.
     {{>model/properties anchor=anchor}}
 {{/if}}
 
-{{#if (isEnum)}}
-    {{>model/enum}}
-{{/if}}
-
 {{#if discriminator}}
     {{>model/discriminator anchor=anchor}}
 {{/if}}
 
 {{#if children}}
     {{>model/children anchor=anchor}}
+{{/if}}
+{{/if}}
+
+{{#if (isEnum)}}
+    {{>model/enum}}
 {{/if}}
 
 {{!-- {{#if allOf}}

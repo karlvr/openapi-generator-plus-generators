@@ -36,14 +36,14 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 {{/each}}
 }
 {{/ifvex}}
-{{#if models}}
+{{#if schemas}}
 
 /**
  * @export
  * @namespace {{className name}}
  */
 export namespace {{className name}} {
-{{#each models}}
+{{#each schemas}}
 	{{#if (isEnum)}}
 	{{>modelEnum}}
 	{{else}}

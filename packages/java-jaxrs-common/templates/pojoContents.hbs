@@ -12,11 +12,13 @@ private boolean __patched{{capitalize (identifier name)}} = false;
  {{#if description}}
  * {{description}}
  {{/if}}
+ {{#if (isNumeric schema)}}
  {{#if schema.minimum}}
  * minimum: {{schema.minimum}}
  {{/if}}
  {{#if schema.maximum}}
  * maximum: {{schema.maximum}}
+ {{/if}}
  {{/if}}
  */
 {{#if deprecated}}
@@ -34,11 +36,13 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
  {{#if description}}
  * {{description}}
  {{/if}}
+ {{#if (isNumeric schema)}}
  {{#if schema.minimum}}
  * minimum: {{schema.minimum}}
  {{/if}}
  {{#if schema.maximum}}
  * maximum: {{schema.maximum}}
+ {{/if}}
  {{/if}}
  */
 {{#if deprecated}}

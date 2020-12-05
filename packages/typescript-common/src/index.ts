@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenModel } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -267,7 +267,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 
 		postProcessModel: (model) => {
-			function modelReferencesToDisjunction(references: CodegenModelReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+			function modelReferencesToDisjunction(references: CodegenObjectSchemaReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
 				const result = references.reduce((result, reference) => {
 					const r = transform(reference.model.nativeType)
 					if (!r) {
@@ -286,7 +286,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				}
 			}
 
-			function modelsToDisjunction(models: CodegenModel[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+			function modelsToDisjunction(models: CodegenObjectSchema[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
 				const result = models.reduce((result, model) => {
 					const r = transform(model.nativeType)
 					if (!r) {
@@ -407,7 +407,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
  * @param model 
  * @param literalType
  */
-function tryToConvertModelToLiteralType(model: CodegenModel, literalType: string) {
+function tryToConvertModelToLiteralType(model: CodegenObjectSchema, literalType: string) {
 	if (!model.properties && !model.implements && !model.parent) {
 		if (!model.vendorExtensions) {
 			model.vendorExtensions = idx.create()

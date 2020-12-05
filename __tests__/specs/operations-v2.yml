@@ -9,11 +9,17 @@ paths:
         - name: a
           type: string
           in: query
+      produces:
+        - application/json
       responses:
         200:
           description: OK
           schema:
             $ref: '#/definitions/Test1'
+        400:
+          description: Bad request
+          schema:
+            type: string
 definitions:
   Test1:
     type: object

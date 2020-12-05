@@ -1,4 +1,4 @@
-import { CodegenModel, CodegenProperties, CodegenProperty } from '@openapi-generator-plus/types'
+import { CodegenObjectSchema, CodegenProperties, CodegenProperty } from '@openapi-generator-plus/types'
 import { idx } from '@openapi-generator-plus/core'
 
 /**
@@ -7,7 +7,7 @@ import { idx } from '@openapi-generator-plus/core'
  * @param model 
  * @param result 
  */
-export function uniquePropertiesIncludingInherited(model: CodegenModel, result: CodegenProperties = idx.create()): CodegenProperty[] {
+export function uniquePropertiesIncludingInherited(model: CodegenObjectSchema, result: CodegenProperties = idx.create()): CodegenProperty[] {
 	if (model.parent) {
 		uniquePropertiesIncludingInherited(model.parent, result)
 	}
