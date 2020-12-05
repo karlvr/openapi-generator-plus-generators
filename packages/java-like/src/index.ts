@@ -101,7 +101,7 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			if (options.schemaType === CodegenSchemaType.ENUM) {
 				name = `${name}_enum`
 			}
-			return name
+			return cg.toSuggestedSchemaName(name, options)
 		},
 		toOperationGroupName: (name) => {
 			return context.generator().toClassName(name)
