@@ -35,7 +35,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 		{{#unless isDefault}}
 		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
 			__response.status({{code}});
-			{{#if nativeType}}
+			{{#if defaultContent.nativeType}}
 			__response.entity(__e.getEntity());
 			{{/if}}
 			return __response.build();
