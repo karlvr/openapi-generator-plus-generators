@@ -95,6 +95,7 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			if (options.schemaType === CodegenSchemaType.OBJECT && generatorOptions.modelClassPrefix) {
 				result = generatorOptions.modelClassPrefix + result
 			}
+			result = context.generator().toClassName(result)
 			return result
 		},
 		toSuggestedSchemaName: (name, options) => {
