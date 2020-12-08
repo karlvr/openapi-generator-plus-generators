@@ -356,6 +356,84 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			return options.fn(this)
 		}
 	})
+
+	/* A custom 'each' helper that detects errors in template usage */
+	hbs.registerHelper('each', function(this: UnknownObject, context: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`each helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+
+		if (context === undefined) {
+			throw new Error(`each helper called with undefined argument @ ${sourcePosition(options)}`)
+		}
+		if (context === null) {
+			return options.inverse(this)
+		}
+
+		if (Array.isArray(context)) {
+			const n = context.length
+			if (n === 0) {
+				return options.inverse(this)
+			}
+
+			let result = ''
+			for (let i = 0; i < n; i++) {
+				result += options.fn(context[i], {
+					data: {
+						root: options.data && options.data.root,
+						index: i,
+						first: i === 0,
+						last: i === n - 1,
+					},
+				})
+			}
+			return result
+		} else if (context && typeof context === 'object') {
+			const keys = Object.keys(context)
+
+			const n = keys.length
+			if (n === 0) {
+				return options.inverse(this)
+			}
+
+			let result = ''
+			for (let i = 0; i < n; i++) {
+				const key = keys[i]
+
+				result += options.fn((context as Record<string, unknown>)[key], {
+					data: {
+						root: options.data && options.data.root,
+						key,
+						first: i === 0,
+						last: i === n - 1,
+					},
+				})
+			}
+			return result
+		} else {
+			throw new Error(`Unsupported context type for each block handler: ${context}`)
+		}
+	})
+
+	/* A custom 'with' helper that detects errors in templates */
+	hbs.registerHelper('with', function(this: UnknownObject, context: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`with helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+
+		if (context === undefined) {
+			throw new Error(`with helper called with undefined argument @ ${sourcePosition(options)}`)
+		}
+		if (context === null) {
+			return options.inverse(this)
+		}
+		return options.fn(context)
+	})
+
 	/** A custom helper to check for vendor extensions */
 	hbs.registerHelper('ifvex', function(this: UnknownObject, extensionName: string, nestedProperty?: string) {
 		// eslint-disable-next-line prefer-rest-params
