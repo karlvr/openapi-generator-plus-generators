@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -415,12 +415,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
 	
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
-			for (const model of context.utils.values(doc.models)) {
-				const modelContext = {
-					models: [model],
+			for (const schema of context.utils.values(doc.schemas)) {
+				if (isCodegenObjectSchema(schema)) {
+					const modelContext = {
+						models: [schema],
+					}
+					await emit('model', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
+						{ ...rootContext, ...modelContext }, true, hbs)
 				}
-				await emit('model', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(model.name)}.java`), 
-					{ ...rootContext, ...modelContext }, true, hbs)
 			}
 	
 			const maven = generatorOptions.maven

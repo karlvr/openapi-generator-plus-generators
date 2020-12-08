@@ -1,8 +1,9 @@
-import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenGeneratorConstructor, CodegenGeneratorType, isCodegenObjectSchema } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
 import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
 import { CodegenOptionsTypeScriptFetchClient } from './types'
+import * as idx from '@openapi-generator-plus/indexed-type'
 
 const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 	const myContext: TypeScriptGeneratorContext = {
@@ -34,7 +35,11 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 		await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api.ts'), { ...rootContext, ...doc }, true, hbs)
-		await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), { ...rootContext, ...doc }, true, hbs)
+		await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), {
+			...rootContext,
+			...doc,
+			models: idx.filter(doc.schemas, schema => isCodegenObjectSchema(schema)),
+		}, true, hbs)
 		await emit('runtime', path.join(outputPath, relativeSourceOutputPath, 'runtime.ts'), { ...rootContext, ...doc }, true, hbs)
 		await emit('configuration', path.join(outputPath, relativeSourceOutputPath, 'configuration.ts'), { ...rootContext, ...doc }, true, hbs)
 		await emit('custom.d', path.join(outputPath, relativeSourceOutputPath, 'custom.d.ts'), { ...rootContext, ...doc }, true, hbs)

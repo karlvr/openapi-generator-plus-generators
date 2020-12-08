@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -266,8 +266,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
 
-		postProcessModel: (model) => {
-			function modelReferencesToDisjunction(references: CodegenObjectSchemaReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+		postProcessSchema: (schema) => {
+			function modelReferencesToDisjunction(references: CodegenObjectSchemaReference[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
 				const result = references.reduce((result, reference) => {
 					const r = transform(reference.model.nativeType)
 					if (!r) {
@@ -282,11 +282,11 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				if (result) {
 					return result
 				} else {
-					return undefined
+					return null
 				}
 			}
 
-			function modelsToDisjunction(models: CodegenObjectSchema[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+			function modelsToDisjunction(models: CodegenObjectSchema[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
 				const result = models.reduce((result, model) => {
 					const r = transform(model.nativeType)
 					if (!r) {
@@ -301,47 +301,47 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				if (result) {
 					return result
 				} else {
-					return undefined
+					return null
 				}
 			}
 
-			if (model.discriminator) {
+			if (isCodegenObjectSchema(schema) && schema.discriminator) {
 				/* If this model has a discriminator then we change its propertyNativeType to a disjunction */
-				if (model.discriminator.references) {
-					const newNativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.nativeType)
+				if (schema.discriminator.references) {
+					const newNativeType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.nativeType)
 					if (newNativeType) {
-						if (!tryToConvertModelToLiteralType(model, newNativeType)) {
-							model.nativeType.nativeType = newNativeType
-							model.nativeType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.serializedType)
-							model.nativeType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
-							model.nativeType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
+						if (!tryToConvertModelToLiteralType(schema, newNativeType)) {
+							schema.nativeType.nativeType = newNativeType
+							schema.nativeType.serializedType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.serializedType)
+							schema.nativeType.literalType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.literalType)
+							schema.nativeType.concreteType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.concreteType)
 							
-							if (model.nativeType.componentType && model.nativeType.componentType !== model.nativeType) {
-								model.nativeType.componentType.nativeType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-								model.nativeType.componentType.serializedType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
-								model.nativeType.componentType.literalType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-								model.nativeType.componentType.concreteType = modelReferencesToDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+							if (schema.nativeType.componentType && schema.nativeType.componentType !== schema.nativeType) {
+								schema.nativeType.componentType.nativeType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+								schema.nativeType.componentType.serializedType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
+								schema.nativeType.componentType.literalType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+								schema.nativeType.componentType.concreteType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 							}
 						}
 					}
 				}
-			} else if (model.implementors && !model.properties && !model.parent) {
+			} else if (isCodegenObjectSchema(schema) && schema.implementors && !schema.properties && !schema.parent) {
 				/* If this model is a parent interface for others, but has no properties of its own, then we can convert it to a disjunction */
-				const implementors = idx.allValues(model.implementors)
+				const implementors = idx.allValues(schema.implementors)
 
 				const newNativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.nativeType)
 				if (newNativeType) {
-					if (!tryToConvertModelToLiteralType(model, newNativeType)) {
-						model.nativeType.nativeType = newNativeType
-						model.nativeType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.serializedType)
-						model.nativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
-						model.nativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
+					if (!tryToConvertModelToLiteralType(schema, newNativeType)) {
+						schema.nativeType.nativeType = newNativeType
+						schema.nativeType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.serializedType)
+						schema.nativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
+						schema.nativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
 						
-						if (model.nativeType.componentType && model.nativeType.componentType !== model.nativeType) {
-							model.nativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-							model.nativeType.componentType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
-							model.nativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-							model.nativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+						if (schema.nativeType.componentType && schema.nativeType.componentType !== schema.nativeType) {
+							schema.nativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+							schema.nativeType.componentType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
+							schema.nativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+							schema.nativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
 						}
 					}
 				}
