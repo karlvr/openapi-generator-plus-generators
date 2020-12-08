@@ -16,7 +16,6 @@ package {{apiSpecPackage}};
 public interface {{className name}}ApiSpec {
 
 {{#each operations}}
-	{{>nestedModels}}
 	@javax.ws.rs.{{httpMethod}}
 	{{#if securityRequirements}}
 	{{#if @root.authenticatedOperationAnnotation}}

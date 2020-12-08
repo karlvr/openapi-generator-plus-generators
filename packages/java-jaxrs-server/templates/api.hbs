@@ -13,7 +13,6 @@ package {{apiPackage}};
 public interface {{className name}}Api {
 
 {{#each operations}}
-	{{>nestedModels}}
 	@javax.ws.rs.{{httpMethod}}
 	{{>hooks/apiMethodAnnotations}}
 	{{#if securityRequirements}}
