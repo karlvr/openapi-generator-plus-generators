@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -416,7 +416,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
 			for (const schema of context.utils.values(doc.schemas)) {
-				if (isCodegenObjectSchema(schema)) {
+				if (isCodegenObjectSchema(schema) || isCodegenEnumSchema(schema)) { // TODO this quality will become part of the generator interface
 					const modelContext = {
 						models: [schema],
 					}
