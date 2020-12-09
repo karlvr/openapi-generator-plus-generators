@@ -25,6 +25,9 @@ components:
       type: object
       required: [petType]
       properties:
+        # This property triggers the creation of Pet as a superclass
+        length:
+          type: number
         petType:
           type: string
       discriminator:
