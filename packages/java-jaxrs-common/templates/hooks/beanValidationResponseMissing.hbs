@@ -1,0 +1,7 @@
+{{!--
+Handle response validation missing a required response body.
+
+@param responseBuilderVar the name of the local variable holding the ResponseBuilder object
+@param operation the CodegenOperation
+--}}
+throw new javax.ws.rs.InternalServerErrorException("Response body missing");

@@ -15,6 +15,10 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 
 	{{>util/inject interface=(concat apiServicePackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
 
+	{{#if @root.useBeanValidation}}
+	private javax.validation.ValidatorFactory validatorFactory = javax.validation.Validation.buildDefaultValidatorFactory();
+
+	{{/if}}
 {{#each operations}}
 	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>serviceBodyParam}}{{/if}}) {
 		{{#with defaultResponse}}
@@ -27,6 +31,9 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{#with defaultResponse}}
 			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless defaultContent.nativeType}}{{#or ../parameters ../requestBody}}, {{/or}}__response{{/unless}});
 			{{#if defaultContent.nativeType}}
+			{{#if @root.useBeanValidation}}
+			{{>frag/beanValidationValidateResponse responseVar='__entity'}}
+			{{/if}}
 			__response.entity(__entity);
 			{{/if}}
 			return __response.build();
