@@ -117,7 +117,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 	{{/each}}
 	{{#each headerParams}}
-			{{#if isListContainer}}
+			{{#ifdef isListContainer}}
 			if ({{identifier name}}) {
 				localVarHeaderParameter['{{name}}'] = {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
 			}
@@ -125,7 +125,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			if ({{identifier name}} !== undefined && {{identifier name}} !== null) {
 				localVarHeaderParameter['{{name}}'] = String({{identifier name}});
 			}
-			{{/if}}
+			{{/ifdef}}
 
 	{{/each}}
 	{{#each formParams}}
