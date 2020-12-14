@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-like-generator-helper",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Helpers for Java-like language generators",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
