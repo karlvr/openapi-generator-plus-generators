@@ -10,5 +10,5 @@ return {{responseBuilderVar}}
 	.type(javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE)
 	.entity(__validations.stream()
 		.map(__v -> __v.getPropertyPath() + " " + __v.getMessage())
-		.collect(java.util.stream.Collectors.toList()))
+		.collect(java.util.stream.Collectors.joining("\n")))
 	.build();
