@@ -40,8 +40,62 @@ export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
 	additionalWatchPaths?: () => string[]
 	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
-	defaultNpmOptions?: (config: CodegenConfig) => NpmOptions
-	defaultTypeScriptOptions?: (config: CodegenConfig) => TypeScriptOptions
+	defaultNpmOptions?: (config: CodegenConfig, defaultValue: NpmOptions) => NpmOptions
+	defaultTypeScriptOptions?: (config: CodegenConfig, defaultValue: TypeScriptOptions) => TypeScriptOptions
+}
+
+export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext, add: Partial<TypeScriptGeneratorContext>): TypeScriptGeneratorContext {
+	const result: TypeScriptGeneratorContext = {
+		...base,
+		loadAdditionalTemplates: async function(hbs) {
+			/* Load the additional first, so that earlier contexts in the chain have priority */
+			if (add.loadAdditionalTemplates) {
+				await add.loadAdditionalTemplates(hbs)
+			}
+			if (base.loadAdditionalTemplates) {
+				await base.loadAdditionalTemplates(hbs)
+			}
+		},
+		additionalWatchPaths: function() {
+			const result: string[] = []
+			if (base.additionalWatchPaths) {
+				result.push(...base.additionalWatchPaths())
+			}
+			if (add.additionalWatchPaths) {
+				result.push(...add.additionalWatchPaths())
+			}
+			return result
+		},
+		additionalExportTemplates: async function(outputPath, doc, hbs, rootContext) {
+			if (base.additionalExportTemplates) {
+				await base.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+			}
+			if (add.additionalExportTemplates) {
+				await add.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+			}
+		},
+		defaultNpmOptions: function(config, defaultOptions) {
+			let result: NpmOptions = defaultOptions
+			if (add.defaultNpmOptions) {
+				result = add.defaultNpmOptions(config, result)
+			}
+			if (base.defaultNpmOptions) {
+				result = base.defaultNpmOptions(config, result)
+			}
+			return result
+		},
+		defaultTypeScriptOptions: function(config, defaultOptions) {
+			let result: TypeScriptOptions = defaultOptions
+			if (add.defaultTypeScriptOptions) {
+				result = add.defaultTypeScriptOptions(config, result)
+			}
+			if (base.defaultTypeScriptOptions) {
+				result = base.defaultTypeScriptOptions(config, result)
+			}
+			return result
+		},
+	}
+	return result
 }
 
 /* https://github.com/microsoft/TypeScript/issues/2536 */
@@ -60,12 +114,13 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	
 	const relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
 
-	const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config) : {
+	const defaultDefaultNpmOptions: NpmOptions = {
 		name: 'typescript-gen',
 		version: '0.0.1',
 		private: true,
 		repository: null,
 	}
+	const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config, defaultDefaultNpmOptions) : defaultDefaultNpmOptions
 	const npmConfig: NpmOptions | undefined = npm ? {
 		name: npm.name || defaultNpmOptions.name,
 		version: npm.version || defaultNpmOptions.version,
@@ -73,13 +128,14 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 		private: npm.private !== undefined ? npm.private : defaultNpmOptions.private,
 	} : undefined
 
-	const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config) : typeof config.typescript === 'object' ? {
+	const defaultDefaultTypeScriptOptions: TypeScriptOptions = typeof config.typescript === 'object' ? {
 		target: 'ES5',
 		libs: ['$target', 'DOM'],
 	} : {
 		target: 'ES5',
 		libs: ['$target', 'DOM'],
 	}
+	const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config, defaultDefaultTypeScriptOptions) : defaultDefaultTypeScriptOptions
 
 	let typeScriptOptions: TypeScriptOptions | undefined
 	if (typeof config.typescript === 'object') {
