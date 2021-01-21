@@ -1,13 +1,12 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType, isCodegenEnumSchema, isCodegenObjectSchema } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
-import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
+import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext, chainTypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
 import { CodegenOptionsTypeScriptFetchClient } from './types'
 import * as idx from '@openapi-generator-plus/indexed-type'
 
 const createGenerator: CodegenGeneratorConstructor = (config, context) => {
-	const myContext: TypeScriptGeneratorContext = {
-		...context,
+	const myContext: TypeScriptGeneratorContext = chainTypeScriptGeneratorContext(context, {
 		loadAdditionalTemplates: async(hbs) => {
 			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 		},
@@ -24,7 +23,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 			target: 'ES5',
 			libs: ['$target', 'DOM'],
 		}),
-	}
+	})
 
 	const generatorOptions: CodegenOptionsTypeScriptFetchClient = {
 		...typescriptCommonOptions(config, myContext),

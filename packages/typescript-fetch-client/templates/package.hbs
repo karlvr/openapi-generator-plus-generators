@@ -5,7 +5,7 @@
 	{{/if}}
 	"version": "{{version}}",
 	"description": "API client for {{name}}",
-	"author": "@openapi-generator-plus/typescript-fetch-client-generator",
+	"author": "{{{generatorClass}}}",
 	"keywords": [
 		"fetch",
 		"typescript",
@@ -21,6 +21,7 @@
 		"prepare": "npm run build"
 	},
 	"dependencies": {
+		{{>hooks/packageDependencies}}
 		"portable-fetch": "^3.0.0"
 	},
 	"devDependencies": {

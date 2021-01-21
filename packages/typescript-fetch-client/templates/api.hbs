@@ -7,6 +7,7 @@ import portableFetch from "portable-fetch";
 import { Configuration } from "./configuration";
 import { BASE_PATH, COLLECTION_FORMATS, FetchAPI, FetchArgs, BaseAPI, RequiredError } from "./runtime";
 import { Api } from "./models";
+{{>hooks/apiImports}}
 
 {{#each groups}}
 /**
