@@ -1,5 +1,5 @@
 import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema } from '@openapi-generator-plus/types'
-import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
+import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
@@ -163,15 +163,32 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 		typeScriptOptions.libs = typeScriptOptions.libs.map(lib => lib === '$target' ? typeScriptOptions!.target : lib)
 	}
 
+	const dateApproach = parseDateApproach(config.dateApproach)
+
 	const options: CodegenOptionsTypeScript = {
 		...javaLikeOptions(config, createJavaLikeContext(context)),
 		relativeSourceOutputPath,
 		npm: npmConfig || null,
 		typescript: typeScriptOptions || null,
 		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
+		dateApproach,
 	}
 
 	return options
+}
+
+function parseDateApproach(approach: string) {
+	if (!approach) {
+		return DateApproach.Native
+	} else if (approach === DateApproach.BlindDate) {
+		return DateApproach.BlindDate
+	} else if (approach === DateApproach.Native) {
+		return DateApproach.Native
+	} else if (approach === DateApproach.String) {
+		return DateApproach.String
+	} else {
+		throw new Error(`Invalid dateApproach config: ${approach}`)
+	}
 }
 
 function createJavaLikeContext(context: TypeScriptGeneratorContext): JavaLikeContext {
@@ -182,6 +199,7 @@ function createJavaLikeContext(context: TypeScriptGeneratorContext): JavaLikeCon
 	}
 	return javaLikeContext
 }
+
 
 export default function createGenerator(config: CodegenConfig, context: TypeScriptGeneratorContext): Omit<CodegenGenerator, 'generatorType'> {
 	const generatorOptions = options(config, context)
@@ -216,14 +234,36 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					if (format === 'binary') {
 						throw new Error(`Cannot format literal for type ${type} format ${format}`)
 					} else if (format === 'date') {
-						/* The date format should be an ISO date, and the timezone doesn't matter */
-						return `new Date("${value}")`
+						switch (generatorOptions.dateApproach) {
+							case DateApproach.Native:
+							case DateApproach.String:
+								/* Use a string as a JavaScript Date cannot represent a date properly */
+								return `"${value}"`
+							case DateApproach.BlindDate:
+								return `toLocalDateString("${value}")`
+						}
+						throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 					} else if (format === 'time') {
-						/* Parse the date at 1/1/1970 with a local time (no trailing Z), so it's parsed in the client's locale */
-						return `new Date("1970-01-01T${value}")`
+						switch (generatorOptions.dateApproach) {
+							case DateApproach.Native:
+							case DateApproach.String:
+								/* Use a string as a JavaScript Date cannot represent a time properly */
+								return `"${value}"`
+							case DateApproach.BlindDate:
+								return `toLocalTimeString("${value}")`
+						}
+						throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 					} else if (format === 'date-time') {
-						/* The date-time format should be an ISO datetime with an offset timezone */
-						return `new Date("${value}")`
+						switch (generatorOptions.dateApproach) {
+							case DateApproach.Native:
+								/* The date-time format should be an ISO datetime with an offset timezone */
+								return `new Date("${value}")`
+							case DateApproach.BlindDate:
+								return `toOffsetDateTimeString("${value}")`
+							case DateApproach.String:
+								return `"${value}"`
+						}
+						throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 					} else {
 						return `'${escapeString(value)}'`
 					}
@@ -249,12 +289,38 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case 'string': {
 					switch (format) {
 						case 'date':
+							switch (generatorOptions.dateApproach) {
+								case DateApproach.Native:
+								case DateApproach.String:
+									/* We use strings for date and time as JavaScript Date can't support */
+									return new context.NativeType('string')
+								case DateApproach.BlindDate:
+									return new context.NativeType('LocalDateString')
+							}
+							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'time':
+							switch (generatorOptions.dateApproach) {
+								case DateApproach.Native:
+								case DateApproach.String:
+									/* We use strings for date and time as JavaScript Date can't support */
+									return new context.NativeType('string')
+								case DateApproach.BlindDate:
+									return new context.NativeType('LocalTimeString')
+							}
+							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'date-time':
-							/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-							return new context.NativeType('Date', {
-								serializedType: 'string',
-							})
+							switch (generatorOptions.dateApproach) {
+								case DateApproach.Native:
+									/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
+									return new context.NativeType('Date', {
+										serializedType: 'string',
+									})
+								case DateApproach.BlindDate:
+									return new context.NativeType('OffsetDateTimeString')
+								case DateApproach.String:
+									return new context.NativeType('string')
+							}
+							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						default:
 							return new context.NativeType('string')
 					}

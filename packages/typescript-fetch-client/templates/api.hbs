@@ -7,6 +7,9 @@ import portableFetch from "portable-fetch";
 import { Configuration } from "./configuration";
 import { BASE_PATH, COLLECTION_FORMATS, FetchAPI, FetchArgs, BaseAPI, RequiredError } from "./runtime";
 import { Api } from "./models";
+{{#ifeq dateApproach 'blind-date'}}
+import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
+{{/ifeq}}
 {{>hooks/apiImports}}
 
 {{#each groups}}
@@ -105,9 +108,13 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		--}}
 			if ({{identifier name}} !== undefined) {
 {{#if (isDateTime)}}
+	{{#ifeq dateApproach 'native'}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString();
+	{{else}}
+				localVarQueryParameter['{{name}}'] = {{identifier name}};
+	{{/ifeq}}
 {{else if (isDate)}}
-				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString().replace(/T.*/, "");
+				localVarQueryParameter['{{name}}'] = {{identifier name}};
 {{else}}
 				localVarQueryParameter['{{name}}'] = {{identifier name}};
 {{/if}}

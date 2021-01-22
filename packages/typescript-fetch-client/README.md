@@ -23,6 +23,7 @@ The available config file properties are:
 |--------|----|-----------|-------|
 |`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"|"pascalCase"`|The style to use for constant naming.|`"pascalCase"`|
 |`legacyUnnamespacedModelSupport`|`boolean`|Generate unnamespaced versions of the models.|`false`|
+|`dateApproach`|`"native"|"string"|"blind-date"`|Whether to use `string` for date and time and `Date` for date-time, or just `string`, or whether to use [blind-date](https://npmjs.com/blind-date) for dates and times.|`native`|
 
 ### TypeScript
 

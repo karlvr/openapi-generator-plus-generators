@@ -22,6 +22,9 @@
 	},
 	"dependencies": {
 		{{>hooks/packageDependencies}}
+		{{#ifeq dateApproach 'blind-date'}}
+		"blind-date": "^0.2.0",
+		{{/ifeq}}
 		"portable-fetch": "^3.0.0"
 	},
 	"devDependencies": {

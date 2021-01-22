@@ -1,4 +1,8 @@
 {{>header}}
+{{#ifeq dateApproach 'blind-date'}}
+
+import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
+{{/ifeq}}
 
 export namespace Api {
 {{#each models}}

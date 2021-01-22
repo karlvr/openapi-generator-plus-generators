@@ -8,6 +8,13 @@ export interface CodegenOptionsTypeScript extends JavaLikeOptions {
 	npm: NpmOptions | null
 	typescript: TypeScriptOptions | null
 	customTemplatesPath: string | null
+	dateApproach: DateApproach
+}
+
+export enum DateApproach {
+	Native = 'native',
+	BlindDate = 'blind-date',
+	String = 'string',
 }
 
 export interface TypeScriptOptions {
