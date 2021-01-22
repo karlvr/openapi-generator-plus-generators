@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema, CodegenSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -408,7 +408,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				}
 			}
 
-			function modelsToDisjunction(models: CodegenObjectSchema[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
+			function modelsToDisjunction(models: CodegenSchema[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
 				const result = models.reduce((result, model) => {
 					const r = transform(model.nativeType)
 					if (!r) {
@@ -538,7 +538,7 @@ function tryToConvertModelToLiteralType(model: CodegenObjectSchema, literalType:
 
 		if (model.implementors) {
 			for (const other of idx.values(model.implementors)) {
-				if (other.implements) {
+				if (isCodegenObjectSchema(other) && other.implements) {
 					idx.remove(other.implements, model.name)
 					if (idx.isEmpty(other.implements)) {
 						other.implements = null
