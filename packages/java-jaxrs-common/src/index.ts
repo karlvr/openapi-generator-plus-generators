@@ -355,7 +355,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		},
 		
 		operationGroupingStrategy: () => {
-			return context.operationGroupingStrategies.addToGroupsByPath
+			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
 	
 		watchPaths: () => {
