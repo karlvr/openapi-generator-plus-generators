@@ -1,10 +1,11 @@
-import { CodegenRootContext, CodegenPropertyType, CodegenModelReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenState, CodegenDocument } from '@openapi-generator-plus/types'
-import { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
+import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema, CodegenSchema } from '@openapi-generator-plus/types'
+import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import * as idx from '@openapi-generator-plus/indexed-type'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 
@@ -35,15 +36,66 @@ function toSafeTypeForComposing(nativeType: string): string {
 	}
 }
 
-export interface TypeScriptGeneratorContext<O extends CodegenOptionsTypeScript> extends CodegenGeneratorContext {
+export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
-	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
-	additionalWatchPaths?: (config: CodegenConfig) => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext, state: CodegenState<O>) => Promise<void>
-	transformOptions?: (config: CodegenConfig, options: CodegenOptionsTypeScript) => O
-	defaultNpmOptions?: (config: CodegenConfig) => NpmOptions
-	defaultTypeScriptOptions?: (config: CodegenConfig) => TypeScriptOptions
-	generatorClassName: (state: CodegenState<O>) => string
+	additionalWatchPaths?: () => string[]
+	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
+	defaultNpmOptions?: (config: CodegenConfig, defaultValue: NpmOptions) => NpmOptions
+	defaultTypeScriptOptions?: (config: CodegenConfig, defaultValue: TypeScriptOptions) => TypeScriptOptions
+}
+
+export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext, add: Partial<TypeScriptGeneratorContext>): TypeScriptGeneratorContext {
+	const result: TypeScriptGeneratorContext = {
+		...base,
+		loadAdditionalTemplates: async function(hbs) {
+			/* Load the additional first, so that earlier contexts in the chain have priority */
+			if (add.loadAdditionalTemplates) {
+				await add.loadAdditionalTemplates(hbs)
+			}
+			if (base.loadAdditionalTemplates) {
+				await base.loadAdditionalTemplates(hbs)
+			}
+		},
+		additionalWatchPaths: function() {
+			const result: string[] = []
+			if (base.additionalWatchPaths) {
+				result.push(...base.additionalWatchPaths())
+			}
+			if (add.additionalWatchPaths) {
+				result.push(...add.additionalWatchPaths())
+			}
+			return result
+		},
+		additionalExportTemplates: async function(outputPath, doc, hbs, rootContext) {
+			if (base.additionalExportTemplates) {
+				await base.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+			}
+			if (add.additionalExportTemplates) {
+				await add.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+			}
+		},
+		defaultNpmOptions: function(config, defaultOptions) {
+			let result: NpmOptions = defaultOptions
+			if (add.defaultNpmOptions) {
+				result = add.defaultNpmOptions(config, result)
+			}
+			if (base.defaultNpmOptions) {
+				result = base.defaultNpmOptions(config, result)
+			}
+			return result
+		},
+		defaultTypeScriptOptions: function(config, defaultOptions) {
+			let result: TypeScriptOptions = defaultOptions
+			if (add.defaultTypeScriptOptions) {
+				result = add.defaultTypeScriptOptions(config, result)
+			}
+			if (base.defaultTypeScriptOptions) {
+				result = base.defaultTypeScriptOptions(config, result)
+			}
+			return result
+		},
+	}
+	return result
 }
 
 /* https://github.com/microsoft/TypeScript/issues/2536 */
@@ -56,25 +108,119 @@ const RESERVED_WORDS = [
 	'any', 'boolean', 'constructor', 'declare', 'get', 'module', 'require', 'number', 'set', 'string', 'symbol', 'type', 'from', 'of',
 ]
 
-export default function createGenerator<O extends CodegenOptionsTypeScript>(context: TypeScriptGeneratorContext<O>): Omit<CodegenGenerator<O>, 'generatorType'> {
-	const javaLikeContext: JavaLikeContext<O> = {
+export function options(config: CodegenConfig, context: TypeScriptGeneratorContext): CodegenOptionsTypeScript {
+	const npm = config.npm
+	const defaultRelativeSourceOutputPath = npm ? 'src' : ''
+	
+	const relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
+
+	const defaultDefaultNpmOptions: NpmOptions = {
+		name: 'typescript-gen',
+		version: '0.0.1',
+		private: true,
+		repository: null,
+	}
+	const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config, defaultDefaultNpmOptions) : defaultDefaultNpmOptions
+	const npmConfig: NpmOptions | undefined = npm ? {
+		name: npm.name || defaultNpmOptions.name,
+		version: npm.version || defaultNpmOptions.version,
+		repository: npm.repository || defaultNpmOptions.repository,
+		private: npm.private !== undefined ? npm.private : defaultNpmOptions.private,
+	} : undefined
+
+	const defaultDefaultTypeScriptOptions: TypeScriptOptions = typeof config.typescript === 'object' ? {
+		target: 'ES5',
+		libs: ['$target', 'DOM'],
+	} : {
+		target: 'ES5',
+		libs: ['$target', 'DOM'],
+	}
+	const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config, defaultDefaultTypeScriptOptions) : defaultDefaultTypeScriptOptions
+
+	let typeScriptOptions: TypeScriptOptions | undefined
+	if (typeof config.typescript === 'object') {
+		typeScriptOptions = defaultTypeScriptOptions
+		if (typeof config.typescript.target === 'string') {
+			typeScriptOptions.target = config.typescript.target
+		}
+		if (config.typescript.libs) {
+			typeScriptOptions.libs = config.typescript.libs
+		}
+	} else if (typeof config.typescript === 'boolean') {
+		if (config.typescript) {
+			typeScriptOptions = defaultTypeScriptOptions
+		} else {
+			typeScriptOptions = undefined
+		}
+	} else if (!npm) {
+		/* If we haven't configured an npm package, then assume we don't want tsconfig either */
+		typeScriptOptions = undefined
+	} else {
+		typeScriptOptions = defaultTypeScriptOptions
+	}
+
+	if (typeScriptOptions) {
+		typeScriptOptions.libs = typeScriptOptions.libs.map(lib => lib === '$target' ? typeScriptOptions!.target : lib)
+	}
+
+	const dateApproach = parseDateApproach(config.dateApproach)
+
+	const options: CodegenOptionsTypeScript = {
+		...javaLikeOptions(config, createJavaLikeContext(context)),
+		relativeSourceOutputPath,
+		npm: npmConfig || null,
+		typescript: typeScriptOptions || null,
+		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
+		dateApproach,
+	}
+
+	return options
+}
+
+function parseDateApproach(approach: string) {
+	if (!approach) {
+		return DateApproach.Native
+	} else if (approach === DateApproach.BlindDate) {
+		return DateApproach.BlindDate
+	} else if (approach === DateApproach.Native) {
+		return DateApproach.Native
+	} else if (approach === DateApproach.String) {
+		return DateApproach.String
+	} else {
+		throw new Error(`Invalid dateApproach config: ${approach}`)
+	}
+}
+
+function createJavaLikeContext(context: TypeScriptGeneratorContext): JavaLikeContext {
+	const javaLikeContext: JavaLikeContext = {
+		...context,
 		reservedWords: () => RESERVED_WORDS,
 		defaultConstantStyle: ConstantStyle.pascalCase,
 	}
+	return javaLikeContext
+}
 
+
+export default function createGenerator(config: CodegenConfig, context: TypeScriptGeneratorContext): Omit<CodegenGenerator, 'generatorType'> {
+	const generatorOptions = options(config, context)
+
+	const aCommonGenerator = commonGenerator(config, context)
 	return {
-		...context.baseGenerator(),
-		...commonGenerator(),
-		...javaLikeGenerator(javaLikeContext),
-		toLiteral: (value, options, state) => {
+		...context.baseGenerator(config, context),
+		...aCommonGenerator,
+		...javaLikeGenerator(config, createJavaLikeContext(context)),
+		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return state.generator.toDefaultValue(undefined, options, state).literalValue
+				return context.generator().toDefaultValue(undefined, options).literalValue
+			}
+			if (value === null) {
+				return 'null'
 			}
 
-			const { type, format, required, propertyType } = options
+			const { type, format, schemaType } = options
 
-			if (propertyType === CodegenPropertyType.ENUM) {
-				return `${options.nativeType.toString()}.${state.generator.toEnumMemberName(value, state)}`
+			if (schemaType === CodegenSchemaType.ENUM) {
+				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
 			}
 
 			switch (type) {
@@ -88,20 +234,42 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 					if (format === 'binary') {
 						throw new Error(`Cannot format literal for type ${type} format ${format}`)
 					} else if (format === 'date') {
-						/* The date format should be an ISO date, and the timezone doesn't matter */
-						return `new Date("${value}")`
+						switch (generatorOptions.dateApproach) {
+							case DateApproach.Native:
+							case DateApproach.String:
+								/* Use a string as a JavaScript Date cannot represent a date properly */
+								return `"${value}"`
+							case DateApproach.BlindDate:
+								return `toLocalDateString("${value}")`
+						}
+						throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 					} else if (format === 'time') {
-						/* Parse the date at 1/1/1970 with a local time (no trailing Z), so it's parsed in the client's locale */
-						return `new Date("1970-01-01T${value}")`
+						switch (generatorOptions.dateApproach) {
+							case DateApproach.Native:
+							case DateApproach.String:
+								/* Use a string as a JavaScript Date cannot represent a time properly */
+								return `"${value}"`
+							case DateApproach.BlindDate:
+								return `toLocalTimeString("${value}")`
+						}
+						throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 					} else if (format === 'date-time') {
-						/* The date-time format should be an ISO datetime with an offset timezone */
-						return `new Date("${value}")`
+						switch (generatorOptions.dateApproach) {
+							case DateApproach.Native:
+								/* The date-time format should be an ISO datetime with an offset timezone */
+								return `new Date("${value}")`
+							case DateApproach.BlindDate:
+								return `toOffsetDateTimeString("${value}")`
+							case DateApproach.String:
+								return `"${value}"`
+						}
+						throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 					} else {
 						return `'${escapeString(value)}'`
 					}
 				}
 				case 'boolean':
-					return !required ? `java.lang.Boolean.valueOf(${value})` : `${value}`
+					return `${value}`
 				case 'object':
 				case 'file':
 					throw new Error(`Cannot format literal for type ${type}`)
@@ -121,12 +289,38 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 				case 'string': {
 					switch (format) {
 						case 'date':
+							switch (generatorOptions.dateApproach) {
+								case DateApproach.Native:
+								case DateApproach.String:
+									/* We use strings for date and time as JavaScript Date can't support */
+									return new context.NativeType('string')
+								case DateApproach.BlindDate:
+									return new context.NativeType('LocalDateString')
+							}
+							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'time':
+							switch (generatorOptions.dateApproach) {
+								case DateApproach.Native:
+								case DateApproach.String:
+									/* We use strings for date and time as JavaScript Date can't support */
+									return new context.NativeType('string')
+								case DateApproach.BlindDate:
+									return new context.NativeType('LocalTimeString')
+							}
+							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'date-time':
-							/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-							return new context.NativeType('Date', {
-								wireType: 'string',
-							})
+							switch (generatorOptions.dateApproach) {
+								case DateApproach.Native:
+									/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
+									return new context.NativeType('Date', {
+										serializedType: 'string',
+									})
+								case DateApproach.BlindDate:
+									return new context.NativeType('OffsetDateTimeString')
+								case DateApproach.String:
+									return new context.NativeType('string')
+							}
+							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						default:
 							return new context.NativeType('string')
 					}
@@ -135,19 +329,19 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 					return new context.NativeType('boolean')
 				}
 				case 'file': {
-					/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a wireType */
+					/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a serializedType */
 					return new context.NativeType('File', {
-						wireType: null,
+						serializedType: null,
 					})
 				}
 			}
 
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeObjectType: function({ modelNames }, state) {
+		toNativeObjectType: function({ modelNames }) {
 			let modelName = 'Api'
 			for (const name of modelNames) {
-				modelName += `.${state.generator.toClassName(name, state)}`
+				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName)
 		},
@@ -161,107 +355,43 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 				return `{ [name: ${nativeTypeStrings[0]}]: ${nativeTypeStrings[1]} }`
 			})
 		},
-		toDefaultValue: (defaultValue, options, state) => {
+		toDefaultValue: (defaultValue, options) => {
 			if (defaultValue !== undefined) {
 				return {
 					value: defaultValue,
-					literalValue: state.generator.toLiteral(defaultValue, options, state),
+					literalValue: context.generator().toLiteral(defaultValue, options),
 				}
 			}
 
-			const { propertyType, required } = options
+			const { schemaType, required } = options
 
 			if (!required) {
-				return { literalValue: 'undefined' }
+				return { value: null, literalValue: 'undefined' }
 			}
 
-			switch (propertyType) {
-				case CodegenPropertyType.NUMBER:
-					return { value: 0, literalValue: state.generator.toLiteral(0, options, state) }
-				case CodegenPropertyType.BOOLEAN:
+			switch (schemaType) {
+				case CodegenSchemaType.NUMBER:
+					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
+				case CodegenSchemaType.INTEGER:
+					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
+				case CodegenSchemaType.BOOLEAN:
 					return { value: false, literalValue: 'false' }
-				case CodegenPropertyType.ARRAY:
+				case CodegenSchemaType.ARRAY:
 					return { value: [], literalValue: '[]' }
-				case CodegenPropertyType.MAP:
+				case CodegenSchemaType.MAP:
 					return { value: {}, literalValue: '{}' }
 				default:
-					return { literalValue: 'undefined' }
-			}
-		},
-		options: (config): O => {
-			const npm = config.npm
-			const defaultRelativeSourceOutputPath = npm ? 'src' : ''
-			
-			const relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
-
-			const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config) : {
-				name: 'typescript-gen',
-				version: '0.0.1',
-			}
-			const npmConfig: NpmOptions | undefined = npm ? {
-				name: npm.name || defaultNpmOptions.name,
-				version: npm.version || defaultNpmOptions.version,
-				repository: npm.repository || defaultNpmOptions.repository,
-				private: npm.private || defaultNpmOptions.private,
-			} : undefined
-
-			const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config) : typeof config.typescript === 'object' ? {
-				target: 'ES5',
-				libs: ['$target', 'DOM'],
-			} : {
-				target: 'ES5',
-				libs: ['$target', 'DOM'],
-			}
-
-			let typeScriptOptions: TypeScriptOptions | undefined
-			if (typeof config.typescript === 'object') {
-				typeScriptOptions = defaultTypeScriptOptions
-				if (typeof config.typescript.target === 'string') {
-					typeScriptOptions.target = config.typescript.target
-				}
-				if (config.typescript.libs) {
-					typeScriptOptions.libs = config.typescript.libs
-				}
-			} else if (typeof config.typescript === 'boolean') {
-				if (config.typescript) {
-					typeScriptOptions = defaultTypeScriptOptions
-				} else {
-					typeScriptOptions = undefined
-				}
-			} else if (!npm) {
-				/* If we haven't configured an npm package, then assume we don't want tsconfig either */
-				typeScriptOptions = undefined
-			} else {
-				typeScriptOptions = defaultTypeScriptOptions
-			}
-
-			if (typeScriptOptions) {
-				typeScriptOptions.libs = typeScriptOptions.libs.map(lib => lib === '$target' ? typeScriptOptions!.target : lib)
-			}
-
-			const options: CodegenOptionsTypeScript = {
-				...javaLikeOptions(config, javaLikeContext),
-				relativeSourceOutputPath,
-				npm: npmConfig,
-				typescript: typeScriptOptions,
-				customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
-			}
-
-			if (context.transformOptions) {
-				return context.transformOptions(config, options)
-			} else {
-				/* We must assume that our options are sufficient for the requirements of O as a transformOptions function was not provided */
-				return options as O
+					return { value: null, literalValue: 'undefined' }
 			}
 		},
 		operationGroupingStrategy: () => {
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
 
-		postProcessModel: (model) => {
-			function toDisjunction(references: CodegenModelReference[], transform: (nativeType: CodegenNativeType) => string | undefined): string | undefined {
+		postProcessSchema: (schema) => {
+			function modelReferencesToDisjunction(references: CodegenObjectSchemaReference[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
 				const result = references.reduce((result, reference) => {
-					const r = transform(reference.model.propertyNativeType)
+					const r = transform(reference.model.nativeType)
 					if (!r) {
 						return result
 					}
@@ -274,32 +404,76 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 				if (result) {
 					return result
 				} else {
-					return undefined
+					return null
 				}
 			}
 
-			/* If this model has a discriminator then we change its propertyNativeType to a disjunction */
-			if (model.discriminator) {
-				if (model.discriminator.references) {
-					model.propertyNativeType.nativeType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.nativeType)!
-					model.propertyNativeType.wireType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.wireType)
-					model.propertyNativeType.literalType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.literalType)
-					model.propertyNativeType.concreteType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.concreteType)
-					
-					if (model.propertyNativeType.componentType && model.propertyNativeType.componentType !== model.propertyNativeType) {
-						model.propertyNativeType.componentType.nativeType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-						model.propertyNativeType.componentType.wireType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.wireType : nativeType.wireType)
-						model.propertyNativeType.componentType.literalType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-						model.propertyNativeType.componentType.concreteType = toDisjunction(model.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+			function modelsToDisjunction(models: CodegenSchema[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
+				const result = models.reduce((result, model) => {
+					const r = transform(model.nativeType)
+					if (!r) {
+						return result
+					}
+					if (result) {
+						return `${result} | ${toSafeTypeForComposing(r)}`
+					} else {
+						return toSafeTypeForComposing(r)
+					}
+				}, '')
+				if (result) {
+					return result
+				} else {
+					return null
+				}
+			}
+
+			if (isCodegenObjectSchema(schema) && schema.discriminator) {
+				/* If this model has a discriminator then we change its propertyNativeType to a disjunction */
+				if (schema.discriminator.references) {
+					const newNativeType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.nativeType)
+					if (newNativeType) {
+						if (!tryToConvertModelToLiteralType(schema, newNativeType)) {
+							schema.nativeType.nativeType = newNativeType
+							schema.nativeType.serializedType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.serializedType)
+							schema.nativeType.literalType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.literalType)
+							schema.nativeType.concreteType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.concreteType)
+							
+							if (schema.nativeType.componentType && schema.nativeType.componentType !== schema.nativeType) {
+								schema.nativeType.componentType.nativeType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+								schema.nativeType.componentType.serializedType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
+								schema.nativeType.componentType.literalType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+								schema.nativeType.componentType.concreteType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+							}
+						}
+					}
+				}
+			} else if (isCodegenObjectSchema(schema) && schema.implementors && !schema.properties && !schema.parent) {
+				/* If this model is a parent interface for others, but has no properties of its own, then we can convert it to a disjunction */
+				const implementors = idx.allValues(schema.implementors)
+
+				const newNativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.nativeType)
+				if (newNativeType) {
+					if (!tryToConvertModelToLiteralType(schema, newNativeType)) {
+						schema.nativeType.nativeType = newNativeType
+						schema.nativeType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.serializedType)
+						schema.nativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
+						schema.nativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
+						
+						if (schema.nativeType.componentType && schema.nativeType.componentType !== schema.nativeType) {
+							schema.nativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
+							schema.nativeType.componentType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
+							schema.nativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
+							schema.nativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
+						}
 					}
 				}
 			}
 		},
 
-		watchPaths: (config) => {
+		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
 			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths(config))
+				result.push(...context.additionalWatchPaths())
 			}
 			if (config.customTemplates) {
 				result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
@@ -309,40 +483,81 @@ export default function createGenerator<O extends CodegenOptionsTypeScript>(cont
 
 		cleanPathPatterns: () => undefined,
 
-		exportTemplates: async(outputPath, doc, state) => {
+		templateRootContext: () => {
+			return {
+				...aCommonGenerator.templateRootContext(),
+				...generatorOptions,
+			}
+		},
+
+		exportTemplates: async(outputPath, doc) => {
 			const hbs = Handlebars.create()
 
-			registerStandardHelpers(hbs, context, state)
+			registerStandardHelpers(hbs, context)
 
 			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 			if (context.loadAdditionalTemplates) {
 				await context.loadAdditionalTemplates(hbs)
 			}
 
-			if (state.options.customTemplatesPath) {
-				await loadTemplates(state.options.customTemplatesPath, hbs)
+			if (generatorOptions.customTemplatesPath) {
+				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 
-			const rootContext: CodegenRootContext = {
-				generatorClass: context.generatorClassName(state),
-				generatedDate: new Date().toISOString(),
-			}
-			if (context.customiseRootContext) {
-				await context.customiseRootContext(rootContext)
-			}
+			const rootContext = context.generator().templateRootContext()
 
-			if (state.options.npm) {
-				await emit('package', path.join(outputPath, 'package.json'), { ...state.options.npm, ...state.options, ...rootContext }, true, hbs)
-				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...doc, ...state.options, ...rootContext }, true, hbs)
+			if (generatorOptions.npm) {
+				await emit('package', path.join(outputPath, 'package.json'), { ...rootContext, ...generatorOptions.npm }, true, hbs)
+				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...rootContext, ...doc }, true, hbs)
 			}
 			
-			if (state.options.typescript) {
-				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...state.options.typescript, ...state.options, ...rootContext }, true, hbs)
+			if (generatorOptions.typescript) {
+				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...rootContext, ...generatorOptions.typescript }, true, hbs)
 			}
 	
 			if (context.additionalExportTemplates) {
-				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext, state)
+				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
 			}
 		},
 	}
 }
+
+/**
+ * If a model ends up being just a placeholder, such as just representing a type disjunction, in TypeScript
+ * we can declare it as a literal type rather than an interface.
+ * e.g. `type X = A | B | C` rather than `interface X {}`
+ * @param model 
+ * @param literalType
+ */
+function tryToConvertModelToLiteralType(model: CodegenObjectSchema, literalType: string) {
+	if (!model.properties && !model.implements && !model.parent) {
+		if (!model.vendorExtensions) {
+			model.vendorExtensions = idx.create()
+		}
+		idx.set(model.vendorExtensions, 'convert-to-literal-type', literalType)
+
+		if (model.implementors) {
+			for (const other of idx.values(model.implementors)) {
+				if (isCodegenObjectSchema(other) && other.implements) {
+					idx.remove(other.implements, model.name)
+					if (idx.isEmpty(other.implements)) {
+						other.implements = null
+					}
+				}
+			}
+		}
+		if (model.children) {
+			for (const other of idx.values(model.children)) {
+				if (other.parent == model) {
+					other.parent = null
+					other.parentNativeType = null
+				}
+			}
+		}
+
+		return true
+	} else {
+		return false
+	}
+}
+

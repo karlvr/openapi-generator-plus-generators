@@ -6,12 +6,23 @@ renders a model without the surrounding panel.
         {{{md description}}}
     </section>
 {{/if}}
-{{#if example}}
-    <section class="model-example">
-        <pre>{{{example}}}</pre>
-    </section>
+{{#if examples}}
+    {{#each examples}}
+        <div class="model-example">
+            {{#if name}}
+                <p><strong>{{name}}</strong></p>
+            {{/if}}
+            <pre>
+            {{valuePretty}}
+            </pre>
+            {{#if mediaType}}
+                <p><span class="type">{{mediaType.mediaType}}</span></p>
+            {{/if}}
+        </div>
+    {{/each}}
 {{/if}}
 
+{{#if (isObject)}}
 {{#if parent}}
     {{>model/inherited parent anchor=anchor}}
 {{/if}}
@@ -28,12 +39,17 @@ renders a model without the surrounding panel.
     {{>model/properties anchor=anchor}}
 {{/if}}
 
-{{#if (isEnum)}}
-    {{>model/enum}}
+{{#if discriminator}}
+    {{>model/discriminator anchor=anchor}}
 {{/if}}
 
 {{#if children}}
     {{>model/children anchor=anchor}}
+{{/if}}
+{{/if}}
+
+{{#if (isEnum)}}
+    {{>model/enum}}
 {{/if}}
 
 {{!-- {{#if allOf}}

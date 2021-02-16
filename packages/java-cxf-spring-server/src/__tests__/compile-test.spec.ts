@@ -1,5 +1,5 @@
 import { testGenerate } from '@openapi-generator-plus/generator-common/dist/testing'
-import { prepare, DEFAULT_CONFIG, compileTest } from './common'
+import { prepare, DEFAULT_CONFIG, compileAndTest } from './common'
 import fs from 'fs'
 import path from 'path'
 
@@ -12,6 +12,6 @@ for (const file of files) {
 			...DEFAULT_CONFIG,
 			includeTests: true,
 		})
-		await testGenerate(result, compileTest)
+		await testGenerate(result, compileAndTest)
 	}, 20000)
 }

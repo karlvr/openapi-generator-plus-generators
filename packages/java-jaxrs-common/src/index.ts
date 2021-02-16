@@ -1,4 +1,4 @@
-import { CodegenRootContext, CodegenPropertyType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenState, CodegenGenerator } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -23,7 +23,7 @@ function escapeString(value: string) {
  * Turns a Java package name into a path
  * @param packageName Java package name
  */
-export function packageToPath(packageName: string) {
+export function packageToPath(packageName: string): string {
 	return packageName.replace(/\./g, path.sep)
 }
 
@@ -63,13 +63,11 @@ function computeRelativeTestResourcesOutputPath(config: CodegenConfig) {
 	return config.relativeTestResourcesOutputPath !== undefined ? config.relativeTestResourcesOutputPath : defaultPath
 }
 
-export interface JavaGeneratorContext<O extends CodegenOptionsJava> extends CodegenGeneratorContext {
+export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
-	customiseRootContext?: (rootContext: CodegenRootContext) => Promise<void>
-	additionalWatchPaths?: (config: CodegenConfig) => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: CodegenRootContext, state: CodegenState<O>) => Promise<void>
-	additionalCleanPathPatterns?: (options: O) => string[]
-	transformOptions?: (config: CodegenConfig, options: CodegenOptionsJava) => O
+	additionalWatchPaths?: () => string[]
+	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
+	additionalCleanPathPatterns?: () => string[]
 }
 
 const RESERVED_WORDS = [
@@ -84,25 +82,67 @@ const RESERVED_WORDS = [
 	'true', 'try', 'void', 'volatile', 'while',
 ]
 
-export default function createGenerator<O extends CodegenOptionsJava>(context: JavaGeneratorContext<O>): Omit<CodegenGenerator<O>, 'generatorType'> {
-	const javaLikeContext: JavaLikeContext<O> = {
+export function options(config: CodegenConfig, context: JavaGeneratorContext): CodegenOptionsJava {
+	const packageName = config.package || 'com.example'
+	const apiPackage = config.apiPackage || `${packageName}`
+	const options: CodegenOptionsJava = {
+		...javaLikeOptions(config, createJavaLikeContext(context)),
+		apiPackage,
+		apiImplPackage: config.apiImplPackage || `${apiPackage}.impl`,
+		modelPackage: config.modelPackage || `${packageName}.model`,
+		useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
+		includeTests: config.includeTests !== undefined ? config.includeTests : false,
+		dateImplementation: config.dateImplementation || 'java.time.LocalDate',
+		timeImplementation: config.timeImplementation || 'java.time.LocalTime',
+		dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
+		hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
+		imports: config.imports || null,
+		maven: config.maven ? {
+			groupId: config.maven.groupId || 'com.example',
+			artifactId: config.maven.artifactId || 'api',
+			version: config.maven.version || '0.0.1',
+			versions: config.maven.versions || {},
+		} : null,
+		relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
+		relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
+		relativeTestOutputPath: computeRelativeTestOutputPath(config),
+		relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
+		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
+	}
+
+	return options
+}
+
+function createJavaLikeContext(context: JavaGeneratorContext): JavaLikeContext {
+	const javaLikeContext: JavaLikeContext = {
+		...context,
 		reservedWords: () => RESERVED_WORDS,
 		defaultConstantStyle: ConstantStyle.allCapsSnake,
 	}
+	return javaLikeContext
+}
+
+export default function createGenerator(config: CodegenConfig, context: JavaGeneratorContext): Omit<CodegenGenerator, 'generatorType'> {
+	const generatorOptions = options(config, context)
+
+	const aCommonGenerator = commonGenerator(config, context)
 
 	return {
-		...context.baseGenerator(),
-		...commonGenerator(),
-		...javaLikeGenerator(javaLikeContext),
-		toLiteral: (value, options, state) => {
+		...context.baseGenerator(config, context),
+		...aCommonGenerator,
+		...javaLikeGenerator(config, createJavaLikeContext(context)),
+		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return state.generator.toDefaultValue(undefined, options, state).literalValue
+				return context.generator().toDefaultValue(undefined, options).literalValue
+			}
+			if (value === null) {
+				return 'null'
 			}
 	
-			const { type, format, required, propertyType } = options
+			const { type, format, required, schemaType } = options
 	
-			if (propertyType === CodegenPropertyType.ENUM) {
-				return `${options.nativeType.toString()}.${state.generator.toEnumMemberName(value, state)}`
+			if (schemaType === CodegenSchemaType.ENUM) {
+				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
 			}
 	
 			switch (type) {
@@ -111,7 +151,7 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 						throw new Error(`toLiteral with type integer called with non-number: ${typeof value} (${value})`)
 					}
 
-					if (format === 'int32' || format === undefined) {
+					if (format === 'int32' || !format) {
 						return !required ? `java.lang.Integer.valueOf(${value})` : `${value}`
 					} else if (format === 'int64') {
 						return !required ? `java.lang.Long.valueOf(${value}l)` : `${value}l`
@@ -124,7 +164,7 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 						throw new Error(`toLiteral with type number called with non-number: ${typeof value} (${value})`)
 					}
 
-					if (format === undefined) {
+					if (!format) {
 						return `new java.math.BigDecimal("${value}")`
 					} else if (format === 'float') {
 						return !required ? `java.lang.Float.valueOf(${value}f)` : `${value}f`
@@ -144,11 +184,11 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 					} else if (format === 'binary') {
 						throw new Error(`Cannot format literal for type ${type} format ${format}`)
 					} else if (format === 'date') {
-						return `${state.options.dateImplementation}.parse("${value}")`
+						return `${generatorOptions.dateImplementation}.parse("${value}")`
 					} else if (format === 'time') {
-						return `${state.options.timeImplementation}.parse("${value}")`
+						return `${generatorOptions.timeImplementation}.parse("${value}")`
 					} else if (format === 'date-time') {
-						return `${state.options.dateTimeImplementation}.parse("${value}")`
+						return `${generatorOptions.dateTimeImplementation}.parse("${value}")`
 					} else {
 						return `"${escapeString(value)}"`
 					}
@@ -166,7 +206,7 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 	
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeType: ({ type, format, required, vendorExtensions }, state) => {
+		toNativeType: ({ type, format, required, vendorExtensions }) => {
 			if (vendorExtensions && vendorExtensions['x-java-type']) {
 				return new context.NativeType(vendorExtensions['x-java-type'], {
 					componentType: new context.NativeType(vendorExtensions['x-java-type']),
@@ -176,7 +216,7 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (type) {
 				case 'integer': {
-					if (format === 'int32' || format === undefined) {
+					if (format === 'int32' || !format) {
 						return new context.NativeType(!required ? 'java.lang.Integer' : 'int', {
 							componentType: new context.NativeType('java.lang.Integer'),
 						})
@@ -189,7 +229,7 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 					}
 				}
 				case 'number': {
-					if (format === undefined) {
+					if (!format) {
 						return new context.NativeType('java.math.BigDecimal')
 					} else if (format === 'float') {
 						return new context.NativeType(!required ? 'java.lang.Float' : 'float', {
@@ -207,29 +247,29 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 					if (format === 'byte') {
 						return new context.NativeType(!required ? 'java.lang.Byte' : 'byte', {
 							componentType: new context.NativeType('java.lang.Byte'),
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'binary') {
 						return new context.NativeType('java.lang.String')
 					} else if (format === 'date') {
-						return new context.NativeType(state.options.dateImplementation, {
-							wireType: 'java.lang.String',
+						return new context.NativeType(generatorOptions.dateImplementation, {
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'time') {
-						return new context.NativeType(state.options.timeImplementation, {
-							wireType: 'java.lang.String',
+						return new context.NativeType(generatorOptions.timeImplementation, {
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'date-time') {
-						return new context.NativeType(state.options.dateTimeImplementation, {
-							wireType: 'java.lang.String',
+						return new context.NativeType(generatorOptions.dateTimeImplementation, {
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'uuid') {
 						return new context.NativeType('java.util.UUID', {
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'url') {
 						return new context.NativeType('java.net.URL', {
-							wireType: 'java.lang.String',
+							serializedType: 'java.lang.String',
 						})
 					} else {
 						return new context.NativeType('java.lang.String')
@@ -247,10 +287,10 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 	
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeObjectType: function({ modelNames }, state) {
-			let modelName = `${state.options.modelPackage}`
+		toNativeObjectType: function({ modelNames }) {
+			let modelName = `${generatorOptions.modelPackage}`
 			for (const name of modelNames) {
-				modelName += `.${state.generator.toClassName(name, state)}`
+				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName)
 		},
@@ -276,83 +316,52 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 				concreteType: ([keyNativeType, componentNativeType]) => `java.util.HashMap<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
 			})
 		},
-		toDefaultValue: (defaultValue, options, state) => {
+		toDefaultValue: (defaultValue, options) => {
 			if (defaultValue !== undefined) {
 				return {
 					value: defaultValue,
-					literalValue: state.generator.toLiteral(defaultValue, options, state),
+					literalValue: context.generator().toLiteral(defaultValue, options),
 				}
 			}
 	
-			const { type, required, propertyType, nativeType } = options
+			const { type, required, schemaType, nativeType } = options
 	
 			if (!required) {
 				return { value: null, literalValue: 'null' }
 			}
 	
-			switch (propertyType) {
-				case CodegenPropertyType.ENUM:
-				case CodegenPropertyType.OBJECT:
-				case CodegenPropertyType.DATE:
-				case CodegenPropertyType.TIME:
-				case CodegenPropertyType.DATETIME:
-				case CodegenPropertyType.FILE:
-				case CodegenPropertyType.STRING:
+			switch (schemaType) {
+				case CodegenSchemaType.ENUM:
+				case CodegenSchemaType.OBJECT:
+				case CodegenSchemaType.DATE:
+				case CodegenSchemaType.TIME:
+				case CodegenSchemaType.DATETIME:
+				case CodegenSchemaType.FILE:
+				case CodegenSchemaType.STRING:
 					return { value: null, literalValue: 'null' }
-				case CodegenPropertyType.ARRAY:
-				case CodegenPropertyType.MAP:
-					return { literalValue: `new ${nativeType.concreteType}()` }
-				case CodegenPropertyType.NUMBER:
-					return { value: 0, literalValue: state.generator.toLiteral(0, options, state) }
-				case CodegenPropertyType.BOOLEAN:
-					return { value: false, literalValue: state.generator.toLiteral(false, options, state) }
+				case CodegenSchemaType.ARRAY:
+					return { value: [], literalValue: `new ${nativeType.concreteType}()` }
+				case CodegenSchemaType.MAP:
+					return { value: {}, literalValue: `new ${nativeType.concreteType}()` }
+				case CodegenSchemaType.NUMBER:
+					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
+				case CodegenSchemaType.INTEGER:
+					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
+				case CodegenSchemaType.BOOLEAN:
+					return { value: false, literalValue: context.generator().toLiteral(false, options) }
 			}
 	
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		options: (config): O => {
-			const packageName = config.package || 'com.example'
-			const apiPackage = config.apiPackage || `${packageName}`
-			const options: CodegenOptionsJava = {
-				...javaLikeOptions(config, javaLikeContext),
-				apiPackage,
-				apiImplPackage: config.apiImplPackage || `${apiPackage}.impl`,
-				modelPackage: config.modelPackage || `${packageName}.model`,
-				useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
-				includeTests: config.includeTests !== undefined ? config.includeTests : false,
-				dateImplementation: config.dateImplementation || 'java.time.LocalDate',
-				timeImplementation: config.timeImplementation || 'java.time.LocalTime',
-				dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
-				hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
-				imports: config.imports,
-				maven: config.maven && {
-					groupId: config.maven.groupId || 'com.example',
-					artifactId: config.maven.artifactId || 'api',
-					version: config.maven.version || '0.0.1',
-					versions: config.maven.versions || {},
-				},
-				relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
-				relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
-				relativeTestOutputPath: computeRelativeTestOutputPath(config),
-				relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
-				customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
-			}
-
-			if (context.transformOptions) {
-				return context.transformOptions(config, options)
-			} else {
-				/* We must assume that our options are sufficient for the requirements of O as a transformOptions function was not provided */
-				return options as O
-			}
-		},
+		
 		operationGroupingStrategy: () => {
-			return context.operationGroupingStrategies.addToGroupsByPath
+			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
 	
-		watchPaths: (config) => {
+		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
 			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths(config))
+				result.push(...context.additionalWatchPaths())
 			}
 			if (config.customTemplates) {
 				result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
@@ -360,12 +369,12 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 			return result
 		},
 	
-		cleanPathPatterns: (options) => {
-			const relativeSourceOutputPath = options.relativeSourceOutputPath
+		cleanPathPatterns: () => {
+			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 			
-			const apiPackagePath = packageToPath(options.apiPackage)
-			const apiImplPackagePath = packageToPath(options.apiImplPackage)
-			const modelPackagePath = packageToPath(options.modelPackage)
+			const apiPackagePath = packageToPath(generatorOptions.apiPackage)
+			const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
+			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
 	
 			const result = [
 				path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
@@ -373,83 +382,68 @@ export default function createGenerator<O extends CodegenOptionsJava>(context: J
 				path.join(relativeSourceOutputPath, modelPackagePath, '*.java'),
 			]
 			if (context.additionalCleanPathPatterns) {
-				result.push(...context.additionalCleanPathPatterns(options))
+				result.push(...context.additionalCleanPathPatterns())
 			}
 			return result
 		},
+
+		templateRootContext: () => {
+			return {
+				...aCommonGenerator.templateRootContext(),
+				...generatorOptions,
+				generatorClass: '@openapi-generator-plus/java-jaxrs-generator',
+			}
+		},
 	
-		exportTemplates: async(outputPath, doc, state) => {
+		exportTemplates: async(outputPath, doc) => {
 			const hbs = Handlebars.create()
 			
-			registerStandardHelpers(hbs, context, state)
+			registerStandardHelpers(hbs, context)
 	
 			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 			if (context.loadAdditionalTemplates) {
 				await context.loadAdditionalTemplates(hbs)
 			}
 	
-			if (state.options.customTemplatesPath) {
-				await loadTemplates(state.options.customTemplatesPath, hbs)
+			if (generatorOptions.customTemplatesPath) {
+				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 	
-			const rootContext: CodegenRootContext = {
-				generatorClass: '@openapi-generator-plus/java-jaxrs-generator',
-				generatedDate: new Date().toISOString(),
-			}
-			if (context.customiseRootContext) {
-				await context.customiseRootContext(rootContext)
-			}
+			const rootContext = context.generator().templateRootContext()
 	
-			const relativeSourceOutputPath = state.options.relativeSourceOutputPath
-			const relativeTestOutputPath = state.options.relativeTestOutputPath
+			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
 	
-			const apiPackagePath = packageToPath(state.options.apiPackage)
-			for (const group of doc.groups) {
-				const operations = group.operations
-				if (!operations.length) {
-					continue
+			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
+			for (const schema of context.utils.values(doc.schemas)) {
+				if (isCodegenObjectSchema(schema) || isCodegenEnumSchema(schema)) { // TODO this quality will become part of the generator interface
+					const modelContext = {
+						models: [schema],
+					}
+					await emit('model', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
+						{ ...rootContext, ...modelContext }, true, hbs)
 				}
-				await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}Api.java`), 
-					{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
-			}
-			
-			const apiImplPackagePath = packageToPath(state.options.apiImplPackage)
-			for (const group of doc.groups) {
-				const operations = group.operations
-				if (!operations.length) {
-					continue
-				}
-				await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${state.generator.toClassName(group.name, state)}ApiImpl.java`), 
-					{ ...group, operations, ...state.options, ...rootContext }, true, hbs)
 			}
 	
-			const modelPackagePath = packageToPath(state.options.modelPackage)
-			for (const model of context.utils.values(doc.models)) {
-				const context = {
-					models: [model],
-				}
-				await emit('model', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${state.generator.toClassName(model.name, state)}.java`), 
-					{ ...context, ...state.options, ...rootContext }, true, hbs)
-			}
-	
-			const maven = state.options.maven
+			const maven = generatorOptions.maven
 			if (maven) {
-				await emit('pom', path.join(outputPath, 'pom.xml'), { ...maven, ...state.options, ...rootContext }, false, hbs)
+				await emit('pom', path.join(outputPath, 'pom.xml'), { ...rootContext, ...maven }, false, hbs)
 			}
 			
-			if (state.options.includeTests && hbs.partials['tests/apiTest']) {
+			if (generatorOptions.includeTests && hbs.partials['tests/apiTest']) {
+				const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 				for (const group of doc.groups) {
 					const operations = group.operations
 					if (!operations.length) {
 						continue
 					}
-					await emit('tests/apiTest', path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${state.generator.toClassName(group.name, state)}ApiTest.java`),
-						{ ...group, ...state.options, ...rootContext }, false, hbs)
+					await emit('tests/apiTest', path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}ApiTest.java`),
+						{ ...rootContext, ...group }, false, hbs)
 				}
 			}
 	
 			if (context.additionalExportTemplates) {
-				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext, state)
+				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
 			}
 		},
 	}

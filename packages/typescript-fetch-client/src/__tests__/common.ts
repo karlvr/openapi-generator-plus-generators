@@ -1,6 +1,17 @@
 import ts from 'typescript'
 import glob from 'glob-promise'
 import path from 'path'
+import { CodegenConfig } from '@openapi-generator-plus/types'
+import { CodegenResult, createCodegenResult } from '@openapi-generator-plus/testing'
+import createGenerator from '..'
+
+export const DEFAULT_CONFIG: CodegenConfig = {
+	maven: {},
+}
+
+export async function prepare(spec: string, config?: CodegenConfig): Promise<CodegenResult> {
+	return createCodegenResult(path.resolve(__dirname, spec), config || DEFAULT_CONFIG, createGenerator)
+}
 
 export async function compile(basePath: string): Promise<void> {
 	const searchPath = path.join(basePath, '**/*.ts')

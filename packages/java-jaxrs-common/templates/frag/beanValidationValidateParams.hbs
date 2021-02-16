@@ -1,8 +1,6 @@
 {{#with requestBody}}
-javax.validation.ValidatorFactory __factory = javax.validation.Validation.buildDefaultValidatorFactory();
-javax.validation.Validator __validator = __factory.getValidator();
 if ({{identifier name }} != null) {
-	java.util.Set<javax.validation.ConstraintViolation<{{{nativeType}}}>> __validations = __validator.validate({{identifier name}});
+	java.util.Set<javax.validation.ConstraintViolation<{{{nativeType}}}>> __validations = this.validatorFactory.getValidator().validate({{identifier name}});
 	if (!__validations.isEmpty()) {
 		{{>hooks/beanValidationViolation responseBuilderVar='__response' violationsVar='__validations' operation=..}}
 	}

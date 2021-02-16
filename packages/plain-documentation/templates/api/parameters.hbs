@@ -12,7 +12,7 @@
                 <tr>
                     <td class="name">{{name}} {{#if required}}<span class="type">Required</span>{{/if}} {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}</td>
                     <td class="type">
-                        {{>model/datatype . anchor='/definitions'}}{{#if items}},{{>model/datatype items}}{{/if}}
+                        {{>model/datatype . anchor='/definitions'}}
                         {{#if collectionFormat}}
                             <div class="sw-param-collection-format">{{{md (swagger--collection-format collectionFormat)}}}</div>
                         {{/if}}

@@ -13,7 +13,6 @@ package {{apiPackage}};
 public interface {{className name}}Api {
 
 {{#each operations}}
-	{{>nestedModels}}
 	@javax.ws.rs.{{httpMethod}}
 	{{>hooks/apiMethodAnnotations}}
 	{{#if securityRequirements}}
@@ -33,18 +32,18 @@ public interface {{className name}}Api {
 	{{#if produces}}
 	@javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	{{/if}}
-	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if notes}}, notes = {{{stringLiteral notes}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#if securityRequirements}}, authorizations = {
+	@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}}, notes = {{{stringLiteral description}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{!--{{#if returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/if}}--}}{{#if securityRequirements}}, authorizations = {
 		{{#each securityRequirements}}
-		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#scheme.isOAuth}}, scopes = {
+		@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#if scheme.isOAuth}}, scopes = {
 			{{#each scopes}}
 			@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{#if description}}{{{stringLiteral description}}}{{else}}""{{/if}}){{#hasMore}},{{/hasMore}}
 			{{/each}}
-		}{{/scheme.isOAuth}}){{#hasMore}},{{/hasMore}}
+		}{{/if}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
 	}{{/if}}, tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 	@io.swagger.annotations.ApiResponses(value = {
 		{{#each responses}}
-		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = {{{stringLiteral description}}}, response = {{#if nativeType}}{{{nativeType.literalType}}}{{else}}Void{{/if}}.class{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}){{#hasMore}},{{/hasMore}}
+		@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = {{{stringLiteral description}}}, response = {{#if defaultContent.nativeType}}{{{defaultContent.nativeType.literalType}}}{{else}}Void{{/if}}.class{{!--{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}--}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
 	})
 	javax.ws.rs.core.Response {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});

@@ -1,39 +1,49 @@
+{{#ifvex 'convert-to-literal-type'}}
+export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
+{{else}}
 /**
- * {{{description}}}
+{{#if description}}
+ * {{{md description}}}
+{{/if}}
  * @export
  * @interface {{className name}}
  */
 export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{{!--
 --}}{{#if implements}}{{#unless parentNativeType}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
-{{#discriminator}}
-	{{name}}: {{{nativeType.wireType}}};
+{{#if discriminator}}
+{{#with discriminator}}
+	{{name}}: {{{nativeType.serializedType}}};
 	
-{{/discriminator}}
+{{/with}}
+{{/if}}
 {{#each discriminatorValues}}
 	{{model.discriminator.name}}: {{{value}}}
 
 {{/each}}
-{{#additionalPropertiesType}}
-	[key: string]: {{{additionalPropertiesType}}}{{#if properties}} | any{{/if}};
+{{#if componentSchema}}
+	[key: string]: {{{componentSchema.nativeType}}}
 
-{{/additionalPropertiesType}}
+{{/if}}
 {{#each properties}}
 	/**
-	 * {{{description}}}
-	 * @type {{safe '{'}}{{{nativeType}}}{{safe '}'}}
+	{{#if description}}
+	 * {{{md description}}}
+	{{/if}}
+	 * @type {{safe '{'}}{{{nativeType.serializedType}}}{{safe '}'}}
 	 * @memberof {{className ../name}}
 	 */
-	{{name}}{{^required}}?{{/required}}: {{{nativeType.wireType}}}{{#if nullable}} | null{{/if}};
+	{{name}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}}{{#if nullable}} | null{{/if}};
 {{/each}}
 }
-{{#if models}}
+{{/ifvex}}
+{{#if schemas}}
 
 /**
  * @export
  * @namespace {{className name}}
  */
 export namespace {{className name}} {
-{{#each models}}
+{{#each schemas}}
 	{{#if (isEnum)}}
 	{{>modelEnum}}
 	{{else}}

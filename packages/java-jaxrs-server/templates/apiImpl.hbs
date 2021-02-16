@@ -15,31 +15,38 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 
 	{{>util/inject interface=(concat apiServicePackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
 
+	{{#if @root.useBeanValidation}}
+	private javax.validation.ValidatorFactory validatorFactory = javax.validation.Validation.buildDefaultValidatorFactory();
+
+	{{/if}}
 {{#each operations}}
 	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>serviceBodyParam}}{{/if}}) {
 		{{#with defaultResponse}}
-		final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{^vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/vendorExtensions.x-cache-control}}"));
+		final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{{vendorExtensions.x-cache-control}}}{{#unless vendorExtensions.x-cache-control}}no-cache, no-store, must-revalidate, private{{/unless}}"));
 		{{/with}}
 		try {
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#with defaultResponse}}
-			{{#if nativeType}}{{{nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless nativeType}}{{#or ../parameters ../requestBody}}, {{/or}}__response{{/unless}});
-			{{#if nativeType}}
+			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless defaultContent.nativeType}}{{#or ../parameters ../requestBody}}, {{/or}}__response{{/unless}});
+			{{#if defaultContent.nativeType}}
+			{{#if @root.useBeanValidation}}
+			{{>frag/beanValidationValidateResponse responseVar='__entity'}}
+			{{/if}}
 			__response.entity(__entity);
 			{{/if}}
 			return __response.build();
 			{{/with}}
 		{{#each responses}}
-		{{^isDefault}}
+		{{#unless isDefault}}
 		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
 			__response.status({{code}});
-			{{#if nativeType}}
+			{{#if defaultContent.nativeType}}
 			__response.entity(__e.getEntity());
 			{{/if}}
 			return __response.build();
-		{{/isDefault}}
+		{{/unless}}
 		{{/each}}
 		} finally {
 		

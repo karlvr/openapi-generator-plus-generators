@@ -1,25 +1,23 @@
 <span class="model-property-type">
-    {{#if discriminator}}<span class="type">Discriminator</span>{{/if}}
-    
     {{#if anchor}}
         {{#if (isObject)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
         {{else if (isMap)}}
-            <a class="model-ref" href="#{{anchor}}/{{htmlId componentNativeType}}">{{nativeType}}</a>
+            <a class="model-ref" href="#{{anchor}}/{{htmlId componentSchema.nativeType}}">{{nativeType}}</a>
         {{else if (isArray)}}
-            <a class="model-ref" href="#{{anchor}}/{{htmlId componentNativeType}}">{{nativeType}}</a>
+            <a class="model-ref" href="#{{anchor}}/{{htmlId componentSchema.nativeType}}">{{nativeType}}</a>
         {{else if (isEnum)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
         {{else}}
             {{nativeType}}
-            {{#if nativeType.wireType}}
-            ({{nativeType.wireType}})
+            {{#if nativeType.serializedType}}
+            ({{nativeType.serializedType}})
             {{/if}}
         {{/if}}
     {{else}}
         {{nativeType}}
     {{/if}}
 </span>
-{{#if default}}
-    <span class="model-property-default-value">{{default}}</span>
+{{#if defaultValue}}
+    <span class="model-property-default-value">{{defaultValue.value}}</span>
 {{/if}}

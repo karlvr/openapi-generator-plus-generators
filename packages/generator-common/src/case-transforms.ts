@@ -1,5 +1,5 @@
 /** Returns the string with the first character converted to upper-case */
-export function capitalize(value: string) {
+export function capitalize(value: string): string {
 	if (value.length > 0) {
 		return value.substring(0, 1).toUpperCase() + value.substring(1)
 	} else {
@@ -7,7 +7,7 @@ export function capitalize(value: string) {
 	}
 }
 
-export function camelCase(value: string) {
+export function camelCase(value: string): string {
 	value = value.replace(/([^a-zA-Z0-9]+)([a-zA-Z0-9])/g, (whole, sep, letter) => capitalize(letter))
 	/* If the string starts with capitals, we need to lower-case that first word */
 	value = value.replace(/^([A-Z]+)([A-Z])/, (whole, first, next) => first.toLocaleLowerCase() + next)
@@ -16,7 +16,7 @@ export function camelCase(value: string) {
 	return value
 }
 
-export function pascalCase(value: string) {
+export function pascalCase(value: string): string {
 	value = value.replace(/([^a-zA-Z0-9]+)([a-zA-Z0-9])/g, (whole, sep, letter) => capitalize(letter))
 	return capitalize(value)
 }

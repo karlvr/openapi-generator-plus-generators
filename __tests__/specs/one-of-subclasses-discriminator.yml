@@ -3,7 +3,22 @@ openapi: '3.0.3'
 info:
   version: 1.0.1
   title: Example
-paths: {}
+paths:
+  /pet/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
 components:
   schemas:
     Pet:
