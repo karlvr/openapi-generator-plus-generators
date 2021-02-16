@@ -29,7 +29,7 @@ The available config file properties are:
 |`apiServicePackage`|`string`|Package for API service interfaces.|`"${package}.service"`|
 |`apiServiceImplPackage`|`string`|Package for API service implementation classes.|`"${apiPackage}.service.impl"`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
-|`invokerPackage`|`string | null`|Package for API invoker classes.|`"${package}.app"`|
+|`invokerPackage`|`string \| null`|Package for API invoker classes.|`"${package}.app"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|
 
 ### Code style
@@ -40,7 +40,7 @@ The available config file properties are:
 |`dateImplementation`|`string`|Date type class.|`"java.time.LocalDate"`|
 |`timeImplementation`|`string`|Time type class.|`"java.time.LocalTime"`|
 |`dateTimeImplementation`|`string`|Date time type class.|`"java.time.OffsetDateTime"`|
-|`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"|"pascalCase"`|The style to use for constant naming.|`"allCapsSnake"`|
+|`constantStyle`|`"allCapsSnake"\|"allCaps"\|"camelCase"\|"pascalCase"`|The style to use for constant naming.|`"allCapsSnake"`|
 |`authenticatedOperationAnnotation`|`string`|Annotation to add to API methods that require authentication.|`undefined`|
 
 ### Packaging
