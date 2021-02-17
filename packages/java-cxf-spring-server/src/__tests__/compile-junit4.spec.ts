@@ -11,7 +11,8 @@ for (const file of files) {
 		const result = await prepare(path.join(basePath, file), {
 			...DEFAULT_CONFIG,
 			includeTests: true,
+			junitVersion: 4,
 		})
-		await testGenerate(result, compile, path.join('test-output/junit5', file))
+		await testGenerate(result, compile, path.join('test-output/junit4', file))
 	}, 20000)
 }

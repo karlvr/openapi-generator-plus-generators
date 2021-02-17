@@ -1,5 +1,12 @@
 package {{apiPackage}};
 
+{{#ifeq junitVersion 4}}
+import static org.junit.Assert.*;
+{{/ifeq}}
+{{#ifeq junitVersion 5}}
+import static org.junit.jupiter.api.Assertions.*;
+{{/ifeq}}
+
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.endpoint.Server;
@@ -7,16 +14,33 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.spring.JAXRSServerFactoryBeanDefinitionParser.SpringJAXRSServerFactoryBean;
 import org.apache.cxf.transport.local.LocalConduit;
+{{#ifeq junitVersion 4}}
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+{{/ifeq}}
+{{#ifeq junitVersion 5}}
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+{{/ifeq}}
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+{{#ifeq junitVersion 4}}
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+{{/ifeq}}
+{{#ifeq junitVersion 5}}
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+{{/ifeq}}
 
+{{#ifeq junitVersion 4}}
 @RunWith(SpringJUnit4ClassRunner.class)
+{{/ifeq}}
+{{#ifeq junitVersion 5}}
+@ExtendWith(SpringExtension.class)
+{{/ifeq}}
 @ContextConfiguration(classes = { TestConfiguration.class })
 public class {{className name}}ApiTest {
 	
@@ -26,14 +50,24 @@ public class {{className name}}ApiTest {
 	@Autowired
 	private SpringJAXRSServerFactoryBean serverFactory;
 
+	{{#ifeq junitVersion 4}}
 	@Before
+	{{/ifeq}}
+	{{#ifeq junitVersion 5}}
+	@BeforeEach
+	{{/ifeq}}
 	public void setup() throws Exception {
 		server = serverFactory.create();
 		api = JAXRSClientFactory.create(TestConfiguration.ENDPOINT_ADDRESS, {{apiPackage}}.{{className name}}Api.class, TestConfiguration.defaultProviders());
 		WebClient.getConfig(api).getRequestContext().put(LocalConduit.DIRECT_DISPATCH, Boolean.TRUE);
 	}
 	
+	{{#ifeq junitVersion 4}}
 	@After
+	{{/ifeq}}
+	{{#ifeq junitVersion 5}}
+	@AfterEach
+	{{/ifeq}}
 	public void destroy() throws Exception {
 		server.stop();
 		server.destroy();
@@ -47,10 +81,10 @@ public class {{className name}}ApiTest {
 		{{/each}}
 
 		Response response = this.api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});
-		Assert.assertNotNull(response);
+		assertNotNull(response);
 		{{#if returnNativeType}}
 		{{returnNativeType}} result = response.readEntity({{returnNativeType.literalType}}.class);
-		Assert.assertNotNull(result);
+		assertNotNull(result);
 		{{/if}}
 	}
 

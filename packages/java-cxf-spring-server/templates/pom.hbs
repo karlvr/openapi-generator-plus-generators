@@ -19,7 +19,12 @@
 		<javax.validation.version>{{lookup maven.versions 'javax_validation' '2.0.0.Final'}}</javax.validation.version>
 		{{/if}}
 		{{#if includeTests}}
+		{{#ifeq junitVersion 4}}
 		<junit.version>{{lookup maven.versions 'junit' '4.13'}}</junit.version>
+		{{/ifeq}}
+		{{#ifeq junitVersion 5}}
+		<junit.version>{{lookup maven.versions 'junit' '5.7.1'}}</junit.version>
+		{{/ifeq}}
 		{{/if}}
 	</properties>
 
@@ -99,12 +104,28 @@
 			<version>${cxf.version}</version>
 			<scope>test</scope>
 		</dependency>
+		{{#ifeq junitVersion 4}}
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+		{{/ifeq}}
+		{{#ifeq junitVersion 5}}
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+			<version>${junit.version}</version>
+    		<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		{{/ifeq}}
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
