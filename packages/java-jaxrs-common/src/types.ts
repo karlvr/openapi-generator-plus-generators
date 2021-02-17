@@ -9,6 +9,7 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	modelPackage: string
 	useBeanValidation: boolean
 	includeTests: boolean
+	junitVersion: number
 
 	dateImplementation: string
 	timeImplementation: string

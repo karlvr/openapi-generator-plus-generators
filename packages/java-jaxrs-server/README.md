@@ -65,6 +65,13 @@ The available config file properties are:
 |--------|----|-----------|-------|
 |`hideGenerationTimestamp`|`boolean`|Whether to hide the timestamp in the `@Generated` annotation.|`false`|
 
+### Testing
+
+|Property|Type|Description|Default|
+|--------|----|-----------|-------|
+|`includeTests`|`boolean`|Whether to generate test classes.|`false`|
+|`junitVersion`|`4` \| `5`|The JUnit version to use.|`5`|
+
 ### Overrides
 
 |Property|Type|Description|Default|

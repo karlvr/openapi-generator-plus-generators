@@ -92,6 +92,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		modelPackage: config.modelPackage || `${packageName}.model`,
 		useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
 		includeTests: config.includeTests !== undefined ? config.includeTests : false,
+		junitVersion: typeof config.junitVersion === 'number' ? config.junitVersion : 5,
 		dateImplementation: config.dateImplementation || 'java.time.LocalDate',
 		timeImplementation: config.timeImplementation || 'java.time.LocalTime',
 		dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
