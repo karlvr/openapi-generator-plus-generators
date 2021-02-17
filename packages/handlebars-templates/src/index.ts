@@ -7,6 +7,7 @@ import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
 import marked from 'marked'
+import { EOL } from 'os'
 
 type UnknownObject = Record<string, unknown>
 
@@ -70,6 +71,9 @@ export async function emit(templateName: string, outputPath: string, context: Un
 	} catch (error) {
 		throw new Error(`Failed to generate template "${templateName}": ${error.message}`)
 	}
+
+	/* Normalise line endings */
+	outputString = outputString.replace(/\r\n/g, '\n').replace(/\n/g, EOL)
 
 	if (outputPath === '-') {
 		console.log(outputString)
