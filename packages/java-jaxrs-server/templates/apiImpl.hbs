@@ -1,7 +1,6 @@
 package {{apiImplPackage}};
 
 {{>frag/imports}}
-@javax.ws.rs.Path("{{{path}}}")
 {{>hooks/apiImplClassAnnotations}}
 @io.swagger.annotations.Api(description = "the {{{capitalCase name}}} API")
 {{#if consumes}}
