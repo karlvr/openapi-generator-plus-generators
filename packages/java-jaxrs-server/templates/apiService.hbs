@@ -9,7 +9,7 @@ public interface {{className name}}ApiService {
 	
 	{{#each operations}}
 	{{#each (nonDefaultResponses)}}
-	public static class {{{className ../name}}}{{{code}}}Exception extends Exception {
+	class {{{className ../name}}}{{{code}}}Exception extends Exception {
 
 		private static final long serialVersionUID = 1L;
 		
