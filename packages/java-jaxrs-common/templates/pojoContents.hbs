@@ -111,8 +111,8 @@ public boolean equals(java.lang.Object o) {
 	{{/if}}
 	{{#if properties}}
 	{{className name}} {{identifier name}} = ({{className name}}) o;
-	return {{#each properties}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}} &&
-			{{/hasMore}}{{/each}};
+	return {{#each properties}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}}
+			&& {{/hasMore}}{{/each}};
 	{{else}}
 	return true;
 	{{/if}}
