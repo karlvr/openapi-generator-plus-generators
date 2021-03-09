@@ -43,6 +43,9 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
 			__response.status({{code}});
 			{{#if defaultContent.nativeType}}
+			{{#if @root.useBeanValidation}}
+			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()'}}
+			{{/if}}
 			__response.entity(__e.getEntity());
 			{{/if}}
 			return __response.build();
