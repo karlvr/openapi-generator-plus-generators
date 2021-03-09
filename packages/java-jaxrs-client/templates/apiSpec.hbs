@@ -17,11 +17,6 @@ public interface {{className name}}ApiSpec {
 
 {{#each operations}}
 	@javax.ws.rs.{{httpMethod}}
-	{{#if securityRequirements}}
-	{{#if @root.authenticatedOperationAnnotation}}
-	{{@root.authenticatedOperationAnnotation}}
-	{{/if}}
-	{{/if}}
 	{{#if deprecated}}
 	@java.lang.Deprecated
 	{{/if}}
