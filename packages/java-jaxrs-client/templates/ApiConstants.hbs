@@ -7,7 +7,7 @@ public interface ApiConstants {
 	 * {{{md server.description}}}
 	 */
 	{{/if}}
-	public static String DEFAULT_SERVER = {{{stringLiteral server.url}}};
+	String DEFAULT_SERVER = {{{stringLiteral server.url}}};
 
 	{{#each servers}}
 	{{#if description}}
@@ -16,9 +16,9 @@ public interface ApiConstants {
 	 */
 	{{/if}}
 	{{#if vendorExtensions.x-name}}
-	public static String {{constantName (concat vendorExtensions.x-name 'Server')}} = {{{stringLiteral url}}};
+	String {{constantName (concat vendorExtensions.x-name 'Server')}} = {{{stringLiteral url}}};
 	{{else}}
-	public static String {{constantName (concat 'Server' '_' @index)}} = {{{stringLiteral url}}};
+	String {{constantName (concat 'Server' '_' @index)}} = {{{stringLiteral url}}};
 	{{/if}}
 
 	{{/each}}

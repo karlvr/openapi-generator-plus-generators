@@ -30,7 +30,7 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 	/**
 	 * {{{md description}}}
 	 */
-	public static class {{{className ../name}}}{{{code}}}Exception extends java.lang.Exception {
+	class {{{className ../name}}}{{{code}}}Exception extends java.lang.Exception {
 
 		private static final long serialVersionUID = 1L;
 		
@@ -54,7 +54,7 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 
 	{{/each}}
 	/** The server returned a status code that is not documented in the API. */
-	public static class {{{className name}}}UnexpectedResponseException extends java.lang.RuntimeException {
+	class {{{className name}}}UnexpectedResponseException extends java.lang.RuntimeException {
 
 		private static final long serialVersionUID = 1L;
 
