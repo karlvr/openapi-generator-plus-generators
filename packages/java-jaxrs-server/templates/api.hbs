@@ -1,6 +1,7 @@
 package {{apiPackage}};
 
 {{>frag/imports}}
+{{>generatedAnnotation}}
 @io.swagger.annotations.Api(description = "the {{{capitalCase name}}} API")
 {{#if consumes}}
 @javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
@@ -8,7 +9,6 @@ package {{apiPackage}};
 {{#if produces}}
 @javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
-{{>generatedAnnotation}}
 public interface {{className name}}Api {
 
 {{#each operations}}

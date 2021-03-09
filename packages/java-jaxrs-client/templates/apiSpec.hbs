@@ -5,6 +5,7 @@ package {{apiSpecPackage}};
  * The JAX-RS API client interface.
  * {{{md description}}}
  */
+{{>generatedAnnotation}}
 @javax.ws.rs.Path("{{{path}}}")
 {{#if consumes}}
 @javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
@@ -12,7 +13,6 @@ package {{apiSpecPackage}};
 {{#if produces}}
 @javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
-{{>generatedAnnotation}}
 public interface {{className name}}ApiSpec {
 
 {{#each operations}}
