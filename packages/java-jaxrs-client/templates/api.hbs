@@ -62,6 +62,10 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 			super("Unexpected response status " + response.getStatus());
 		}
 
+		public {{{className name}}}UnexpectedResponseException(javax.ws.rs.core.Response response, javax.ws.rs.ProcessingException exception) {
+			super("Response processing failed for " + response.getStatus() + " response status: " + exception.getMessage());
+		}
+
 	}
 
 	{{/each}}
