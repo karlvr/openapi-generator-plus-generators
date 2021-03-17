@@ -2,7 +2,6 @@
 
 /// <reference path="./custom.d.ts" />
 
-import url from "url";
 import portableFetch from "portable-fetch";
 import { Configuration } from "./configuration";
 import { BASE_PATH, COLLECTION_FORMATS, FetchAPI, FetchArgs, BaseAPI, RequiredError } from "./runtime";
@@ -39,19 +38,22 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options: any = {}): FetchArgs {
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options: RequestInit = {}): FetchArgs {
 	{{#each parameters}}
 	{{>frag/validateParameter operation=..}}
 	{{/each}}
 	{{#with requestBody}}
 	{{>frag/validateParameter operation=..}}
 	{{/with}}
-			const localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
+			let localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
 				.replace('{{safe '{'}}{{{name}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/each}};
-			const localVarUrlObj = url.parse(localVarPath, true);
-			const localVarRequestOptions = Object.assign({ method: '{{httpMethod}}' }, options);
-			const localVarHeaderParameter = {} as any;
-			const localVarQueryParameter = {} as any;
+			const localVarPathQueryStart = localVarPath.indexOf("?");
+			const localVarRequestOptions: RequestInit = Object.assign({ method: '{{httpMethod}}' }, options);
+			const localVarHeaderParameter: HeadersInit = {};
+			const localVarQueryParameter = new URLSearchParams(localVarPathQueryStart !== -1 ? localVarPath.substring(localVarPathQueryStart + 1) : "");
+			if (localVarPathQueryStart !== -1) {
+				localVarPath = localVarPath.substring(0, localVarPathQueryStart);
+			}
 	{{#if formParams}}
 			const localVarFormParams = new URLSearchParams();
 	{{/if}}
@@ -72,7 +74,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				const localVarApiKeyValue = typeof configuration.apiKey === 'function'
 					? configuration.apiKey("{{identifier scheme.name}}")
 					: configuration.apiKey;
-				localVarQueryParameter["{{identifier scheme.name}}"] = localVarApiKeyValue;
+				localVarQueryParameter.set("{{identifier scheme.name}}", localVarApiKeyValue);
 			}
 			{{/if}}
 			{{/if}}
@@ -99,9 +101,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{#if isListContainer}}
 			if ({{identifier name}}) {
 			{{#if isCollectionFormatMulti}}
-				localVarQueryParameter['{{name}}'] = {{identifier name}};
+				localVarQueryParameter.append('{{name}}', {{identifier name}});
 			{{else}}
-				localVarQueryParameter['{{name}}'] = {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]);
+				localVarQueryParameter.append('{{name}}', {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
 			{{/if}}
 			}
 			{{else}}
@@ -109,14 +111,14 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			if ({{identifier name}} !== undefined) {
 {{#if (isDateTime)}}
 	{{#ifeq dateApproach 'native'}}
-				localVarQueryParameter['{{name}}'] = {{identifier name}}.toISOString();
+				localVarQueryParameter.append('{{name}}', {{identifier name}}.toISOString());
 	{{else}}
-				localVarQueryParameter['{{name}}'] = {{identifier name}};
+				localVarQueryParameter.append('{{name}}', {{identifier name}});
 	{{/ifeq}}
 {{else if (isDate)}}
-				localVarQueryParameter['{{name}}'] = {{identifier name}};
+				localVarQueryParameter.append('{{name}}', {{identifier name}});
 {{else}}
-				localVarQueryParameter['{{name}}'] = {{identifier name}};
+				localVarQueryParameter.append('{{name}}', {{identifier name}});
 {{/if}}
 			}
 		{{!--
@@ -169,9 +171,6 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{/each}}
 
 	{{/with}}
-			localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
-			// fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
-			delete localVarUrlObj.search;
 			localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
 	{{#if formParams}}
 			localVarRequestOptions.body = localVarFormParams.toString();
@@ -201,8 +200,12 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		{{/each}}
 	{{/with}}
 
+			const localVarQueryParameterString = localVarQueryParameter.toString();
+			if (localVarQueryParameterString) {
+				localVarPath += "?" + localVarQueryParameterString;
+			}
 			return {
-				url: url.format(localVarUrlObj),
+				url: localVarPath,
 				options: localVarRequestOptions,
 			};
 		},
@@ -236,7 +239,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.serializedType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.serializedType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
 			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options);
 			return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
 				return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
@@ -278,7 +281,7 @@ export const {{className name}}ApiFactory = function (configuration?: Configurat
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: any) {
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit) {
 			return {{className ../name}}ApiFp(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options)(fetch, basePath);
 		},
 	{{/each}}
@@ -310,7 +313,7 @@ export interface {{className name}}ApiInterface {
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}ApiInterface
 	 */
-	{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{#unless required}} | undefined{{/unless}}, {{/each}}options?: any): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
+	{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{#unless required}} | undefined{{/unless}}, {{/each}}options?: RequestInit): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
 
 {{/each}}
 }
@@ -348,7 +351,7 @@ export class {{className name}}Api extends BaseAPI {
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}Api
 	 */
-	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: any) {
+	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit) {
 		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options)(this.fetch, this.basePath);
 	}
 
