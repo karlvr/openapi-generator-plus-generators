@@ -101,7 +101,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{#if isListContainer}}
 			if ({{identifier name}}) {
 			{{#if isCollectionFormatMulti}}
-				localVarQueryParameter.append('{{name}}', {{identifier name}});
+				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
 			{{else}}
 				localVarQueryParameter.append('{{name}}', {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
 			{{/if}}
@@ -113,12 +113,12 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{#ifeq dateApproach 'native'}}
 				localVarQueryParameter.append('{{name}}', {{identifier name}}.toISOString());
 	{{else}}
-				localVarQueryParameter.append('{{name}}', {{identifier name}});
+				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
 	{{/ifeq}}
 {{else if (isDate)}}
-				localVarQueryParameter.append('{{name}}', {{identifier name}});
+				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
 {{else}}
-				localVarQueryParameter.append('{{name}}', {{identifier name}});
+				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
 {{/if}}
 			}
 		{{!--
