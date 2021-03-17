@@ -24,6 +24,8 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 			}
 			{{/each}}
 			throw new {{{className name}}}UnexpectedResponseException(__e.getResponse());
+		} catch (javax.ws.rs.client.ResponseProcessingException __e) {
+			throw new {{{className name}}}UnexpectedResponseException(__e.getResponse(), __e);
 		}
 	}
 	
