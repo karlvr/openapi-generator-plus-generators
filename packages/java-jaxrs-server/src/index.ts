@@ -16,6 +16,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		...options,
 		apiServicePackage,
 		apiServiceImplPackage: config.apiServiceImplPackage || `${apiServicePackage}.impl`,
+		apiProviderPackage: config.apiProviderPackage || `${packageName}.providers`,
 		invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
 		authenticatedOperationAnnotation: config.authenticatedOperationAnnotation || null,
 	}
@@ -94,6 +95,12 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			const basePath = apiBasePath(doc.servers)
 			await emit('invoker', path.join(outputPath, relativeSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
 				{ ...rootContext, ...doc.info, basePath }, false, hbs)
+		}
+
+		const providerPackagePath = generatorOptions.apiProviderPackage ? packageToPath(generatorOptions.apiProviderPackage) : undefined
+		if (providerPackagePath) {
+			await emit('MyJaxbJsonProvider', path.join(outputPath, relativeSourceOutputPath, providerPackagePath, 'MyJaxbJsonProvider.java'),
+				{ ...rootContext }, false, hbs)
 		}
 
 		if (context.additionalExportTemplates) {

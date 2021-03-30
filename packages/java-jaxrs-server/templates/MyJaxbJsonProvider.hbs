@@ -1,0 +1,33 @@
+package {{apiProviderPackage}};
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+/**
+ * A simple wrapper around the JacksonJaxbJsonProvider. This declares more specific Produces and Consumes than Jackson
+ * so as to survive the provider sorting changes in CXF 3.1.2 {@link http://cxf.apache.org/docs/jax-rs.html#JAX-RS-CXF3.1.2ProviderSortingChanges}.
+ * <p>
+ * This class also includes the configuration for serialization and deserialization of JSON.
+ * @author karlvr
+ */
+@javax.ws.rs.Produces({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
+@javax.ws.rs.Consumes({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
+@javax.ws.rs.ext.Provider
+@javax.enterprise.context.Dependent
+public class MyJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
+
+	public MyJaxbJsonProvider() {
+		super();
+
+		com.fasterxml.jackson.databind.ObjectMapper jsonMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
+		/* Support Java time object types */
+		jsonMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+		jsonMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+		this.setMapper(jsonMapper);
+	}
+
+}
