@@ -8,7 +8,7 @@ public interface ApiProviders {
 		return result;
 	}
 
-	static class MyJacksonJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
+	class MyJacksonJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
 
 		public MyJacksonJaxbJsonProvider() {
 			super();
@@ -17,6 +17,7 @@ public interface ApiProviders {
 
 			/* Support Java time object types */
 			mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+			mapper.configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
 			/* Ignore unknown properties received from the server */
 			mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
