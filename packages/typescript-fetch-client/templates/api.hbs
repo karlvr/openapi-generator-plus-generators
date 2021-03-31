@@ -11,6 +11,8 @@ import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeSt
 {{/ifeq}}
 {{>hooks/apiImports}}
 
+export type FactoryFunction<T> = (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) => T;
+
 {{#each groups}}
 /**
  * {{className name}}Api - fetch parameter creator
@@ -262,30 +264,8 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
  {{/if}}
  * @export
  */
-export const {{className name}}ApiFactory = function (configuration?: Configuration, fetch?: FetchAPI, basePath?: string) {
-	return {
-	{{#each operations}}
-		/**
-		 {{#if description}}
-		 * {{{md description}}}
-		 {{/if}}
-		 {{#if summary}}
-		 * @summary {{{summary}}}
-		 {{/if}}
-		 {{#each parameters}}
-		 * {{>frag/parameterDocumentation}}
-		 {{/each}}
-		 {{#with requestBody}}
-		 * {{>frag/parameterDocumentation}}
-		 {{/with}}
-		 * @param {*} [options] Override http request option.
-		 * @throws {RequiredError}
-		 */
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit) {
-			return {{className ../name}}ApiFp(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options)(fetch, basePath);
-		},
-	{{/each}}
-	};
+export const {{className name}}ApiFactory: FactoryFunction<{{className name}}Api{{#if @root.withInterfaces}}Interface{{/if}}> = function (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) {
+	return new {{className name}}Api(configuration, basePath, fetch);
 };
 
 {{#if @root.withInterfaces}}
