@@ -14,7 +14,12 @@ public interface ApiProviders {
 			super();
 
 			final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
+			/* Support Java time object types */
 			mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+
+			/* Ignore unknown properties received from the server */
+			mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			setMapper(mapper);
 		}
 
