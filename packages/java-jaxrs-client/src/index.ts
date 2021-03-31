@@ -1,4 +1,4 @@
-import { CodegenGeneratorType, CodegenGenerator, CodegenConfig } from '@openapi-generator-plus/types'
+import { CodegenGeneratorType, CodegenGenerator, CodegenConfig, isCodegenObjectSchema } from '@openapi-generator-plus/types'
 import path from 'path'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
@@ -111,5 +111,27 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 		},
 		generatorType: () => CodegenGeneratorType.CLIENT,
+
+		postProcessDocument: (doc) => {
+			if (base.postProcessDocument) {
+				base.postProcessDocument(doc)
+			}
+			
+			for (const group of doc.groups) {
+				for (const op of group.operations) {
+					if (op.defaultResponse && op.defaultResponse.defaultContent) {
+						const schema = op.defaultResponse.defaultContent.schema
+						if (isCodegenObjectSchema(schema)) {
+							/* Check if this is a return type that we cannot deserialize, as we don't know what type it
+							   is. We turn the return type into a generic Response so the user can decide which to read.
+							 */
+							if (schema.isInterface && !schema.discriminator && !schema.children) {
+								op.returnNativeType = new context.NativeType('javax.ws.rs.core.Response')
+							}
+						}
+					}
+				}
+			}
+		},
 	}
 }
