@@ -1,0 +1,23 @@
+package {{apiPackage}};
+
+public interface ApiProviders {
+
+	static java.util.List<?> defaultProviders() {
+		java.util.List<Object> result = new java.util.ArrayList<>();
+		result.add(new MyJacksonJaxbJsonProvider());
+		return result;
+	}
+
+	static class MyJacksonJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
+
+		public MyJacksonJaxbJsonProvider() {
+			super();
+
+			final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+			mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+			setMapper(mapper);
+		}
+
+	}
+
+}

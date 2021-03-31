@@ -1,8 +1,8 @@
 import { CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
 import path from 'path'
-import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
+import { loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator, { options as javaGeneratorOptions } from '@openapi-generator-plus/java-jaxrs-client-generator'
-import { packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
 export const createGenerator: CodegenGeneratorConstructor = (config, context: JavaGeneratorContext) => {
 	const myContext: JavaGeneratorContext = {
@@ -16,19 +16,6 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context: Ja
 	}
 
 	const generatorOptions = javaGeneratorOptions(config, myContext)
-
-	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
-		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
-		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
-
-		await emit('ApiProviders', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
-			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
-		}, false, hbs)
-
-		if (context.additionalExportTemplates) {
-			context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
-		}
-	}
 
 	const base = javaGenerator(config, myContext)
 	return {
