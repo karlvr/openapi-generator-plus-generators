@@ -1,0 +1,1160 @@
+openapi: 3.0.1
+info:
+    title: IDKIT API Swagger Specification
+    description: DEFAULT
+    version: 1.0.0
+servers:
+    - url: https://example.api.au.idkit.com/api/v1
+tags:
+    - name: transactions
+      description: Operations about Transactions
+paths:
+    /transactions:
+        post:
+            security:
+              - oAuth2ClientCredentials:
+                - 'transactions/post'
+            tags:
+                - transactions
+            summary: Create a transaction
+            description: Triggers an ID verification, either as an SMS we will send to your customers or as a link which you can pass on or redirect your customer to however you like.
+            operationId: create
+            requestBody:
+                description: Create Transaction Parameters
+                content:
+                    application/json:
+                        schema:
+                            required:
+                                - flow_type
+                            type: object
+                            properties:
+                                flow_type:
+                                    type: string
+                                name:
+                                    type: string
+                                    description: You can specify a "name" reference that may be seen in the SMS and is stored in the transaction record. (eg. Daniel).
+                                notifications:
+                                    required:
+                                        - complete
+                                    type: object
+                                    properties:
+                                        complete:
+                                            type: array
+                                            items:
+                                                required:
+                                                    - auth_header_name
+                                                type: object
+                                                properties:
+                                                    auth_header_name:
+                                                        type: string
+                                                        description: Optional Name of an authorization header for us to use when contacting your webhook URL.
+                                                    auth_header_value:
+                                                        type: string
+                                                        description: Optional Value of an authorization header for us to use when contacting your webhook URL.
+                                                    type:
+                                                        type: string
+                                                    url:
+                                                        type: string
+                                                        description: Your webhook URL for where we should send the notification that the transaction has been completed.
+                                phone_number:
+                                    type: string
+                                    desctiption: The mobile number without region code (eg. 0400123456 or 400123456).
+                                phone_region_code:
+                                    type: string
+                                    description: The region code for the mobile number (eg. +61)
+                                redirect_url_exit:
+                                    type: string
+                                    description: A URL for the customer to be redirected to if exiting within the journey without completing.
+                                redirect_url_success:
+                                    type: string
+                                    description: A URL for the customer to be redirected to once successfully completing the journey.
+                                reference:
+                                    type: string
+                                    desctiption: You can specify a reference that may be seen in the SMS and is stored in the transaction record. (eg. 0000001).
+                        examples:
+                            sample:
+                                $ref: '#/components/examples/CreateTransactionRequestBody'
+                required: true
+            responses:
+                200:
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateTransactionResponse'
+                            example:
+                                transaction_id: 01ERZZN650QZM9N7C20E4G8760
+                                url: https://example.idkit.com/01ERZZN650QZM9N7C20E4G8760
+                400:
+                    $ref: '#/components/responses/BadRequest'
+                401:
+                    $ref: '#/components/responses/Unauthenticated'
+                500:
+                    $ref: '#/components/responses/InternalServerError'
+    /transactions/{transaction_id}/{format}:
+        get:
+            security:
+              - oAuth2ClientCredentials:
+                - 'transactions/get'
+            tags:
+                - transactions
+            summary: Fetch a transaction
+            description: Get the transaction payload data by `trasanction_id`. You can generate a PDF (Base64 data) by setting the `format` to "pdf".
+            operationId: get
+            parameters:
+                - name: transaction_id
+                  in: path
+                  description: Transaction ID
+                  required: true
+                  schema:
+                      type: string
+                  example: 01ERZZN650QZM9N7C20E4G8760
+                - name: format
+                  in: path
+                  description: 'Available values are: json, pdf'
+                  schema:
+                      default: json
+                      type: string
+                  example: json
+            responses:
+                200:
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: '#/components/schemas/GetTransactionJson'
+                                    - $ref: '#/components/schemas/GetTransactionPDF'
+                            examples:
+                                'JSON Example':
+                                    $ref: '#/components/examples/GetTransactionJSONExample'
+                                'PDF Example':
+                                    $ref: '#/components/examples/GetTransactionPDFExample'
+                400:
+                    $ref: '#/components/responses/BadRequest'
+                401:
+                    $ref: '#/components/responses/Unauthenticated'
+                404:
+                    $ref: '#/components/responses/Unauthenticated'
+                500:
+                    $ref: '#/components/responses/InternalServerError'
+components:
+    schemas:
+        DataProviderData:
+            required:
+                - DATA_CONNECT
+            type: object
+            properties:
+                DATA_CONNECT:
+                    $ref: '#/components/schemas/DataProvider'
+                GREEN_ID:
+                    $ref: '#/components/schemas/DataProvider'
+                ID_MATRIX:
+                    $ref: '#/components/schemas/DataProvider'
+            description: Model for DataProvider
+        SearchResults:
+            required:
+                - fraudassessment
+            type: object
+            properties:
+                fraudassessment:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Components'
+                verification:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Verification'
+            description: Model for SearchResults
+        IdMatrixResults:
+            required:
+                - overall
+            type: object
+            properties:
+                overall:
+                    type: string
+                rulesResults:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/RulesResults'
+                searchResults:
+                    $ref: '#/components/schemas/SearchResults'
+                verificationOutcome:
+                    $ref: '#/components/schemas/VerificationOutcome'
+            description: Model for SearchResults
+        IdMatrixData:
+            required:
+                - fraudAssessment
+            type: object
+            properties:
+                fraudAssessment:
+                    $ref: '#/components/schemas/FraudAssessment'
+                overall:
+                    type: string
+                searchResults:
+                    $ref: '#/components/schemas/IdMatrixResults'
+                summary:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Summary'
+            description: Model for IdMatrix
+        Summary:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                value:
+                    type: string
+            description: Model for Summary
+        VerificationOutcome:
+            required:
+                - indicator
+            type: object
+            properties:
+                indicator:
+                    type: string
+                totalPoints:
+                    type: string
+            description: Model for VerificationOutcome
+        Verification:
+            required:
+                - components
+            type: object
+            properties:
+                components:
+                    $ref: '#/components/schemas/Components'
+                name:
+                    type: string
+                points:
+                    type: string
+                results:
+                    type: string
+                searchName:
+                    type: string
+                value:
+                    type: string
+            description: Model for Verification
+        RulesResults:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                value:
+                    type: string
+            description: Model for RulesResults
+        Overall:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                value:
+                    type: string
+            description: Model for Overall
+        FraudAssessment:
+            required:
+                - dataSource
+            type: object
+            properties:
+                dataSource:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataSource'
+                overall:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Overall'
+            description: Model for FraudAssessment
+        DataSource:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                result:
+                    type: string
+                score:
+                    type: string
+                threshold:
+                    type: string
+                weight:
+                    type: string
+            description: Model for DataSource
+        GreenIdData:
+            required:
+                - individualResults
+            type: object
+            properties:
+                individualResults:
+                    $ref: '#/components/schemas/IndividualResults'
+                overall:
+                    type: string
+                registrationDetails:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/RegistrationDetails'
+            description: Model for GreenIdData
+        RegistrationDetails:
+            required:
+                - label
+            type: object
+            properties:
+                label:
+                    type: string
+                value:
+                    type: string
+            description: Model for RegistrationDetails
+        IndividualResults:
+            required:
+                - background
+            type: object
+            properties:
+                background:
+                    type: array
+                    items:
+                        type: string
+                dvs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Dvs'
+                watchlist:
+                    $ref: '#/components/schemas/Watchlist'
+            description: Model for IndividualResults
+        Watchlist:
+            required:
+                - ERROR
+            type: object
+            properties:
+                ERROR:
+                    type: array
+                    items:
+                        type: string
+                FOUND_ON_LIST:
+                    type: array
+                    items:
+                        type: string
+                NOT_FOUND_ON_LIST:
+                    type: array
+                    items:
+                        type: string
+            description: Model for Watchlist
+        Components:
+            required:
+                - address
+            type: object
+            properties:
+                address:
+                    type: string
+                dob:
+                    type: string
+                firstName:
+                    type: string
+                fraud:
+                    type: string
+                full_name:
+                    type: string
+                id:
+                    type: string
+                name:
+                    type: string
+                surName:
+                    type: string
+            description: Model for Components
+        Dvs:
+            required:
+                - components
+            type: object
+            properties:
+                components:
+                    $ref: '#/components/schemas/Components'
+                label:
+                    type: string
+                result:
+                    type: string
+            description: Model for Dvs
+        Documents:
+            required:
+                - asf_breakdown
+            type: object
+            properties:
+                asf_breakdown:
+                    $ref: '#/components/schemas/AsfBreakdown'
+                created_at:
+                    type: string
+                    format: date-time
+                document_id:
+                    type: string
+                extracted:
+                    $ref: '#/components/schemas/Extracted'
+                face_photo:
+                    $ref: '#/components/schemas/File'
+                front_document:
+                    $ref: '#/components/schemas/File'
+                identity_document_type:
+                    type: string
+                ocr:
+                    type: boolean
+                original_front_document:
+                    $ref: '#/components/schemas/File'
+                updated_at:
+                    type: string
+                    format: date-time
+            description: Model for Documents
+        File:
+            required:
+                - content_type
+            type: object
+            properties:
+                content_type:
+                    type: string
+                size:
+                    type: integer
+                    format: int32
+                url:
+                    type: string
+            description: Model for File
+        DataProvider:
+            required:
+                - data
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/DataConnectData'
+                message:
+                    type: string
+                overall:
+                    type: string
+                version:
+                    type: string
+                xml:
+                    type: boolean
+            description: Model for DataConnect
+        DataConnectData:
+            required:
+                - fieldDetails
+            type: object
+            properties:
+                fieldDetails:
+                    $ref: '#/components/schemas/FieldDetails'
+                rapidID:
+                    type: string
+                VerifyDocumentResult:
+                    $ref: '#/components/schemas/VerifyDocumentResult'
+            description: Model for DataConnectData
+        FieldDetails:
+            required:
+                - BirthDate
+            type: object
+            properties:
+                BirthDate:
+                    type: string
+                BirthDay:
+                    type: string
+                BirthMonth:
+                    type: string
+                BirthYear:
+                    type: string
+                CardType:
+                    type: string
+                CountryOfIssue:
+                    type: string
+                ExpiryDay:
+                    type: string
+                FamilyName:
+                    type: string
+                GivenName:
+                    type: string
+                ImmiCardNumber:
+                    type: string
+                LicenceNumber:
+                    type: string
+                MiddleName:
+                    type: string
+                RegistrationState:
+                    type: string
+                StateOfIssue:
+                    type: string
+            description: Model for FieldDetails
+        Attributes:
+            required:
+                - i_type
+            type: object
+            properties:
+                i_type:
+                    type: string
+            description: Model for Attributes
+        VerifyDocumentResult:
+            required:
+                - ActivityId
+            type: object
+            properties:
+                ActivityId:
+                    type: string
+                attributes:
+                    $ref: '#/components/schemas/Attributes'
+                OriginatingAgencyCode:
+                    type: string
+                VerificationRequestNumber:
+                    type: string
+                VerificationResultCode:
+                    type: string
+            description: Model for VerifyDocumentResult
+        Results:
+            required:
+                - data
+            type: object
+            properties:
+                data:
+                    type: string
+                documents:
+                    type: string
+                facematch:
+                    type: string
+                liveness:
+                    type: string
+                overall:
+                    type: string
+            description: Model for Results
+        LikenessFeatures:
+            required:
+                - forehead
+            type: object
+            properties:
+                forehead:
+                    type: string
+                jaw:
+                    type: string
+                left_brow:
+                    type: string
+                left_cheek:
+                    type: string
+                left_eye:
+                    type: string
+                middle_forehead:
+                    type: string
+                mouth:
+                    type: string
+                nose:
+                    type: string
+                philtrum:
+                    type: string
+                right_brow:
+                    type: string
+                right_cheek:
+                    type: string
+                right_eye:
+                    type: string
+            description: Model for LikenessFeatures
+        AsfBreakdown:
+            required:
+                - detail_check
+            type: object
+            properties:
+                detail_check:
+                    type: string
+                document_integrity:
+                    type: string
+                image_composition:
+                    type: string
+                photo_check:
+                    type: string
+            description: Model for AsfBreakdown
+        Extracted:
+            required:
+                - address
+            type: object
+            properties:
+                address:
+                    type: string
+                card_number:
+                    type: string
+                city:
+                    type: string
+                country_of_issue:
+                    type: string
+                date_of_birth:
+                    type: string
+                date_of_expiry:
+                    type: string
+                document_type:
+                    type: string
+                first_name:
+                    type: string
+                issuer:
+                    type: string
+                last_name:
+                    type: string
+                licence_class:
+                    type: string
+                licence_condition:
+                    type: string
+                licence_number:
+                    type: string
+                middle_name:
+                    type: string
+                state:
+                    type: string
+                street:
+                    type: string
+                zip_code:
+                    type: string
+            description: Model for Extracted
+        GetTransactionJson:
+            required:
+                - created_at
+            type: object
+            properties:
+                created_at:
+                    type: string
+                    format: date-time
+                current_step:
+                    type: string
+                data_provider:
+                    $ref: '#/components/schemas/DataProviderData'
+                device_info:
+                    $ref: '#/components/schemas/DeviceInfo'
+                documents:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Documents'
+                facematch_best_frame:
+                    $ref: '#/components/schemas/File'
+                flow_type:
+                    type: string
+                likeness_features:
+                    $ref: '#/components/schemas/LikenessFeatures'
+                likeness_overall:
+                    type: string
+                liveness_attempts:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/LivenessAttempts'
+                results:
+                    $ref: '#/components/schemas/Results'
+                spoof_result:
+                    type: string
+                status:
+                    type: string
+                transaction_id:
+                    type: string
+                user_details:
+                    $ref: '#/components/schemas/UserDetails'
+            description: Model for Get Transaction as JSON
+        GetTransactionPDF:
+            required:
+                - created_at
+            type: object
+            properties:
+                created_at:
+                    type: string
+                    format: date-time
+                flow_type:
+                    type: string
+                status:
+                    type: string
+                transaction_id:
+                    type: string
+            description: Model for Get Transaction as JSON
+        LivenessAttempts:
+            required:
+                - actions
+            type: object
+            properties:
+                actions:
+                    type: array
+                    items:
+                        type: string
+                result:
+                    type: boolean
+                session_id:
+                    type: string
+                video:
+                    $ref: '#/components/schemas/File'
+            description: Model for LivenessAttempts
+        UserDetails:
+            required:
+                - address
+            type: object
+            properties:
+                address:
+                    $ref: '#/components/schemas/Address'
+                date_of_birth:
+                    type: string
+                    format: date
+                date_of_expiry:
+                    type: string
+                    format: date
+                first_name:
+                    type: string
+                last_name:
+                    type: string
+                licence_number:
+                    type: string
+                middle_name:
+                    type: string
+                passport_number:
+                    type: string
+            description: Model for UserDetails
+        Address:
+            required:
+                - city
+            type: object
+            properties:
+                city:
+                    type: string
+                country:
+                    type: string
+                full_address:
+                    type: string
+                post_code:
+                    type: string
+                state:
+                    type: string
+                street_address:
+                    type: string
+                street_address_2:
+                    type: string
+                suburb:
+                    type: string
+            description: Model for Address
+        DeviceInfo:
+            required:
+                - browser
+            type: object
+            properties:
+                browser:
+                    type: string
+                country:
+                    type: string
+                geolocation:
+                    type: string
+                ip:
+                    type: string
+                ip_location:
+                    type: string
+                isp:
+                    type: string
+                os:
+                    type: string
+                vpn:
+                    type: boolean
+            description: Model for DeviceInfo
+        CreateTransactionResponse:
+            required:
+                - transaction_id
+            type: object
+            properties:
+                transaction_id:
+                    type: string
+                url:
+                    type: string
+            description: Model for Create
+        BadRequestResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Bad Request.
+        UnauthenticatedResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Unauthenticated.
+        NotFoundResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: The token was not found.
+        InternalServerErrorResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Internal Server Error.
+    responses:
+        BadRequest:
+            description: The server could not understand the request due to invalid syntax.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/BadRequestResponse'
+        Unauthenticated:
+            description: Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UnauthenticatedResponse'
+        NotFound:
+            description: The server can not find requested resource.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/NotFoundResponse'
+        InternalServerError:
+            description: The server has encountered a situation it doesn't know how to handle.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/InternalServerErrorResponse'
+    examples:
+        GetTransactionJSONExample:
+            value:
+                device_info:
+                    browser: Mobile Safari 13.1.1
+                    country: Australia
+                    geolocation: 33.000000,15.00000
+                    ip: '10.10.10.100'
+                    ip_location: 33.000000,15.00000
+                    isp: Telstra Corporation
+                    os: iOS 13.5.1
+                    vpn: false
+                created_at: '2020-12-08T01:32:36.385Z'
+                current_step: SUBMITTED
+                user_details:
+                    address:
+                        street_address: 78 West End Road
+                        country: AU
+                        city: Auckland
+                        post_code: '1022'
+                        full_address: 78 West End Road, Westmere, Auckland 1022
+                    date_of_expiry: '2025-07-02'
+                    date_of_birth: '1992-07-01'
+                    licence_number: '1234566'
+                    last_name: Smith
+                    first_name: Daniel
+                status: COMPLETE
+                flow_type: NORMAL
+                transaction_id: 01ERZZN650QZM9N7C20E4G8760
+                spoof_result: High Risk
+                liveness_attempts:
+                    - result: false
+                      session_id: from-tester-40968d82-f4b5-c-2e7792efee2f29da
+                      actions:
+                          - SMILE
+                          - RIGHT
+                      video:
+                          url: https://example.com/file
+                          size: 955152
+                          content_type: video/webm
+                documents:
+                    - identity_document_type: AUS_NSW_DRIVERLICENCE
+                      updated_at: '2020-12-08T01:33:09.476Z'
+                      created_at: '2020-12-08T01:33:09.476Z'
+                      document_id: 74695b5338ecb9cc3f8a424244c575a4
+                      extracted:
+                          address: UNIT3 3 WINNIE ST CREMORNE NSW 2090
+                          card_number: '0515051313'
+                          city: CREMORNE
+                          date_of_birth: 15/03/1977
+                          last_name: Smith
+                          licence_class: C
+                          middle_name: John
+                          issuer: New South Wales Australia
+                          zip_code: '2090'
+                          licence_condition: n/a
+                          date_of_expiry: N/A
+                          licence_number: '1234566'
+                          street: UNIT3 3 WINNIE ST
+                          country_of_issue: Australia
+                          state: NSW
+                          first_name: David
+                          document_type: AUS_NSW_DRIVERLICENCE
+                      ocr: true
+                      asf_breakdown:
+                          document_integrity: PASSED
+                          image_composition: PASSED
+                          photo_check: PASSED
+                          detail_check: PASSED
+                      face_photo:
+                          url: https://example.com/file
+                          size: 7936
+                          content_type: image/jpeg
+                      front_document:
+                          url: https://example.com/file
+                          size: 75984
+                          content_type: image/jpeg
+                      original_front_document:
+                          url: https://example.com/file
+                          size: 2602208
+                          content_type: image/jpeg
+                likeness_overall: Fail
+                likeness_features:
+                    right_eye: Fail
+                    nose: Fail
+                    philtrum: Pass
+                    jaw: Fail
+                    middle_forehead: Fail
+                    mouth: Fail
+                    left_eye: Fail
+                    forehead: Fail
+                    left_cheek: Fail
+                    right_brow: Fail
+                    left_brow: Fail
+                    right_cheek: Fail
+                results:
+                    liveness: FLAGGED
+                    overall: FLAGGED
+                    data: FLAGGED
+                    documents: PASSED
+                    facematch: FLAGGED
+                data_provider:
+                    DATA_CONNECT:
+                        overall: FAILED
+                        data:
+                            rapidID: <check-id>
+                            VerifyDocumentResult:
+                                attributes:
+                                    i:type: DriverLicenceResponse
+                                VerificationResultCode: N
+                                OriginatingAgencyCode: XXXX
+                                ActivityId: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+                                VerificationRequestNumber: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+                            fieldDetails:
+                                BirthYear: No Match
+                                BirthMonth: No Match
+                                FamilyName: No Match
+                                LicenceNumber: No Match
+                                GivenName: No Match
+                                BirthDay: No Match
+                                StateOfIssue: No Match
+                                ImmiCardNumber: No Match
+                                MiddleName: No Match
+                                ExpiryDay: No Match
+                                RegistrationState: No Match
+                                CardType: No Match
+                                CountryOfIssue: No Match
+                                BirthDate: No Match
+                        message: OK
+                        version: 1.0.0
+                        xml: false
+                    GREEN_ID:
+                        data:
+                            individualResults:
+                                background: []
+                                dvs:
+                                    - components:
+                                          dob: PASS
+                                          firstName: PASS
+                                          id: PASS
+                                          surName: PASS
+                                      label: DVS - NSW Driver Licence
+                                      result: PASS
+                                watchlist:
+                                    ERROR: []
+                                    FOUND_ON_LIST: []
+                                    NOT_FOUND_ON_LIST:
+                                        - Politically Exposed Persons Watchlist
+                                        - Department of Foreign Affairs and Trade Watchlist
+                                        - US, Dept of Treasury, Office of Foreign Assets Control
+                                          - Specially Designated Nationals List
+                                        - US, Dept of Treasury, Office of Foreign Assets Control
+                                          - Palestinian Legislative Council (PLC) List
+                                        - Consolidated list of persons subject to EU financial sanctions
+                                        - UK, HM Treasury - Consolidated List of Financial Sanctions
+                                          Targets in the UK
+                                        - UK - Members of Parliament
+                                        - New Zealand - Members of Parliament
+                                        - Cyprus - Members of Parliament
+                                        - Russia - Deputies of the State Duma
+                                        - US, Immigration and Customs Enforcement - Most Wanted
+                                          Fugitives List
+                                        - US, System for Award Management - Exclusions List
+                                        - INTERPOL - Wanted Persons List
+                            overall: VERIFIED
+                            registrationDetails:
+                                - label: Data Provider
+                                  value: Illion / GreenID
+                                - label: Time & Date
+                                  value: 2020-07-16T13:29:23.485+1000
+                                - label: Reference
+                                  value: 1EwoGOGzO
+                                - label: Rule ID
+                                  value: default
+                        encrypted_xml: example/01ERZZN650QZM9N7C20E4G8760/encrypted-green-id-response.xml.enc
+                        message: OK
+                        version: 1.0.0
+                    ID_MATRIX:
+                        data:
+                            fraudAssessment:
+                                dataSource:
+                                    - name: Politically Exposed Person (PEP) Verification
+                                      result: PASS
+                                      score: '100.0'
+                                      threshold: '50.0'
+                                      weight: '0.25'
+                                    - name: Velocity Verification
+                                      result: PASS
+                                      score: '100.0'
+                                      threshold: '50.0'
+                                      weight: '0.25'
+                                    - name: FraudCheck Shared Fraud Database
+                                      result: PASS
+                                      score: '100.0'
+                                      threshold: '50.0'
+                                      weight: '0.25'
+                                    - name: Sanctions Check
+                                      result: PASS
+                                      score: '100.0'
+                                      threshold: '50.0'
+                                      weight: '0.25'
+                                overall:
+                                    - name: Overall Result
+                                      value: PASS
+                                    - name: Overall Fraud Score
+                                      value: 100/100
+                                    - name: Overall Threshold
+                                      value: '50.0'
+                            overall: ACCEPT
+                            searchResults:
+                                overall: ACCEPT
+                                rulesResults:
+                                    - name: Overall Decision
+                                      value: ACCEPT
+                                    - name: Overall Points
+                                      value: '119.0'
+                                    - name: IDMatrix Minimum Requirements Verification
+                                      value: MATCH
+                                    - name: IDMatrix Safe Harbour Verification
+                                      value: MATCH
+                                searchResults:
+                                    fraudassessment:
+                                        - components:
+                                              address: NO MATCH
+                                              dob: NO MATCH
+                                              fraud: NO MATCH
+                                              full_name: NO MATCH
+                                              id: NO MATCH
+                                              name: NO MATCH
+                                          name: Velocity (v1.0)
+                                          points: '0'
+                                          results: 0
+                                          searchName: VEDA-EVVELOCITY-0026
+                                          value: NO MATCH
+                                        - components:
+                                              address: NO MATCH
+                                              dob: NO MATCH
+                                              fraud: NO MATCH
+                                              full_name: NO MATCH
+                                              id: NO MATCH
+                                              name: NO MATCH
+                                          name: GlobalScreening - PEPs (Domestic) (v1.0)
+                                          points: '0'
+                                          results: 0
+                                          searchName: ACC-PEPS-0048
+                                          value: NO MATCH
+                                        - components:
+                                              address: NO MATCH
+                                              dob: NO MATCH
+                                              fraud: NO MATCH
+                                              full_name: NO MATCH
+                                              id: NO MATCH
+                                              name: NO MATCH
+                                          name: GlobalScreening - Sanctions (International) (v2.0)
+                                          points: '0'
+                                          results: 0
+                                          searchName: ACC-COMPLINK-0021
+                                          value: NO MATCH
+                                        - components:
+                                              address: NO MATCH
+                                              dob: NO MATCH
+                                              fraud: NO MATCH
+                                              full_name: NO MATCH
+                                              id: NO MATCH
+                                              name: NO MATCH
+                                          name: Fraud Lookup - Address (v1.0)
+                                          points: '0'
+                                          results: '0'
+                                          searchName: VEDA-SFDADDR-0023
+                                          value: NO MATCH
+                                    verification:
+                                        - components:
+                                              address: PASS
+                                              dob: PASS
+                                              fraud: PASS
+                                              full_name: PASS
+                                              id: PASS
+                                              name: PASS
+                                          name: Credit Bureau Consumer (v3.0)
+                                          points: '59'
+                                          results: '98'
+                                          searchName: VEDA-CBCONS-0050
+                                          value: PASS
+                                        - components:
+                                              address: PASS
+                                              dob: PASS
+                                              fraud: PASS
+                                              full_name: PASS
+                                              id: PASS
+                                              name: PASS
+                                          name: Credit Bureau Consumer (v3.2)
+                                          points: '0'
+                                          results: '100'
+                                          searchName: VEDA-CBCONS-0066
+                                          value: PASS
+                                        - components:
+                                              address: PASS
+                                              dob: PASS
+                                              fraud: PASS
+                                              full_name: PASS
+                                              id: PASS
+                                              name: PASS
+                                          name: Australian Electoral Roll (v3.0)
+                                          points: '60'
+                                          results: '100'
+                                          searchName: AEC-ER-0049
+                                          value: PASS
+                                verificationOutcome:
+                                    indicator: ACCEPT
+                                    totalPoints: '119'
+                            summary:
+                                - name: Reference
+                                  value: 200822-98BE2-ADFA9
+                                - name: Profile Name
+                                  value: KYC-TEST_PROFILE_GEE-Service1
+                                - name: Profile Version
+                                  value: '1'
+                        encrypted_xml: example/01ERZZN650QZM9N7C20E4G8760/encrypted-id-matrix-response.xml.enc
+                        message: OK
+                        version: 1.0.0
+                facematch_best_frame:
+                    url: https://example.com/file
+                    size: 19456
+        GetTransactionPDFExample:
+            value:
+                transaction_id: '01ERZZN650QZM9N7C20E4G8760'
+                status: 'COMPLETE'
+                created_at: '2020-12-08T02:01:42.824Z'
+                flow_type: 'NORMAL'
+                pdf_binary_base64: 'AMgAuADYpCi9Qcm9kdWNlciAo/v8AUQB0ACAAN...'
+        CreateTransactionRequestBody:
+            value:
+                name: 'MyTest'
+                reference: 'Demo'
+                flow_type: 'NORMAL'
+                phone_region_code: '61'
+                phone_number: '00000000'
+                redirect_url_success: 'https://google.com/?success'
+                redirect_url_exit: 'https://google.com/?exit'
+                notifications:
+                    complete:
+                        - type: 'https'
+                          url: 'https://example.com/auth'
+                          auth_header_name: 'Authorization'
+                          auth_header_value: 'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
+    securitySchemes:
+      oAuth2ClientCredentials:
+        type: oauth2
+        flows:
+            clientCredentials:
+                tokenUrl: https://example.idkit.co
+                scopes:
+                  'transactions/post': Craete Transactions
+                  'transactions/get': Get Transactions
