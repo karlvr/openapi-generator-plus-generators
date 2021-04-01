@@ -12,7 +12,7 @@ public {{className name}}ApiImpl(java.lang.String baseAddress, java.util.List<?>
 
 @java.lang.Override
 public void authorize(java.lang.String headerValue) {
-	org.apache.cxf.jaxrs.client.WebClient.client(api).header("Authorization", headerValue);
+	org.apache.cxf.jaxrs.client.WebClient.client(api).authorization(headerValue);
 }
 
 @java.lang.Override
