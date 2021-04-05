@@ -1,3 +1,5 @@
+private org.apache.cxf.jaxrs.client.Client client;
+
 public {{className name}}ApiImpl() {
 	this({{apiPackage}}.ApiConstants.DEFAULT_SERVER, {{apiPackage}}.ApiProviders.defaultProviders());
 }
@@ -7,16 +9,25 @@ public {{className name}}ApiImpl(String baseAddress) {
 }
 
 public {{className name}}ApiImpl(java.lang.String baseAddress, java.util.List<?> providers) {
-	this.api = org.apache.cxf.jaxrs.client.JAXRSClientFactory.create(baseAddress, {{@root.apiSpecPackage}}.{{className name}}ApiSpec.class, providers);
+	this(org.apache.cxf.jaxrs.client.JAXRSClientFactory.create(baseAddress, {{@root.apiSpecPackage}}.{{className name}}ApiSpec.class, providers));
+}
+
+public {{className name}}ApiImpl({{@root.apiSpecPackage}}.{{className name}}ApiSpec api) {
+	this(api, org.apache.cxf.jaxrs.client.WebClient.client(api));
+}
+
+public {{className name}}ApiImpl({{@root.apiSpecPackage}}.{{className name}}ApiSpec api, org.apache.cxf.jaxrs.client.Client client) {
+	this.api = api;
+	this.client = client;
 }
 
 @java.lang.Override
 public void authorize(java.lang.String headerValue) {
-	org.apache.cxf.jaxrs.client.WebClient.client(api).authorization(headerValue);
+	client.authorization(headerValue);
 }
 
 @java.lang.Override
 public org.apache.cxf.jaxrs.client.Client client() {
-	return org.apache.cxf.jaxrs.client.WebClient.client(api);
+	return client;
 }
 
