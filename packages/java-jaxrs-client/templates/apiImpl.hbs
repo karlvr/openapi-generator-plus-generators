@@ -6,13 +6,32 @@ package {{apiImplPackage}};
 public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{className name}}Api {
 
 	{{>hooks/injectApi group=. name='api'}}
+	private {{apiSpiPackage}}.ApiAuthorizationProvider authorizationProvider;
 
 	{{>hooks/apiImplClassBody}}
 {{#each operations}}
 	@Override
 	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>serviceBodyParam}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{{className ../name}}}{{{code}}}Exception{{/each}} {
+		{{#if securityRequirements}}
+		if (authorizationProvider != null) {
+			authorizationProvider.authorize(this);
+		}
+		{{/if}}
 		try {
+			{{#if securityRequirements}}
+			try {
+				{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{identifier requestBody.name}}{{/if}});
+			} catch (javax.ws.rs.WebApplicationException __e) {
+				if (__e.getResponse().getStatus() == 401 && authorizationProvider != null) {
+					if (authorizationProvider.reauthorize(this, __e.getResponse())) {
+						{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{identifier requestBody.name}}{{/if}});
+					}
+				}
+				throw __e;
+			}
+			{{else}}
 			{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{identifier requestBody.name}}{{/if}});
+			{{/if}}
 		} catch (javax.ws.rs.WebApplicationException __e) {
 			{{#each (nonDefaultResponses)}}
 			if (__e.getResponse().getStatus() == {{code}}) {
@@ -30,4 +49,12 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 	}
 	
 {{/each}}
+	public {{apiSpiPackage}}.ApiAuthorizationProvider getAuthorizationProvider() {
+		return authorizationProvider;
+	}
+
+	public void setAuthorizationProvider({{apiSpiPackage}}.ApiAuthorizationProvider authorizationProvider) {
+		this.authorizationProvider = authorizationProvider;
+	}
+
 }

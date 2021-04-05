@@ -3,4 +3,8 @@ package {{apiPackage}};
 public interface ApiInvoker {
 
 	{{>hooks/apiInvokerInterfaceBody}}
+
+	{{apiSpiPackage}}.ApiAuthorizationProvider getAuthorizationProvider();
+	void setAuthorizationProvider({{apiSpiPackage}}.ApiAuthorizationProvider authorizationProvider);
+	
 }

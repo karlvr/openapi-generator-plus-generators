@@ -25,6 +25,7 @@ The available config file properties are:
 |`apiPackage`|`string`|Package for API interfaces.|`"${package}"`|
 |`apiImplPackage`|`string`|Package for API implementation classes.|`"${package}.impl"`|
 |`apiSpecPackage`|`string`|Package for JAX-RS API interfaces.|`"${package}.spec"`|
+|`apiSpiPackage`|`string`|Package for SPI interfaces for extra functionality.|`"${package}.spi`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|
 

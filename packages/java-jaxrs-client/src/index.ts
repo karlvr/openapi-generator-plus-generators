@@ -11,6 +11,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 	const generatorOptions: CodegenOptionsJavaClient = {
 		...parentOptions,
 		apiSpecPackage: config.apiSpecPackage || `${parentOptions.apiPackage}.spec`,
+		apiSpiPackage: config.apiSpiPackage || `${parentOptions.apiPackage}.spi`,
 	}
 	return generatorOptions
 }
@@ -82,6 +83,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			await emit('apiSpec', path.join(outputPath, relativeSourceOutputPath, apiSpecPackagePath, `${context.generator().toClassName(group.name)}ApiSpec.java`), 
 				{ ...rootContext, ...group, operations }, true, hbs)
 		}
+
+		const apiSpiPackagePath = packageToPath(generatorOptions.apiSpiPackage)
+		await emit('spi/ApiAuthorizationProvider', path.join(outputPath, relativeSourceOutputPath, apiSpiPackagePath, 'ApiAuthorizationProvider.java'), {
+			...rootContext,
+		}, true, hbs)
 
 		if (context.additionalExportTemplates) {
 			context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
