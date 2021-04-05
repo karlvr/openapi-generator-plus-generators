@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-retrofit-client-generator",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "An OpenAPI Generator+ module for a Java API client using Retrofit",
   "keywords": [
     "openapi-generator-plus",
