@@ -38,13 +38,13 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 				try {
 					throw new {{className ../name}}{{code}}Exception({{#if defaultContent.nativeType}}__e.getResponse().readEntity({{defaultContent.nativeType}}.class){{/if}});
 				} catch (javax.ws.rs.ProcessingException __processingException) {
-					throw new {{{className ../name}}}UnexpectedResponseException(__e.getResponse(), __processingException);
+					throw new {{{className ../name}}}UnprocessableResponseException(__e.getResponse(), __processingException);
 				}
 			}
 			{{/each}}
 			throw new {{{className name}}}UnexpectedResponseException(__e.getResponse());
 		} catch (javax.ws.rs.client.ResponseProcessingException __e) {
-			throw new {{{className name}}}UnexpectedResponseException(__e.getResponse(), __e);
+			throw new {{{className name}}}UnprocessableResponseException(__e.getResponse(), __e);
 		}
 	}
 	
