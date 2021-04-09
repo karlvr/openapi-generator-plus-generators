@@ -53,6 +53,19 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 	return this;
 }
 
+{{#or (isObject) (isMap) (isArray)}}
+/**
+ * Returns the {{identifier name}}, or if it's {@code null} it first creates a new object,
+ * sets the property to the new object, and then returns it.
+ */
+public {{{nativeType}}} {{identifier name}}() {
+	if (this.{{identifier name}} == null) {
+		this.{{identifier name}} = new {{{nativeType.concreteType}}}();
+	}
+	return this.{{identifier name}};
+}
+
+{{/or}}
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
