@@ -6,5 +6,5 @@ export interface CodegenOptionsJavaServer extends CommonCodegenOptions {
 	apiProviderPackage: string
 	invokerPackage: string | null
 	
-	authenticatedOperationAnnotation: string | null
+	authenticationRequiredAnnotation: string | null
 }

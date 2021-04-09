@@ -18,7 +18,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		apiServiceImplPackage: config.apiServiceImplPackage || `${apiServicePackage}.impl`,
 		apiProviderPackage: config.apiProviderPackage || `${packageName}.providers`,
 		invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
-		authenticatedOperationAnnotation: config.authenticatedOperationAnnotation || null,
+		authenticationRequiredAnnotation: config.authenticationRequiredAnnotation || config.authenticatedOperationAnnotation || null,
 	}
 	
 	return result

@@ -1,9 +1,9 @@
 @javax.ws.rs.{{httpMethod}}
 {{>hooks/apiMethodAnnotations}}
 {{#and securityRequirements (not securityRequirements.optional)}}
-{{#ifdef @root.authenticatedOperationAnnotation}}
-{{#if @root.authenticatedOperationAnnotation}}
-{{@root.authenticatedOperationAnnotation}}
+{{#ifdef @root.authenticationRequiredAnnotation}}
+{{#if @root.authenticationRequiredAnnotation}}
+{{@root.authenticationRequiredAnnotation}}
 {{/if}}
 {{/ifdef}}
 {{/and}}

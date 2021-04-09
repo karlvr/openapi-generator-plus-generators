@@ -42,7 +42,7 @@ The available config file properties are:
 |`dateTimeImplementation`|`string`|Date time type class.|`"java.time.OffsetDateTime"`|
 |`constantStyle`|`"allCapsSnake"` \| `"allCaps"` \| `"camelCase"` \| `"pascalCase"`|The style to use for constant naming.|`"allCapsSnake"`|
 |`modelClassPrefix`|`string`|Apply a prefix to all model class names.|`undefined`|
-|`authenticatedOperationAnnotation`|`string`|Annotation to add to API methods that require authentication.|`undefined`|
+|`authenticationRequiredAnnotation`|`string`|Annotation to add to API methods that require authentication.|`undefined`|
 
 ### Packaging
 
