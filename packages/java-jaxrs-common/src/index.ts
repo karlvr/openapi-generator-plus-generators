@@ -357,7 +357,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.DATETIME:
 				case CodegenSchemaType.FILE:
 				case CodegenSchemaType.STRING:
-					return { value: null, literalValue: 'null' }
+					return null
 				case CodegenSchemaType.ARRAY:
 					return { value: [], literalValue: `new ${nativeType.concreteType}()` }
 				case CodegenSchemaType.MAP:
