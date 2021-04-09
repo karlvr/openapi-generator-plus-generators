@@ -19,21 +19,20 @@
 {{#if produces}}
 @javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 {{/if}}
-@io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}}, notes = {{{stringLiteral description}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{!--{{#if returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/if}}--}}{{#if securityRequirements}}, authorizations = {
-	{{#if securityRequirements}}
+@io.swagger.v3.oas.annotations.Operation(
+	summary = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}},
+	description = {{{stringLiteral description}}}{{/if}},
+	responses = {
+	{{#each responses}}
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "{{{code}}}", description = {{{stringLiteral description}}}){{#hasMore}},{{/hasMore}}
+{{/each}}	}{{!--{{#if returnContainer}},
+	responseContainer = "{{{returnContainer}}}"{{/if}}--}}{{#if securityRequirements}},
+	security = {
 	{{#each securityRequirements.requirements}}
 	{{#each schemes}}
-	@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#if scheme.isOAuth}}, scopes = {
-		{{#each scopes}}
-		@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{#if description}}{{{stringLiteral description}}}{{else}}""{{/if}}){{#hasMore}},{{/hasMore}}
-		{{/each}}
-	}{{/if}}),
+		@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "{{scheme.name}}"{{#if scopes}}, scopes = { {{#each scopes}}{{{stringLiteral name}}}{{#hasMore}},{{/hasMore}}{{/each}} }{{/if}}),
 	{{/each}}
 	{{/each}}
-	{{/if}}
-}{{/if}}, tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
-@io.swagger.annotations.ApiResponses(value = {
-	{{#each responses}}
-	@io.swagger.annotations.ApiResponse(code = {{{code}}}, message = {{{stringLiteral description}}}, response = {{#if defaultContent.nativeType}}{{{defaultContent.nativeType.literalType}}}{{else}}Void{{/if}}.class{{!--{{#if containerType}}, responseContainer = "{{{containerType}}}"{{/if}}--}}){{#hasMore}},{{/hasMore}}
-	{{/each}}
-})
+	}{{/if}},
+	tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} }
+)

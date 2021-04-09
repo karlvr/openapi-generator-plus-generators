@@ -10,7 +10,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>{{lookup maven.versions 'java' '1.8'}}</java.version>
-		<swagger.version>{{lookup maven.versions 'swagger' '1.5.24'}}</swagger.version>
+		<swagger.version>{{lookup maven.versions 'swagger' '2.1.7'}}</swagger.version>
 		<jaxrs.version>{{lookup maven.versions 'jaxrs' '2.1.1'}}</jaxrs.version>
 		<jackson.version>{{lookup maven.versions 'jackson' '2.10.2'}}</jackson.version>
 		{{#if useBeanValidation}}
@@ -20,16 +20,9 @@
 
     <dependencies>
 		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-jaxrs</artifactId>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
 			<version>${swagger.version}</version>
-			<exclusions>
-				<!-- We must exclude jsr311-api as it contains an older version of jaxrs -->
-				<exclusion>
-					<artifactId>jsr311-api</artifactId>
-					<groupId>javax.ws.rs</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>

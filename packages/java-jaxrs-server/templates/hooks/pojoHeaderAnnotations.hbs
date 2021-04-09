@@ -1,1 +1,1 @@
-@io.swagger.annotations.ApiModel(value = "{{#if serializedName}}{{{serializedName}}}{{/if}}"{{#if description}}, description = {{{stringLiteral description}}}{{/if}}{{#if discriminator}}, discriminator="{{{discriminator.name}}}"{{/if}})
+@io.swagger.v3.oas.annotations.media.Schema(name = "{{#if serializedName}}{{{serializedName}}}{{/if}}"{{#if description}}, description = {{{stringLiteral description}}}{{/if}}{{#if discriminator}}, discriminatorProperty = "{{{discriminator.name}}}"{{/if}})
