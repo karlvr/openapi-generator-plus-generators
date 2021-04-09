@@ -211,7 +211,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		...javaLikeGenerator(config, createJavaLikeContext(context)),
 		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return context.generator().toDefaultValue(undefined, options).literalValue
+				return context.generator().defaultValue(options).literalValue
 			}
 			if (value === null) {
 				return 'null'
@@ -355,18 +355,33 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				return `{ [name: ${nativeTypeStrings[0]}]: ${nativeTypeStrings[1]} }`
 			})
 		},
-		toDefaultValue: (defaultValue, options) => {
-			if (defaultValue !== undefined) {
-				return {
-					value: defaultValue,
-					literalValue: context.generator().toLiteral(defaultValue, options),
-				}
-			}
-
+		defaultValue: (options) => {
 			const { schemaType, required } = options
 
 			if (!required) {
 				return { value: null, literalValue: 'undefined' }
+			}
+
+			switch (schemaType) {
+				case CodegenSchemaType.NUMBER:
+					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
+				case CodegenSchemaType.INTEGER:
+					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
+				case CodegenSchemaType.BOOLEAN:
+					return { value: false, literalValue: 'false' }
+				case CodegenSchemaType.ARRAY:
+					return { value: [], literalValue: '[]' }
+				case CodegenSchemaType.MAP:
+					return { value: {}, literalValue: '{}' }
+				default:
+					return { value: null, literalValue: 'undefined' }
+			}
+		},
+		initialValue: (options) => {
+			const { schemaType, required } = options
+
+			if (!required) {
+				return null
 			}
 
 			switch (schemaType) {

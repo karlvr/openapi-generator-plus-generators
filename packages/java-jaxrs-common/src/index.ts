@@ -134,7 +134,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		...javaLikeGenerator(config, createJavaLikeContext(context)),
 		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return context.generator().toDefaultValue(undefined, options).literalValue
+				return context.generator().defaultValue(options).literalValue
 			}
 			if (value === null) {
 				return 'null'
@@ -317,18 +317,36 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				concreteType: ([keyNativeType, componentNativeType]) => `java.util.HashMap<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
 			})
 		},
-		toDefaultValue: (defaultValue, options) => {
-			if (defaultValue !== undefined) {
-				return {
-					value: defaultValue,
-					literalValue: context.generator().toLiteral(defaultValue, options),
-				}
+		defaultValue: (options) => {
+			const { type, schemaType } = options
+	
+			switch (schemaType) {
+				case CodegenSchemaType.ENUM:
+				case CodegenSchemaType.DATE:
+				case CodegenSchemaType.TIME:
+				case CodegenSchemaType.DATETIME:
+				case CodegenSchemaType.FILE:
+				case CodegenSchemaType.OBJECT:
+				case CodegenSchemaType.STRING:
+				case CodegenSchemaType.ARRAY:
+				case CodegenSchemaType.MAP:
+					return { value: null, literalValue: 'null' }
+				case CodegenSchemaType.NUMBER:
+					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
+				case CodegenSchemaType.INTEGER:
+					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
+				case CodegenSchemaType.BOOLEAN:
+					return { value: false, literalValue: context.generator().toLiteral(false, options) }
 			}
 	
+			throw new Error(`Unsupported type name: ${type}`)
+		},
+
+		initialValue: (options) => {
 			const { type, required, schemaType, nativeType } = options
 	
 			if (!required) {
-				return { value: null, literalValue: 'null' }
+				return null
 			}
 	
 			switch (schemaType) {

@@ -36,7 +36,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		generatorType: () => CodegenGeneratorType.DOCUMENTATION,
 		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return context.generator().toDefaultValue(undefined, options).literalValue
+				return context.generator().defaultValue(options).literalValue
 			}
 
 			return `${value}`
@@ -73,14 +73,10 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		toNativeMapType: ({ keyNativeType, componentNativeType }) => {
 			return new context.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
 		},
-		toDefaultValue: (defaultValue, options) => {
-			if (defaultValue !== undefined) {
-				return {
-					value: defaultValue,
-					literalValue: context.generator().toLiteral(defaultValue, options),
-				}
-			}
-
+		defaultValue: () => {
+			return { value: null, literalValue: 'undefined' }
+		},
+		initialValue: () => {
 			return { value: null, literalValue: 'undefined' }
 		},
 		toOperationGroupName: (name) => {

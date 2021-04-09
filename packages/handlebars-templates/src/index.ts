@@ -668,7 +668,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			if (typeInfo.schemaType === undefined || typeInfo.nativeType === undefined) {
 				throw new Error(`undefinedValueLiteral helper must be called with a CodegenTypeInfo argument @ ${sourcePosition(options)}`)
 			}
-			return generator().toDefaultValue(undefined, {
+			return generator().defaultValue({
 				...typeInfo,
 				required: false,
 			}).literalValue
