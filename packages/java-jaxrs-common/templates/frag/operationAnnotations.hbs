@@ -1,10 +1,12 @@
 @javax.ws.rs.{{httpMethod}}
 {{>hooks/apiMethodAnnotations}}
-{{#if securityRequirements}}
+{{#and securityRequirements (not securityRequirements.optional)}}
 {{#ifdef @root.authenticatedOperationAnnotation}}
+{{#if @root.authenticatedOperationAnnotation}}
 {{@root.authenticatedOperationAnnotation}}
-{{/ifdef}}
 {{/if}}
+{{/ifdef}}
+{{/and}}
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
@@ -18,13 +20,17 @@
 @javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 {{/if}}
 @io.swagger.annotations.ApiOperation(value = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}}, notes = {{{stringLiteral description}}}{{/if}}{{#if returnNativeType}}, response = {{{returnNativeType.literalType}}}.class{{/if}}{{!--{{#if returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/if}}--}}{{#if securityRequirements}}, authorizations = {
-	{{#each securityRequirements}}
+	{{#if securityRequirements}}
+	{{#each securityRequirements.requirements}}
+	{{#each schemes}}
 	@io.swagger.annotations.Authorization(value = "{{scheme.name}}"{{#if scheme.isOAuth}}, scopes = {
 		{{#each scopes}}
 		@io.swagger.annotations.AuthorizationScope(scope = "{{name}}", description = {{#if description}}{{{stringLiteral description}}}{{else}}""{{/if}}){{#hasMore}},{{/hasMore}}
 		{{/each}}
-	}{{/if}}){{#hasMore}},{{/hasMore}}
+	}{{/if}}),
 	{{/each}}
+	{{/each}}
+	{{/if}}
 }{{/if}}, tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 @io.swagger.annotations.ApiResponses(value = {
 	{{#each responses}}

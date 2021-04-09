@@ -60,7 +60,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			const localVarFormParams = new URLSearchParams();
 	{{/if}}
 
-	{{#each securityRequirements}}
+	{{#if securityRequirements}}
+		{{#each securityRequirements.requirements}}
+			{{#each schemes}}
 			// authentication {{scheme.name}} required
 			{{#if scheme.isApiKey}}
 			{{#if scheme.isInHeader}}
@@ -68,7 +70,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				const localVarApiKeyValue = typeof configuration.apiKey === 'function'
 					? configuration.apiKey("{{identifier scheme.name}}")
 					: configuration.apiKey;
-				localVarHeaderParameter["{{identifier scheme.name}}"] = localVarApiKeyValue;
+				if (localVarApiKeyValue !== null) {
+					localVarHeaderParameter["{{identifier scheme.name}}"] = localVarApiKeyValue;
+				}
 			}
 			{{/if}}
 			{{#if scheme.isInQuery}}
@@ -76,7 +80,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				const localVarApiKeyValue = typeof configuration.apiKey === 'function'
 					? configuration.apiKey("{{identifier scheme.name}}")
 					: configuration.apiKey;
-				localVarQueryParameter.set("{{identifier scheme.name}}", localVarApiKeyValue);
+				if (localVarApiKeyValue !== null) {
+					localVarQueryParameter.set("{{identifier scheme.name}}", localVarApiKeyValue);
+				}
 			}
 			{{/if}}
 			{{/if}}
@@ -92,11 +98,14 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
 					? configuration.accessToken("{{scheme.name}}", [{{#each scopes}}"{{{name}}}"{{#unless @last}}, {{/unless}}{{/each}}])
 					: configuration.accessToken;
-				localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+				if (localVarAccessTokenValue !== null) {
+					localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+				}
 			}
 			{{/if}}
-
-	{{/each}}
+			{{/each}}
+		{{/each}}
+	{{/if}}
 	{{#each queryParams}}
 		{{!-- TODO --}}
 		{{!--

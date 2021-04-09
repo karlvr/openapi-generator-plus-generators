@@ -3,7 +3,8 @@
         <h5>Security</h5>
 
         <table>
-            {{#each securityRequirements}}
+            {{#each securityRequirements.requirements}}
+            {{#each schemes}}
                 <tr>
                     <td><a href="#/security/{{htmlId scheme.name}}">{{capitalize scheme.type}}</a></td>
                     <td>
@@ -12,6 +13,7 @@
                         {{/each}}
                     </td>
                 </tr>
+            {{/each}}
             {{/each}}
         </table>
     </div>
