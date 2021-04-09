@@ -48,6 +48,24 @@ export async function loadTemplates(templateDirPath: string, hbs: typeof Handleb
 	}
 }
 
+async function detectPreferredLineEnding(outputPath: string): Promise<string | undefined> {
+	try {
+		const existingFileString = await fs.readFile(outputPath, { encoding: 'utf-8' })
+		const firstNewline = existingFileString.indexOf('\n')
+		if (firstNewline !== -1) {
+			if (firstNewline > 0) {
+				const beforeFirstNewline = existingFileString.charAt(firstNewline - 1)
+				if (beforeFirstNewline === '\r') {
+					return '\r\n'
+				}
+			}
+		}
+		return '\n'
+	} catch (error) {
+		return undefined
+	}
+}
+
 /**
  * Emit a file
  * @param templateName The name of the template partial to use as the root of the output
@@ -72,12 +90,13 @@ export async function emit(templateName: string, outputPath: string, context: Un
 		throw new Error(`Failed to generate template "${templateName}": ${error.message}`)
 	}
 
-	/* Normalise line endings */
-	outputString = outputString.replace(/\r\n/g, '\n').replace(/\n/g, EOL)
-
 	if (outputPath === '-') {
-		console.log(outputString)
+		const normalisedOutputString = outputString.replace(/\r\n/g, '\n').replace(/\n/g, EOL)
+		console.log(normalisedOutputString)
 	} else {
+		const preferredLineEnding = await detectPreferredLineEnding(outputPath) || EOL
+		const normalisedOutputString = outputString.replace(/\r\n/g, '\n').replace(/\n/g, preferredLineEnding)
+
 		if (!replace) {
 			try {
 				await fs.access(outputPath)
@@ -88,7 +107,7 @@ export async function emit(templateName: string, outputPath: string, context: Un
 			}
 		}
 		await fs.mkdir(path.dirname(outputPath), { recursive: true })
-		await fs.writeFile(outputPath, outputString, { encoding: 'utf-8' })
+		await fs.writeFile(outputPath, normalisedOutputString, { encoding: 'utf-8' })
 	}
 }
 
