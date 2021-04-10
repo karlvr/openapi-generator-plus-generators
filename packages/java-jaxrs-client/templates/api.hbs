@@ -53,47 +53,5 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 	}
 
 	{{/each}}
-	/** The server returned a status code that is not documented in the API. */
-	class {{{className name}}}UnexpectedResponseException extends java.lang.RuntimeException {
-
-		private static final long serialVersionUID = 1L;
-
-		private javax.ws.rs.core.Response response;
-
-		public {{{className name}}}UnexpectedResponseException(javax.ws.rs.core.Response response) {
-			super("Unexpected response status " + response.getStatus());
-			this.response = response;
-		}
-
-		public javax.ws.rs.core.Response getResponse() {
-			return response;
-		}
-
-	}
-
-	/** The server returned a response that couldn't be processed. */
-	class {{{className name}}}UnprocessableResponseException extends java.lang.RuntimeException {
-
-		private static final long serialVersionUID = 1L;
-
-		private javax.ws.rs.core.Response response;
-		private javax.ws.rs.ProcessingException processingException;
-
-		public {{{className name}}}UnprocessableResponseException(javax.ws.rs.core.Response response, javax.ws.rs.ProcessingException exception) {
-			super("Response processing failed for " + response.getStatus() + " response status: " + exception.getMessage());
-			this.response = response;
-			this.processingException = exception;
-		}
-
-		public javax.ws.rs.core.Response getResponse() {
-			return response;
-		}
-
-		public javax.ws.rs.ProcessingException getProcessingException() {
-			return processingException;
-		}
-
-	}
-
 	{{/each}}
 }
