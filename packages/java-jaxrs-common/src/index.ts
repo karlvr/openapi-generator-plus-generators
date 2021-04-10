@@ -145,6 +145,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			if (schemaType === CodegenSchemaType.ENUM) {
 				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
 			}
+
+			/* We use the same logic as in toNativeType  */
+			const primitive = required
 	
 			switch (type) {
 				case 'integer': {
@@ -153,9 +156,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 
 					if (format === 'int32' || !format) {
-						return !required ? `java.lang.Integer.valueOf(${value})` : `${value}`
+						return !primitive ? `java.lang.Integer.valueOf(${value})` : `${value}`
 					} else if (format === 'int64') {
-						return !required ? `java.lang.Long.valueOf(${value}l)` : `${value}l`
+						return !primitive ? `java.lang.Long.valueOf(${value}l)` : `${value}l`
 					} else {
 						throw new Error(`Unsupported ${type} format: ${format}`)
 					}
@@ -168,9 +171,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (!format) {
 						return `new java.math.BigDecimal("${value}")`
 					} else if (format === 'float') {
-						return !required ? `java.lang.Float.valueOf(${value}f)` : `${value}f`
+						return !primitive ? `java.lang.Float.valueOf(${value}f)` : `${value}f`
 					} else if (format === 'double') {
-						return !required ? `java.lang.Double.valueOf(${value}d)` : `${value}d`
+						return !primitive ? `java.lang.Double.valueOf(${value}d)` : `${value}d`
 					} else {
 						throw new Error(`Unsupported ${type} format: ${format}`)
 					}
@@ -181,7 +184,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 
 					if (format === 'byte') {
-						return !required ? `java.lang.Byte.valueOf(${value}b)` : `${value}b`
+						return !primitive ? `java.lang.Byte.valueOf(${value}b)` : `${value}b`
 					} else if (format === 'binary') {
 						throw new Error(`Cannot format literal for type ${type} format ${format}`)
 					} else if (format === 'date') {
@@ -199,7 +202,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						throw new Error(`toLiteral with type boolean called with non-boolean: ${typeof value} (${value})`)
 					}
 
-					return !required ? `java.lang.Boolean.valueOf(${value})` : `${value}`
+					return !primitive ? `java.lang.Boolean.valueOf(${value})` : `${value}`
 				case 'object':
 				case 'file':
 					throw new Error(`Cannot format literal for type ${type}`)
@@ -213,16 +216,23 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					componentType: new context.NativeType(vendorExtensions['x-java-type']),
 				})
 			}
+
+			/**
+			 * We only use primitives if the schema is required. We don't use primitives if the schema isn't
+			 * nullable, as we don't have `undefined` in Java so we don't know whether the property was included
+			 * or not.
+			 */
+			const primitive = required
 			
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (type) {
 				case 'integer': {
 					if (format === 'int32' || !format) {
-						return new context.NativeType(!required ? 'java.lang.Integer' : 'int', {
+						return new context.NativeType(!primitive ? 'java.lang.Integer' : 'int', {
 							componentType: new context.NativeType('java.lang.Integer'),
 						})
 					} else if (format === 'int64') {
-						return new context.NativeType(!required ? 'java.lang.Long' : 'long', {
+						return new context.NativeType(!primitive ? 'java.lang.Long' : 'long', {
 							componentType: new context.NativeType('java.lang.Long'),
 						})
 					} else {
@@ -233,11 +243,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (!format) {
 						return new context.NativeType('java.math.BigDecimal')
 					} else if (format === 'float') {
-						return new context.NativeType(!required ? 'java.lang.Float' : 'float', {
+						return new context.NativeType(!primitive ? 'java.lang.Float' : 'float', {
 							componentType: new context.NativeType('java.lang.Float'),
 						})
 					} else if (format === 'double') {
-						return new context.NativeType(!required ? 'java.lang.Double' : 'double', {
+						return new context.NativeType(!primitive ? 'java.lang.Double' : 'double', {
 							componentType: new context.NativeType('java.lang.Double'),
 						})
 					} else {
@@ -246,7 +256,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 				case 'string': {
 					if (format === 'byte') {
-						return new context.NativeType(!required ? 'java.lang.Byte' : 'byte', {
+						return new context.NativeType(!primitive ? 'java.lang.Byte' : 'byte', {
 							componentType: new context.NativeType('java.lang.Byte'),
 							serializedType: 'java.lang.String',
 						})
@@ -277,7 +287,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 				}
 				case 'boolean': {
-					return new context.NativeType(!required ? 'java.lang.Boolean' : 'boolean', {
+					return new context.NativeType(!primitive ? 'java.lang.Boolean' : 'boolean', {
 						componentType: new context.NativeType('java.lang.Boolean'),
 					})
 				}
