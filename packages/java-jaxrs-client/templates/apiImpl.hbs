@@ -42,7 +42,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 				}
 			}
 			{{/each}}
-			throw new {{@root/apiPackage}}.UnexpectedResponseException(__e.getResponse());
+			throw new {{@root/apiPackage}}.UnexpectedResponseException(__e.getResponse(), __e);
 		} catch (javax.ws.rs.client.ResponseProcessingException __e) {
 			throw new {{@root/apiPackage}}.UnprocessableResponseException(__e.getResponse(), __e);
 		}
