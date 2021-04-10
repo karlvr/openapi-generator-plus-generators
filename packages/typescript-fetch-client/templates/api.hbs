@@ -302,7 +302,7 @@ export interface {{className name}}ApiInterface {
 	 * @throws {RequiredError}
 	 * @memberof {{className ../name}}ApiInterface
 	 */
-	{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#if nullable}} | null{{/if}}{{#unless required}} | undefined{{/unless}}, {{/each}}options?: RequestInit): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
+	{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#unless required}} | undefined{{/unless}}, {{/each}}options?: RequestInit): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
 
 {{/each}}
 }

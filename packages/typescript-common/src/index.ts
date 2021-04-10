@@ -277,14 +277,14 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeType: ({ type, format }) => {
+		toNativeType: ({ type, format, nullable }) => {
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (type) {
 				case 'integer': {
-					return new context.NativeType('number')
+					return new context.NativeType(nullable ? 'number | null' : 'number')
 				}
 				case 'number': {
-					return new context.NativeType('number')
+					return new context.NativeType(nullable ? 'number | null' : 'number')
 				}
 				case 'string': {
 					switch (format) {
@@ -293,9 +293,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 								case DateApproach.Native:
 								case DateApproach.String:
 									/* We use strings for date and time as JavaScript Date can't support */
-									return new context.NativeType('string')
+									return new context.NativeType(nullable ? 'string | null' : 'string')
 								case DateApproach.BlindDate:
-									return new context.NativeType('LocalDateString')
+									return new context.NativeType(nullable ? 'LocalDateString | null' : 'LocalDateString')
 							}
 							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'time':
@@ -303,34 +303,34 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 								case DateApproach.Native:
 								case DateApproach.String:
 									/* We use strings for date and time as JavaScript Date can't support */
-									return new context.NativeType('string')
+									return new context.NativeType(nullable ? 'string | null' : 'string')
 								case DateApproach.BlindDate:
-									return new context.NativeType('LocalTimeString')
+									return new context.NativeType(nullable ? 'LocalTimeString | null' : 'LocalTimeString')
 							}
 							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'date-time':
 							switch (generatorOptions.dateApproach) {
 								case DateApproach.Native:
 									/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-									return new context.NativeType('Date', {
+									return new context.NativeType(nullable ? 'Date | null' : 'Date', {
 										serializedType: 'string',
 									})
 								case DateApproach.BlindDate:
-									return new context.NativeType('OffsetDateTimeString')
+									return new context.NativeType(nullable ? 'OffsetDateTimeString | null' : 'OffsetDateTimeString')
 								case DateApproach.String:
-									return new context.NativeType('string')
+									return new context.NativeType(nullable ? 'string | null' : 'string')
 							}
 							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						default:
-							return new context.NativeType('string')
+							return new context.NativeType(nullable ? 'string | null' : 'string')
 					}
 				}
 				case 'boolean': {
-					return new context.NativeType('boolean')
+					return new context.NativeType(nullable ? 'boolean | null' : 'boolean')
 				}
 				case 'file': {
 					/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a serializedType */
-					return new context.NativeType('File', {
+					return new context.NativeType(nullable ? 'File | null' : 'File', {
 						serializedType: null,
 					})
 				}
