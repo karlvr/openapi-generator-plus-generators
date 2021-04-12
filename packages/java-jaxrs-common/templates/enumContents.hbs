@@ -9,18 +9,22 @@ private {{enumValueNativeType}} value;
 }
 
 @com.fasterxml.jackson.annotation.JsonValue
-public String value() {
+public {{enumValueNativeType}} value() {
 	return value;
 }
 
 @Override
-public String toString() {
-	return String.valueOf(value);
+public java.lang.String toString() {
+	return java.lang.String.valueOf(value);
 }
 
-public static {{className name}} fromValue(String v) {
+/**
+ * Return the {{className name}} that has the given {@link #value()} by matching
+ * its string representation.
+ */
+public static {{className name}} fromValue(java.lang.String v) {
 	for ({{className name}} b : {{className name}}.values()) {
-		if (String.valueOf(b.value).equals(v)) {
+		if (java.lang.String.valueOf(b.value).equals(v)) {
 			return b;
 		}
 	}
