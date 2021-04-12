@@ -137,8 +137,8 @@ public int hashCode() {
 }
 
 @Override
-public String toString() {
-	StringBuilder sb = new StringBuilder();
+public java.lang.String toString() {
+	java.lang.StringBuilder sb = new java.lang.StringBuilder();
 	sb.append("class {{className name}} {\n");
 	{{#if parentNativeType}}sb.append("    ").append(toIndentedString(super.toString())).append("\n");{{/if}}
 	{{#each properties}}sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
