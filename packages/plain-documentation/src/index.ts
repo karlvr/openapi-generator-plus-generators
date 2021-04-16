@@ -60,9 +60,9 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				serializedType: null,
 			})
 		},
-		toNativeObjectType: function({ modelNames }) {
+		toNativeObjectType: function({ scopedName }) {
 			let modelName = ''
-			for (const name of modelNames) {
+			for (const name of scopedName) {
 				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName.substring(1))

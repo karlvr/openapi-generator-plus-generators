@@ -298,9 +298,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeObjectType: function({ modelNames }) {
+		toNativeObjectType: function({ scopedName }) {
 			let modelName = `${generatorOptions.modelPackage}`
-			for (const name of modelNames) {
+			for (const name of scopedName) {
 				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName)
