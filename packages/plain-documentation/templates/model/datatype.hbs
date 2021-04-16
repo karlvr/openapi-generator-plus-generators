@@ -1,13 +1,13 @@
 <span class="model-property-type">
     {{#if anchor}}
         {{#if (isObject)}}
-            <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
+            <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
         {{else if (isMap)}}
-            <a class="model-ref" href="#{{anchor}}/{{htmlId componentSchema.nativeType}}">{{nativeType}}</a>
+            <a class="model-ref" href="#{{anchor}}/{{htmlId component.nativeType.concreteType}}">{{nativeType}}</a>
         {{else if (isArray)}}
-            <a class="model-ref" href="#{{anchor}}/{{htmlId componentSchema.nativeType}}">{{nativeType}}</a>
+            <a class="model-ref" href="#{{anchor}}/{{htmlId component.nativeType.concreteType}}">{{nativeType}}</a>
         {{else if (isEnum)}}
-            <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a>
+            <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
         {{else}}
             {{nativeType}}
             {{#if nativeType.serializedType}}
