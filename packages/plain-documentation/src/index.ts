@@ -41,7 +41,8 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 
 			return `${value}`
 		},
-		toNativeType: ({ type, format }) => {
+		toNativeType: (options) => {
+			const { type, format } = options
 			if (type === 'string') {
 				if (format) {
 					return new context.NativeType(format, {
@@ -60,19 +61,32 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				serializedType: null,
 			})
 		},
-		toNativeObjectType: function({ scopedName }) {
+		toNativeObjectType: function(options) {
+			const { scopedName } = options
 			let modelName = ''
 			for (const name of scopedName) {
 				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName.substring(1))
 		},
-		toNativeArrayType: ({ componentNativeType }) => {
+		toNativeArrayType: (options) => {
+			const { componentNativeType } = options
 			return new context.NativeType(`${componentNativeType}[]`)
 		},
-		toNativeMapType: ({ keyNativeType, componentNativeType }) => {
+		toNativeMapType: (options) => {
+			const { keyNativeType, componentNativeType } = options
 			return new context.NativeType(`{ [name: ${keyNativeType}]: ${componentNativeType} }`)
 		},
+		nativeTypeUsageTransformer: ({ nullable }) => ({
+			default: function(nativeType, nativeTypeString) {
+				if (nullable) {
+					return `${nativeTypeString} | null`
+				}
+				return nativeTypeString
+			},
+			/* We don't transform the concrete type as the concrete type is never null; we use it to make new objects */
+			concreteType: null,
+		}),
 		defaultValue: () => {
 			return { value: null, literalValue: 'undefined' }
 		},

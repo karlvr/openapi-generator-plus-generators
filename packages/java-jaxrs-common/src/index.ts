@@ -140,14 +140,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				return 'null'
 			}
 	
-			const { type, format, required, schemaType } = options
+			const { type, format, required, nullable, schemaType } = options
 	
 			if (schemaType === CodegenSchemaType.ENUM) {
 				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
 			}
 
-			/* We use the same logic as in toNativeType  */
-			const primitive = required
+			/* We use the same logic as in nativeTypeUsageTransformer  */
+			const primitive = required && !nullable
 	
 			switch (type) {
 				case 'integer': {
@@ -210,29 +210,28 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeType: ({ type, format, required, vendorExtensions }) => {
+		toNativeType: (options) => {
+			const { type, format, vendorExtensions } = options
+
+			/* Note that we return separate componentTypes in this function in case the type
+			   is transformed, using nativeTypeTransformer, and the native type becomes primitive
+			   as the component type must still be non-primitive.
+			 */
 			if (vendorExtensions && vendorExtensions['x-java-type']) {
 				return new context.NativeType(vendorExtensions['x-java-type'], {
 					componentType: new context.NativeType(vendorExtensions['x-java-type']),
 				})
 			}
-
-			/**
-			 * We only use primitives if the schema is required. We don't use primitives if the schema isn't
-			 * nullable, as we don't have `undefined` in Java so we don't know whether the property was included
-			 * or not.
-			 */
-			const primitive = required
 			
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (type) {
 				case 'integer': {
 					if (format === 'int32' || !format) {
-						return new context.NativeType(!primitive ? 'java.lang.Integer' : 'int', {
+						return new context.NativeType('java.lang.Integer', {
 							componentType: new context.NativeType('java.lang.Integer'),
 						})
 					} else if (format === 'int64') {
-						return new context.NativeType(!primitive ? 'java.lang.Long' : 'long', {
+						return new context.NativeType('java.lang.Long', {
 							componentType: new context.NativeType('java.lang.Long'),
 						})
 					} else {
@@ -243,11 +242,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (!format) {
 						return new context.NativeType('java.math.BigDecimal')
 					} else if (format === 'float') {
-						return new context.NativeType(!primitive ? 'java.lang.Float' : 'float', {
+						return new context.NativeType('java.lang.Float', {
 							componentType: new context.NativeType('java.lang.Float'),
 						})
 					} else if (format === 'double') {
-						return new context.NativeType(!primitive ? 'java.lang.Double' : 'double', {
+						return new context.NativeType('java.lang.Double', {
 							componentType: new context.NativeType('java.lang.Double'),
 						})
 					} else {
@@ -256,7 +255,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 				case 'string': {
 					if (format === 'byte') {
-						return new context.NativeType(!primitive ? 'java.lang.Byte' : 'byte', {
+						return new context.NativeType('java.lang.Byte', {
 							componentType: new context.NativeType('java.lang.Byte'),
 							serializedType: 'java.lang.String',
 						})
@@ -287,7 +286,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 				}
 				case 'boolean': {
-					return new context.NativeType(!primitive ? 'java.lang.Boolean' : 'boolean', {
+					return new context.NativeType('java.lang.Boolean', {
 						componentType: new context.NativeType('java.lang.Boolean'),
 					})
 				}
@@ -298,35 +297,61 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeObjectType: function({ scopedName }) {
+		toNativeObjectType: function(options) {
+			const { scopedName } = options
 			let modelName = `${generatorOptions.modelPackage}`
 			for (const name of scopedName) {
 				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName)
 		},
-		toNativeArrayType: ({ componentNativeType, uniqueItems }) => {
+		toNativeArrayType: (options) => {
+			const { componentNativeType, uniqueItems } = options
 			if (uniqueItems) {
 				return new context.FullTransformingNativeType(componentNativeType, {
-					nativeType: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
+					default: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
 					literalType: () => 'java.util.List',
 					concreteType: (nativeType) => `java.util.ArrayList<${(nativeType.componentType || nativeType).nativeType}>`,
 				})
 			} else {
 				return new context.FullTransformingNativeType(componentNativeType, {
-					nativeType: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
+					default: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
 					literalType: () => 'java.util.List',
 					concreteType: (nativeType) => `java.util.ArrayList<${(nativeType.componentType || nativeType).nativeType}>`,
 				})
 			}
 		},
-		toNativeMapType: ({ keyNativeType, componentNativeType }) => {
+		toNativeMapType: (options) => {
+			const { keyNativeType, componentNativeType } = options
 			return new context.FullComposingNativeType([keyNativeType, componentNativeType], {
-				nativeType: ([keyNativeType, componentNativeType]) => `java.util.Map<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
+				default: ([keyNativeType, componentNativeType]) => `java.util.Map<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
 				literalType: () => 'java.util.Map',
 				concreteType: ([keyNativeType, componentNativeType]) => `java.util.HashMap<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
 			})
 		},
+		nativeTypeUsageTransformer: ({ required, nullable }) => ({
+			nativeType: function(nativeType, nativeTypeString) {
+				const primitive = required && !nullable
+				if (primitive) {
+					if (nativeTypeString === 'java.lang.Integer') {
+						return 'int'
+					} else if (nativeTypeString === 'java.lang.Boolean') {
+						return 'boolean'
+					} else if (nativeTypeString === 'java.lang.Long') {
+						return 'long'
+					} else if (nativeTypeString === 'java.lang.Float') {
+						return 'float'
+					} else if (nativeTypeString === 'java.lang.Double') {
+						return 'double'
+					} else if (nativeTypeString === 'java.lang.Byte') {
+						return 'byte'
+					}
+				}
+				return nativeTypeString
+			},
+			/* Don't transform component types, as we mustn't make them primitives */
+			componentType: null,
+		}),
 		defaultValue: (options) => {
 			const { type, schemaType } = options
 	

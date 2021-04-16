@@ -277,14 +277,16 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeType: ({ type, format, nullable }) => {
+		toNativeType: (options) => {
+			const { type, format } = options
+
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (type) {
 				case 'integer': {
-					return new context.NativeType(nullable ? 'number | null' : 'number')
+					return new context.NativeType('number')
 				}
 				case 'number': {
-					return new context.NativeType(nullable ? 'number | null' : 'number')
+					return new context.NativeType('number')
 				}
 				case 'string': {
 					switch (format) {
@@ -293,9 +295,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 								case DateApproach.Native:
 								case DateApproach.String:
 									/* We use strings for date and time as JavaScript Date can't support */
-									return new context.NativeType(nullable ? 'string | null' : 'string')
+									return new context.NativeType('string')
 								case DateApproach.BlindDate:
-									return new context.NativeType(nullable ? 'LocalDateString | null' : 'LocalDateString')
+									return new context.NativeType('LocalDateString')
 							}
 							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'time':
@@ -303,34 +305,34 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 								case DateApproach.Native:
 								case DateApproach.String:
 									/* We use strings for date and time as JavaScript Date can't support */
-									return new context.NativeType(nullable ? 'string | null' : 'string')
+									return new context.NativeType('string')
 								case DateApproach.BlindDate:
-									return new context.NativeType(nullable ? 'LocalTimeString | null' : 'LocalTimeString')
+									return new context.NativeType('LocalTimeString')
 							}
 							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						case 'date-time':
 							switch (generatorOptions.dateApproach) {
 								case DateApproach.Native:
 									/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-									return new context.NativeType(nullable ? 'Date | null' : 'Date', {
+									return new context.NativeType('Date', {
 										serializedType: 'string',
 									})
 								case DateApproach.BlindDate:
-									return new context.NativeType(nullable ? 'OffsetDateTimeString | null' : 'OffsetDateTimeString')
+									return new context.NativeType('OffsetDateTimeString')
 								case DateApproach.String:
-									return new context.NativeType(nullable ? 'string | null' : 'string')
+									return new context.NativeType('string')
 							}
 							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 						default:
-							return new context.NativeType(nullable ? 'string | null' : 'string')
+							return new context.NativeType('string')
 					}
 				}
 				case 'boolean': {
-					return new context.NativeType(nullable ? 'boolean | null' : 'boolean')
+					return new context.NativeType('boolean')
 				}
 				case 'file': {
 					/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a serializedType */
-					return new context.NativeType(nullable ? 'File | null' : 'File', {
+					return new context.NativeType('File', {
 						serializedType: null,
 					})
 				}
@@ -338,23 +340,37 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			throw new Error(`Unsupported type name: ${type}`)
 		},
-		toNativeObjectType: function({ scopedName }) {
+		toNativeObjectType: function(options) {
+			const { scopedName } = options
 			let modelName = 'Api'
 			for (const name of scopedName) {
 				modelName += `.${context.generator().toClassName(name)}`
 			}
 			return new context.NativeType(modelName)
 		},
-		toNativeArrayType: ({ componentNativeType }) => {
+		toNativeArrayType: (options) => {
+			const { componentNativeType } = options
 			return new context.TransformingNativeType(componentNativeType, (nativeTypeString) => {
 				return `${toSafeTypeForComposing(nativeTypeString)}[]`
 			})
 		},
-		toNativeMapType: ({ keyNativeType, componentNativeType }) => {
+		toNativeMapType: (options) => {
+			const { keyNativeType, componentNativeType } = options
 			return new context.ComposingNativeType([keyNativeType, componentNativeType], (nativeTypeStrings) => {
 				return `{ [name: ${nativeTypeStrings[0]}]: ${nativeTypeStrings[1]} }`
 			})
 		},
+		nativeTypeUsageTransformer: ({ nullable }) => ({
+			default: function(nativeType, nativeTypeString) {
+				if (nullable) {
+					return `${toSafeTypeForComposing(nativeTypeString)} | null`
+				}
+
+				return nativeTypeString
+			},
+			/* We don't transform the concrete type as the concrete type is never null; we use it to make new objects */
+			concreteType: null,
+		}),
 		defaultValue: (options) => {
 			const { schemaType, required } = options
 
