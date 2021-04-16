@@ -20,8 +20,8 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	{{model.discriminator.name}}: {{{value}}}
 
 {{/each}}
-{{#if componentSchema}}
-	[key: string]: {{{componentSchema.nativeType}}}
+{{#if component}}
+	[key: string]: {{{component.nativeType}}}
 
 {{/if}}
 {{#each properties}}

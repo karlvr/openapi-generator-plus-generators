@@ -95,7 +95,7 @@ public boolean patched{{capitalize (identifier name)}}() {
 }
 {{/if}}
 {{#if (isArray)}}
-public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{componentSchema.nativeType}}} {{identifier (singular name)}}) {
+public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{component.nativeType}}} {{identifier (singular name)}}) {
 	if (this.{{identifier name}} == null) {
 		this.{{identifier name}} = new {{{nativeType.concreteType}}}();
 	}
