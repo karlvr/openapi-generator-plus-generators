@@ -500,5 +500,18 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
 			}
 		},
+
+		postProcessDocument: (doc) => {
+			for (const group of doc.groups) {
+				for (const op of group.operations) {
+					/* Fix form post request bodies, as we can't properly handle them using 
+					   https://docs.oracle.com/javaee/7/api/javax/ws/rs/BeanParam.html yet
+					 */
+					if (op.requestBody && op.consumes && op.consumes[0].mimeType === 'application/x-www-form-urlencoded') {
+						op.requestBody.nativeType = new context.NativeType('javax.ws.rs.core.MultivaluedHashMap<java.lang.String, java.lang.String>')
+					}
+				}
+			}
+		},
 	}
 }
