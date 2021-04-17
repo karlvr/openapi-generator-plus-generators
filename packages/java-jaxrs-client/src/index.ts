@@ -35,6 +35,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 			return result
 		},
+		formUrlEncodedImplementation: () => new context.NativeType('javax.ws.rs.core.Form'),
 	}
 
 	const generatorOptions = options(config, myContext)

@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -68,6 +68,10 @@ export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	additionalWatchPaths?: () => string[]
 	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
 	additionalCleanPathPatterns?: () => string[]
+	/**
+	 * Override the class used to capture application/x-www-form-urlencoded messages.
+	 */
+	formUrlEncodedImplementation?: () => CodegenNativeType
 }
 
 const RESERVED_WORDS = [
@@ -508,7 +512,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					   https://docs.oracle.com/javaee/7/api/javax/ws/rs/BeanParam.html yet
 					 */
 					if (op.requestBody && op.consumes && op.consumes[0].mimeType === 'application/x-www-form-urlencoded') {
-						op.requestBody.nativeType = new context.NativeType('javax.ws.rs.core.MultivaluedHashMap<java.lang.String, java.lang.String>')
+						op.requestBody.nativeType = context.formUrlEncodedImplementation
+							? context.formUrlEncodedImplementation()
+							: new context.NativeType('javax.ws.rs.core.MultivaluedHashMap<java.lang.String, java.lang.String>')
 					}
 				}
 			}
