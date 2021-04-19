@@ -847,11 +847,15 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars): void
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType[], hbs: typeof Handlebars): void
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType | CodegenSchemaType[], hbs: typeof Handlebars): void {
-	hbs.registerHelper(name, function(this: CodegenTypeInfo) {
+	hbs.registerHelper(name, function(this: CodegenTypeInfo, anObject?: CodegenTypeInfo) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length < 2) {
+			anObject = undefined
+		}
 
-		const aPropertyType = this.schemaType
+		const target = anObject || this
+		const aPropertyType = target.schemaType
 		if (schemaType === undefined) {
 			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}`)
 		}
