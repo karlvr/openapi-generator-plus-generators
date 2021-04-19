@@ -105,6 +105,11 @@ public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{c
 	{{/if}}
 	return this;
 }
+public {{{component.nativeType}}} add{{capitalize (singular (identifier name))}}() {
+	{{{component.nativeType}}} {{identifier (singular name)}} = new {{{component.nativeType.concreteType}}}();
+	add{{capitalize (singular (identifier name))}}({{identifier (singular name)}});
+	return {{identifier (singular name)}};
+}
 {{/if}}
 
 {{/each}}
