@@ -6,6 +6,15 @@
 {{@root.authenticationRequiredAnnotation}}
 {{/if}}
 {{/ifdef}}
+{{#each securityRequirements.requirements}}
+{{#each schemes}}
+{{#with scheme}}
+{{#ifvex 'x-java-operation-annotation'}}
+{{{vendorExtensions.x-java-operation-annotation}}}
+{{/ifvex}}
+{{/with}}
+{{/each}}
+{{/each}}
 {{/and}}
 {{#if deprecated}}
 @java.lang.Deprecated
