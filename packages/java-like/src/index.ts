@@ -42,12 +42,14 @@ export const enum ConstantStyle {
 }
 
 export interface JavaLikeOptions {
+	apiClassPrefix?: string
 	modelClassPrefix?: string
 	constantStyle: ConstantStyle
 }
 
 export function options(config: CodegenConfig, context: JavaLikeContext): JavaLikeOptions {
 	const result: JavaLikeOptions = {
+		apiClassPrefix: config.apiClassPrefix,
 		modelClassPrefix: config.modelClassPrefix,
 		constantStyle: config.constantStyle || context.defaultConstantStyle,
 	}
@@ -105,7 +107,11 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			return cg.toSuggestedSchemaName(name, options)
 		},
 		toOperationGroupName: (name) => {
-			return context.generator().toClassName(name)
+			if (generatorOptions.apiClassPrefix) {
+				return context.generator().toClassName(`${generatorOptions.apiClassPrefix}_${name}`)
+			} else {
+				return context.generator().toClassName(name)
+			}
 		},
 	}
 }
