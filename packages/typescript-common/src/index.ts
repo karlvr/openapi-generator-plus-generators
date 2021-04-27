@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenObjectSchemaReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema, CodegenSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenDiscriminatorReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema, CodegenSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -420,7 +420,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 
 		postProcessSchema: (schema) => {
-			function modelReferencesToDisjunction(references: CodegenObjectSchemaReference[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
+			function modelReferencesToDisjunction(references: CodegenDiscriminatorReference[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
 				const result = references.reduce((result, reference) => {
 					const r = transform(reference.model.nativeType)
 					if (!r) {
