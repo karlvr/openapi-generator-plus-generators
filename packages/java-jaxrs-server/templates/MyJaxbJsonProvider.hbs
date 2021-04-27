@@ -14,13 +14,9 @@ public class MyJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.Jackson
 	public MyJaxbJsonProvider() {
 		super();
 
-		com.fasterxml.jackson.databind.ObjectMapper jsonMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+		{{>frag/jaxbJsonProviderBody}}
 
-		/* Support Java time object types */
-		jsonMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-		jsonMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
-		this.setMapper(jsonMapper);
+		this.setMapper(mapper);
 	}
 
 }

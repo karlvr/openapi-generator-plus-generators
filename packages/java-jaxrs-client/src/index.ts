@@ -73,7 +73,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 		await emit('ApiProviders', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
 			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
-		}, false, hbs)
+		}, true, hbs)
 
 		const apiSpecPackagePath = packageToPath(generatorOptions.apiSpecPackage)
 		for (const group of doc.groups) {
