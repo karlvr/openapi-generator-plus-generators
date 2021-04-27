@@ -1,5 +1,8 @@
 com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
+/* We don't serialise null values so the client can treat them as null or undefined as they see fit */
+mapper.setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL);
+
 /* Support PATCH requests using java.util.Optional */
 mapper.registerModule(new com.fasterxml.jackson.datatype.jdk8.Jdk8Module());
 
