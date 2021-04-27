@@ -3,9 +3,9 @@ package {{apiPackage}};
 public interface ApiProviders {
 
 	static java.util.List<?> defaultProviders() {
-		java.util.List<Object> result = new java.util.ArrayList<>();
-		result.add(new MyJacksonJaxbJsonProvider());
-		return result;
+		java.util.List<Object> providers = new java.util.ArrayList<>();
+		{{>frag/apiProviders}}
+		return providers;
 	}
 
 	class MyJacksonJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
@@ -15,7 +15,7 @@ public interface ApiProviders {
 
 			final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
-			{{>frag/apiProvidersBody}}
+			{{>frag/apiProvidersJsonProvider}}
 			
 			setMapper(mapper);
 		}
