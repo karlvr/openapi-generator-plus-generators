@@ -10,9 +10,9 @@
     "watch": "lerna run --parallel watch"
   },
   "devDependencies": {
-    "@openapi-generator-plus/core": "^0.26.0",
-    "@openapi-generator-plus/testing": "^0.26.0",
-    "@openapi-generator-plus/types": "^0.26.0",
+    "@openapi-generator-plus/core": "^0.27.0",
+    "@openapi-generator-plus/testing": "^0.27.0",
+    "@openapi-generator-plus/types": "^0.27.0",
     "@types/jest": "^26.0.15",
     "@types/less": "^3.0.1",
     "@types/lodash": "^4.14.165",
