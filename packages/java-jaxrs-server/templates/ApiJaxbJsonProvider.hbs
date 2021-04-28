@@ -3,15 +3,15 @@ package {{apiProviderPackage}};
 /**
  * A simple wrapper around {@link com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider}.
  * This declares more specific {@code @Produces} and {@code Consumes} so as to survive the
- * provider sorting changes in CXF 3.1.2 {@link http://cxf.apache.org/docs/jax-rs.html#JAX-RS-CXF3.1.2ProviderSortingChanges}.
+ * provider sorting changes in CXF 3.1.2 http://cxf.apache.org/docs/jax-rs.html#JAX-RS-CXF3.1.2ProviderSortingChanges
  */
 @javax.ws.rs.Produces({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
 @javax.ws.rs.Consumes({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
 @javax.ws.rs.ext.Provider
 {{>hooks/jaxbJsonProviderAnnotations}}
-public class MyJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
+public class ApiJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
 
-	public MyJaxbJsonProvider() {
+	public ApiJaxbJsonProvider() {
 		super();
 
 		{{>frag/jaxbJsonProviderBody}}
