@@ -9,6 +9,7 @@ package {{apiProviderPackage}};
 @javax.ws.rs.Consumes({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
 @javax.ws.rs.ext.Provider
 {{>hooks/jaxbJsonProviderAnnotations}}
+{{>generatedAnnotation}}
 public class ApiJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
 
 	public ApiJaxbJsonProvider() {
