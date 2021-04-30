@@ -156,6 +156,13 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			switch (type) {
 				case 'integer': {
+					if (typeof value === 'string') {
+						const parsedValue = parseInt(value)
+						if (isNaN(parsedValue)) {
+							throw new Error(`toLiteral with type integer called with non-number: ${typeof value} (${value})`)
+						}
+						value = parsedValue
+					}
 					if (typeof value !== 'number') {
 						throw new Error(`toLiteral with type integer called with non-number: ${typeof value} (${value})`)
 					}
@@ -169,6 +176,13 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 				}
 				case 'number': {
+					if (typeof value === 'string') {
+						const parsedValue = parseFloat(value)
+						if (isNaN(parsedValue)) {
+							throw new Error(`toLiteral with type number called with non-number: ${typeof value} (${value})`)
+						}
+						value = parsedValue
+					}
 					if (typeof value !== 'number') {
 						throw new Error(`toLiteral with type number called with non-number: ${typeof value} (${value})`)
 					}
@@ -203,6 +217,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 				}
 				case 'boolean':
+					if (typeof value === 'string') {
+						value = value.toLowerCase() === 'true'
+					}
+					if (typeof value === 'number') {
+						value = value !== 0
+					}
 					if (typeof value !== 'boolean') {
 						throw new Error(`toLiteral with type boolean called with non-boolean: ${typeof value} (${value})`)
 					}
