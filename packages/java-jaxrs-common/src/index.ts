@@ -15,6 +15,7 @@ function escapeString(value: string) {
 
 	value = value.replace(/\\/g, '\\\\')
 	value = value.replace(/"/g, '\\"')
+	value = value.replace(/\r/g, '\\r')
 	value = value.replace(/\n/g, '\\n')
 	return value
 }
