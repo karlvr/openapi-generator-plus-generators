@@ -59,6 +59,9 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
  * Returns the {{identifier name}}, or if it's {@code null} it first creates a new object,
  * sets the property to the new object, and then returns it.
  */
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
 public {{{nativeType}}} {{identifier name}}() {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
@@ -95,6 +98,9 @@ public void set{{capitalize (identifier name)}}({{>frag/pojoPropertyType}} {{ide
 	this.{{identifier name}} = {{identifier name}};
 }
 {{#if (isArray)}}
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
 public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{component.nativeType}}} {{identifier (singular name)}}) {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
@@ -110,6 +116,9 @@ public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{c
 	return this;
 }
 {{#if (isObject component)}}
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
 public {{{component.nativeType}}} add{{capitalize (singular (identifier name))}}() {
 	{{{component.nativeType}}} {{identifier (singular name)}} = new {{{component.nativeType.concreteType}}}();
 	add{{capitalize (singular (identifier name))}}({{identifier (singular name)}});
