@@ -4,17 +4,17 @@ package {{apiPackage}};
  * The server returned a status code that is not documented in the API.
  */
 {{>generatedAnnotation}}
-public class UnexpectedResponseException extends java.lang.RuntimeException {
+public class UnexpectedResponseException extends {{apiPackage}}.UnexpectedApiException {
 
 	private static final long serialVersionUID = 1L;
 
 	private javax.ws.rs.core.Response response;
 	private javax.ws.rs.WebApplicationException webApplicationException;
 
-	public UnexpectedResponseException(javax.ws.rs.core.Response response, javax.ws.rs.WebApplicationException cause) {
-		super("Unexpected response status " + response.getStatus(), cause);
+	public UnexpectedResponseException(javax.ws.rs.core.Response response, javax.ws.rs.WebApplicationException exception) {
+		super("Unexpected response status " + response.getStatus());
 		this.response = response;
-		this.webApplicationException = cause;
+		this.webApplicationException = exception;
 	}
 
 	public javax.ws.rs.core.Response getResponse() {

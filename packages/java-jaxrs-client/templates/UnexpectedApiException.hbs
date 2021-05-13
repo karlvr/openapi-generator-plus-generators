@@ -1,0 +1,18 @@
+package {{apiPackage}};
+
+/**
+ * An unexpected exception occurred during API processing.
+ * Note that API exceptions do not use any JAX-RS exceptions as causes
+ * as that can trigger a JAX-RS-aware server to use the responses in those
+ * exceptions as the server's response.
+ */
+{{>generatedAnnotation}}
+public class UnexpectedApiException extends java.lang.RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+
+	public UnexpectedApiException(java.lang.String message) {
+		super(message);
+	}
+
+}

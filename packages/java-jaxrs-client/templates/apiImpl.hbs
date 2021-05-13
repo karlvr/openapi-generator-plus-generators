@@ -45,6 +45,14 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 			throw new {{@root/apiPackage}}.UnexpectedResponseException(__e.getResponse(), __e);
 		} catch (javax.ws.rs.client.ResponseProcessingException __e) {
 			throw new {{@root/apiPackage}}.UnprocessableResponseException(__e.getResponse(), __e);
+		} catch (javax.ws.rs.ProcessingException __e) {
+			throw new {{@root/apiPackage}}.UnexpectedApiException(
+				__e.getMessage() != null
+					? __e.getMessage()
+					: __e.getCause() != null && __e.getCause().getMessage() != null
+						? __e.getCause().getMessage()
+						: __e.toString()
+			);
 		}
 	}
 	
