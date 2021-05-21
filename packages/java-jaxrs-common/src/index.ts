@@ -205,7 +205,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (format === 'byte') {
 						return !primitive ? `java.lang.Byte.valueOf(${value}b)` : `${value}b`
 					} else if (format === 'binary') {
-						throw new Error(`Cannot format literal for type ${type} format ${format}`)
+						return `"${escapeString(value)}".getBytes(java.nio.charset.StandardCharsets.UTF_8)`
 					} else if (format === 'date') {
 						return `${generatorOptions.dateImplementation}.parse("${value}")`
 					} else if (format === 'time') {
@@ -285,7 +285,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 							serializedType: 'java.lang.String',
 						})
 					} else if (format === 'binary') {
-						return new context.NativeType('java.lang.String')
+						return new context.NativeType('byte[]')
 					} else if (format === 'date') {
 						return new context.NativeType(generatorOptions.dateImplementation, {
 							serializedType: 'java.lang.String',
