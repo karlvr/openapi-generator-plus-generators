@@ -495,9 +495,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		if (vendorExtensions && vendorExtensions[extensionName]) {
-			return options.fn(this)
+			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
-			return options.inverse(this)
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
 	/** A custom helper to check for examples by name */
@@ -514,9 +514,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		if (examples && examples[exampleName]) {
-			return options.fn(this)
+			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
-			return options.inverse(this)
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
 
@@ -536,9 +536,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		if (a == b) {
-			return options.fn(this)
+			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
-			return options.inverse(this)
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
 	hbs.registerHelper('ifneq', function(this: UnknownObject, a: unknown, b: unknown) {
@@ -556,9 +556,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		if (a != b) {
-			return options.fn(this)
+			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
-			return options.inverse(this)
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
 	
@@ -570,9 +570,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		if (value !== undefined) {
-			return options.fn(this)
+			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
-			return options.inverse(this)
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
 	
@@ -584,9 +584,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		if (value === undefined) {
-			return options.fn(this)
+			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
-			return options.inverse(this)
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
 
@@ -602,11 +602,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			}
 
 			if (value) {
-				return options.fn(this)
+				return typeof options.fn === 'function' ? options.fn(this) : true
 			}
 		}
 
-		return options.inverse(this)
+		return typeof options.inverse === 'function' ? options.inverse(this) : false
 	})
 	hbs.registerHelper('and', function(this: UnknownObject) {
 		// eslint-disable-next-line prefer-rest-params
@@ -620,11 +620,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			}
 
 			if (!value) {
-				return options.inverse(this)
+				return typeof options.inverse === 'function' ? options.inverse(this) : false
 			}
 		}
 
-		return options.fn(this)
+		return typeof options.fn === 'function' ? options.fn(this) : true
 	})
 	hbs.registerHelper('not', function(this: UnknownObject, value: unknown) {
 		// eslint-disable-next-line prefer-rest-params
@@ -656,9 +656,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		if (haystack && haystack.indexOf(needle) !== -1) {
-			return options.fn(this)
+			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
-			return options.inverse(this)
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
 
