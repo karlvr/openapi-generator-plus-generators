@@ -21,10 +21,37 @@ public {{className name}}ApiImpl({{@root.apiSpecPackage}}.{{className name}}ApiS
 	this.client = client;
 }
 
-@java.lang.Override
-public void authorize(java.lang.String headerValue) {
-	client.authorization(headerValue);
+{{#each @root/securitySchemes}}
+{{#ifeq type 'apiKey'}}
+public void authorize(java.lang.String apiKeyValue) {
+{{#ifeq in 'header'}}
+	client.header({{{stringLiteral paramName}}}, apiKeyValue);
+{{else ifeq in 'cookie'}}
+	client.cookie(new javax.ws.rs.core.Cookie({{{stringLiteral paramName}}}, apiKeyValue));
+{{else ifeq in 'query'}}
+	client.query({{{stringLiteral paramName}}}, apiKeyValue);
+{{/ifeq}}
 }
+{{/ifeq}}
+{{#ifeq type 'http'}}
+{{#ifeq scheme 'basic'}}
+public void authorize(java.lang.String username, java.lang.String password) {
+	client.authorization("Basic " + java.util.Base64.getEncoder().encodeToString((username + ":" + password).getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+}
+{{else}}
+@java.lang.Override
+public void authorize(java.lang.String value) {
+	client.authorization({{{stringLiteral (concat (capitalize scheme) ' ')}}} + value);
+}
+{{/ifeq}}
+{{/ifeq}}
+{{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
+@java.lang.Override
+public void authorize(java.lang.String bearerToken) {
+	client.authorization("Bearer " + bearerToken);
+}
+{{/or}}
+{{/each}}
 
 @java.lang.Override
 public org.apache.cxf.jaxrs.client.Client client() {

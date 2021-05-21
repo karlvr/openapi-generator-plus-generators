@@ -1,0 +1,42 @@
+openapi: '3.0.3'
+info:
+  title: Test APIKey
+  version: '1.0'
+paths:
+  /test1:
+    get:
+      parameters:
+        - name: a
+          in: query
+          schema:
+            type: string
+      security:
+        - authByHttp: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Test1'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        423:
+          description: No response
+components:
+  securitySchemes:
+    authByHttp:
+      type: http
+      scheme: bearer
+  schemas:
+    Test1:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: integer

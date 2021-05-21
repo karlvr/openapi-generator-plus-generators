@@ -1,0 +1,56 @@
+swagger: '2.0'
+info:
+  title: Test
+  version: '1.0'
+paths:
+  /test1:
+    get:
+      parameters:
+        - name: a
+          type: string
+          in: query
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Test1'
+        400:
+          description: Bad request
+          schema:
+            type: string
+        423:
+          description: No response
+      security:
+        - myBasicAuth: []
+  /test2:
+    post:
+      parameters:
+        - name: a
+          in: body
+          schema:
+            type: object
+            properties:
+              b:
+                type: string
+      consumes:
+        - application/json
+      responses:
+        201:
+          description: Created
+      security:
+        - myBasicAuth: []
+      
+securityDefinitions:
+  myBasicAuth:
+    type: basic
+definitions:
+  Test1:
+    type: object
+    properties:
+      name:
+        type: string
+      size:
+        type: integer
+

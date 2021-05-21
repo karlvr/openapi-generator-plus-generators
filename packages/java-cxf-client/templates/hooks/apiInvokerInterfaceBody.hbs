@@ -3,6 +3,34 @@ The body of the API group invoker interface.
 
 @param . the api operation group
 --}}
-void authorize(java.lang.String headerValue);
+{{#if securitySchemes}}
+{{#each securitySchemes}}
+{{#ifeq type 'apiKey'}}
+/**
+ * Authorize requests using an API key.
+ */
+void authorize(java.lang.String apiKeyValue);
+{{/ifeq}}
+{{#ifeq type 'http'}}
+{{#ifeq scheme 'basic'}}
+/**
+ * Authorize requests using HTTP Basic authorization.
+ */
+void authorize(java.lang.String username, java.lang.String password);
+{{else}}
+/**
+ * Authorize requests using {{scheme}} authorization.
+ */
+void authorize(java.lang.String value);
+{{/ifeq}}
+{{/ifeq}}
+{{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
+/**
+ * Authorize requets using an OAuth2 Bearer token value.
+ */
+void authorize(java.lang.String bearerToken);
+{{/or}}
+{{/each}}
+{{/if}}
 org.apache.cxf.jaxrs.client.Client client();
 

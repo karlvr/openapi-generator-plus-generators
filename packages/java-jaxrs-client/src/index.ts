@@ -62,14 +62,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				continue
 			}
 			await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
-				{ ...rootContext, ...group, operations }, true, hbs)
+				{ ...rootContext, ...doc, ...group, operations }, true, hbs)
 		}
 
 		await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
 			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : null,
 		}, true, hbs)
 		await emit('ApiInvoker', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), 
-			{ ...rootContext }, true, hbs)
+			{ ...rootContext, ...doc }, true, hbs)
 
 		await emit('ApiProviders', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
 			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
