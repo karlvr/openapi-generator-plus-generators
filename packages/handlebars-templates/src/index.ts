@@ -87,7 +87,10 @@ export async function emit(templateName: string, outputPath: string, context: Un
 			allowProtoPropertiesByDefault: true,
 		})
 	} catch (error) {
-		throw new Error(`Failed to generate template "${templateName}": ${error.message}`)
+		const newError = new Error(`Failed to generate template "${templateName}": ${error.message}`)
+		/* Use the original stack so we can see where we failed */
+		newError.stack = error.stack
+		throw newError
 	}
 
 	if (outputPath === '-') {
