@@ -6,9 +6,20 @@ public class {{className name}}ApiTest {
 
 	{{>util/inject interface=(concat apiPackage '.' (className name) 'Api') class=(concat apiImplPackage '.' (className name) 'ApiImpl') name='api'}}
 
+{{#each operations}}
 	@Test
-	public void test() throws Exception {
-		
+	public void {{identifier name}}Test() throws java.lang.Exception {
+		{{#each parameters}}
+		{{nativeType}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
+		{{/each}}
+		{{#if requestBody}}
+		{{#with requestBody}}
+		{{nativeType}} __request = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
+		{{/with}}
+		{{/if}}
+
+		api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}__request{{/if}});
 	}
 
+{{/each}}
 }

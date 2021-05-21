@@ -77,10 +77,15 @@ public class {{className name}}ApiTest {
 	@Test
 	public void {{identifier name}}Test() {
 		{{#each parameters}}
-		{{nativeType}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{examples.default.valueLiteral}}{{else}}{{undefinedValueLiteral .}}{{/ifeg}};
+		{{nativeType}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
 		{{/each}}
+		{{#if requestBody}}
+		{{#with requestBody}}
+		{{nativeType}} __request = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
+		{{/with}}
+		{{/if}}
 
-		Response response = this.api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});
+		Response response = this.api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}__request{{/if}});
 		assertNotNull(response);
 		{{#if returnNativeType}}
 		{{returnNativeType}} result = response.readEntity({{returnNativeType.literalType}}.class);
