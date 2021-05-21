@@ -231,9 +231,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					return `${value}`
 				}
 				case 'string': {
-					if (format === 'binary') {
-						throw new Error(`Cannot format literal for type ${type} format ${format}`)
-					} else if (format === 'date') {
+					if (format === 'date') {
 						switch (generatorOptions.dateApproach) {
 							case DateApproach.Native:
 							case DateApproach.String:
