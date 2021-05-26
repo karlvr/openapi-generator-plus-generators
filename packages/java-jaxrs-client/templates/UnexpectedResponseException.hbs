@@ -25,4 +25,8 @@ public class UnexpectedResponseException extends {{apiPackage}}.UnexpectedApiExc
 		return webApplicationException;
 	}
 
+	public int getStatus() {
+		return response.getStatus();
+	}
+
 }
