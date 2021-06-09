@@ -128,6 +128,10 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{/ifeq}}
 {{else if (isDate)}}
 				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
+{{else if (isArray)}}
+				if ({{identifier name}}.length > 0) {
+					localVarQueryParameter.append('{{name}}', {{identifier name}}.join(','));
+				}
 {{else}}
 				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
 {{/if}}
