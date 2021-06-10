@@ -34,3 +34,13 @@ void authorize(java.lang.String bearerToken);
 {{/if}}
 org.apache.cxf.jaxrs.client.Client client();
 
+/**
+ * Returns the timeout on API requests in milliseconds.
+ */
+long getReceiveTimeout();
+
+/**
+ * Set the timeout on API requests in milliseconds.
+ */
+void setReceiveTimeout(long receiveTimeout);
+

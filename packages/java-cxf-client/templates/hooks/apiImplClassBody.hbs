@@ -58,3 +58,12 @@ public org.apache.cxf.jaxrs.client.Client client() {
 	return client;
 }
 
+@java.lang.Override
+public long getReceiveTimeout() {
+	return org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().getReceiveTimeout();
+}
+
+public void setReceiveTimeout(long receiveTimeout) {
+	org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().setReceiveTimeout(receiveTimeout);
+}
+
