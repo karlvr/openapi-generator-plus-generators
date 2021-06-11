@@ -1,9 +1,47 @@
 {{>nestedModels}}
-{{#if properties}}
+{{#if additionalProperties}}
+private {{{additionalProperties.nativeType}}} additionalProperties = new {{{additionalProperties.nativeType.concreteType}}}();
+{{/if}}
 {{#each properties}}
 private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{{initialValue.literalValue}}}{{/if}};
 {{/each}}
 
+{{#if additionalProperties}}
+@com.fasterxml.jackson.annotation.JsonAnyGetter
+public {{{additionalProperties.nativeType}}} getAdditionalProperties() {
+	return additionalProperties;
+}
+
+public {{{additionalProperties.component.nativeType}}} getAdditionalProperty(java.lang.String name) {
+	if (additionalProperties != null) {
+		return additionalProperties.get(name);
+	} else {
+		return null;
+	}
+}
+
+@com.fasterxml.jackson.annotation.JsonAnySetter
+public void putAdditionalProperty(java.lang.String name, {{{additionalProperties.component.nativeType}}} value) {
+	additionalProperties().put(name, value);
+}
+
+public void setAdditionalProperties({{{additionalProperties.nativeType}}} additionalProperties) {
+	this.additionalProperties = additionalProperties;
+}
+
+public {{{additionalProperties.nativeType}}} additionalProperties() {
+	if (additionalProperties == null) {
+		additionalProperties = new {{{additionalProperties.nativeType.concreteType}}}();
+	}
+	return additionalProperties;
+}
+
+public {{{className name}}} additionalProperties({{{additionalProperties.nativeType}}} additionalProperties) {
+	setAdditionalProperties(additionalProperties);
+	return this;
+}
+
+{{/if}}
 {{#each (inheritedProperties)}}
 /**
  {{#if description}}
@@ -128,7 +166,6 @@ public {{{component.nativeType}}} add{{capitalize (singular (identifier name))}}
 {{/if}}
 
 {{/each}}
-{{/if}}
 @Override
 public boolean equals(java.lang.Object o) {
 	if (this == o) {
