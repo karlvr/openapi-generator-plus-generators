@@ -20,6 +20,10 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	{{model.discriminator.name}}: {{{value}}}
 
 {{/each}}
+{{#if additionalProperties}}
+	[key: string]: {{{additionalProperties.component.nativeType}}}
+
+{{/if}}
 {{#if component}}
 	[key: string]: {{{component.nativeType}}}
 
