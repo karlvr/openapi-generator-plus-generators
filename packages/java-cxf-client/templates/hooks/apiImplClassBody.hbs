@@ -67,3 +67,12 @@ public void setReceiveTimeout(long receiveTimeout) {
 	org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().setReceiveTimeout(receiveTimeout);
 }
 
+@java.lang.Override
+public long getConnectionTimeout() {
+	return org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().getConnectionTimeout();
+}
+
+public void setConnectionTimeout(long connectionTimeout) {
+	org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().setConnectionTimeout(connectionTimeout);
+}
+
