@@ -1,5 +1,22 @@
 private org.apache.cxf.jaxrs.client.Client client;
 
+{{#each @root/securitySchemes}}
+{{#ifeq type 'apiKey'}}
+private java.lang.String authorization;
+{{/ifeq}}
+{{#ifeq type 'http'}}
+{{#ifeq scheme 'basic'}}
+private java.lang.String username;
+private java.lang.String password;
+{{else}}
+private java.lang.String authorization;
+{{/ifeq}}
+{{/ifeq}}
+{{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
+private java.lang.String authorization;
+{{/or}}
+{{/each}}
+
 public {{className name}}ApiImpl() {
 	this({{apiPackage}}.ApiConstants.DEFAULT_SERVER, {{apiPackage}}.ApiProviders.defaultProviders());
 }
@@ -24,6 +41,7 @@ public {{className name}}ApiImpl({{@root.apiSpecPackage}}.{{className name}}ApiS
 {{#each @root/securitySchemes}}
 {{#ifeq type 'apiKey'}}
 public void authorize(java.lang.String apiKeyValue) {
+	this.authorization = apiKeyValue;
 {{#ifeq in 'header'}}
 	client.header({{{stringLiteral paramName}}}, apiKeyValue);
 {{else ifeq in 'cookie'}}
@@ -32,23 +50,52 @@ public void authorize(java.lang.String apiKeyValue) {
 	client.query({{{stringLiteral paramName}}}, apiKeyValue);
 {{/ifeq}}
 }
+
+@java.lang.Override
+public java.lang.String getAuthorization() {
+	return authorization;
+}
 {{/ifeq}}
 {{#ifeq type 'http'}}
 {{#ifeq scheme 'basic'}}
 public void authorize(java.lang.String username, java.lang.String password) {
+	this.username = username;
+	this.password = password;
 	client.authorization("Basic " + java.util.Base64.getEncoder().encodeToString((username + ":" + password).getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+}
+
+@java.lang.Override
+public java.lang.String getAuthorizationUsername() {
+	return username;
+}
+
+@java.lang.Override
+public java.lang.String getAuthorizationPassword() {
+	return password;
 }
 {{else}}
 @java.lang.Override
 public void authorize(java.lang.String value) {
+	this.authorization = value;
 	client.authorization({{{stringLiteral (concat (capitalize scheme) ' ')}}} + value);
+}
+
+@java.lang.Override
+public java.lang.String getAuthorization() {
+	return authorization;
 }
 {{/ifeq}}
 {{/ifeq}}
 {{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
 @java.lang.Override
 public void authorize(java.lang.String bearerToken) {
+	this.authorization = bearerToken;
 	client.authorization("Bearer " + bearerToken);
+}
+
+@java.lang.Override
+public java.lang.String getAuthorization() {
+	return authorization;
 }
 {{/or}}
 {{/each}}

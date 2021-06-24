@@ -10,6 +10,11 @@ The body of the API group invoker interface.
  * Authorize requests using an API key.
  */
 void authorize(java.lang.String apiKeyValue);
+
+/**
+ * Returns the API key used to authorize requests.
+ */
+java.lang.String getAuthorization();
 {{/ifeq}}
 {{#ifeq type 'http'}}
 {{#ifeq scheme 'basic'}}
@@ -17,18 +22,38 @@ void authorize(java.lang.String apiKeyValue);
  * Authorize requests using HTTP Basic authorization.
  */
 void authorize(java.lang.String username, java.lang.String password);
+
+/**
+ * Returns the username used to authorize requests.
+ */
+java.lang.String getAuthorizationUsername();
+
+/**
+ * Returns the password used to authorize requests.
+ */
+java.lang.String getAuthorizationPassword();
 {{else}}
 /**
  * Authorize requests using {{scheme}} authorization.
  */
 void authorize(java.lang.String value);
+
+/**
+ * Returns the value used to authorize requests.
+ */
+java.lang.String getAuthorization();
 {{/ifeq}}
 {{/ifeq}}
 {{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
 /**
- * Authorize requets using an OAuth2 Bearer token value.
+ * Authorize requests using an OAuth2 Bearer token value.
  */
 void authorize(java.lang.String bearerToken);
+
+/**
+ * Returns the OAuth2 Bearer token value used to authorize requests.
+ */
+java.lang.String getAuthorization();
 {{/or}}
 {{/each}}
 {{/if}}
