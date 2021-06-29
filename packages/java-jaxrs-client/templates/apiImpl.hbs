@@ -46,6 +46,9 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		} catch (javax.ws.rs.client.ResponseProcessingException __e) {
 			throw new {{@root/apiPackage}}.UnprocessableResponseException(__e.getResponse(), __e);
 		} catch (javax.ws.rs.ProcessingException __e) {
+			if (__e.getCause() instanceof java.net.SocketTimeoutException) {
+				throw new {{@root/apiPackage}}.UnexpectedTimeoutException((java.net.SocketTimeoutException) __e.getCause());
+			}
 			throw new {{@root/apiPackage}}.UnexpectedApiException(
 				__e.getMessage() != null
 					? __e.getMessage()

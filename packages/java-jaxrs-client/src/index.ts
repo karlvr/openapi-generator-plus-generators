@@ -96,6 +96,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		await emit('UnprocessableResponseException', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'UnprocessableResponseException.java'), {
 			...rootContext,
 		}, true, hbs)
+		await emit('UnexpectedTimeoutException', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'UnexpectedTimeoutException.java'), {
+			...rootContext,
+		}, true, hbs)
 
 		const apiSpiPackagePath = packageToPath(generatorOptions.apiSpiPackage)
 		await emit('spi/ApiAuthorizationProvider', path.join(outputPath, relativeSourceOutputPath, apiSpiPackagePath, 'ApiAuthorizationProvider.java'), {
