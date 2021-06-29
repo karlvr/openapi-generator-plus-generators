@@ -3,4 +3,6 @@ import { CodegenOptionsJava as CommonCodegenOptions } from '@openapi-generator-p
 export interface CodegenOptionsJavaClient extends CommonCodegenOptions {
 	apiSpecPackage: string
 	apiSpiPackage: string
+	connectionTimeoutMillis: number
+	receiveTimeoutMillis: number
 }

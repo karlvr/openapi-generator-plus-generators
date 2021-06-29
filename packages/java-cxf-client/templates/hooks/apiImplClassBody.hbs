@@ -36,6 +36,9 @@ public {{className name}}ApiImpl({{@root.apiSpecPackage}}.{{className name}}ApiS
 public {{className name}}ApiImpl({{@root.apiSpecPackage}}.{{className name}}ApiSpec api, org.apache.cxf.jaxrs.client.Client client) {
 	this.api = api;
 	this.client = client;
+
+	setConnectionTimeout({{apiPackage}}.ApiConstants.DEFAULT_CONNECTION_TIMEOUT_MILLIS);
+	setReceiveTimeout({{apiPackage}}.ApiConstants.DEFAULT_RECEIVE_TIMEOUT_MILLIS);
 }
 
 {{#each @root/securitySchemes}}
@@ -106,20 +109,20 @@ public org.apache.cxf.jaxrs.client.Client client() {
 }
 
 @java.lang.Override
-public long getReceiveTimeout() {
-	return org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().getReceiveTimeout();
-}
-
-public void setReceiveTimeout(long receiveTimeout) {
-	org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().setReceiveTimeout(receiveTimeout);
-}
-
-@java.lang.Override
 public long getConnectionTimeout() {
 	return org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().getConnectionTimeout();
 }
 
 public void setConnectionTimeout(long connectionTimeout) {
 	org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().setConnectionTimeout(connectionTimeout);
+}
+
+@java.lang.Override
+public long getReceiveTimeout() {
+	return org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().getReceiveTimeout();
+}
+
+public void setReceiveTimeout(long receiveTimeout) {
+	org.apache.cxf.jaxrs.client.WebClient.getConfig(client).getHttpConduit().getClient().setReceiveTimeout(receiveTimeout);
 }
 

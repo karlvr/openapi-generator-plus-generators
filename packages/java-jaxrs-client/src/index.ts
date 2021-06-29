@@ -12,6 +12,8 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		...parentOptions,
 		apiSpecPackage: config.apiSpecPackage || `${parentOptions.apiPackage}.spec`,
 		apiSpiPackage: config.apiSpiPackage || `${parentOptions.apiPackage}.spi`,
+		connectionTimeoutMillis: config.connectionTimeoutMillis || 30000,
+		receiveTimeoutMillis: config.receiveTimeoutMillis || 0,
 	}
 	return generatorOptions
 }

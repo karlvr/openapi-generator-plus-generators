@@ -39,6 +39,13 @@ The available config file properties are:
 |`dateTimeImplementation`|`string`|Date time type class.|`"java.time.OffsetDateTime"`|
 |`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"`|The style to use for constant naming.|`"allCapsSnake"`|
 
+### Behaviour
+
+|Property|Type|Description|Default|
+|--------|----|-----------|-------|
+|`connectionTimeoutMillis`|`number`|The number of milliseconds to wait to connect to the API server before timing out. `0` means no timeout.|`30000`|
+|`receiveTimeoutMillis`|`number`|The number of milliseconds to wait for a response the API server before timing out. `0` means no timeout.|`0`|
+
 ### Packaging
 
 |Property|Type|Description|Default|
