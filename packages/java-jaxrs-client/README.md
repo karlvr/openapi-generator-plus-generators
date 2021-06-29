@@ -44,7 +44,7 @@ The available config file properties are:
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`connectionTimeoutMillis`|`number`|The number of milliseconds to wait to connect to the API server before timing out. `0` means no timeout.|`30000`|
-|`receiveTimeoutMillis`|`number`|The number of milliseconds to wait for a response the API server before timing out. `0` means no timeout.|`0`|
+|`receiveTimeoutMillis`|`number`|The number of milliseconds to wait for a response the API server before timing out. `0` means no timeout.|`60000`|
 
 ### Packaging
 

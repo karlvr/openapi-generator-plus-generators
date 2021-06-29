@@ -13,7 +13,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		apiSpecPackage: config.apiSpecPackage || `${parentOptions.apiPackage}.spec`,
 		apiSpiPackage: config.apiSpiPackage || `${parentOptions.apiPackage}.spi`,
 		connectionTimeoutMillis: config.connectionTimeoutMillis || 30000,
-		receiveTimeoutMillis: config.receiveTimeoutMillis || 0,
+		receiveTimeoutMillis: config.receiveTimeoutMillis || 60000,
 	}
 	return generatorOptions
 }
