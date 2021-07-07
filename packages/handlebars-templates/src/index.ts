@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, stringify } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -835,6 +835,22 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			return idx.allValues(this.responses).filter(response => !response.isDefault)
 		} else {
 			return []
+		}
+	})
+
+	hbs.registerHelper('responseContentAndNone', function(this: CodegenResponse): { content: CodegenContent | null }[] {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 1) {
+			throw new Error(`nonDefaultResponsesContent helper must be called with no arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (this.contents) {
+			return this.contents.map(content => ({ content }))
+		} else {
+			return [{
+				content: null,
+			}]
 		}
 	})
 

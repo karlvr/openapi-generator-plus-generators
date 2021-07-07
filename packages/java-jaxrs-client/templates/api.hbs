@@ -22,36 +22,38 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 	{{#if deprecated}}
 	@java.lang.Deprecated
 	{{/if}}
-	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{{className ../name}}}{{{code}}}Exception{{/each}};
+	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}};
 	{{/each}}
 
 	{{#each operations}}
 	{{#each (nonDefaultResponses)}}
+	{{#each (responseContentAndNone)}}
 	/**
-	 * {{{md description}}}
+	 * {{{md ../description}}}
 	 */
-	class {{{className ../name}}}{{{code}}}Exception extends java.lang.Exception {
+	class {{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception extends java.lang.Exception {
 
 		private static final long serialVersionUID = 1L;
 		
-		{{#unless defaultContent.nativeType}}
-		public {{{className ../name}}}{{{code}}}Exception() {
+		{{#unless content.nativeType}}
+		public {{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception() {
 			
 		}
 		{{else}}
-		private {{{defaultContent.nativeType}}} entity;
+		private {{{content.nativeType}}} entity;
 		
-		public {{{className ../name}}}{{{code}}}Exception({{{defaultContent.nativeType}}} entity) {
+		public {{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception({{{content.nativeType}}} entity) {
 			this.entity = entity;
 		}
 		
-		public {{{defaultContent.nativeType}}} getEntity() {
+		public {{{content.nativeType}}} getEntity() {
 			return this.entity;
 		}
 		{{/unless}}
 
 	}
 
+	{{/each}}
 	{{/each}}
 	{{/each}}
 }
