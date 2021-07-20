@@ -197,9 +197,18 @@ public int hashCode() {
 public java.lang.String toString() {
 	java.lang.StringBuilder sb = new java.lang.StringBuilder();
 	sb.append("class {{className name}} {\n");
-	{{#if parentNativeType}}sb.append("    ").append(toIndentedString(super.toString())).append("\n");{{/if}}
-	{{#each properties}}sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
-	{{/each}}sb.append("}");
+	{{#if parentNativeType}}
+	sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+	{{/if}}
+	{{#each properties}}
+	sb.append("    {{identifier name}}: ").append(toIndentedString(this.{{identifier name}})).append("\n");
+	{{/each}}
+	{{#if additionalProperties}}
+	for (java.lang.String key : additionalProperties.keySet()) {
+		sb.append("    ").append(key).append(": ").append(toIndentedString(getAdditionalProperty(key))).append("\n");
+	}
+	{{/if}}
+	sb.append("}");
 	return sb.toString();
 }
 
