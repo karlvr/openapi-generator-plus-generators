@@ -208,11 +208,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					} else if (format === 'binary') {
 						return `"${escapeString(value)}".getBytes(java.nio.charset.StandardCharsets.UTF_8)`
 					} else if (format === 'date') {
-						return `${generatorOptions.dateImplementation}.parse("${value}")`
+						return `${generatorOptions.dateImplementation}.parse("${escapeString(value)}")`
 					} else if (format === 'time') {
-						return `${generatorOptions.timeImplementation}.parse("${value}")`
+						return `${generatorOptions.timeImplementation}.parse("${escapeString(value)}")`
 					} else if (format === 'date-time') {
-						return `${generatorOptions.dateTimeImplementation}.parse("${value}")`
+						return `${generatorOptions.dateTimeImplementation}.parse("${escapeString(value)}")`
 					} else {
 						return `"${escapeString(value)}"`
 					}
