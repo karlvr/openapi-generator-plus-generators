@@ -204,7 +204,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 
 					if (format === 'byte') {
-						return !primitive ? `java.lang.Byte.valueOf(${value}b)` : `${value}b`
+						return `"${escapeString(value)}"`
 					} else if (format === 'binary') {
 						return `"${escapeString(value)}".getBytes(java.nio.charset.StandardCharsets.UTF_8)`
 					} else if (format === 'date') {
@@ -281,10 +281,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 				case 'string': {
 					if (format === 'byte') {
-						return new context.NativeType('java.lang.Byte', {
-							componentType: new context.NativeType('java.lang.Byte'),
-							serializedType: 'java.lang.String',
-						})
+						/* base64 encoded characters */
+						return new context.NativeType('java.lang.String')
 					} else if (format === 'binary') {
 						return new context.NativeType('byte[]')
 					} else if (format === 'date') {
