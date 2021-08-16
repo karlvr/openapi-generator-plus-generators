@@ -9,13 +9,15 @@ import * as idx from '@openapi-generator-plus/indexed-type'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 
-function escapeString(value: string) {
-	if (typeof value !== 'string') {
-		throw new Error(`escapeString called with non-string: ${typeof value} (${value})`)
+function escapeString(value: string | number | boolean) {
+	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
+		throw new Error(`escapeString called with unsupported type: ${typeof value} (${value})`)
 	}
-	
+
+	value = String(value)
 	value = value.replace(/\\/g, '\\\\')
 	value = value.replace(/'/g, '\\\'')
+	value = value.replace(/\r/g, '\\r')
 	value = value.replace(/\n/g, '\\n')
 	return value
 }

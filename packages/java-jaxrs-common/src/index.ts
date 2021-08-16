@@ -8,11 +8,12 @@ import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 export { CodegenOptionsJava } from './types'
 
-function escapeString(value: string) {
-	if (typeof value !== 'string') {
-		throw new Error(`escapeString called with non-string: ${typeof value} (${value})`)
+function escapeString(value: string | number | boolean) {
+	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
+		throw new Error(`escapeString called with unsupported type: ${typeof value} (${value})`)
 	}
 
+	value = String(value)
 	value = value.replace(/\\/g, '\\\\')
 	value = value.replace(/"/g, '\\"')
 	value = value.replace(/\r/g, '\\r')
@@ -198,8 +199,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 				}
 				case 'string': {
-					if (typeof value !== 'string') {
-						throw new Error(`toLiteral with type string called with non-string: ${typeof value} (${value})`)
+					if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
+						throw new Error(`toLiteral with type string called with unsupported type: ${typeof value} (${value})`)
 					}
 
 					if (format === 'byte') {
