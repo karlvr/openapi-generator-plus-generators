@@ -10,11 +10,11 @@ public class {{className name}}ApiTest {
 	@Test
 	public void {{identifier name}}Test() throws java.lang.Exception {
 		{{#each parameters}}
-		{{nativeType}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
+		{{{nativeType}}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
 		{{/each}}
 		{{#if requestBody}}
 		{{#with requestBody}}
-		{{nativeType}} __request = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
+		{{{nativeType}}} __request = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral .}}}{{/ifeg}};
 		{{/with}}
 		{{/if}}
 
