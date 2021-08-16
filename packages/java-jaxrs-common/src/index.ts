@@ -213,6 +213,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						return `${generatorOptions.timeImplementation}.parse("${escapeString(value)}")`
 					} else if (format === 'date-time') {
 						return `${generatorOptions.dateTimeImplementation}.parse("${escapeString(value)}")`
+					} else if (format === 'uuid') {
+						return `java.util.UUID.fromString("${escapeString(value)}")`
 					} else {
 						return `"${escapeString(value)}"`
 					}
