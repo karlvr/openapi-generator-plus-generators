@@ -38,7 +38,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 				try {
 					{{#each contents}}
 					if (__e.getResponse().getMediaType().isCompatible(javax.ws.rs.core.MediaType.valueOf({{{stringLiteral mediaType.mediaType}}}))) {
-						throw new {{className ../../name}}{{../code}}{{#unless @first}}{{className mediaType.mediaType}}{{/unless}}Exception({{#if nativeType}}__e.getResponse().readEntity({{nativeType}}.class){{/if}});
+						throw new {{className ../../name}}{{../code}}{{#unless @first}}{{className mediaType.mediaType}}{{/unless}}Exception({{#if nativeType}}__e.getResponse().readEntity({{{nativeType.literalType}}}.class){{/if}});
 					}
 					{{/each}}
 
