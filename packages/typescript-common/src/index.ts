@@ -273,6 +273,14 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case 'object':
 				case 'file':
 					throw new Error(`Cannot format literal for type ${type}`)
+				case 'array': {
+					const arrayValue = Array.isArray(value) ? value : [value]
+					const component = options.component
+					if (!component) {
+						throw new Error(`toLiteral cannot format array literal without a component type: ${value}`)
+					}
+					return `[${arrayValue.map(v => context.generator().toLiteral(v, component)).join(', ')}]`
+				}
 			}
 
 			throw new Error(`Unsupported type name: ${type}`)
