@@ -78,6 +78,10 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			return result
 		},
 		toConstantName: (name) => {
+			if (!name) {
+				return context.generator().toConstantName('empty')
+			}
+
 			const constantStyle = generatorOptions.constantStyle
 			switch (constantStyle) {
 				case ConstantStyle.allCaps:
