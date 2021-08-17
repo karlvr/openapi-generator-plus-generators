@@ -6,7 +6,7 @@ const app = express()
 {{#each groups}}
 /* {{{name}}} */
 {{#each operations}}
-app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res, next) {
+app.{{lowerCase httpMethod}}('{{{expressPath fullPath}}}', function(req, res) {
 	{{#if defaultResponse}}
 	{{#hasExamples defaultResponse}}
 	const defaultResponses: { contentType: string, body: string }[] = []
@@ -46,5 +46,9 @@ const options = getopts(process.argv.slice(2), {
 const port = options.port || 3000
 const server = app.listen(port, function() {
 	const address = server.address()
-	console.log(`Listening on ${address.port}`)
+	if (typeof address === 'string') {
+		console.log(`Listening on ${address}`)
+	} else {
+		console.log(`Listening on ${address.port}`)
+	}
 })

@@ -18,21 +18,20 @@
 	"typings": "./dist/index.d.ts",
 	"scripts": {
 		"build": "tsc",
-		"prepare": "npm run build",
 		"start": "node dist/index"
 	},
 	"dependencies": {
 		"express": "^4",
-		"getopts": "^2.2.5"
+		"getopts": "^2"
 	},
 	"devDependencies": {
-		"@types/node": "^8.0.9",
+		"@types/node": "^14",
 		"@types/express": "^4",
-		"typescript": "^3"
-	{{#repository}}
+		"typescript": "^4"
+	{{#if repository}}
 	},
 	"publishConfig": {
 		"registry": "{{{repository}}}"
-	{{/repository}}
+	{{/if}}
 	}
 }
