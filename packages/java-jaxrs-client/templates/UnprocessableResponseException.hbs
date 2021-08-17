@@ -12,7 +12,8 @@ public class UnprocessableResponseException extends {{apiPackage}}.UnexpectedApi
 	private javax.ws.rs.ProcessingException processingException;
 
 	public UnprocessableResponseException(javax.ws.rs.core.Response response, javax.ws.rs.ProcessingException exception) {
-		super("Response processing failed for response status " + response.getStatus() + ": " + exception.getMessage());
+		super("Response processing failed for response status " + response.getStatus() + ": " + exception.getMessage() +
+			(exception.getCause() != null ? ": " + exception.getCause() : ""));
 		this.response = response;
 		this.processingException = exception;
 	}
