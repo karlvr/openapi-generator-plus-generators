@@ -92,14 +92,25 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
 			}
 			{{/if}}
-			{{#if scheme.isOAuth}}
-			// oauth required
-			if (configuration && configuration.accessToken) {
-				const localVarAccessTokenValue = typeof configuration.accessToken === 'function'
-					? configuration.accessToken("{{scheme.name}}", [{{#each scopes}}"{{{name}}}"{{#unless @last}}, {{/unless}}{{/each}}])
-					: configuration.accessToken;
-				if (localVarAccessTokenValue !== null) {
-					localVarHeaderParameter["Authorization"] = "Bearer " + localVarAccessTokenValue;
+			{{#or scheme.isOAuth scheme.isOpenIdConnect}}
+			// oauth or openIdConnect required
+			if (configuration && configuration.authorization) {
+				const localVarAuthorizationValue = typeof configuration.authorization === 'function'
+					? configuration.authorization("{{scheme.name}}", [{{#each scopes}}"{{{name}}}"{{#unless @last}}, {{/unless}}{{/each}}])
+					: configuration.authorization;
+				if (localVarAuthorizationValue !== null) {
+					localVarHeaderParameter["Authorization"] = "Bearer " + localVarAuthorizationValue;
+				}
+			}
+			{{/or}}
+			{{#if scheme.isHttp}}
+			// http authorization required
+			if (configuration && configuration.authorization) {
+				const localVarAuthorizationValue = typeof configuration.authorization === 'function'
+					? configuration.authorization("{{scheme.name}}")
+					: configuration.authorization;
+				if (localVarAuthorizationValue !== null) {
+					localVarHeaderParameter["Authorization"] = "{{capitalize scheme.scheme}} " + localVarAuthorizationValue;
 				}
 			}
 			{{/if}}
