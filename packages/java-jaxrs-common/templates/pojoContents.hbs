@@ -212,6 +212,7 @@ public java.lang.String toString() {
 	return sb.toString();
 }
 
+{{#or parentNativeType properties additionalProperties}}
 /**
  * Convert the given object to string with each line indented by 4 spaces
  * (except the first line).
@@ -222,4 +223,4 @@ private String toIndentedString(java.lang.Object o) {
 	}
 	return o.toString().replace("\n", "\n    ");
 }
-
+{{/or}}
