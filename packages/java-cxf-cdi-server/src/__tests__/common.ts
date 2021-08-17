@@ -17,13 +17,5 @@ export async function compile(basePath: string): Promise<void> {
 		cwd: basePath,
 		quiet: true,
 	})
-	await mvn.execute('compile')
-}
-
-export async function compileAndTest(basePath: string): Promise<void> {
-	const mvn = Maven.create({
-		cwd: basePath,
-		quiet: true,
-	})
 	await mvn.execute('test-compile')
 }
