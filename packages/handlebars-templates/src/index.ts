@@ -861,6 +861,28 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			return value
 		}
 	})
+
+	/**
+	 * Join the non-empty lines of the body of the block together with the given separator, and set into the named variable
+	 * in the current scope.
+	 */
+	hbs.registerHelper('join', function(this: UnknownObject, varName: string, separator: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3) {
+			throw new Error(`join helper must be called with 2 arguments @ ${sourcePosition(options)}`)
+		}
+		if (!varName) {
+			throw new Error(`join helper must be called with 2 arguments; missing or undefined first argument (varName) @ ${sourcePosition(options)}`)
+		}
+		if (typeof separator !== 'string') {
+			throw new Error(`join helper must be called with 2 arguments; missing or undefined second argument (separator) @ ${sourcePosition(options)}`)
+		}
+
+		const result = options.fn(this).split('\n').filter(s => s.trim().length > 0).join(separator)
+		this[varName] = result
+		return null
+	})
 }
 
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars): void
