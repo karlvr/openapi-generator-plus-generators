@@ -1,10 +1,10 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import { capitalize, commonGenerator } from '@openapi-generator-plus/generator-common'
 
 export { CodegenOptionsJava } from './types'
 
@@ -487,6 +487,20 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			const hbs = Handlebars.create()
 			
 			registerStandardHelpers(hbs, context)
+
+			hbs.registerHelper('getter', function(property: CodegenProperty) {
+				if (property.type === 'boolean' && property.required && !property.nullable) {
+					return `is${capitalize(context.generator().toIdentifier(property.name))}`
+				} else {
+					return `get${capitalize(context.generator().toIdentifier(property.name))}`
+				}
+			})
+			hbs.registerHelper('setter', function(property: CodegenProperty) {
+				return `set${capitalize(context.generator().toIdentifier(property.name))}`
+			})
+			hbs.registerHelper('escapeString', function(value: string) {
+				return escapeString(value)
+			})
 	
 			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 			if (context.loadAdditionalTemplates) {
