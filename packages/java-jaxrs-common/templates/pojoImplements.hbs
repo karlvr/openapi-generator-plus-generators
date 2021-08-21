@@ -8,6 +8,7 @@ java.io.Serializable
 {{#ifvex 'x-implements-interfaces'}}
 {{{vendorExtensions.x-implements-interfaces}}}
 {{/ifvex}}
+{{>hooks/pojoImplementsExtras}}
 {{/join}}
 {{#if _implements}}
 implements {{{_implements}}} {{/if}}
