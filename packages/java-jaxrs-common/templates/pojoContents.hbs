@@ -122,7 +122,7 @@ public {{{nativeType}}} {{identifier name}}() {
 {{{schema.vendorExtensions.x-extra-annotation}}}
 {{/if}}
 {{>hooks/pojoPropertyAnnotations}}
-@com.fasterxml.jackson.annotation.JsonProperty("{{name}}")
+@com.fasterxml.jackson.annotation.JsonProperty({{{stringLiteral serializedName}}})
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}
 {{/if}}
