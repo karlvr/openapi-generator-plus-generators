@@ -867,6 +867,24 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 	})
 
 	/**
+	 * Set the named variable in the current scope to the value in the body of the block.
+	 */
+	hbs.registerHelper('set', function(this: UnknownObject, varName: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`set helper must be called with 1 argument @ ${sourcePosition(options)}`)
+		}
+		if (!varName) {
+			throw new Error(`set helper must be called with 1 argument; missing or undefined first argument (varName) @ ${sourcePosition(options)}`)
+		}
+
+		const result = options.fn(this).trim()
+		this[varName] = result
+		return null
+	})
+
+	/**
 	 * Join the non-empty lines of the body of the block together with the given separator, and set into the named variable
 	 * in the current scope.
 	 */
