@@ -16,21 +16,55 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		if (authorizationProvider != null) {
 			authorizationProvider.authorize(this);
 		}
+
 		{{/if}}
+		{{#set '__requestBodyVar'}}
+		{{/set}}
+		{{#ifeq requestBody.defaultContent.encoding.type 'MULTIPART'}}
+		{{#set '__requestBodyVar'}}
+		__multipartBody
+		{{/set}}
+		java.util.ArrayList<org.apache.cxf.jaxrs.ext.multipart.Attachment> __multipartBodyParts = new java.util.ArrayList<>();
+		{{#each requestBody.defaultContent.encoding.properties}}
+		if ({{identifier ../requestBody.name}}.{{getter property}}() != null) {
+			{{#if filenameProperty}}
+			java.lang.String __filename = {{identifier ../requestBody.name}}.{{getter property}}().{{getter filenameProperty}}();
+			{{/if}}
+			__multipartBodyParts.add(new org.apache.cxf.jaxrs.ext.multipart.AttachmentBuilder()
+				.object({{identifier ../requestBody.name}}.{{getter property}}(){{#if valueProperty}}.{{getter valueProperty}}(){{/if}})
+				.mediaType({{{stringLiteral contentType}}})
+				{{#ifeq ../requestBody.defaultContent.mediaType.mimeType 'multipart/form-data'}}
+				.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"{{{escapeString property.serializedName}}}\"{{#if filenameProperty}}; filename=\"" + (__filename != null ? __filename : "") + "\"{{/if}}"))
+				{{else}}
+				.id({{{stringLiteral property.serializedName}}})
+				{{/ifeq}}
+				{{#each headerProperties}}
+				.header({{{stringLiteral @key}}}, {{identifier ../../requestBody.name}}.{{getter ../property}}().{{getter .}}() != null ? {{identifier ../../requestBody.name}}.{{getter ../property}}().{{getter .}}().toString() : null)
+				{{/each}}
+				.build());
+		}
+		{{/each}}
+		org.apache.cxf.jaxrs.ext.multipart.MultipartBody __multipartBody = new org.apache.cxf.jaxrs.ext.multipart.MultipartBody(
+			__multipartBodyParts,
+			javax.ws.rs.core.MediaType.valueOf({{{stringLiteral requestBody.defaultContent.mediaType.mediaType}}}),
+			true
+		);
+
+		{{/ifeq}}
 		try {
 			{{#if securityRequirements}}
 			try {
-				{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{identifier requestBody.name}}{{/if}});
+				{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
 			} catch (javax.ws.rs.WebApplicationException __e) {
 				if (__e.getResponse().getStatus() == 401 && authorizationProvider != null) {
 					if (authorizationProvider.reauthorize(this, __e.getResponse())) {
-						{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{identifier requestBody.name}}{{/if}});
+						{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
 					}
 				}
 				throw __e;
 			}
 			{{else}}
-			{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{identifier requestBody.name}}{{/if}});
+			{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
 			{{/if}}
 		} catch (javax.ws.rs.WebApplicationException __e) {
 			{{#each (nonDefaultResponses)}}

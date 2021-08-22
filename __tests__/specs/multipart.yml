@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: Multipart
+  version: '1.0'
+paths:
+  /object/create:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: OK
+  /object/update:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+      responses:
+        200:
+          description: OK
+  /object/headers:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+            encoding:
+              info:
+                headers:
+                  Content-Disposition:
+                    schema:
+                      type: string
+      responses:
+        200:
+          description: OK
+  /object/conflicts:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              info:
+                headers:
+                  value:
+                    schema:
+                      type: string
+              file:
+                headers:
+                  filename:
+                    schema:
+                      type: string
+      responses:
+        200:
+          description: OK
+  /object/conflicts2:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              info:
+                headers:
+                  value:
+                    schema:
+                      type: string
+                  Value:
+                    schema:
+                      type: number
+              file:
+                headers:
+                  filename:
+                    schema:
+                      type: string
+      responses:
+        200:
+          description: OK
+  /object/mixed:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/mixed:
+            schema:
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: OK
+
