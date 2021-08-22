@@ -2,7 +2,7 @@ import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocum
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
-import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
+import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator } from '@openapi-generator-plus/generator-common'
 
@@ -499,7 +499,13 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				return `set${capitalize(context.generator().toIdentifier(property.name))}`
 			})
 			hbs.registerHelper('escapeString', function(value: string) {
-				return escapeString(value)
+				// eslint-disable-next-line prefer-rest-params
+				const options = arguments[arguments.length - 1] as ActualHelperOptions
+				try {
+					return escapeString(value)
+				} catch (error) {
+					throw new Error(`${error.message} @ ${sourcePosition(options)}`)
+				}
 			})
 	
 			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)

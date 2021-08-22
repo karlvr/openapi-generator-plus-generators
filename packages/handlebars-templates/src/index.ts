@@ -114,7 +114,7 @@ export async function emit(templateName: string, outputPath: string, context: Un
 	}
 }
 
-interface ActualHelperOptions extends Handlebars.HelperOptions {
+export interface ActualHelperOptions extends Handlebars.HelperOptions {
 	/* The helper name */
 	name: string
 	loc: {
@@ -128,7 +128,7 @@ interface ActualHelperOptions extends Handlebars.HelperOptions {
  * Return the current source position as a string
  * @param options the Handlebars helper options
  */
-function sourcePosition(options: ActualHelperOptions): string {
+export function sourcePosition(options: ActualHelperOptions): string {
 	if (!options || !options.loc) {
 		return 'unknown'
 	}
@@ -192,7 +192,11 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (name !== undefined) {
-			return generator().toIdentifier(convertToString(name))
+			try {
+				return generator().toIdentifier(convertToString(name))
+			} catch (error) {
+				throw new Error(`${error.message} @ ${sourcePosition(options)}`)
+			}
 		} else {
 			console.warn(`identifier helper has invalid parameter "${name}" @ ${sourcePosition(options)}`)
 			return name
