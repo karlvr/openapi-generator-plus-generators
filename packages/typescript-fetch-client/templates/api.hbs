@@ -202,28 +202,40 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			localVarRequestOptions.body = localVarFormParams.toString();
 	{{/if}}
 	{{#with requestBody}}
-		{{#unless consumes}}
-			localVarRequestOptions.body =  JSON.stringify({{identifier name}} || {});
-		{{/unless}}
-		{{#each consumes}}
-		{{#if @first}}
-			{{#ifeq mimeType 'application/x-www-form-urlencoded'}}
-			const localVarFormParams = new URLSearchParams();
-			for (const localVarName in {{identifier ../name}}) {
-				if (localVarName !== undefined) {
-					localVarFormParams.set(localVarName, ({{identifier ../name}} as any)[localVarName]);
+	
+			if ({{identifier name}} !== undefined) {
+		{{#with defaultContent}}
+			{{#ifeq mediaType.mimeType 'application/x-www-form-urlencoded'}}
+				const localVarFormParams = new URLSearchParams();
+				for (const localVarName in {{identifier ../name}}) {
+					if (localVarName !== undefined) {
+						localVarFormParams.set(localVarName, ({{identifier ../name}} as any)[localVarName]);
+					}
 				}
-			}
-			localVarRequestOptions.body = localVarFormParams.toString();
-			{{else ifeq mimeType 'application/json'}}
-			localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
-			{{else ifeq mimeType 'text/json'}}
-			localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
+				localVarRequestOptions.body = localVarFormParams;
+			{{else ifeq mediaType.mimeType 'application/json'}}
+				localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
+			{{else ifeq mediaType.mimeType 'text/json'}}
+				localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
+			{{else ifeq mediaType.mimeType 'multipart/form-data'}}
+				const localVarFormData = new FormData();
+			{{#each encoding.properties}}
+				if ({{#if valueProperty}}typeof {{identifier ../../name}}.{{identifier property.name}} === 'object' && {{/if}}{{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}} !== undefined) {
+			{{#ifeq contentType 'application/json'}}
+					localVarFormData.append({{{stringLiteral property.serializedName}}}, JSON.stringify({{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}));
+			{{else ifeq contentType 'application/octet-stream'}}
+					localVarFormData.append({{{stringLiteral property.serializedName}}}, {{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}{{#if filenameProperty}}, {{identifier ../../name}}.{{identifier property.name}}.{{identifier filenameProperty.name}}{{/if}});
 			{{else}}
-			localVarRequestOptions.body =  ({{identifier ../name}} || "");
+					localVarFormData.append({{{stringLiteral property.serializedName}}}, String({{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}} || ''));
 			{{/ifeq}}
-		{{/if}}
-		{{/each}}
+				}
+			{{/each}}
+				localVarRequestOptions.body = localVarFormData;
+			{{else}}
+				localVarRequestOptions.body = String({{identifier ../name}} || "");
+{{/ifeq}}
+			}
+		{{/with}}
 	{{/with}}
 
 			const localVarQueryParameterString = localVarQueryParameter.toString();
