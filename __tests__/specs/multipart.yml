@@ -154,4 +154,24 @@ paths:
       responses:
         200:
           description: OK
+  /object/array:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                values:
+                  type: array
+                  items:
+                    type: string
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: OK
 

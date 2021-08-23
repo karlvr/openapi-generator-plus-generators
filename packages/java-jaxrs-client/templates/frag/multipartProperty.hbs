@@ -1,0 +1,19 @@
+{{!--
+Add a multipart property to the body
+@context a CodegenPropertyEncoding
+@param propertyVar the variable name (or expression) containing the property
+@param bodyPartsVar the variable name containing the list of body parts
+@param content the CodegenContent
+--}}
+{{{bodyPartsVar}}}.add(new org.apache.cxf.jaxrs.ext.multipart.AttachmentBuilder()
+	.object({{{propertyVar}}}{{#if valueProperty}}.{{getter valueProperty}}(){{/if}})
+	.mediaType({{{stringLiteral contentType}}})
+	{{#ifeq content.mediaType.mimeType 'multipart/form-data'}}
+	.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"{{{escapeString property.serializedName}}}\"{{#if filenameProperty}}; filename=\"" + ({{{propertyVar}}}.{{getter filenameProperty}}() != null ? {{{propertyVar}}}.{{getter filenameProperty}}() : "") + "\"{{/if}}"))
+	{{else}}
+	.id({{{stringLiteral property.serializedName}}})
+	{{/ifeq}}
+	{{#each headerProperties}}
+	.header({{{stringLiteral @key}}}, {{{../propertyVar}}}.{{getter .}}() != null ? {{{../propertyVar}}}.{{getter .}}().toString() : null)
+	{{/each}}
+	.build());

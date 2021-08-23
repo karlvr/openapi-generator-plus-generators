@@ -26,22 +26,17 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		{{/set}}
 		java.util.ArrayList<org.apache.cxf.jaxrs.ext.multipart.Attachment> __multipartBodyParts = new java.util.ArrayList<>();
 		{{#each requestBody.defaultContent.encoding.properties}}
-		if ({{identifier ../requestBody.name}}.{{getter property}}() != null) {
-			{{#if filenameProperty}}
-			java.lang.String __filename = {{identifier ../requestBody.name}}.{{getter property}}().{{getter filenameProperty}}();
+		{{#set '__propertyVar'}}
+		{{identifier ../requestBody.name}}.{{getter property}}()
+		{{/set}}
+		if ({{{__propertyVar}}} != null) {
+			{{#if (isArray property)}}
+			for ({{{property.component.nativeType}}} __anObject : {{{__propertyVar}}}) {
+				{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent}}
+			}
+			{{else}}
+			{{>frag/multipartProperty . propertyVar=__propertyVar bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent}}
 			{{/if}}
-			__multipartBodyParts.add(new org.apache.cxf.jaxrs.ext.multipart.AttachmentBuilder()
-				.object({{identifier ../requestBody.name}}.{{getter property}}(){{#if valueProperty}}.{{getter valueProperty}}(){{/if}})
-				.mediaType({{{stringLiteral contentType}}})
-				{{#ifeq ../requestBody.defaultContent.mediaType.mimeType 'multipart/form-data'}}
-				.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"{{{escapeString property.serializedName}}}\"{{#if filenameProperty}}; filename=\"" + (__filename != null ? __filename : "") + "\"{{/if}}"))
-				{{else}}
-				.id({{{stringLiteral property.serializedName}}})
-				{{/ifeq}}
-				{{#each headerProperties}}
-				.header({{{stringLiteral @key}}}, {{identifier ../../requestBody.name}}.{{getter ../property}}().{{getter .}}() != null ? {{identifier ../../requestBody.name}}.{{getter ../property}}().{{getter .}}().toString() : null)
-				{{/each}}
-				.build());
 		}
 		{{/each}}
 		org.apache.cxf.jaxrs.ext.multipart.MultipartBody __multipartBody = new org.apache.cxf.jaxrs.ext.multipart.MultipartBody(
