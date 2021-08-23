@@ -220,14 +220,14 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{else ifeq mediaType.mimeType 'multipart/form-data'}}
 				const localVarFormData = new FormData();
 			{{#each encoding.properties}}
-				if ({{#if valueProperty}}typeof {{identifier ../../name}}.{{identifier property.name}} === 'object' && {{/if}}{{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}} !== undefined) {
-			{{#ifeq contentType 'application/json'}}
-					localVarFormData.append({{{stringLiteral property.serializedName}}}, JSON.stringify({{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}));
-			{{else ifeq contentType 'application/octet-stream'}}
-					localVarFormData.append({{{stringLiteral property.serializedName}}}, {{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}{{#if filenameProperty}}, {{identifier ../../name}}.{{identifier property.name}}.{{identifier filenameProperty.name}}{{/if}});
-			{{else}}
-					localVarFormData.append({{{stringLiteral property.serializedName}}}, String({{identifier ../../name}}.{{identifier property.name}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}} || ''));
-			{{/ifeq}}
+				if ({{identifier ../../name}}.{{identifier property.name}} !== undefined) {
+{{#if (isArray property)}}
+					for (const __anObject of {{identifier ../../name}}.{{identifier property.name}}{{#if property.nullable}} || []{{/if}}) {
+						{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='localVarFormData'}}
+					}
+{{else}}
+					{{>frag/multipartProperty . propertyVar=(concat (identifier ../../name) '.' (identifier property.name)) bodyPartsVar='localVarFormData'}}
+{{/if}}
 				}
 			{{/each}}
 				localVarRequestOptions.body = localVarFormData;
