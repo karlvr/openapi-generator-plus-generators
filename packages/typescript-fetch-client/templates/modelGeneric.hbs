@@ -36,7 +36,7 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	 * @type {{safe '{'}}{{{nativeType.serializedType}}}{{safe '}'}}
 	 * @memberof {{className ../name}}
 	 */
-	{{name}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
+	{{serializedName}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
 {{/each}}
 }
 {{/ifvex}}
