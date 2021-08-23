@@ -34,6 +34,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		...aCommonGenerator,
 		...javaLikeGenerator(config, javaLikeContext),
 		generatorType: () => CodegenGeneratorType.DOCUMENTATION,
+		toIdentifier: (name) => name,
 		toLiteral: (value, options) => {
 			if (value === undefined) {
 				return context.generator().defaultValue(options).literalValue
