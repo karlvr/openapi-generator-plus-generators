@@ -545,6 +545,29 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
+	hbs.registerHelper('ifmatch', function(this: UnknownObject, a: string, regexp: string, flags: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3 && arguments.length !== 4) {
+			throw new Error(`ifmatch helper must be called with two or three arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (a === undefined) {
+			throw new Error(`ifmatch helper called with undefined first argument @ ${sourcePosition(options)}`)
+		}
+		if (regexp === undefined) {
+			throw new Error(`ifmatch helper called with undefined second argument @ ${sourcePosition(options)}`)
+		}
+		if (flags === undefined || typeof flags !== 'string') {
+			flags = 'i'
+		}
+
+		if (new RegExp(regexp, flags).test(a)) {
+			return typeof options.fn === 'function' ? options.fn(this) : true
+		} else {
+			return typeof options.inverse === 'function' ? options.inverse(this) : false
+		}
+	})
 	hbs.registerHelper('ifneq', function(this: UnknownObject, a: unknown, b: unknown) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
