@@ -232,7 +232,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{/each}}
 				localVarRequestOptions.body = localVarFormData;
 			{{else}}
-				localVarRequestOptions.body = String({{identifier ../name}} || "");
+				localVarRequestOptions.body = {{identifier ../name}};
 {{/ifeq}}
 			}
 		{{/with}}

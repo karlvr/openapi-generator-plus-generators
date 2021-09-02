@@ -58,6 +58,17 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 			}
 		},
 		generatorType: () => CodegenGeneratorType.CLIENT,
+		toNativeType: function(options) {
+			const { type, format } = options
+			if (type === 'string' && format === 'binary') {
+				/* We support string and Blob, which is what FormData supports. It also enables us to handle literal binary values
+				   created from strings... which is hopefully a good idea.
+				 */
+				return new context.NativeType('string | Blob')
+			} else {
+				return base.toNativeType(options)
+			}
+		},
 	}
 }
 
