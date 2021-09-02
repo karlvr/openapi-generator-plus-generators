@@ -504,7 +504,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				try {
 					return escapeString(value)
 				} catch (error) {
-					throw new Error(`${error.message} @ ${sourcePosition(options)}`)
+					throw new Error(`${error instanceof Error ? error.message : error} @ ${sourcePosition(options)}`)
 				}
 			})
 	

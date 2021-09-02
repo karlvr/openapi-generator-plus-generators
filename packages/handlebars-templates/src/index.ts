@@ -87,10 +87,14 @@ export async function emit(templateName: string, outputPath: string, context: Un
 			allowProtoPropertiesByDefault: true,
 		})
 	} catch (error) {
-		const newError = new Error(`Failed to generate template "${templateName}": ${error.message}`)
-		/* Use the original stack so we can see where we failed */
-		newError.stack = `${newError.stack}\nCaused by ${error.stack}`
-		throw newError
+		if (error instanceof Error) {
+			const newError = new Error(`Failed to generate template "${templateName}": ${error.message}`)
+			/* Use the original stack so we can see where we failed */
+			newError.stack = `${newError.stack}\nCaused by ${error.stack}`
+			throw newError
+		} else {
+			throw new Error(`Failed to generate template "${templateName}": ${error}`)
+		}
 	}
 
 	if (outputPath === '-') {
@@ -195,7 +199,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			try {
 				return generator().toIdentifier(convertToString(name))
 			} catch (error) {
-				throw new Error(`${error.message} @ ${sourcePosition(options)}`)
+				throw new Error(`${error instanceof Error ? error.message : error} @ ${sourcePosition(options)}`)
 			}
 		} else {
 			console.warn(`identifier helper has invalid parameter "${name}" @ ${sourcePosition(options)}`)
