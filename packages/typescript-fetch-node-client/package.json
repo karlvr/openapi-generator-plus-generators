@@ -1,0 +1,44 @@
+{
+  "name": "@openapi-generator-plus/typescript-fetch-node-client-generator",
+  "version": "0.12.1",
+  "description": "An OpenAPI Generator+ module for a TypeScript API client using Fetch in Node",
+  "keywords": [
+    "openapi-generator-plus",
+    "openapi-generator-plus-generator",
+    "openapi",
+    "openapi-generator",
+    "typescript",
+    "fetch",
+    "node",
+    "client"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "clean": "../../node_modules/.bin/rimraf dist",
+    "test": "../../node_modules/.bin/jest",
+    "watch": "../../node_modules/.bin/tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
+  "author": "Karl von Randow",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
+  "dependencies": {
+    "@openapi-generator-plus/typescript-fetch-client-generator": "file:../typescript-fetch-client"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "4d7336969427733ca316dfb48219f166adb9182a",
+  "devDependencies": {
+    "@types/node-fetch": "^2.5.12",
+    "node-fetch": "^3.0.0"
+  }
+}

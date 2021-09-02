@@ -48,6 +48,7 @@
     "@openapi-generator-plus/plain-documentation-generator": "file:packages/plain-documentation",
     "@openapi-generator-plus/typescript-generator-common": "file:packages/typescript-common",
     "@openapi-generator-plus/typescript-fetch-client-generator": "file:packages/typescript-fetch-client",
+    "@openapi-generator-plus/typescript-fetch-node-client-generator": "file:packages/typescript-fetch-node-client",
     "@openapi-generator-plus/typescript-fetch-rn-client-generator": "file:packages/typescript-fetch-rn-client",
     "@openapi-generator-plus/typescript-express-example-server-generator": "file:packages/typescript-express-example-server"
   }
