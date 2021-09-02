@@ -13,7 +13,7 @@ describe('compile test cases', () => {
 				...DEFAULT_CONFIG,
 				includeTests: true,
 			})
-			await testGenerate(result, compile, path.join('test-output', file))
+			await testGenerate(result, compile, file)
 		})
 	}
 })

@@ -1,7 +1,8 @@
 import { CodegenResult } from '@openapi-generator-plus/testing'
 import { promises as fs } from 'fs'
 import path from 'path'
-import os from 'os'
+import { tmpdir } from 'os'
+import { cwd } from 'process'
 import rimraf from 'rimraf'
 
 function rimrafPromise(path: string, options?: rimraf.Options): Promise<void> {
@@ -26,34 +27,15 @@ export type TestGenerateFunc = (basePath: string) => Promise<void>
  * Generate the templates for the `CodegenResult` and call `func` to test them.
  * @param result a `CodegenResult` from `createCodegenResult`
  * @param func a function to handle the generation result
- * @param outputPath if specified, generate to the given output path instead of a temp path (must be under cwd)
+ * @param testName the name of the test
  */
-export async function testGenerate(result: CodegenResult, func: TestGenerateFunc, outputPath?: string): Promise<void> {
-	let tmpdir: string | undefined
-	let deleteOutput = false
-	if (outputPath) {
-		outputPath = path.resolve(outputPath)
-		if (!outputPath.startsWith(process.cwd())) {
-			throw new Error(`Invalid output path: ${outputPath} not under cwd ${process.cwd()}`)
-		}
+export async function testGenerate(result: CodegenResult, func: TestGenerateFunc, testName: string): Promise<void> {
+	const outputPath = path.join(tmpdir(), 'openapi-generator-plus-generators', path.basename(cwd()), testName)
 
-		/* Clean the output first */
-		await rimrafPromise(outputPath, { disableGlob: true })
-		await fs.mkdir(outputPath, { recursive: true })
+	/* Clean the output first */
+	await rimrafPromise(outputPath, { disableGlob: true })
+	await fs.mkdir(outputPath, { recursive: true })
 
-		tmpdir = undefined
-	} else {
-		tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'openapi-generator-plus'))
-		outputPath = tmpdir
-		deleteOutput = true
-	}
-
-	try {
-		await result.state.generator.exportTemplates(outputPath, result.doc)
-		await func(outputPath)
-	} finally {
-		if (tmpdir && deleteOutput) {
-			await rimrafPromise(tmpdir, { disableGlob: true })
-		}
-	}
+	await result.state.generator.exportTemplates(outputPath, result.doc)
+	await func(outputPath)
 }

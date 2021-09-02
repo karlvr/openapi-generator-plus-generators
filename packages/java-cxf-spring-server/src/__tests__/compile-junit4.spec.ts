@@ -14,7 +14,7 @@ describe('compile test cases', () => {
 				includeTests: true,
 				junitVersion: 4,
 			})
-			await testGenerate(result, compile, path.join('test-output/junit4', file))
+			await testGenerate(result, compile, `junit4/${file}`)
 		})
 	}
 })
