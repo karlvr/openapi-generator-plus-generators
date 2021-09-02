@@ -21,11 +21,14 @@
 		"prepare": "npm run build"
 	},
 	"dependencies": {
-		{{>hooks/packageDependencies}}
-		{{#ifeq dateApproach 'blind-date'}}
-		"blind-date": "^3.0.0",
-		{{/ifeq}}
-		"portable-fetch": "^3.0.0"
+{{#join '__dependencies' ',
+		'}}
+{{>hooks/packageDependencies}}
+{{#ifeq dateApproach 'blind-date'}}
+"blind-date": "^3.0.0"
+{{/ifeq}}
+{{/join}}
+		{{{__dependencies}}}
 	},
 	"devDependencies": {
 		"@types/node": "^8.0.9",
