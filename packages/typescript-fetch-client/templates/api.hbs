@@ -217,7 +217,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
 			{{else ifeq mediaType.mimeType 'text/json'}}
 				localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
-			{{else ifeq mediaType.mimeType 'multipart/form-data'}}
+			{{else ifmatch mediaType.mimeType 'multipart/.*'}}
 				const localVarFormData = new FormData();
 			{{#each encoding.properties}}
 				if ({{identifier ../../name}}.{{identifier property.name}} !== undefined) {
