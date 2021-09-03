@@ -1,8 +1,11 @@
 import { testGenerate } from '@openapi-generator-plus/generator-common/dist/testing'
-import { compile, prepare } from './common'
+import { compile, DEFAULT_CONFIG, prepare } from './common'
 
 test('one of no discriminator', async() => {
-	const result = await prepare('one-of/one-of-no-discriminator.yml', { legacyUnnamespacedModelSupport: true })
+	const result = await prepare('one-of/one-of-no-discriminator.yml', {
+		...DEFAULT_CONFIG,
+		legacyUnnamespacedModelSupport: true,
+	})
 
 	await testGenerate(result, compile, 'one-of')
 }, 20000)
