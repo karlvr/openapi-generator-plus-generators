@@ -1,9 +1,9 @@
 {{#join '_implements' ', '}}
-{{#if (not parentNativeType)}}
+{{#and (not parents) (not implements)}}
 java.io.Serializable
-{{/if}}
+{{/and}}
 {{#each implements}}
-{{{nativeType}}}
+{{{nativeType.parentType}}}
 {{/each}}
 {{#ifvex 'x-implements-interfaces'}}
 {{{vendorExtensions.x-implements-interfaces}}}

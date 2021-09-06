@@ -23,12 +23,10 @@ renders a model without the surrounding panel.
 {{/if}}
 
 {{#if (isObject)}}
-{{#if parent}}
-    {{>model/inherited parent anchor=anchor}}
-{{/if}}
-
-{{#if isInterface}}
-    {{>model/interface anchor=anchor}}
+{{#if parents}}
+{{#each parents}}
+    {{>model/inherited . anchor=anchor}}
+{{/each}}
 {{/if}}
 
 {{#if implements}}
@@ -45,6 +43,16 @@ renders a model without the surrounding panel.
 
 {{#if children}}
     {{>model/children anchor=anchor}}
+{{/if}}
+{{/if}}
+
+{{#if (isInterface)}}
+    {{>model/interface anchor=anchor}}
+
+{{#if parents}}
+{{#each parents}}
+    {{>model/inherited . anchor=anchor}}
+{{/each}}
 {{/if}}
 {{/if}}
 

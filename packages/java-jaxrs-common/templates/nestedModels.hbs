@@ -1,9 +1,9 @@
 {{#each schemas}}
 {{#if (isEnum)}}
 {{>enumNested}}
-{{else if isInterface}}
+{{else if (isInterface)}}
 {{>interfaceNested}}
-{{else}}
+{{else if (isObject)}}
 {{>pojoNested}}
 {{/if}}
 

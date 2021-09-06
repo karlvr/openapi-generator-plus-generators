@@ -174,7 +174,7 @@ public boolean equals(java.lang.Object o) {
 	if (o == null || getClass() != o.getClass()) {
 		return false;
 	}
-	{{#if parentNativeType}}
+	{{#if parents}}
 	if (!super.equals(o)) {
 		return false;
 	}
@@ -190,14 +190,14 @@ public boolean equals(java.lang.Object o) {
 
 @Override
 public int hashCode() {
-	return {{#if parentNativeType}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#each properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});
+	return {{#if parents}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#each properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}});
 }
 
 @Override
 public java.lang.String toString() {
 	java.lang.StringBuilder sb = new java.lang.StringBuilder();
 	sb.append("class {{className name}} {\n");
-	{{#if parentNativeType}}
+	{{#if parents}}
 	sb.append("    ").append(toIndentedString(super.toString())).append("\n");
 	{{/if}}
 	{{#each properties}}
@@ -212,7 +212,7 @@ public java.lang.String toString() {
 	return sb.toString();
 }
 
-{{#or parentNativeType properties additionalProperties}}
+{{#or parents properties additionalProperties}}
 /**
  * Convert the given object to string with each line indented by 4 spaces
  * (except the first line).

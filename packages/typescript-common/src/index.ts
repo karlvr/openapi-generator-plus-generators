@@ -1,11 +1,10 @@
-import { CodegenSchemaType, CodegenDiscriminatorReference, CodegenNativeType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenObjectSchema, isCodegenObjectSchema, CodegenSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
-import * as idx from '@openapi-generator-plus/indexed-type'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
 
@@ -271,6 +270,15 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case 'boolean':
 					return `${value}`
 				case 'object':
+				case 'anyOf':
+				case 'oneOf':
+					if (typeof value === 'string') {
+						return value
+					} else {
+						context.log(CodegenLogLevel.WARN, `Literal is unsupported for schema type object: ${JSON.stringify(value)}`)
+						return 'null'
+					}
+					break
 				case 'file':
 					throw new Error(`Cannot format literal for type ${type}`)
 				case 'array': {
@@ -339,9 +347,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					return new context.NativeType('boolean')
 				}
 				case 'file': {
-					/* JavaScript does have a File type, but it isn't supported by JSON serialization so we don't have a serializedType */
+					/* JavaScript does have a File type, but it isn't supported by JSON serialization... we say string as we have to say something, it will need to be handled in the generated code */
 					return new context.NativeType('File', {
-						serializedType: null,
+						serializedType: 'string',
 					})
 				}
 			}
@@ -426,88 +434,11 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		operationGroupingStrategy: () => {
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
-
-		postProcessSchema: (schema) => {
-			function modelReferencesToDisjunction(references: CodegenDiscriminatorReference[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
-				const result = references.reduce((result, reference) => {
-					const r = transform(reference.model.nativeType)
-					if (!r) {
-						return result
-					}
-					if (result) {
-						return `${result} | ${toSafeTypeForComposing(r)}`
-					} else {
-						return toSafeTypeForComposing(r)
-					}
-				}, '')
-				if (result) {
-					return result
-				} else {
-					return null
-				}
-			}
-
-			function modelsToDisjunction(models: CodegenSchema[], transform: (nativeType: CodegenNativeType) => string | null): string | null {
-				const result = models.reduce((result, model) => {
-					const r = transform(model.nativeType)
-					if (!r) {
-						return result
-					}
-					if (result) {
-						return `${result} | ${toSafeTypeForComposing(r)}`
-					} else {
-						return toSafeTypeForComposing(r)
-					}
-				}, '')
-				if (result) {
-					return result
-				} else {
-					return null
-				}
-			}
-
-			if (isCodegenObjectSchema(schema) && schema.discriminator) {
-				/* If this model has a discriminator then we change its propertyNativeType to a disjunction */
-				if (schema.discriminator.references) {
-					const newNativeType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.nativeType)
-					if (newNativeType) {
-						if (!tryToConvertModelToLiteralType(schema, newNativeType)) {
-							schema.nativeType.nativeType = newNativeType
-							schema.nativeType.serializedType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.serializedType)
-							schema.nativeType.literalType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.literalType)
-							schema.nativeType.concreteType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.concreteType)
-							
-							if (schema.nativeType.componentType && schema.nativeType.componentType !== schema.nativeType) {
-								schema.nativeType.componentType.nativeType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-								schema.nativeType.componentType.serializedType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
-								schema.nativeType.componentType.literalType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-								schema.nativeType.componentType.concreteType = modelReferencesToDisjunction(schema.discriminator.references, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
-							}
-						}
-					}
-				}
-			} else if (isCodegenObjectSchema(schema) && schema.implementors && !schema.properties && !schema.parent) {
-				/* If this model is a parent interface for others, but has no properties of its own, then we can convert it to a disjunction */
-				const implementors = idx.allValues(schema.implementors)
-
-				const newNativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.nativeType)
-				if (newNativeType) {
-					if (!tryToConvertModelToLiteralType(schema, newNativeType)) {
-						schema.nativeType.nativeType = newNativeType
-						schema.nativeType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.serializedType)
-						schema.nativeType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.literalType)
-						schema.nativeType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.concreteType)
-						
-						if (schema.nativeType.componentType && schema.nativeType.componentType !== schema.nativeType) {
-							schema.nativeType.componentType.nativeType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)!
-							schema.nativeType.componentType.serializedType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.serializedType : nativeType.serializedType)
-							schema.nativeType.componentType.literalType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.literalType : nativeType.literalType)
-							schema.nativeType.componentType.concreteType = modelsToDisjunction(implementors, (nativeType) => nativeType.componentType ? nativeType.componentType.concreteType : nativeType.concreteType)
-						}
-					}
-				}
-			}
-		},
+		allOfStrategy: () => CodegenAllOfStrategy.OBJECT,
+		anyOfStrategy: () => CodegenAnyOfStrategy.NATIVE,
+		oneOfStrategy: () => CodegenOneOfStrategy.NATIVE,
+		supportsInheritance: () => true,
+		supportsMultipleInheritance: () => true, /* As we use interfaces not classes */
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
@@ -560,43 +491,3 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 	}
 }
-
-/**
- * If a model ends up being just a placeholder, such as just representing a type disjunction, in TypeScript
- * we can declare it as a literal type rather than an interface.
- * e.g. `type X = A | B | C` rather than `interface X {}`
- * @param model 
- * @param literalType
- */
-function tryToConvertModelToLiteralType(model: CodegenObjectSchema, literalType: string) {
-	if (!model.properties && !model.implements && !model.parent) {
-		if (!model.vendorExtensions) {
-			model.vendorExtensions = idx.create()
-		}
-		idx.set(model.vendorExtensions, 'convert-to-literal-type', literalType)
-
-		if (model.implementors) {
-			for (const other of idx.values(model.implementors)) {
-				if (isCodegenObjectSchema(other) && other.implements) {
-					idx.remove(other.implements, model.name)
-					if (idx.isEmpty(other.implements)) {
-						other.implements = null
-					}
-				}
-			}
-		}
-		if (model.children) {
-			for (const other of idx.values(model.children)) {
-				if (other.parent == model) {
-					other.parent = null
-					other.parentNativeType = null
-				}
-			}
-		}
-
-		return true
-	} else {
-		return false
-	}
-}
-

@@ -1,6 +1,3 @@
-{{#ifvex 'convert-to-literal-type'}}
-export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
-{{else}}
 /**
 {{#if description}}
  * {{{md description}}}
@@ -8,8 +5,8 @@ export type {{className name}} = {{{vendorExtensions.convert-to-literal-type}}}
  * @export
  * @interface {{className name}}
  */
-export interface {{className name}} {{#if parentNativeType}}extends {{{parentNativeType}}} {{/if}}{{!--
---}}{{#if implements}}{{#unless parentNativeType}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
+export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{nativeType.parentType}}}{{#hasMore}}, {{/hasMore}}{{/each}} {{/if}}{{!--
+--}}{{#if implements}}{{#unless parents}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
 {{#if discriminator}}
 {{#with discriminator}}
 	{{name}}: {{{nativeType.serializedType}}};
@@ -39,7 +36,6 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
 	{{serializedName}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
 {{/each}}
 }
-{{/ifvex}}
 {{#if schemas}}
 
 /**
@@ -47,12 +43,6 @@ export interface {{className name}} {{#if parentNativeType}}extends {{{parentNat
  * @namespace {{className name}}
  */
 export namespace {{className name}} {
-{{#each schemas}}
-	{{#if (isEnum)}}
-	{{>modelEnum}}
-	{{else}}
-	{{>modelGeneric}}
-	{{/if}}
-{{/each}}
+	{{>nestedModels}}
 }
 {{/if}}

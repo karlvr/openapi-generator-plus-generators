@@ -1,0 +1,12 @@
+{{#each schemas}}
+{{#if (isEnum)}}
+{{>modelEnum}}
+{{else if (isObject)}}
+{{>modelGeneric}}
+{{else if (isOneOf)}}
+{{>modelOneOf}}
+{{else if (isAnyOf)}}
+{{>modelOneOf}}
+{{/if}}
+
+{{/each}}

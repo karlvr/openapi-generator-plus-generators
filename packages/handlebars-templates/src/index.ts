@@ -804,6 +804,10 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 
 	/* Property type helpers */
 	registerPropertyTypeHelper('isObject', CodegenSchemaType.OBJECT, hbs)
+	registerPropertyTypeHelper('isAllOf', CodegenSchemaType.ALLOF, hbs)
+	registerPropertyTypeHelper('isAnyOf', CodegenSchemaType.ANYOF, hbs)
+	registerPropertyTypeHelper('isOneOf', CodegenSchemaType.ONEOF, hbs)
+	registerPropertyTypeHelper('isInterface', CodegenSchemaType.INTERFACE, hbs)
 	registerPropertyTypeHelper('isMap', CodegenSchemaType.MAP, hbs)
 	registerPropertyTypeHelper('isArray', CodegenSchemaType.ARRAY, hbs)
 	registerPropertyTypeHelper('isBoolean', CodegenSchemaType.BOOLEAN, hbs)
@@ -842,8 +846,8 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 			throw new Error(`inheritedProperties helper must be called with no arguments @ ${sourcePosition(options)}`)
 		}
 
-		if (this.parent) {
-			const parentProperties = uniquePropertiesIncludingInherited(this.parent)
+		if (this.parents) {
+			const parentProperties = uniquePropertiesIncludingInherited(this.parents)
 			if (this.properties) {
 				const myProperties = this.properties
 				return parentProperties.filter(p => !idx.get(myProperties, p.name))

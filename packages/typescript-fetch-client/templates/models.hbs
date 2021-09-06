@@ -6,18 +6,11 @@ import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeSt
 {{>hooks/modelsImports}}
 
 export namespace Api {
-{{#each models}}
-	{{#if (isEnum)}}
-	{{>modelEnum}}
-	{{else}}
-	{{>modelGeneric}}
-	{{/if}}
-
-{{/each}}
+	{{>nestedModels}}
 }
 {{#if legacyUnnamespacedModelSupport}}
 
-{{#each models}}
+{{#each schemas}}
 {{#if (isEnum)}}
 /**
  {{#if description}}

@@ -1,7 +1,16 @@
+package {{modelPackage}};
+
+{{#with interface}}
+{{#if description}}
+/**
+ * {{description}}
+ */
+{{/if}}
 {{>generatedAnnotation}}
 {{>frag/pojoHeader}}
-public interface {{className name}} {{>interfaceExtends}}{{#if parent.isInterface}}, {{{parentNativeType.concreteType}}}{{/if}} {
+public interface {{className name}} {{>interfaceExtends}} {
 
 	{{>nestedModels}}
 	{{>interfaceContents}}
 }
+{{/with}}

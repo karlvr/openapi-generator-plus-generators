@@ -1,4 +1,4 @@
-import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenOneOfStrategy } from '@openapi-generator-plus/types'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -100,6 +100,11 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		operationGroupingStrategy: () => {
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
+		allOfStrategy: () => CodegenAllOfStrategy.NATIVE,
+		anyOfStrategy: () => CodegenAnyOfStrategy.NATIVE,
+		oneOfStrategy: () => CodegenOneOfStrategy.NATIVE,
+		supportsInheritance: () => false,
+		supportsMultipleInheritance: () => false,
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]

@@ -1,10 +1,6 @@
-{{#if (isObject)}}
+{{#or (isObject) (isArray) (isMap)}}
 @javax.validation.Valid
-{{else if (isArray)}}
-@javax.validation.Valid
-{{else if (isMap)}}
-@javax.validation.Valid
-{{/if}}
+{{/or}}
 {{#if required}}
 {{#unless (lookup schema.vendorExtensions 'x-not-blank')}}
 {{#unless (lookup schema.vendorExtensions 'x-not-empty')}}

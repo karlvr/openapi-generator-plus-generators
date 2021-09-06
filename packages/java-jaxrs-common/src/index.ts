@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -142,11 +142,15 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			if (value === undefined) {
 				return context.generator().defaultValue(options).literalValue
 			}
-			if (value === null) {
-				return 'null'
-			}
 	
 			const { type, format, required, nullable, schemaType } = options
+			if (value === null) {
+				if (nullable) {
+					return 'null'
+				}
+
+				return context.generator().defaultValue(options).literalValue
+			}
 	
 			if (schemaType === CodegenSchemaType.ENUM) {
 				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
@@ -232,6 +236,17 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 					return !primitive ? `java.lang.Boolean.valueOf(${value})` : `${value}`
 				case 'object':
+					if (typeof value === 'string') {
+						if (value) {
+							return value
+						} else {
+							return 'null'
+						}
+					} else {
+						context.log(CodegenLogLevel.WARN, `Literal is unsupported for schema type object: ${JSON.stringify(value)}`)
+						return 'null'
+					}
+					break
 				case 'file':
 					throw new Error(`Cannot format literal for type ${type}`)
 				case 'array': {
@@ -387,7 +402,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			componentType: null,
 		}),
 		defaultValue: (options) => {
-			const { type, schemaType } = options
+			const { schemaType } = options
 	
 			switch (schemaType) {
 				case CodegenSchemaType.ENUM:
@@ -399,6 +414,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.STRING:
 				case CodegenSchemaType.ARRAY:
 				case CodegenSchemaType.MAP:
+				case CodegenSchemaType.INTERFACE:
 					return { value: null, literalValue: 'null' }
 				case CodegenSchemaType.NUMBER:
 					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
@@ -408,11 +424,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					return { value: false, literalValue: context.generator().toLiteral(false, options) }
 			}
 	
-			throw new Error(`Unsupported type name: ${type}`)
+			throw new Error(`Unsupported type name: ${schemaType}`)
 		},
 
 		initialValue: (options) => {
-			const { type, required, schemaType, nativeType } = options
+			const { required, schemaType, nativeType } = options
 	
 			if (!required) {
 				return null
@@ -426,6 +442,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.DATETIME:
 				case CodegenSchemaType.FILE:
 				case CodegenSchemaType.STRING:
+				case CodegenSchemaType.INTERFACE:
 					return null
 				case CodegenSchemaType.ARRAY:
 					return { value: [], literalValue: `new ${nativeType.concreteType}()` }
@@ -439,12 +456,18 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					return { value: false, literalValue: context.generator().toLiteral(false, options) }
 			}
 	
-			throw new Error(`Unsupported type name: ${type}`)
+			throw new Error(`Unsupported type name: ${schemaType}`)
 		},
 		
 		operationGroupingStrategy: () => {
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
+
+		allOfStrategy: () => CodegenAllOfStrategy.OBJECT,
+		anyOfStrategy: () => CodegenAnyOfStrategy.OBJECT,
+		oneOfStrategy: () => CodegenOneOfStrategy.INTERFACE,
+		supportsInheritance: () => true,
+		supportsMultipleInheritance: () => false,
 	
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
@@ -524,12 +547,15 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
 			for (const schema of context.utils.values(doc.schemas)) {
-				if (isCodegenObjectSchema(schema) || isCodegenEnumSchema(schema)) { // TODO this quality will become part of the generator interface
-					const modelContext = {
-						models: [schema],
-					}
-					await emit('model', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, ...modelContext }, true, hbs)
+				if (isCodegenObjectSchema(schema)) {
+					await emit('pojo', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
+						{ ...rootContext, pojo: schema }, true, hbs)
+				} else if (isCodegenEnumSchema(schema)) {
+					await emit('enum', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
+						{ ...rootContext, enum: schema }, true, hbs)
+				} else if (isCodegenInterfaceSchema(schema)) {
+					await emit('interface', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
+						{ ...rootContext, interface: schema }, true, hbs)
 				}
 			}
 	

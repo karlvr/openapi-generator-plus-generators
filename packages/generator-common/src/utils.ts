@@ -7,12 +7,19 @@ import { idx } from '@openapi-generator-plus/core'
  * @param model 
  * @param result 
  */
-export function uniquePropertiesIncludingInherited(model: CodegenObjectSchema, result: CodegenProperties = idx.create()): CodegenProperty[] {
-	if (model.parent) {
-		uniquePropertiesIncludingInherited(model.parent, result)
-	}
-	if (model.properties) {
-		idx.merge(result, model.properties)
+export function uniquePropertiesIncludingInherited(models: CodegenObjectSchema[], result: CodegenProperties = idx.create()): CodegenProperty[] {
+	const open = [...models]
+	for (const model of open) {
+		if (model.properties) {
+			idx.merge(result, model.properties)
+		}
+		if (model.parents) {
+			for (const aParent of model.parents) {
+				if (open.indexOf(aParent) === -1) {
+					open.push(aParent)
+				}
+			}
+		}
 	}
 
 	return idx.allValues(result)
