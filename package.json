@@ -2,17 +2,14 @@
   "name": "openapi-generator-plus-generators",
   "private": true,
   "scripts": {
-    "build": "lerna run build",
-    "clean": "lerna run clean",
-    "link": "lerna clean --yes && npm link @openapi-generator-plus/core @openapi-generator-plus/types @openapi-generator-plus/indexed-type @openapi-generator-plus/testing openapi-generator-plus && lerna exec --concurrency 1 -- npm link && lerna clean --yes && rimraf packages/*/package-lock.json",
-    "release": "npm run clean && npm run build && npm test && lerna publish",
-    "test": "lerna run test",
-    "watch": "lerna run --parallel watch"
+    "build": "pnpm build --recursive",
+    "clean": "pnpm clean --recursive",
+    "link": "pnpm link --global @openapi-generator-plus/core @openapi-generator-plus/types @openapi-generator-plus/indexed-type @openapi-generator-plus/testing && pnpm --recursive --workspace-concurrency=1 exec pnpm link --global",
+    "release": "pnpm clean && pnpm build && pnpm test && pnpm publish --recursive",
+    "test": "pnpm test --recursive",
+    "watch": "pnpm watch --parallel"
   },
   "devDependencies": {
-    "@openapi-generator-plus/core": "^0.30.1",
-    "@openapi-generator-plus/testing": "^0.30.1",
-    "@openapi-generator-plus/types": "^0.30.0",
     "@types/jest": "^27.0.1",
     "@types/less": "^3.0.3",
     "@types/lodash": "^4.14.172",
@@ -28,28 +25,15 @@
     "glob-promise": "^4.2.0",
     "handlebars": "^4.7.7",
     "jest": "^27.0.6",
-    "lerna": "^4.0.0",
     "maven": "github:karlvr/node-maven",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.4",
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "file:packages/generator-common",
-    "@openapi-generator-plus/handlebars-templates": "file:packages/handlebars-templates",
-    "@openapi-generator-plus/java-cxf-client-generator": "file:packages/java-cxf-client",
-    "@openapi-generator-plus/java-cxf-cdi-server-generator": "file:packages/java-cxf-cdi-server",
-    "@openapi-generator-plus/java-cxf-spring-server-generator": "file:packages/java-cxf-spring-server",
-    "@openapi-generator-plus/java-like-generator-helper": "file:packages/java-like",
-    "@openapi-generator-plus/java-jaxrs-client-generator": "file:packages/java-jaxrs-client",
-    "@openapi-generator-plus/java-jaxrs-generator-common": "file:packages/java-jaxrs-common",
-    "@openapi-generator-plus/java-jaxrs-server-generator": "file:packages/java-jaxrs-server",
-    "@openapi-generator-plus/java-retrofit-client-generator": "file:packages/java-retrofit-client",
-    "@openapi-generator-plus/plain-documentation-generator": "file:packages/plain-documentation",
-    "@openapi-generator-plus/typescript-generator-common": "file:packages/typescript-common",
-    "@openapi-generator-plus/typescript-fetch-client-generator": "file:packages/typescript-fetch-client",
-    "@openapi-generator-plus/typescript-fetch-node-client-generator": "file:packages/typescript-fetch-node-client",
-    "@openapi-generator-plus/typescript-fetch-rn-client-generator": "file:packages/typescript-fetch-rn-client",
-    "@openapi-generator-plus/typescript-express-example-server-generator": "file:packages/typescript-express-example-server"
+    "@openapi-generator-plus/core": "^0.30.2",
+    "@openapi-generator-plus/indexed-type": "^0.1.6",
+    "@openapi-generator-plus/testing": "^0.30.2",
+    "@openapi-generator-plus/types": "^0.30.0"
   }
 }
