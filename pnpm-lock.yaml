@@ -4,8 +4,9 @@ importers:
 
   .:
     specifiers:
-      '@openapi-generator-plus/core': ^0.30.1
-      '@openapi-generator-plus/testing': ^0.30.1
+      '@openapi-generator-plus/core': ^0.30.2
+      '@openapi-generator-plus/indexed-type': ^0.1.6
+      '@openapi-generator-plus/testing': ^0.30.2
       '@openapi-generator-plus/types': ^0.30.0
       '@types/jest': ^27.0.1
       '@types/less': ^3.0.3
@@ -26,10 +27,12 @@ importers:
       rimraf: ^3.0.2
       ts-jest: ^27.0.4
       typescript: ^4.3.5
-    devDependencies:
+    dependencies:
       '@openapi-generator-plus/core': 0.30.2
+      '@openapi-generator-plus/indexed-type': 0.1.6
       '@openapi-generator-plus/testing': 0.30.2
       '@openapi-generator-plus/types': 0.30.0
+    devDependencies:
       '@types/jest': 27.0.1
       '@types/less': 3.0.3
       '@types/lodash': 4.14.172
@@ -60,7 +63,7 @@ importers:
 
   packages/handlebars-templates:
     specifiers:
-      '@openapi-generator-plus/generator-common': workspace:*
+      '@openapi-generator-plus/generator-common': file:../generator-common
       handlebars: ^4.7.6
       marked: ^0.8.0
       pluralize: ^8.0.0
@@ -72,34 +75,34 @@ importers:
 
   packages/java-cxf-cdi-server:
     specifiers:
-      '@openapi-generator-plus/handlebars-templates': workspace:*
-      '@openapi-generator-plus/java-jaxrs-server-generator': workspace:*
+      '@openapi-generator-plus/handlebars-templates': file:../handlebars-templates
+      '@openapi-generator-plus/java-jaxrs-server-generator': file:../java-jaxrs-server
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-server-generator': link:../java-jaxrs-server
 
   packages/java-cxf-client:
     specifiers:
-      '@openapi-generator-plus/handlebars-templates': workspace:*
-      '@openapi-generator-plus/java-jaxrs-client-generator': workspace:*
+      '@openapi-generator-plus/handlebars-templates': file:../handlebars-templates
+      '@openapi-generator-plus/java-jaxrs-client-generator': file:../java-jaxrs-client
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-client-generator': link:../java-jaxrs-client
 
   packages/java-cxf-spring-server:
     specifiers:
-      '@openapi-generator-plus/handlebars-templates': workspace:*
-      '@openapi-generator-plus/java-jaxrs-server-generator': workspace:*
+      '@openapi-generator-plus/handlebars-templates': file:../handlebars-templates
+      '@openapi-generator-plus/java-jaxrs-server-generator': file:../java-jaxrs-server
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-server-generator': link:../java-jaxrs-server
 
   packages/java-jaxrs-client:
     specifiers:
-      '@openapi-generator-plus/generator-common': workspace:*
-      '@openapi-generator-plus/handlebars-templates': workspace:*
-      '@openapi-generator-plus/java-jaxrs-generator-common': workspace:*
-      '@openapi-generator-plus/java-like-generator-helper': workspace:*
+      '@openapi-generator-plus/generator-common': file:../generator-common
+      '@openapi-generator-plus/handlebars-templates': file:../handlebars-templates
+      '@openapi-generator-plus/java-jaxrs-generator-common': file:../java-jaxrs-common
+      '@openapi-generator-plus/java-like-generator-helper': file:../java-like
       change-case: ^4.1.1
     dependencies:
       '@openapi-generator-plus/generator-common': link:../generator-common
@@ -182,9 +185,9 @@ importers:
 
   packages/typescript-fetch-client:
     specifiers:
-      '@openapi-generator-plus/generator-common': workspace:*
-      '@openapi-generator-plus/handlebars-templates': workspace:*
-      '@openapi-generator-plus/typescript-generator-common': workspace:*
+      '@openapi-generator-plus/generator-common': file:../generator-common
+      '@openapi-generator-plus/handlebars-templates': file:../handlebars-templates
+      '@openapi-generator-plus/typescript-generator-common': file:../typescript-common
       change-case: ^4.1.1
     dependencies:
       '@openapi-generator-plus/generator-common': link:../generator-common
@@ -194,7 +197,7 @@ importers:
 
   packages/typescript-fetch-node-client:
     specifiers:
-      '@openapi-generator-plus/typescript-fetch-client-generator': workspace:*
+      '@openapi-generator-plus/typescript-fetch-client-generator': file:../typescript-fetch-client
       '@types/node-fetch': ^2.5.12
       node-fetch: ^3.0.0
     dependencies:
@@ -205,7 +208,7 @@ importers:
 
   packages/typescript-fetch-rn-client:
     specifiers:
-      '@openapi-generator-plus/typescript-fetch-client-generator': workspace:*
+      '@openapi-generator-plus/typescript-fetch-client-generator': file:../typescript-fetch-client
     dependencies:
       '@openapi-generator-plus/typescript-fetch-client-generator': link:../typescript-fetch-client
 
@@ -214,11 +217,11 @@ packages:
   /@apidevtools/openapi-schemas/2.1.0:
     resolution: {integrity: sha512-Zc1AlqrJlX3SlpupFGpiLi2EbteyP7fXmUOGup6/DnkRgjP9bgMM/ag+n91rsv0U1Gpz0H3VILA/o3bW7Ua6BQ==}
     engines: {node: '>=10'}
-    dev: true
+    dev: false
 
   /@apidevtools/swagger-methods/3.0.2:
     resolution: {integrity: sha512-QAkD5kK2b1WfjDS/UQn/qQkbwF31uqRjPTrsCs5ZG9BQGAkjwvqGFjjPqAuzac/IYzpPtRzjCP1WrTuAIjMrXg==}
-    dev: true
+    dev: false
 
   /@babel/code-frame/7.12.11:
     resolution: {integrity: sha512-Zt1yodBx1UcyiePMSkWnU4hPqhwq7hGi2nFL1LeA3EUl+q2LQx16MISgJ0+z7dnmgvP9QtIleuETGOiOH1RcIw==}
@@ -808,7 +811,7 @@ packages:
 
   /@jsdevtools/ono/7.1.3:
     resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
-    dev: true
+    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -839,11 +842,11 @@ packages:
       lodash: 4.17.21
     transitivePeerDependencies:
       - openapi-types
-    dev: true
+    dev: false
 
   /@openapi-generator-plus/indexed-type/0.1.6:
     resolution: {integrity: sha512-uWqDWOqrIH7dINlSWrZQu83/kNishUniGSum0Fn5TFlLepl0hk6QRTjS68bWPWBxoj6Qyul0TI2EzemkfXjrdw==}
-    dev: true
+    dev: false
 
   /@openapi-generator-plus/json-schema-ref-parser/9.0.10:
     resolution: {integrity: sha512-p44PHIfsFi7YmNvRWOvsEy0fAaUt/rI6603Dyq2JPpC36mntIOVlOYzm6nqKCS/QQxlid92r7Ph+2ttd1YJITQ==}
@@ -851,7 +854,7 @@ packages:
       '@jsdevtools/ono': 7.1.3
       call-me-maybe: 1.0.1
       js-yaml: 3.14.1
-    dev: true
+    dev: false
 
   /@openapi-generator-plus/swagger-parser/10.0.6:
     resolution: {integrity: sha512-cpieVU/shvpocVtPig9VaeYIR2yyK3eHdonWp2CW+a9JGB+O7KOoCI1P7d/crZ04q0KxFI0rlwJioihOAaIisA==}
@@ -864,7 +867,7 @@ packages:
       '@openapi-generator-plus/json-schema-ref-parser': 9.0.10
       call-me-maybe: 1.0.1
       z-schema: 4.2.4
-    dev: true
+    dev: false
 
   /@openapi-generator-plus/testing/0.30.2:
     resolution: {integrity: sha512-ZMKzu9uMnsySPDDs5gn1LfEabkbWxDDbbzh2CJpoyEtm+RmMi0Ff0y2fY3pJZA5h6/+GdsjN3NK2sg4eGSHsGA==}
@@ -873,14 +876,14 @@ packages:
       '@openapi-generator-plus/types': 0.30.0
     transitivePeerDependencies:
       - openapi-types
-    dev: true
+    dev: false
 
   /@openapi-generator-plus/types/0.30.0:
     resolution: {integrity: sha512-zQjiC7+l8JCBX7/fkIX2A4U5srYAg1U8ADjejCTrW9nfJRYGSBwJEUzdOfwL6axWAmbZtkrJoW7OEa+oXDE5Jw==}
     dependencies:
       '@openapi-generator-plus/indexed-type': 0.1.6
       openapi-types: 9.3.0
-    dev: true
+    dev: false
 
   /@sinonjs/commons/1.8.3:
     resolution: {integrity: sha512-xkNcLAn/wZaX14RPlwizcKicDk9G3F8m2nU3L7Ukm5zBgTwiT0wsoFAHx9Jq56fJA1z/7uKGtCRu16sOUCLIHQ==}
@@ -1244,7 +1247,6 @@ packages:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
     dependencies:
       sprintf-js: 1.0.3
-    dev: true
 
   /array-union/2.1.0:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
@@ -1386,7 +1388,7 @@ packages:
 
   /call-me-maybe/1.0.1:
     resolution: {integrity: sha1-JtII6onje1y95gJQoV8DHBak1ms=}
-    dev: true
+    dev: false
 
   /callsites/3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
@@ -1521,7 +1523,7 @@ packages:
   /commander/2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
     requiresBuild: true
-    dev: true
+    dev: false
     optional: true
 
   /concat-map/0.0.1:
@@ -1835,7 +1837,6 @@ packages:
     resolution: {integrity: sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==}
     engines: {node: '>=4'}
     hasBin: true
-    dev: true
 
   /esquery/1.4.0:
     resolution: {integrity: sha512-cCDispWt5vHHtwMY2YrAQ4ibFkAL8RbH5YGBnZBc90MolvvfkkQcJro/aZiAQUlQ3qgrYS6D6v8Gc5G5CQsc9w==}
@@ -2796,7 +2797,6 @@ packages:
     dependencies:
       argparse: 1.0.10
       esprima: 4.0.1
-    dev: true
 
   /jsdom/16.7.0:
     resolution: {integrity: sha512-u9Smc2G1USStM+s/x1ru5Sxrl6mPYCbByG1U/hUmqaVsm4tbNyS7CicOSRyuGQYZhTu0h84qkZZQ/I+dzizSVw==}
@@ -2922,11 +2922,11 @@ packages:
 
   /lodash.get/4.4.2:
     resolution: {integrity: sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=}
-    dev: true
+    dev: false
 
   /lodash.isequal/4.5.0:
     resolution: {integrity: sha1-QVxEePK8wwEgwizhDtMib30+GOA=}
-    dev: true
+    dev: false
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -2938,7 +2938,6 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /lower-case/2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
@@ -3113,7 +3112,6 @@ packages:
 
   /openapi-types/9.3.0:
     resolution: {integrity: sha512-sR23YjmuwDSMsQVZDHbV9mPgi0RyniQlqR0AQxTC2/F3cpSjRFMH3CFPjoWvNqhC4OxPkDYNb2l8Mc1Me6D/KQ==}
-    dev: true
 
   /optionator/0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}
@@ -3475,7 +3473,6 @@ packages:
 
   /sprintf-js/1.0.3:
     resolution: {integrity: sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=}
-    dev: true
 
   /stack-utils/2.0.3:
     resolution: {integrity: sha512-gL//fkxfWUsIlFL2Tl42Cl6+HFALEaB1FU76I/Fy+oZjRreP7OPMXFlGbxM7NQsI0ZpUfw76sHnv0WNYuTb7Iw==}
@@ -3767,7 +3764,7 @@ packages:
   /validator/13.6.0:
     resolution: {integrity: sha512-gVgKbdbHgtxpRyR8K0O6oFZPhhB5tT1jeEHZR0Znr9Svg03U0+r9DXWMrnRAB+HtCStDQKlaIZm42tVsVjqtjg==}
     engines: {node: '>= 0.10'}
-    dev: true
+    dev: false
 
   /w3c-hr-time/1.0.2:
     resolution: {integrity: sha512-z8P5DvDNjKDoFIHK7q8r8lackT6l+jo/Ye3HOle7l9nICP9lf1Ci25fy9vHd0JOWewkIFzXIEig3TdKT7JQ5fQ==}
@@ -3918,7 +3915,7 @@ packages:
       validator: 13.6.0
     optionalDependencies:
       commander: 2.20.3
-    dev: true
+    dev: false
 
   github.com/karlvr/node-maven/b9460728c532fcd6b223d10394e5f7a8c1418ca2:
     resolution: {tarball: https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2}
