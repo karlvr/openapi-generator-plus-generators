@@ -33,6 +33,9 @@
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
     "@openapi-generator-plus/typescript-generator-common": "file:../typescript-common"
   },
+  "devDependencies": {
+    "@openapi-generator-plus/generator-common": "file:../generator-common"
+  },
   "publishConfig": {
     "access": "public"
   },
