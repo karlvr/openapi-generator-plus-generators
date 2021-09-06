@@ -31,6 +31,7 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
+    "@openapi-generator-plus/java-jaxrs-generator-common": "file:../java-jaxrs-common",
     "@openapi-generator-plus/java-jaxrs-client-generator": "file:../java-jaxrs-client"
   },
   "publishConfig": {

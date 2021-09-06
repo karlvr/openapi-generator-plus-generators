@@ -31,7 +31,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/typescript-fetch-client-generator": "file:../typescript-fetch-client"
+    "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
+    "@openapi-generator-plus/typescript-fetch-client-generator": "file:../typescript-fetch-client",
+    "@openapi-generator-plus/typescript-generator-common": "file:../typescript-common"
   },
   "publishConfig": {
     "access": "public"
