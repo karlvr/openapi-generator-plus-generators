@@ -357,13 +357,13 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		toNativeArrayType: (options) => {
 			const { componentNativeType, uniqueItems } = options
 			if (uniqueItems) {
-				return new context.FullTransformingNativeType(componentNativeType, {
+				return new context.TransformingNativeType(componentNativeType, {
 					default: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
 					literalType: () => 'java.util.List',
 					concreteType: (nativeType) => `java.util.ArrayList<${(nativeType.componentType || nativeType).nativeType}>`,
 				})
 			} else {
-				return new context.FullTransformingNativeType(componentNativeType, {
+				return new context.TransformingNativeType(componentNativeType, {
 					default: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
 					literalType: () => 'java.util.List',
 					concreteType: (nativeType) => `java.util.ArrayList<${(nativeType.componentType || nativeType).nativeType}>`,
@@ -372,7 +372,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		},
 		toNativeMapType: (options) => {
 			const { keyNativeType, componentNativeType } = options
-			return new context.FullComposingNativeType([keyNativeType, componentNativeType], {
+			return new context.ComposingNativeType([keyNativeType, componentNativeType], {
 				default: ([keyNativeType, componentNativeType]) => `java.util.Map<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
 				literalType: () => 'java.util.Map',
 				concreteType: ([keyNativeType, componentNativeType]) => `java.util.HashMap<${(keyNativeType.componentType || keyNativeType).nativeType}, ${(componentNativeType.componentType || componentNativeType).nativeType}>`,
