@@ -1,0 +1,16 @@
+{{#if discriminator}}
+{{#with discriminator}}
+	/**
+	 * Discriminator property
+	 */
+	{{name}}: {{{nativeType.serializedType}}};
+	
+{{/with}}
+{{/if}}
+{{#each discriminatorValues}}
+	/**
+	 * Value for discriminator in {{model.nativeType.parentType}}
+	 */
+	{{model.discriminator.name}}: {{{value}}};
+
+{{/each}}

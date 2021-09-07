@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenOneOfSchema, isCodegenAnyOfSchema, isCodegenInterfaceSchema, isCodegenObjectSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -439,6 +439,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		oneOfStrategy: () => CodegenOneOfStrategy.NATIVE,
 		supportsInheritance: () => true,
 		supportsMultipleInheritance: () => true, /* As we use interfaces not classes */
+		nativeOneOfCanBeScope: () => true,
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
@@ -487,6 +488,19 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 	
 			if (context.additionalExportTemplates) {
 				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+			}
+		},
+
+		postProcessSchema: (schema) => {
+			/* We don't have access to the schema when we create the native type, so we post-process to change the native type
+			   to represent the disjunctions that we support.
+			 */
+			if (isCodegenOneOfSchema(schema) || isCodegenAnyOfSchema(schema)) {
+				schema.nativeType.nativeType = schema.composes.map(s => s.nativeType.parentType).join(' | ')
+			} else if (isCodegenObjectSchema(schema) && schema.discriminator && schema.children) {
+				schema.nativeType.nativeType = schema.children.map(s => s.nativeType.parentType).join(' | ')
+			} else if (isCodegenInterfaceSchema(schema) && schema.discriminator && schema.implementors) {
+				schema.nativeType.nativeType = schema.implementors.map(s => s.nativeType.parentType).join(' | ')
 			}
 		},
 	}

@@ -5,15 +5,14 @@
  * @export
  * @interface {{className name}}
  */
-export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{nativeType.parentType}}}{{#hasMore}}, {{/hasMore}}{{/each}} {{/if}}{{!--
---}}{{#if implements}}{{#unless parents}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
+export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{nativeType.parentType}}}{{#hasMore}}, {{/hasMore}}{{/each}} {{/if}} {
 {{>frag/discriminator}}
 {{#if additionalProperties}}
-	[key: string]: {{{additionalProperties.component.nativeType}}};
+	[key: string]: {{{additionalProperties.component.nativeType}}}
 
 {{/if}}
 {{#if component}}
-	[key: string]: {{{component.nativeType}}};
+	[key: string]: {{{component.nativeType}}}
 
 {{/if}}
 {{#each properties}}
