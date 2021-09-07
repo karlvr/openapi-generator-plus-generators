@@ -11,14 +11,14 @@
 {{/each}}
 })
 {{/if}}
-{{else if children}}
+{{else and (isObject) polymorphic children}}
 @com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.DEDUCTION)
 @com.fasterxml.jackson.annotation.JsonSubTypes({
 	{{#each children}}
 	@com.fasterxml.jackson.annotation.JsonSubTypes.Type(value = {{{nativeType.literalType}}}.class, name = "{{{name}}}"),
 	{{/each}}
 })
-{{else and (isInterface) implementors}}
+{{else and (isInterface) polymorphic implementors}}
 @com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.DEDUCTION)
 @com.fasterxml.jackson.annotation.JsonSubTypes({
 	{{#each implementors}}
