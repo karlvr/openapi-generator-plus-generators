@@ -366,14 +366,16 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 		toNativeArrayType: (options) => {
 			const { componentNativeType } = options
-			return new context.TransformingNativeType(componentNativeType, (nativeTypeString) => {
-				return `${toSafeTypeForComposing(nativeTypeString)}[]`
+			return new context.TransformingNativeType(componentNativeType, {
+				default: (nativeType) => `${toSafeTypeForComposing(nativeType.componentType ? nativeType.componentType.nativeType : nativeType.nativeType)}[]`,
 			})
 		},
 		toNativeMapType: (options) => {
 			const { keyNativeType, componentNativeType } = options
-			return new context.ComposingNativeType([keyNativeType, componentNativeType], (nativeTypeStrings) => {
-				return `{ [name: ${nativeTypeStrings[0]}]: ${nativeTypeStrings[1]} }`
+			return new context.ComposingNativeType([keyNativeType, componentNativeType], {
+				default: (nativeTypes) => {
+					return `{ [name: ${nativeTypes[0].componentType ? nativeTypes[0].componentType.nativeType : nativeTypes[0].nativeType}]: ${nativeTypes[1].componentType ? nativeTypes[1].componentType.nativeType : nativeTypes[1].nativeType} }`
+				},
 			})
 		},
 		nativeTypeUsageTransformer: ({ nullable }) => ({
