@@ -4,7 +4,7 @@
   "scripts": {
     "build": "pnpm build --recursive",
     "clean": "pnpm clean --recursive",
-    "clean:node_modules": "pnpm --recursive exec rm -rf node_modules",
+    "clean:node": "pnpm --recursive exec rm -rf node_modules",
     "link": "pnpm link --global @openapi-generator-plus/core @openapi-generator-plus/types @openapi-generator-plus/indexed-type @openapi-generator-plus/testing && pnpm --recursive --workspace-concurrency=1 exec pnpm link --global",
     "release": "pnpm clean && pnpm build && pnpm test && pnpx changeset publish",
     "test": "pnpm test --recursive",
