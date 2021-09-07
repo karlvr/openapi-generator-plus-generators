@@ -294,17 +294,17 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			throw new Error(`Unsupported type name: ${type}`)
 		},
 		toNativeType: (options) => {
-			const { type, format } = options
+			const { type, format, schemaType } = options
 
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
-			switch (type) {
-				case 'integer': {
+			switch (schemaType) {
+				case CodegenSchemaType.INTEGER: {
 					return new context.NativeType('number')
 				}
-				case 'number': {
+				case CodegenSchemaType.NUMBER: {
 					return new context.NativeType('number')
 				}
-				case 'string': {
+				case CodegenSchemaType.STRING: {
 					switch (format) {
 						case 'date':
 							switch (generatorOptions.dateApproach) {
@@ -343,10 +343,10 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 							return new context.NativeType('string')
 					}
 				}
-				case 'boolean': {
+				case CodegenSchemaType.BOOLEAN: {
 					return new context.NativeType('boolean')
 				}
-				case 'file': {
+				case CodegenSchemaType.FILE: {
 					/* JavaScript does have a File type, but it isn't supported by JSON serialization... we say string as we have to say something, it will need to be handled in the generated code */
 					return new context.NativeType('File', {
 						serializedType: 'string',
