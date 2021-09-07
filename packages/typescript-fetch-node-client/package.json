@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-fetch-node-client-generator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An OpenAPI Generator+ module for a TypeScript API client using Fetch in Node",
   "keywords": [
     "openapi-generator-plus",
@@ -31,16 +31,16 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/handlebars-templates": "^0.16.0",
-    "@openapi-generator-plus/typescript-fetch-client-generator": "^0.22.0",
-    "@openapi-generator-plus/typescript-generator-common": "^0.21.0"
+    "@openapi-generator-plus/handlebars-templates": "^0.17.0",
+    "@openapi-generator-plus/typescript-fetch-client-generator": "^0.23.0",
+    "@openapi-generator-plus/typescript-generator-common": "^0.22.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "gitHead": "4d7336969427733ca316dfb48219f166adb9182a",
   "devDependencies": {
-    "@openapi-generator-plus/generator-common": "^0.16.0",
+    "@openapi-generator-plus/generator-common": "^0.17.0",
     "@types/node-fetch": "^2.5.12",
     "node-fetch": "^3.0.0"
   }
