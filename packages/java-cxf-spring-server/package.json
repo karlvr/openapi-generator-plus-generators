@@ -31,12 +31,12 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
-    "@openapi-generator-plus/java-jaxrs-generator-common": "file:../java-jaxrs-common",
-    "@openapi-generator-plus/java-jaxrs-server-generator": "file:../java-jaxrs-server"
+    "@openapi-generator-plus/handlebars-templates": "^0.16.0",
+    "@openapi-generator-plus/java-jaxrs-generator-common": "^0.26.1",
+    "@openapi-generator-plus/java-jaxrs-server-generator": "^0.30.1"
   },
   "devDependencies": {
-    "@openapi-generator-plus/generator-common": "file:../generator-common"
+    "@openapi-generator-plus/generator-common": "^0.16.0"
   },
   "publishConfig": {
     "access": "public"

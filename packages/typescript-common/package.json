@@ -27,9 +27,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "file:../generator-common",
-    "@openapi-generator-plus/handlebars-templates": "file:../handlebars-templates",
-    "@openapi-generator-plus/java-like-generator-helper": "file:../java-like"
+    "@openapi-generator-plus/generator-common": "^0.16.0",
+    "@openapi-generator-plus/handlebars-templates": "^0.16.0",
+    "@openapi-generator-plus/java-like-generator-helper": "^0.14.1"
   },
   "publishConfig": {
     "access": "public"
