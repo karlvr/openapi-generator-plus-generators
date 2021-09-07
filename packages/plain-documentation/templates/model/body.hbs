@@ -25,7 +25,7 @@ renders a model without the surrounding panel.
 {{#if (isObject)}}
 {{#if parents}}
 {{#each parents}}
-    {{>model/inherited . anchor=anchor}}
+    {{>model/inherited . anchor=../anchor}}
 {{/each}}
 {{/if}}
 
