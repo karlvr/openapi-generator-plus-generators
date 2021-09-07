@@ -936,6 +936,22 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		this[varName] = result
 		return null
 	})
+
+	/**
+	 * Indent the lines of the body of this block element with the given string.
+	 */
+	hbs.registerHelper('indent', function(this: UnknownObject, indent: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`indent helper must be called with 1 argument @ ${sourcePosition(options)}`)
+		}
+		if (!indent) {
+			throw new Error(`indent helper missing indent argument @ ${sourcePosition(options)}`)
+		}
+
+		return options.fn(this).split('\n').join(`\n${indent}`)
+	})
 }
 
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars): void
