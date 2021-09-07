@@ -12,6 +12,7 @@ package {{apiPackage}};
 public interface {{className name}}Api {
 
 {{#each operations}}
+	{{>frag/operationDocumentation}}
 	{{>frag/operationAnnotations}}
 	javax.ws.rs.core.Response {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
 

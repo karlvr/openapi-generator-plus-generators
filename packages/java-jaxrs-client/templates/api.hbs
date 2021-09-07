@@ -9,16 +9,7 @@ package {{apiPackage}};
 public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 
 	{{#each operations}}
-	{{#or summary description}}
-	/**
-	{{#if summary}}
-	 * {{summary}}
-	{{/if}}
-	{{#if description}}
-	 * {{{md description}}}
-	{{/if}}
-	 */
-	{{/or}}
+	{{>frag/operationDocumentation}}
 	{{#if deprecated}}
 	@java.lang.Deprecated
 	{{/if}}

@@ -1,7 +1,7 @@
 {{#or description (isNumeric schema)}}
 /**
  {{#if description}}
- * {{description}}
+ * {{#indent ' * '}}{{{md description}}}{{/indent}}
  {{/if}}
  {{#if (isNumeric schema)}}
  {{#if schema.minimum}}
