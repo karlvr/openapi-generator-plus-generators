@@ -1,10 +1,4 @@
-/**
-{{#if description}}
- * {{{md description}}}
-{{/if}}
- * @export
- * @interface {{className name}}
- */
+{{>frag/schemaDocumentation}}
 export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{nativeType.parentType}}}{{#hasMore}}, {{/hasMore}}{{/each}} {{/if}} {
 {{>frag/discriminator}}
 {{#if additionalProperties}}
@@ -16,13 +10,7 @@ export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{n
 
 {{/if}}
 {{#each properties}}
-	/**
-	{{#if description}}
-	 * {{{md description}}}
-	{{/if}}
-	 * @type {{safe '{'}}{{{nativeType.serializedType}}}{{safe '}'}}
-	 * @memberof {{className ../name}}
-	 */
+	{{frag/propertyDocumentation memberOf=../name}}
 	{{serializedName}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
 {{/each}}
 }

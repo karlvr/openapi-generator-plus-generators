@@ -13,30 +13,12 @@ export type FactoryFunction<T> = (configuration?: Configuration, basePath?: stri
 {{#each groups}}
 /**
  * {{className name}}Api - fetch parameter creator
- {{#if description}}
- * {{{md description}}}
- {{/if}}
  * @export
  */
 export const {{className name}}ApiFetchParamCreator = function (configuration?: Configuration) {
 	return {
 	{{#each operations}}
-		/**
-		 {{#if description}}
-		 * {{{md description}}}
-		 {{/if}}
-		 {{#if summary}}
-		 * @summary {{{summary}}}
-		 {{/if}}
-		 {{#each parameters}}
-		 * {{>frag/parameterDocumentation}}
-		 {{/each}}
-		 {{#with requestBody}}
-		 * {{>frag/parameterDocumentation}}
-		 {{/with}}
-		 * @param {*} [options] Override http request option.
-		 * @throws {RequiredError}
-		 */
+		{{>frag/operationDocumentation}}
 		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options: RequestInit = {}): FetchArgs {
 	{{#each parameters}}
 	{{>frag/validateParameter operation=..}}
@@ -250,30 +232,12 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 /**
  * {{className name}}Api - functional programming interface
- {{#if description}}
- * {{{md description}}}
- {{/if}}
  * @export
  */
 export const {{className name}}ApiFp = function(configuration?: Configuration) {
 	return {
 	{{#each operations}}
-		/**
-		 {{#if description}}
-		 * {{{md description}}}
-		 {{/if}}
-		 {{#if summary}}
-		 * @summary {{{summary}}}
-		 {{/if}}
-		 {{#each parameters}}
-		 * {{>frag/parameterDocumentation}}
-		 {{/each}}
-		 {{#with requestBody}}
-		 * {{>frag/parameterDocumentation}}
-		 {{/with}}
-		 * @param {*} [options] Override http request option.
-		 * @throws {RequiredError}
-		 */
+		{{>frag/operationDocumentation}}
 		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.serializedType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
 			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options);
 			return (fetch: FetchAPI = defaultFetch, basePath: string = BASE_PATH) => {
@@ -292,9 +256,6 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 
 /**
  * {{className name}}Api - factory interface
- {{#if description}}
- * {{{md description}}}
- {{/if}}
  * @export
  */
 export const {{className name}}ApiFactory: FactoryFunction<{{className name}}Api{{#if @root.withInterfaces}}Interface{{/if}}> = function (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) {
@@ -304,28 +265,12 @@ export const {{className name}}ApiFactory: FactoryFunction<{{className name}}Api
 {{#if @root.withInterfaces}}
 /**
  * {{className name}}Api - interface
- {{#if description}}
- * {{{md description}}}
- {{/if}}
  * @export
  * @interface {{className name}}Api
  */
 export interface {{className name}}ApiInterface {
 {{#each operations}}
-	/**
-	 {{#if description}}
-	 * {{{md description}}}
-	 {{/if}}
-	 {{#summary}}
-	 * @summary {{{summary}}}
-	 {{/summary}}
-	 {{#each parameters}}
-	 * @param {{safe '{'}}{{{nativeType}}}{{safe '}'}} {{#unless required}}[{{/unless}}{{identifier name}}{{#unless required}}]{{/unless}} {{#if description}}{{description}}{{/if}}
-	 {{/each}}
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 * @memberof {{className ../name}}ApiInterface
-	 */
+	{{>frag/operationDocumentation}}
 	{{identifier name}}({{#each parameters}}{{identifier name}}: {{{nativeType}}}{{#unless required}} | undefined{{/unless}}, {{/each}}options?: RequestInit): Promise<{{#if returnNativeType}}{{{returnNativeType}}}{{else}}{}{{/if}}>;
 
 {{/each}}
@@ -334,9 +279,6 @@ export interface {{className name}}ApiInterface {
 {{/if}}
 /**
  * {{className name}}Api - object-oriented interface
- {{#if description}}
- * {{{md description}}}
- {{/if}}
  * @export
  * @class {{className name}}Api
  * @extends {BaseAPI}
@@ -347,23 +289,7 @@ export class {{className name}}Api extends BaseAPI implements {{className name}}
 export class {{className name}}Api extends BaseAPI {
 {{/if}}
 	{{#each operations}}
-	/**
-	 {{#if description}}
-	 * {{{md description}}}
-	 {{/if}}
-	 {{#if summary}}
-	 * @summary {{{summary}}}
-	 {{/if}}
-	 {{#each parameters}}
-	 * {{>frag/parameterDocumentation}}
-	 {{/each}}
-	 {{#with requestBody}}
-	 * {{>frag/parameterDocumentation}}
-	 {{/with}}
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 * @memberof {{className ../name}}Api
-	 */
+	{{>frag/operationDocumentation}}
 	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit) {
 		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options)(this.fetch, this.basePath);
 	}

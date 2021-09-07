@@ -1,0 +1,19 @@
+{{#or description (isNumeric schema)}}
+/**
+ {{#if description}}
+ * {{#indent ' * '}}{{{md description}}}{{/indent}}
+ {{/if}}
+ * @type {{safe '{'}}{{{nativeType.serializedType}}}{{safe '}'}}
+{{#if memberOf}}
+ * @memberof {{className memberOf}}
+{{/if}}
+ {{#if (isNumeric schema)}}
+ {{#if schema.minimum}}
+ * minimum: {{schema.minimum}}
+ {{/if}}
+ {{#if schema.maximum}}
+ * maximum: {{schema.maximum}}
+ {{/if}}
+ {{/if}}
+ */
+{{/or}}

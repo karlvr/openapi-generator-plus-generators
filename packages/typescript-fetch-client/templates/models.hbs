@@ -12,22 +12,10 @@ export namespace Api {
 
 {{#each schemas}}
 {{#if (isEnum)}}
-/**
- {{#if description}}
- * {{{md description}}}
- {{/if}}
- * @export
- * @enum {string}
- */
+{{>frag/schemaDocumentation}}
 export import {{className name}} = Api.{{className name}}
 {{else}}
-/**
-{{#if description}}
- * {{{md description}}}
-{{/if}}
- * @export
- * @interface {{className name}}
- */
+{{>frag/schemaDocumentation}}
 export type {{className name}} = Api.{{className name}}
 {{/if}}
 
