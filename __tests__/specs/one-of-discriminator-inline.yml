@@ -1,0 +1,106 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: oneOf inline with discriminator
+paths: {}
+components:
+  schemas:
+    url:
+      type: string
+      format: url
+
+    Image:
+      type: object
+      description: An image
+      required: [url, width, height]
+      properties:
+        url:
+          $ref: '#/components/schemas/url'
+        width:
+          type: integer
+        height:
+          type: integer   
+        title:
+          type: string
+          description: A description of the image to use in alt text.
+
+    ArticleContent:
+      oneOf:
+        - type: object
+          x-schema-name: Text
+          required: [text]
+          properties:
+            contentType:
+              type: string
+            title:
+              type: string
+            text:
+              type: string
+        - type: object
+          x-schema-name: Html
+          required: [html]
+          properties:
+            contentType:
+              type: string
+            title:
+              type: string
+            html:
+              type: string
+        - type: object
+          x-schema-name: Image
+          required: [image]
+          properties:
+            contentType:
+              type: string
+            title:
+              type: string
+            image:
+              $ref: '#/components/schemas/Image'
+            caption:
+              type: string
+        - type: object
+          x-schema-name: Links
+          properties:
+            contentType:
+              type: string
+            title:
+              type: string
+            links:
+              type: array
+              items:
+                type: object
+                required: [name, url]
+                properties:
+                  name:
+                    type: string
+                  url:
+                    type: string
+                    format: url
+                  description:
+                    type: string
+        - type: object
+          x-schema-name: Download
+          required:
+            - url
+          properties:
+            contentType:
+              type: string
+            title:
+              type: string
+            url:
+              type: string
+              format: url
+        - type: object
+          x-schema-name: Video
+          required:
+            - url
+          properties:
+            contentType:
+              type: string
+            title:
+              type: string
+            url:
+              type: string
+              format: url
+      discriminator:
+        propertyName: contentType
