@@ -58,7 +58,9 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				}
 			}
 
-			return new context.NativeType(type)
+			return new context.NativeType(type, {
+				serializedType: '', /* To prevent us from outputting in the documentation */
+			})
 		},
 		toNativeObjectType: function(options) {
 			const { scopedName } = options
