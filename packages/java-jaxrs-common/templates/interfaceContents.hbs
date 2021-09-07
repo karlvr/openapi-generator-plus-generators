@@ -1,13 +1,47 @@
+{{#if additionalProperties}}
+{{{additionalProperties.nativeType}}} getAdditionalProperties();
+
+{{{additionalProperties.component.nativeType}}} getAdditionalProperty(java.lang.String name);
+
+void putAdditionalProperty(java.lang.String name, {{{additionalProperties.component.nativeType}}} value);
+
+void setAdditionalProperties({{{additionalProperties.nativeType}}} additionalProperties);
+
+{{{additionalProperties.nativeType}}} additionalProperties();
+
+{{{className name}}} additionalProperties({{{additionalProperties.nativeType}}} additionalProperties);
+
+{{/if}}
 {{#if properties}}
 {{#each properties}}
-{{#if deprecated}}
-@java.lang.Deprecated
+{{>frag/propertyDocumentation}}
+{{>frag/propertyAnnotations}}
+{{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}});
+
+{{#or (isObject) (isMap) (isArray)}}
+/**
+ * Returns the {{identifier name}}, or if it's {@code null} it first creates a new object,
+ * sets the property to the new object, and then returns it.
+ */
+{{>frag/propertyAnnotations}}
+{{{nativeType}}} {{identifier name}}();
+
+{{/or}}
+{{>frag/propertyAnnotations}}
+{{>frag/pojoPropertyType}} {{getter .}}();
+
+{{>frag/propertyAnnotations}}
+void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}});
+{{#if (isArray)}}
+
+{{>frag/propertyAnnotations}}
+{{className ../name}} add{{capitalize (singular (identifier name))}}({{{component.nativeType}}} {{identifier (singular name)}});
+{{#if (isObject component)}}
+
+{{>frag/propertyAnnotations}}
+{{{component.nativeType}}} add{{capitalize (singular (identifier name))}}();
 {{/if}}
-{{{nativeType}}} {{#and (isBoolean) required}}is{{else}}get{{/and}}{{capitalize (identifier name)}}();
-{{#if deprecated}}
-@java.lang.Deprecated
 {{/if}}
-void set{{capitalize (identifier name)}}({{{nativeType}}} {{identifier name}});
 
 {{/each}}
 {{/if}}

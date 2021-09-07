@@ -43,22 +43,8 @@ public {{{className name}}} additionalProperties({{{additionalProperties.nativeT
 
 {{/if}}
 {{#each (inheritedProperties)}}
-/**
- {{#if description}}
- * {{description}}
- {{/if}}
- {{#if (isNumeric schema)}}
- {{#if schema.minimum}}
- * minimum: {{schema.minimum}}
- {{/if}}
- {{#if schema.maximum}}
- * maximum: {{schema.maximum}}
- {{/if}}
- {{/if}}
- */
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+{{>frag/propertyDocumentation}}
+{{>frag/propertyAnnotations}}
 @java.lang.Override
 public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	set{{capitalize (identifier name)}}({{identifier name}});
@@ -67,22 +53,8 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 
 {{/each}}
 {{#each properties}}
-/**
- {{#if description}}
- * {{description}}
- {{/if}}
- {{#if (isNumeric schema)}}
- {{#if schema.minimum}}
- * minimum: {{schema.minimum}}
- {{/if}}
- {{#if schema.maximum}}
- * maximum: {{schema.maximum}}
- {{/if}}
- {{/if}}
- */
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+{{>frag/propertyDocumentation}}
+{{>frag/propertyAnnotations}}
 public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	{{#if nullable}}
 	set{{capitalize (identifier name)}}(java.util.Optional.of({{identifier name}}));
@@ -97,9 +69,7 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
  * Returns the {{identifier name}}, or if it's {@code null} it first creates a new object,
  * sets the property to the new object, and then returns it.
  */
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+{{>frag/propertyAnnotations}}
 public {{{nativeType}}} {{identifier name}}() {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
@@ -115,9 +85,7 @@ public {{{nativeType}}} {{identifier name}}() {
 }
 
 {{/or}}
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+{{>frag/propertyAnnotations}}
 {{#if (lookup schema.vendorExtensions 'x-extra-annotation')}}
 {{{schema.vendorExtensions.x-extra-annotation}}}
 {{/if}}
@@ -129,16 +97,14 @@ public {{{nativeType}}} {{identifier name}}() {
 public {{>frag/pojoPropertyType}} {{getter .}}() {
 	return this.{{identifier name}};
 }
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+
+{{>frag/propertyAnnotations}}
 public void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}}) {
 	this.{{identifier name}} = {{identifier name}};
 }
 {{#if (isArray)}}
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+
+{{>frag/propertyAnnotations}}
 public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{component.nativeType}}} {{identifier (singular name)}}) {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
@@ -154,9 +120,8 @@ public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{c
 	return this;
 }
 {{#if (isObject component)}}
-{{#if deprecated}}
-@java.lang.Deprecated
-{{/if}}
+
+{{>frag/propertyAnnotations}}
 public {{{component.nativeType}}} add{{capitalize (singular (identifier name))}}() {
 	{{{component.nativeType}}} {{identifier (singular name)}} = new {{{component.nativeType.concreteType}}}();
 	add{{capitalize (singular (identifier name))}}({{identifier (singular name)}});

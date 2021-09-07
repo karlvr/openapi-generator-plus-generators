@@ -1,0 +1,13 @@
+/**
+ {{#if description}}
+ * {{description}}
+ {{/if}}
+ {{#if (isNumeric schema)}}
+ {{#if schema.minimum}}
+ * minimum: {{schema.minimum}}
+ {{/if}}
+ {{#if schema.maximum}}
+ * maximum: {{schema.maximum}}
+ {{/if}}
+ {{/if}}
+ */

@@ -1,7 +1,4 @@
 {{#join '_implements' ', '}}
-{{#and (not parents) (not implements)}}
-java.io.Serializable
-{{/and}}
 {{#each implements}}
 {{{nativeType.parentType}}}
 {{/each}}
@@ -9,6 +6,9 @@ java.io.Serializable
 {{{vendorExtensions.x-implements-interfaces}}}
 {{/ifvex}}
 {{>hooks/pojoImplementsExtras}}
+{{#and (not parents)}}
+java.io.Serializable
+{{/and}}
 {{/join}}
 {{#if _implements}}
 implements {{{_implements}}} {{/if}}
