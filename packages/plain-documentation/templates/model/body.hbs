@@ -23,46 +23,17 @@ renders a model without the surrounding panel.
 {{/if}}
 
 {{#if (isObject)}}
-{{#if parents}}
-{{#each parents}}
-    {{>model/inherited . anchor=../anchor}}
-{{/each}}
+    {{>model/object anchor=anchor}}
 {{/if}}
-
-{{#if implements}}
-    {{>model/implements anchor=anchor}}
-{{/if}}
-
-{{#if properties}}
-    {{>model/properties anchor=anchor}}
-{{/if}}
-
-{{#if discriminator}}
-    {{>model/discriminator anchor=anchor}}
-{{/if}}
-
-{{#if children}}
-    {{>model/children anchor=anchor}}
-{{/if}}
-{{/if}}
-
-{{#if (isInterface)}}
-    {{>model/interface anchor=anchor}}
-
-{{#if parents}}
-{{#each parents}}
-    {{>model/inherited . anchor=anchor}}
-{{/each}}
-{{/if}}
-{{/if}}
-
 {{#if (isEnum)}}
     {{>model/enum}}
 {{/if}}
-
-{{!-- {{#if allOf}}
-    {{>model/allOf allOf}}
+{{#if (isAllOf)}}
+    {{>model/all-of}}
 {{/if}}
-{{#if anyOf}}
-    {{>model/anyOf anyOf}}
-{{/if}} --}}
+{{!-- {{#if (isAnyOf)}}
+    {{>model/any-of}}
+{{/if}}--}}
+{{#if (isOneOf)}}
+    {{>model/one-of}}
+{{/if}}

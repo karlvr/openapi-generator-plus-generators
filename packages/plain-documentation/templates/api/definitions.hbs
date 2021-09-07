@@ -8,6 +8,8 @@
 	<h2>Definitions</h2>
 
 	{{#eachSorted schemas}}
+		{{#unless anonymous}}
 		{{>api/model model=. anchor="/definitions" }}
+		{{/unless}}
 	{{/eachSorted}}
 </article>

@@ -2,6 +2,12 @@
     {{#if anchor}}
         {{#if (isObject)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
+        {{else if (isAllOf)}}
+            <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
+        {{else if (isAnyOf)}}
+            <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
+        {{else if (isOneOf)}}
+            <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
         {{else if (isMap)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId component.nativeType.concreteType}}">{{nativeType}}</a>
         {{else if (isArray)}}

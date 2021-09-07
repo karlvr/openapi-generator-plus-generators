@@ -10,9 +10,6 @@
                         <h4>
                             {{nativeType}}
                             {{#if (isInterface)}}<span class="type">INTERFACE</span>{{/if}}
-                            {{#ifdef allOf}}
-                            {{#each allOf}}{{#if $ref}}<span class="type">&lt; {{>model/reference $ref}}</span>{{/if}}{{/each}}
-                            {{/ifdef}}
                         </h4>
                     {{/if}}
 

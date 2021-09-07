@@ -1,0 +1,21 @@
+{{#if parents}}
+{{#each parents}}
+    {{>model/inherited . anchor=../anchor}}
+{{/each}}
+{{/if}}
+
+{{#if implements}}
+    {{>model/implements anchor=anchor}}
+{{/if}}
+
+{{#if properties}}
+    {{>model/properties anchor=anchor}}
+{{/if}}
+
+{{#if discriminator}}
+    {{>model/discriminator anchor=anchor}}
+{{/if}}
+
+{{#if children}}
+    {{>model/children anchor=anchor}}
+{{/if}}

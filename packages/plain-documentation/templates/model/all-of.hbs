@@ -1,0 +1,36 @@
+{{!
+renders a model "allOf"-definition.
+}}
+<div class="all-of">
+    <h5>All of</h5>
+    <div class="detail">
+        {{#each composes}}
+            {{#unless anonymous}}
+            <p><a class="model-ref" href="#{{../anchor}}/{{htmlId nativeType}}">{{nativeType}}</a></p>
+            {{/unless}}
+        {{/each}}
+    </div>
+
+    {{#if discriminator}}
+    {{>model/discriminator}}
+    {{/if}}
+
+    {{#set '__first'}}true{{/set}}
+    {{#each composes}}
+        {{#if anonymous}}
+            {{#if ../__first}}
+            <div class="params -properties">
+                <h5>Properties</h5>
+                <table>
+                {{#with ../.}}
+                {{#set '__first'}}{{/set}}
+                {{/with}}
+            {{/if}}
+            {{>model/frag/properties . anchor=../anchor}}
+        {{/if}}
+    {{/each}}
+    {{#unless __first}}
+                </table>
+            </div>
+    {{/unless}}
+</div>
