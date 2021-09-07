@@ -58,9 +58,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				}
 			}
 
-			return new context.NativeType(type, {
-				serializedType: null,
-			})
+			return new context.NativeType(type)
 		},
 		toNativeObjectType: function(options) {
 			const { scopedName } = options
@@ -105,6 +103,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		oneOfStrategy: () => CodegenOneOfStrategy.NATIVE,
 		supportsInheritance: () => false,
 		supportsMultipleInheritance: () => false,
+		nativeOneOfCanBeScope: () => true,
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]

@@ -1,5 +1,7 @@
-{{#if parent}}
-{{>model/frag/inherited parent anchor=anchor}}
+{{#if parents}}
+{{#each parents}}
+{{>model/frag/inherited . anchor=anchor}}
+{{/each}}
 {{/if}}
 {{#if properties}}
 {{>model/frag/properties}}
