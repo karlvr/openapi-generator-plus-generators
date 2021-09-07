@@ -1,4 +1,4 @@
-import { CodegenGenerator, CodegenSchemaType, CodegenConfig, CodegenGeneratorContext } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
 import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
@@ -107,6 +107,10 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 		toSuggestedSchemaName: (name, options) => {
 			if (options.schemaType === CodegenSchemaType.ENUM) {
 				name = `${name}_enum`
+			} else if (options.purpose === CodegenSchemaPurpose.EXTRACTED_INTERFACE) {
+				name = `i_${name}`
+			} else if (options.purpose === CodegenSchemaPurpose.IMPLEMENTATION) {
+				name = `abstract_${name}`
 			}
 			return cg.toSuggestedSchemaName(name, options)
 		},
