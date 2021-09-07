@@ -1,6 +1,13 @@
 # @openapi-generator-plus/generator-common
 
+## 0.17.1
+
+### Patch Changes
+
+- a65b3ce: Upgrade dependencies
+
 ## 0.17.0
+
 ### Minor Changes
 
 - 86c4e5d: Support the allOf, anyOf, oneOf handling changes in core.

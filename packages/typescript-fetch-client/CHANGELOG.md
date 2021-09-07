@@ -1,6 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.23.1
+
+### Patch Changes
+
+- a65b3ce: Upgrade dependencies
+- Updated dependencies [a65b3ce]
+  - @openapi-generator-plus/generator-common@0.17.1
+  - @openapi-generator-plus/handlebars-templates@0.17.1
+
 ## 0.23.0
+
 ### Minor Changes
 
 - 86c4e5d: Support the allOf, anyOf, oneOf handling changes in core.
