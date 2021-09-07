@@ -22,10 +22,10 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
     "pluralize": "^8.0.0",
-    "url-parse": "^1.4.7"
+    "url-parse": "^1.5.3"
   },
   "peerDependencies": {
-    "@openapi-generator-plus/core": "^0.31.0"
+    "@openapi-generator-plus/core": "^0.31.3"
   },
   "publishConfig": {
     "access": "public"
