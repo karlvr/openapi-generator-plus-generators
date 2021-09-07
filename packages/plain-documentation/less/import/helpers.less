@@ -111,7 +111,7 @@
 
 // RGBA with IE fallback
 .rgba(@prop, @colour, @opacity) {
-	@{prop}: fade(@colour, percentage(@opacity/100));
+	@{prop}: fade(@colour, percentage((@opacity/100)));
 	
 	.lte8 & {
 		@{prop}: @colour;
@@ -214,7 +214,7 @@
 }
 
 .gutter(@cols: @col-count) {
-	padding: 0 percentage(@col-pad / (@col-width * @cols));
+	padding: 0 percentage((@col-pad / (@col-width * @cols)));
 }
 
 .subpixel(@enabled) when (@enabled) {
@@ -249,11 +249,11 @@
 @grid-width: unit((@grid-columns * @grid-column + (@grid-columns - 1) * @grid-gutter), px);
 
 .grid(@colspan) {
-	width: percentage(((@colspan * @grid-column) + ((@colspan - 1) * @grid-gutter)) / unit(@grid-width));
+	width: percentage((((@colspan * @grid-column) + ((@colspan - 1) * @grid-gutter)) / unit(@grid-width)));
 }
 
 .grid(@colspan, @context) {
-	width: percentage(((@colspan * @grid-column) + ((@colspan - 1) * @grid-gutter)) / ((@context * @grid-column) + ((@context - 1) * @grid-gutter)));
+	width: percentage((((@colspan * @grid-column) + ((@colspan - 1) * @grid-gutter)) / ((@context * @grid-column) + ((@context - 1) * @grid-gutter))));
 }
 
 @grid-columns-news: 24;
@@ -262,7 +262,7 @@
 @grid-width-news: unit((@grid-columns-news * @grid-column-news + (@grid-columns-news - 1) * @grid-gutter-news), px);
 
 .grid-news(@colspan) {
-	width: percentage(((@colspan * @grid-column-news) + ((@colspan - 1) * @grid-gutter-news)) / unit(@grid-width-news));
+	width: percentage((((@colspan * @grid-column-news) + ((@colspan - 1) * @grid-gutter-news)) / unit(@grid-width-news)));
 }
 
 .grid-news(@colspan, @context) {
