@@ -1,5 +1,15 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 0.16.2
+
+### Patch Changes
+
+- Updated dependencies [7a86b15]
+- Updated dependencies [ee03854]
+  - @openapi-generator-plus/handlebars-templates@0.19.0
+  - @openapi-generator-plus/generator-common@0.18.0
+  - @openapi-generator-plus/java-like-generator-helper@0.15.2
+
 ## 0.16.1
 
 ### Patch Changes

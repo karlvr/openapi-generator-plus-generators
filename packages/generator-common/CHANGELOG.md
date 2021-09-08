@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 0.18.0
+
+### Minor Changes
+
+- ee03854: Core update
+
 ## 0.17.1
 
 ### Patch Changes

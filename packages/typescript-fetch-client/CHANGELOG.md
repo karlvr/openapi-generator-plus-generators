@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.25.1
+
+### Patch Changes
+
+- 7c50b17: Log warnings for unsupported encoding styles
+- Updated dependencies [7a86b15]
+- Updated dependencies [ee03854]
+  - @openapi-generator-plus/handlebars-templates@0.19.0
+  - @openapi-generator-plus/generator-common@0.18.0
+  - @openapi-generator-plus/typescript-generator-common@0.22.2
+
 ## 0.25.0
 
 ### Minor Changes

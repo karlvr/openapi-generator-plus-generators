@@ -1,5 +1,17 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.19.0
+
+### Minor Changes
+
+- 7a86b15: Add logging helpers
+- ee03854: Core update
+
+### Patch Changes
+
+- Updated dependencies [ee03854]
+  - @openapi-generator-plus/generator-common@0.18.0
+
 ## 0.18.0
 
 ### Minor Changes
