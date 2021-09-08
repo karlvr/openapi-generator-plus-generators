@@ -17,7 +17,7 @@
     "@types/less": "^3.0.3",
     "@types/lodash": "^4.14.172",
     "@types/marked": "^3.0.0",
-    "@types/node": "^16.7.12",
+    "@types/node": "^16.7.13",
     "@types/pluralize": "0.0.29",
     "@types/rimraf": "^3.0.2",
     "@types/url-parse": "^1.4.4",
@@ -34,9 +34,9 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "@openapi-generator-plus/core": "^0.31.3",
+    "@openapi-generator-plus/core": "^0.32.0",
     "@openapi-generator-plus/indexed-type": "^0.1.6",
-    "@openapi-generator-plus/testing": "^0.31.1",
-    "@openapi-generator-plus/types": "^0.31.1"
+    "@openapi-generator-plus/testing": "^0.31.2",
+    "@openapi-generator-plus/types": "^0.32.0"
   }
 }
