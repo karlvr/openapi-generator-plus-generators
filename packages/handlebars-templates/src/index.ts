@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, stringify } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent, CodegenLogLevel } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -145,7 +145,7 @@ export function sourcePosition(options: ActualHelperOptions): string {
 	}
 }
 
-export function registerStandardHelpers(hbs: typeof Handlebars, { generator, utils }: CodegenGeneratorContext): void {
+export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log, utils }: CodegenGeneratorContext): void {
 	/* Reject unknown helpers or properties to aid debugging */
 	hbs.registerHelper('helperMissing', function(...helperArguments: unknown[]) {
 		const options = helperArguments[arguments.length - 1] as ActualHelperOptions
@@ -800,6 +800,24 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		}
 
 		return result
+	})
+
+	hbs.registerHelper('warn', function(message: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`warn helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+		log(CodegenLogLevel.WARN, `${message} @ ${sourcePosition(options)}`)
+	})
+	hbs.registerHelper('error', function(message: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`error helper must be called with one argument @ ${sourcePosition(options)}`)
+		}
+
+		throw new Error(`${message} @ ${sourcePosition(options)}`)
 	})
 
 	/* Property type helpers */
