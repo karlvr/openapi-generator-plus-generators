@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, stringify } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent, CodegenSchemaUsage, isCodegenMapSchema, isCodegenSchemaUsage, isCodegenObjectSchema } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -857,6 +857,22 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, uti
 		} else {
 			return []
 		}
+	})
+
+	/** Return an array of unique and not shadowed properties, including inherited, for the current model. */
+	hbs.registerHelper('allProperties', function(this: CodegenObjectSchema, schema?: CodegenObjectSchema) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 1 && arguments.length !== 2) {
+			throw new Error(`allProperties helper must be called with 0 or 1 arguments @ ${sourcePosition(options)}`)
+		}
+		if (arguments.length === 1) {
+			schema = this
+		} else if (!schema) {
+			throw new Error(`allProperties helper called with undefined schema argument @ ${sourcePosition(options)}`)
+		}
+
+		return uniquePropertiesIncludingInherited([schema])
 	})
 
 	hbs.registerHelper('nonDefaultResponses', function(this: CodegenOperation) {
