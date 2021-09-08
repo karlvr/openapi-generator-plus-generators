@@ -138,11 +138,6 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				{{#each (allProperties schema)}}
 				{{>frag/apiParameters dest='localVarFormParams' var=(concat (identifier ../../name) '.' (identifier name)) encoding=(lookup ../encoding.properties name)}}
 				{{/each}}
-				for (const localVarName in {{identifier ../name}}) {
-					if (localVarName !== undefined) {
-						localVarFormParams.append(localVarName, ({{identifier ../name}} as any)[localVarName]);
-					}
-				}
 				localVarRequestOptions.body = localVarFormParams;
 			{{else ifeq mediaType.mimeType 'application/json'}}
 				localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
