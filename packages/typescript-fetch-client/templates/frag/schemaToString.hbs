@@ -6,21 +6,21 @@
 {{#indent indent}}
 {{#if (isDateTime)}}
 {{#ifeq @root.dateApproach 'native'}}
-dateToString({{value}})
+dateToString({{{value}}})
 {{~else}}
-String({{value}})
+String({{{value}}})
 {{~/ifeq}}
 {{~else or (isDate) (isTime)}}
-String({{value}})
+String({{{value}}})
 {{~else if (isObject)}}
 [
 {{#each (allProperties schema)}}
-{{../value}}.{{identifier name}} !== undefined ? {{../value}}.{{identifier name}} !== null ? `{{name}},{{safe '${'}}{{>frag/schemaToString value=(concat ../value '.' (identifier name)) separator=../separator indent=../indent}}{{safe '}'}}` : '{{name}},' : undefined{{#hasMore}},{{/hasMore}}{{safe ' '}}
+{{{../value}}}["{{serializedName}}"] !== undefined ? {{{../value}}}["{{serializedName}}"] !== null ? `{{name}},{{safe '${'}}{{>frag/schemaToString value=(concat ../value '["' serializedName '"]') separator=../separator indent=../indent}}{{safe '}'}}` : '{{name}},' : undefined{{#hasMore}},{{/hasMore}}{{safe ' '}}
 {{/each}}
 ].filter(localVarObjectElement => localVarObjectElement !== undefined).join('{{separator}}')
 {{~else if (isArray)}}
-{{value}}.map(localVarArrayMapElement => {{>frag/schemaToString component value='localVarArrayMapElement' separator=separator indent=indent}}).join('{{separator}}')
+{{{value}}}.map(localVarArrayMapElement => {{>frag/schemaToString component value='localVarArrayMapElement' separator=separator indent=indent}}).join('{{separator}}')
 {{~else}}
-String({{value}})
+String({{{value}}})
 {{~/if~}}
 {{/indent}}

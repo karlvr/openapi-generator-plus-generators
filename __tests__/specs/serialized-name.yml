@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: Serialized name
+  description: |
+    Examples of where a property name might differ from the serializedName
+  version: '1.0'
+paths:
+  /auth/token:
+    post:
+      tags: [auth]
+      deprecated: false
+      summary: Obtain an access token
+      description: "Use this endpoint to generate or refresh an auth token."
+      operationId: signIn
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [grant_type, client_id, client_secret]
+              properties:
+                grant_type:
+                  type: string
+                  enum: [password, refresh_token, client_credentials, token]
+                  description: |
+                    When using `password`, you must provide the `username` and `password`.
+                    
+                    When using `refresh_token` you must provide the `refresh_token`.
+                    
+                    When using `client_credentials` you only need to provide the `client_id` and `client_secret`.
+
+                    When using `token` you only need to provide the token in the `password`.
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+                  format: password
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                totp:
+                  type: string
+                  description: |
+                    Supply the user's current TOTP if enabled for their account.
+                    If a user with TOTP setup attempts to authenticate without a TOTP, or with an invalid TOTP, the
+                    error response will use the `invalid_totp` code, instead of the usual `invalid_grant`.
+                refresh_token:
+                  type: string
+                  format: password
+      responses:
+        200:
+          description: OK
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        400:
+          description: The credentials were not correct for the user, or the account was not found.
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref : '#/components/schemas/OAuthError'
+  /encoding:
+    get:
+      parameters:
+        - name: accessToken
+          in: query
+          schema:
+            $ref: '#/components/schemas/AccessToken'
+        - name: accessTokenFormNoExplode
+          in: query
+          schema:
+            $ref: '#/components/schemas/AccessToken'
+          style: form
+          explode: false
+        - name: accessTokenDeepObject
+          in: query
+          schema:
+            $ref: '#/components/schemas/AccessToken'
+          style: deepObject
+      responses:
+        200:
+          description: OK
+components:
+  schemas:
+    AccessToken:
+      type: object
+      required: [access_token, token_type, expires_in]
+      properties:
+        access_token:
+          type: string
+          description: The access token that grants the member access.
+        token_type:
+          type: string
+          description: "The type of the access token."
+        refresh_token:
+          type: string
+          description: The refresh token is used to obtain a new access token, after the access token expires, without needing to prompt the user for their credentials again.
+        expires_in:
+          type: integer
+          format: int64
+          description: The number of seconds before the access token expires.
+        issuer:
+          type: string
+          description: A named external system that provides identity and API access by issuing OAuth access tokens.
+    OAuthError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: The error code.
