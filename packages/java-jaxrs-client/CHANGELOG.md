@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 0.36.0
+
+### Minor Changes
+
+- 9f6ef06: Support parameter serializedName and fix more object serializedName cases
+
 ## 0.35.0
 
 ### Minor Changes

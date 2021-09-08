@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.25.0
+
+### Minor Changes
+
+- 9f6ef06: Support parameter serializedName and fix more object serializedName cases
+
+### Patch Changes
+
+- 9dbd093: Fix x-www-form-urlencoded body handling
+
+  I left in the old code after the previous upgrade to respect encodings.
+
+- 83cde2b: Correctly handle object properties that have a different serialized name
+
 ## 0.24.0
 
 ### Minor Changes

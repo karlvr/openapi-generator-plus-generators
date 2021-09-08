@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 0.14.2
+
+### Patch Changes
+
+- Updated dependencies [9f6ef06]
+- Updated dependencies [9dbd093]
+- Updated dependencies [83cde2b]
+  - @openapi-generator-plus/typescript-fetch-client-generator@0.25.0
+
 ## 0.14.1
 
 ### Patch Changes
