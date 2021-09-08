@@ -21,8 +21,6 @@ paths:
                   type: string
                 pipeDelimited:
                   type: string
-                deepObject:
-                  type: string
             encoding:
               formExplode:
                 style: form
@@ -34,8 +32,6 @@ paths:
                 style: spaceDelimited
               pipeDelimited:
                 style: pipeDelimited
-              deepObject:
-                style: deepObject
       responses:
         200:
           description: OK
@@ -67,10 +63,6 @@ paths:
                   type: array
                   items:
                     type: string
-                deepObject:
-                  type: array
-                  items:
-                    type: string
             encoding:
               formExplode:
                 style: form
@@ -82,8 +74,6 @@ paths:
                 style: spaceDelimited
               pipeDelimited:
                 style: pipeDelimited
-              deepObject:
-                style: deepObject
       responses:
         200:
           description: OK
@@ -120,11 +110,6 @@ paths:
                   items:
                     type: string
                     format: date-time
-                deepObject:
-                  type: array
-                  items:
-                    type: string
-                    format: date-time
             encoding:
               formExplode:
                 style: form
@@ -136,8 +121,6 @@ paths:
                 style: spaceDelimited
               pipeDelimited:
                 style: pipeDelimited
-              deepObject:
-                style: deepObject
       responses:
         200:
           description: OK

@@ -28,6 +28,7 @@ if ({{{var}}} !== undefined) {
 	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join('|'));
 {{else}}
 	// unsupported
+	{{warn (concat 'Array encoding style ' encoding.style ' not supported')}}
 {{/ifeq}}
 {{else if (isObject)}}
 {{#ifeq encoding.style 'form'}}
@@ -54,6 +55,7 @@ if ({{{var}}} !== undefined) {
 {{/each}}
 {{else}}
 	// unsupported
+	{{warn (concat 'Object encoding style ' encoding.style ' not supported')}}
 {{/ifeq}}
 {{else}}
 	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator=',' indent='					'}});
