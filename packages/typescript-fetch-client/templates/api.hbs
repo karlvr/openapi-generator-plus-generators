@@ -27,7 +27,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{>frag/validateParameter operation=..}}
 	{{/with}}
 			let localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
-				.replace('{{safe '{'}}{{{name}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/each}};
+				.replace('{{safe '{'}}{{{serializedName}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/each}};
 			const localVarPathQueryStart = localVarPath.indexOf("?");
 			const localVarRequestOptions: RequestInit = Object.assign({ method: '{{httpMethod}}' }, options);
 			const localVarHeaderParameter: HeadersInit = {};
@@ -102,7 +102,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{/each}}
 	{{#each headerParams}}
 			if ({{identifier name}} !== undefined && {{identifier name}} !== null) {
-				localVarHeaderParameter['{{name}}'] = {{>frag/schemaToString value=(identifier name) separator=',' indent='					'}};
+				localVarHeaderParameter['{{serializedName}}'] = {{>frag/schemaToString value=(identifier name) separator=',' indent='					'}};
 			}
 
 	{{/each}}
@@ -140,9 +140,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				{{/each}}
 				localVarRequestOptions.body = localVarFormParams;
 			{{else ifeq mediaType.mimeType 'application/json'}}
-				localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
+				localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
 			{{else ifeq mediaType.mimeType 'text/json'}}
-				localVarRequestOptions.body =  JSON.stringify({{identifier ../name}} || {});
+				localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
 			{{else ifmatch mediaType.mimeType 'multipart/.*'}}
 				const localVarFormData = new FormData();
 			{{#each encoding.properties}}

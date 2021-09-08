@@ -13,19 +13,19 @@ if ({{{var}}} !== undefined) {
 	/* array form exploded */
 	for (const localVarArrayElement of {{{var}}}) {
 		if (localVarArrayElement !== undefined) {
-			{{{dest}}}.append('{{name}}', localVarArrayElement !== null ? {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='			'~}} : '');
+			{{{dest}}}.append('{{serializedName}}', localVarArrayElement !== null ? {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='			'~}} : '');
 		}
 	}
 {{else}}
 	/* array form */
-	{{{dest}}}.append('{{name}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(','));
+	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(','));
 {{/if}}
 {{else ifeq encoding.style 'spaceDelimited'}}
 	/* array space delimited */
-	{{{dest}}}.append('{{name}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(' '));
+	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(' '));
 {{else ifeq encoding.style 'pipeDelimited'}}
 	/* array pipe delimited */
-	{{{dest}}}.append('{{name}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join('|'));
+	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join('|'));
 {{else}}
 	// unsupported
 {{/ifeq}}
@@ -35,27 +35,27 @@ if ({{{var}}} !== undefined) {
 	/* object form exploded */
 {{#each (allProperties schema)}}
 	if ({{{concat ../var '["' serializedName '"]'}}} !== undefined) {
-		{{{../dest}}}.append('{{name}}', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') separator=',' indent='			'}} : '');
+		{{{../dest}}}.append('{{serializedName}}', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') separator=',' indent='			'}} : '');
 	}
 {{/each}}
 {{else}}
-	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator=',' indent='		'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator=',' indent='		'}});
 {{/if}}
 {{else ifeq encoding.style 'spaceDelimited'}}
-	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator=' ' indent='		'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator=' ' indent='		'}});
 {{else ifeq encoding.style 'pipeDelimited'}}
-	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator='|' indent='		'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator='|' indent='		'}});
 {{else ifeq encoding.style 'deepObject'}}
 	/* object deepObject */
 {{#each (allProperties schema)}}
 	if ({{{concat ../var '["' serializedName '"]'}}} !== undefined) {
-		{{{../dest}}}.append('{{../name}}[{{name}}]', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') separator=',' indent='			'}} : '');
+		{{{../dest}}}.append('{{../serializedName}}[{{serializedName}}]', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') separator=',' indent='			'}} : '');
 	}
 {{/each}}
 {{else}}
 	// unsupported
 {{/ifeq}}
 {{else}}
-	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator=',' indent='					'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator=',' indent='					'}});
 {{/if}}
 }

@@ -84,6 +84,25 @@ paths:
       responses:
         200:
           description: OK
+  /parameters/{access_token_path}:
+    get:
+      parameters:
+        - name: access_token
+          in: query
+          schema:
+            type: string
+        - name: access-token-header
+          in: header
+          schema:
+            type: string
+        - name: access_token_path
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
 components:
   schemas:
     AccessToken:
