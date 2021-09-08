@@ -23,11 +23,11 @@
     "@openapi-generator-plus/generator-common": "^0.17.1",
     "change-case": "^4.1.2",
     "handlebars": "^4.7.7",
-    "marked": "^3.0.2",
+    "marked": "^3.0.3",
     "pluralize": "^8.0.0"
   },
   "peerDependencies": {
-    "@openapi-generator-plus/core": "^0.33.0"
+    "@openapi-generator-plus/core": "^0.34.0"
   },
   "publishConfig": {
     "access": "public"

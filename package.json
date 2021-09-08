@@ -7,7 +7,7 @@
     "clean:node": "pnpm --recursive exec rm -rf node_modules",
     "link": "pnpm link --global @openapi-generator-plus/core @openapi-generator-plus/types @openapi-generator-plus/indexed-type @openapi-generator-plus/testing && pnpm --recursive --workspace-concurrency=1 exec pnpm link --global",
     "release": "pnpm clean && pnpm build && pnpm test && pnpx changeset publish && pnpm install",
-    "release:version": "pnpm changeset version",
+    "release:version": "pnpm changeset version && pnpm install",
     "test": "pnpm test --recursive",
     "watch": "pnpm watch --parallel"
   },
@@ -17,7 +17,7 @@
     "@types/less": "^3.0.3",
     "@types/lodash": "^4.14.172",
     "@types/marked": "^3.0.0",
-    "@types/node": "^16.7.13",
+    "@types/node": "^16.9.0",
     "@types/pluralize": "0.0.29",
     "@types/rimraf": "^3.0.2",
     "@types/url-parse": "^1.4.4",
@@ -27,16 +27,16 @@
     "eslint-plugin-jest": "^24.4.0",
     "glob-promise": "^4.2.0",
     "handlebars": "^4.7.7",
-    "jest": "^27.1.0",
+    "jest": "^27.1.1",
     "maven": "github:karlvr/node-maven",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.5",
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "@openapi-generator-plus/core": "^0.33.0",
+    "@openapi-generator-plus/core": "^0.34.0",
     "@openapi-generator-plus/indexed-type": "^0.1.6",
-    "@openapi-generator-plus/testing": "^0.31.3",
+    "@openapi-generator-plus/testing": "^0.31.4",
     "@openapi-generator-plus/types": "^0.33.0"
   }
 }
