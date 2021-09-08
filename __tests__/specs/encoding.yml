@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: Encoding
+  version: '1.0'
+paths:
+  /testArrayString:
+    get:
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: queryFormExplode
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+        - name: queryFormNonExplode
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+      responses:
+        200:
+          description: OK
+  /testArrayDateTime:
+    get:
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
+        - name: queryFormExplode
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
+          style: form
+          explode: true
+        - name: queryFormNonExplode
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
+          style: form
+          explode: false
+      responses:
+        200:
+          description: OK
+  /testString:
+    get:
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: queryFormExplode
+          in: query
+          schema:
+            type: string
+          style: form
+          explode: true
+        - name: queryFormNonExplode
+          in: query
+          schema:
+            type: string
+          style: form
+          explode: false
+      responses:
+        200:
+          description: OK
+  /testObject:
+    get:
+      parameters:
+        - name: query
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestObject'
+        - name: queryFormExplode
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestObject'
+          style: form
+          explode: true
+        - name: queryFormNonExplode
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestObject'
+          style: form
+          explode: false
+        - name: querySpaceDelimited
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestObject'
+          style: spaceDelimited
+        - name: queryPipeDelimited
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestObject'
+          style: pipeDelimited
+        - name: queryDeepObject
+          in: query
+          schema:
+            $ref: '#/components/schemas/RequestObject'
+          style: deepObject
+      responses:
+        200:
+          description: OK
+  /testAllOf:
+    get:
+      parameters:
+        - name: query
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChildRequestObject'
+        - name: queryFormExplode
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChildRequestObject'
+          style: form
+          explode: true
+        - name: queryFormNonExplode
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChildRequestObject'
+          style: form
+          explode: false
+      responses:
+        200:
+          description: OK
+  /testHeader:
+    get:
+      parameters:
+        - name: headerObject
+          in: header
+          schema:
+            $ref: '#/components/schemas/ChildRequestObject'
+        - name: headerString
+          in: header
+          schema:
+            type: string
+        - name: headerStringArray
+          in: header
+          schema:
+            type: array
+            items:
+              type: string
+        - name: headerDateTimeArray
+          in: header
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
+      responses:
+        200:
+          description: OK
+components:
+  schemas:
+    RequestObject:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+        c:
+          type: string
+          format: date-time
+    BaseRequestObject:
+      type: object
+      properties:
+        d:
+          type: string
+    ChildRequestObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequestObject'
+        - type: object
+          properties:
+            a:
+              type: string
+            b:
+              type: integer
+            c:
+              type: string
+              format: date-time

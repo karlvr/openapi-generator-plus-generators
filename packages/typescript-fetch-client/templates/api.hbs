@@ -97,68 +97,17 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		{{/each}}
 	{{/if}}
 	{{#each queryParams}}
-		{{!-- TODO --}}
-		{{!--
-			{{#if isListContainer}}
-			if ({{identifier name}}) {
-			{{#if isCollectionFormatMulti}}
-				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
-			{{else}}
-				localVarQueryParameter.append('{{name}}', {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
-			{{/if}}
-			}
-			{{else}}
-		--}}
-			if ({{identifier name}} !== undefined) {
-{{#if (isDateTime)}}
-	{{#ifeq dateApproach 'native'}}
-				localVarQueryParameter.append('{{name}}', {{identifier name}}.toISOString());
-	{{else}}
-				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
-	{{/ifeq}}
-{{else if (isDate)}}
-				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
-{{else if (isArray)}}
-				if ({{identifier name}}.length > 0) {
-					localVarQueryParameter.append('{{name}}', {{identifier name}}.join(','));
-				}
-{{else}}
-				localVarQueryParameter.append('{{name}}', String({{identifier name}}));
-{{/if}}
-			}
-		{{!--
-			{{/if}}
-		--}}
+			{{>frag/apiParameters dest='localVarQueryParameter' var=(identifier name) encoding=encoding}}
 
 	{{/each}}
 	{{#each headerParams}}
-			{{#ifdef isListContainer}}
-			if ({{identifier name}}) {
-				localVarHeaderParameter['{{name}}'] = {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
-			}
-			{{else}}
 			if ({{identifier name}} !== undefined && {{identifier name}} !== null) {
-				localVarHeaderParameter['{{name}}'] = String({{identifier name}});
+				localVarHeaderParameter['{{name}}'] = {{>frag/schemaToString value=(identifier name) separator=',' indent='					'}};
 			}
-			{{/ifdef}}
 
 	{{/each}}
 	{{#each formParams}}
-			{{#ifdef isListContainer}}
-			if ({{identifier name}}) {
-			{{#ifdef isCollectionFormatMulti}}
-				{{identifier name}}.forEach((element) => {
-					localVarFormParams.append('{{name}}', element as any);
-				})
-			{{else}}
-					localVarFormParams.set('{{name}}', {{identifier name}}.join(COLLECTION_FORMATS["{{collectionFormat}}"]));
-			{{/ifdef}}
-			}
-			{{else}}
-			if ({{identifier name}} !== undefined) {
-				localVarFormParams.set('{{name}}', {{identifier name}} as any);
-			}
-			{{/ifdef}}
+			{{>frag/apiParameters dest='localVarFormParams' var=(identifier name) encoding=encoding}}
 
 	{{/each}}
 	{{#if formParams}}
@@ -186,9 +135,12 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		{{#with defaultContent}}
 			{{#ifeq mediaType.mimeType 'application/x-www-form-urlencoded'}}
 				const localVarFormParams = new URLSearchParams();
+				{{#each (allProperties schema)}}
+				{{>frag/apiParameters dest='localVarFormParams' var=(concat (identifier ../../name) '.' (identifier name)) encoding=(lookup ../encoding.properties name)}}
+				{{/each}}
 				for (const localVarName in {{identifier ../name}}) {
 					if (localVarName !== undefined) {
-						localVarFormParams.set(localVarName, ({{identifier ../name}} as any)[localVarName]);
+						localVarFormParams.append(localVarName, ({{identifier ../name}} as any)[localVarName]);
 					}
 				}
 				localVarRequestOptions.body = localVarFormParams;
@@ -297,3 +249,17 @@ export class {{className name}}Api extends BaseAPI {
 	{{/each}}
 }
 {{/each}}
+
+/**
+ * We sometimes represent dates as strings (in models) and as Dates (in parameters) so this
+ * function converts them both to a string.
+ */
+function dateToString(value: Date | string | undefined): string | undefined {
+	if (value instanceof Date) {
+		return value.toISOString();
+	} else if (typeof value === 'string') {
+		return value;
+	} else {
+		return undefined;
+	}
+}

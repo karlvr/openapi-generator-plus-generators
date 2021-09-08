@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: x-www-form-urlencoded
+  version: '1.0'
+paths:
+  /string:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                defaultEncoding:
+                  type: string
+                formExplode:
+                  type: string
+                formNoExplode:
+                  type: string
+                spaceDelimited:
+                  type: string
+                pipeDelimited:
+                  type: string
+                deepObject:
+                  type: string
+            encoding:
+              formExplode:
+                style: form
+                explode: true
+              formNoExplode:
+                style: form
+                explode: false
+              spaceDelimited:
+                style: spaceDelimited
+              pipeDelimited:
+                style: pipeDelimited
+              deepObject:
+                style: deepObject
+      responses:
+        200:
+          description: OK
+  /stringArray:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                defaultEncoding:
+                  type: array
+                  items:
+                    type: string
+                formExplode:
+                  type: array
+                  items:
+                    type: string
+                formNoExplode:
+                  type: array
+                  items:
+                    type: string
+                spaceDelimited:
+                  type: array
+                  items:
+                    type: string
+                pipeDelimited:
+                  type: array
+                  items:
+                    type: string
+                deepObject:
+                  type: array
+                  items:
+                    type: string
+            encoding:
+              formExplode:
+                style: form
+                explode: true
+              formNoExplode:
+                style: form
+                explode: false
+              spaceDelimited:
+                style: spaceDelimited
+              pipeDelimited:
+                style: pipeDelimited
+              deepObject:
+                style: deepObject
+      responses:
+        200:
+          description: OK
+  /dateTimeArray:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                defaultEncoding:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                formExplode:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                formNoExplode:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                spaceDelimited:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                pipeDelimited:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                deepObject:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+            encoding:
+              formExplode:
+                style: form
+                explode: true
+              formNoExplode:
+                style: form
+                explode: false
+              spaceDelimited:
+                style: spaceDelimited
+              pipeDelimited:
+                style: pipeDelimited
+              deepObject:
+                style: deepObject
+      responses:
+        200:
+          description: OK
+  /object:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                defaultEncoding:
+                  $ref: '#/components/schemas/RequestObject'
+                formExplode:
+                  $ref: '#/components/schemas/RequestObject'
+                formNoExplode:
+                  $ref: '#/components/schemas/RequestObject'
+                spaceDelimited:
+                  $ref: '#/components/schemas/RequestObject'
+                pipeDelimited:
+                  $ref: '#/components/schemas/RequestObject'
+                deepObject:
+                  $ref: '#/components/schemas/RequestObject'
+            encoding:
+              formExplode:
+                style: form
+                explode: true
+              formNoExplode:
+                style: form
+                explode: false
+              spaceDelimited:
+                style: spaceDelimited
+              pipeDelimited:
+                style: pipeDelimited
+              deepObject:
+                style: deepObject
+      responses:
+        200:
+          description: OK
+components:
+  schemas:
+    RequestObject:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+        c:
+          type: string
+          format: date-time

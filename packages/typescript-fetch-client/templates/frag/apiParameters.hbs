@@ -1,0 +1,61 @@
+{{!--
+Handle parameters when building an API request
+
+@param this a CodegenSchemaUsage
+@param dest the name of the URLSearchParams to use
+@param encoding the CodegenParameterEncoding (or compatible) to use
+@param var the name of the variable containing the property
+--}}
+if ({{var}} !== undefined) {
+{{#if (isArray)}}
+{{#ifeq encoding.style 'form'}}
+{{#if encoding.explode}}
+	/* array form exploded */
+	for (const localVarArrayElement of {{var}}) {
+		if (localVarArrayElement !== undefined) {
+			{{{dest}}}.append('{{name}}', localVarArrayElement !== null ? {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='			'~}} : '');
+		}
+	}
+{{else}}
+	/* array form */
+	{{{dest}}}.append('{{name}}', {{var}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(','));
+{{/if}}
+{{else ifeq encoding.style 'spaceDelimited'}}
+	/* array space delimited */
+	{{{dest}}}.append('{{name}}', {{var}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(' '));
+{{else ifeq encoding.style 'pipeDelimited'}}
+	/* array pipe delimited */
+	{{{dest}}}.append('{{name}}', {{var}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join('|'));
+{{else}}
+	// unsupported
+{{/ifeq}}
+{{else if (isObject)}}
+{{#ifeq encoding.style 'form'}}
+{{#if encoding.explode}}
+	/* object form exploded */
+{{#each (allProperties schema)}}
+	if ({{concat ../var '.' (identifier name)}} !== undefined) {
+		{{{../dest}}}.append('{{name}}', {{concat ../var '.' (identifier name)}} !== null ? {{>frag/schemaToString value=(concat ../var '.' (identifier name)) separator=',' indent='			'}} : '');
+	}
+{{/each}}
+{{else}}
+	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator=',' indent='		'}});
+{{/if}}
+{{else ifeq encoding.style 'spaceDelimited'}}
+	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator=' ' indent='		'}});
+{{else ifeq encoding.style 'pipeDelimited'}}
+	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator='|' indent='		'}});
+{{else ifeq encoding.style 'deepObject'}}
+	/* object deepObject */
+{{#each (allProperties schema)}}
+	if ({{concat ../var '.' (identifier name)}} !== undefined) {
+		{{{../dest}}}.append('{{../name}}[{{name}}]', {{concat ../var '.' (identifier name)}} !== null ? {{>frag/schemaToString value=(concat ../var '.' (identifier name)) separator=',' indent='			'}} : '');
+	}
+{{/each}}
+{{else}}
+	// unsupported
+{{/ifeq}}
+{{else}}
+	{{{dest}}}.append('{{name}}', {{>frag/schemaToString value=var separator=',' indent='					'}});
+{{/if}}
+}
