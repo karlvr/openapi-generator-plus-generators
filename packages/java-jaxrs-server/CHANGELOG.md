@@ -1,5 +1,24 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.32.0
+
+### Minor Changes
+
+- 8ec0d91: Support externalDocs on operations and pojos, and improve documentation formatting
+
+  We now apply the markdown formatting in all JavaDoc comments. They're supposed to be HTML
+  and IDEs expect them to be HTML formatted, so it improves the display in the IDE.
+
+### Patch Changes
+
+- Updated dependencies [a84fd09]
+- Updated dependencies [dcd7e17]
+- Updated dependencies [04d59a7]
+- Updated dependencies [60f75a9]
+- Updated dependencies [8ec0d91]
+  - @openapi-generator-plus/handlebars-templates@0.18.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.28.0
+
 ## 0.31.1
 
 ### Patch Changes

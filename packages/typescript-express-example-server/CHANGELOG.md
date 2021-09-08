@@ -1,6 +1,17 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 0.17.1
+
+### Patch Changes
+
+- Updated dependencies [a84fd09]
+- Updated dependencies [04d59a7]
+- Updated dependencies [60f75a9]
+  - @openapi-generator-plus/handlebars-templates@0.18.0
+  - @openapi-generator-plus/typescript-generator-common@0.22.1
+
 ## 0.17.0
+
 ### Minor Changes
 
 - 86c4e5d: Support the allOf, anyOf, oneOf handling changes in core.

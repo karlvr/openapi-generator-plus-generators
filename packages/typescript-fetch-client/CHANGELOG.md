@@ -1,5 +1,23 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.24.0
+
+### Minor Changes
+
+- 68cc337: Add support for parameter encoding styles for parameters and x-www-form-urlencoded bodies
+- bab3808: Documentation improvements and externalDocs support
+
+  I've removed some of the @ annotations in the documentation that I didn't think were still useful
+  in a TypeScript world. I hope that was correct.
+
+### Patch Changes
+
+- Updated dependencies [a84fd09]
+- Updated dependencies [04d59a7]
+- Updated dependencies [60f75a9]
+  - @openapi-generator-plus/handlebars-templates@0.18.0
+  - @openapi-generator-plus/typescript-generator-common@0.22.1
+
 ## 0.23.1
 
 ### Patch Changes

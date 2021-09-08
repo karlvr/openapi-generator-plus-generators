@@ -1,5 +1,12 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.18.0
+
+### Minor Changes
+
+- a84fd09: Add an indent helper to help format JavaDoc-style documentation
+- 60f75a9: Add an allProperties helper
+
 ## 0.17.1
 
 ### Patch Changes

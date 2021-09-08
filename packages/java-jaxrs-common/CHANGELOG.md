@@ -1,5 +1,26 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 0.28.0
+
+### Minor Changes
+
+- dcd7e17: Add JsonTypeInfo.Id.DEDUCTION when there is no discriminator
+- 8ec0d91: Support externalDocs on operations and pojos, and improve documentation formatting
+
+  We now apply the markdown formatting in all JavaDoc comments. They're supposed to be HTML
+  and IDEs expect them to be HTML formatted, so it improves the display in the IDE.
+
+### Patch Changes
+
+- 04d59a7: Fix date and time native types
+
+  This was broken in the previous release in the TypeScript generator, and generating dates and times in
+  parameters would have failed.
+
+- Updated dependencies [a84fd09]
+- Updated dependencies [60f75a9]
+  - @openapi-generator-plus/handlebars-templates@0.18.0
+
 ## 0.27.1
 
 ### Patch Changes

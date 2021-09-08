@@ -1,6 +1,17 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 0.29.1
+
+### Patch Changes
+
+- Updated dependencies [a84fd09]
+- Updated dependencies [60f75a9]
+- Updated dependencies [8ec0d91]
+  - @openapi-generator-plus/handlebars-templates@0.18.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@0.35.0
+
 ## 0.29.0
+
 ### Minor Changes
 
 - 86c4e5d: Support the allOf, anyOf, oneOf handling changes in core.
