@@ -82,7 +82,7 @@ importers:
       '@openapi-generator-plus/generator-common': ^0.17.0
       '@openapi-generator-plus/handlebars-templates': ^0.18.0
       '@openapi-generator-plus/java-jaxrs-generator-common': ^0.28.0
-      '@openapi-generator-plus/java-jaxrs-server-generator': ^0.32.0
+      '@openapi-generator-plus/java-jaxrs-server-generator': ^0.33.0
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common': link:../java-jaxrs-common
@@ -94,7 +94,7 @@ importers:
     specifiers:
       '@openapi-generator-plus/generator-common': ^0.17.0
       '@openapi-generator-plus/handlebars-templates': ^0.18.0
-      '@openapi-generator-plus/java-jaxrs-client-generator': ^0.35.0
+      '@openapi-generator-plus/java-jaxrs-client-generator': ^0.36.0
       '@openapi-generator-plus/java-jaxrs-generator-common': ^0.28.0
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
@@ -108,7 +108,7 @@ importers:
       '@openapi-generator-plus/generator-common': ^0.17.0
       '@openapi-generator-plus/handlebars-templates': ^0.18.0
       '@openapi-generator-plus/java-jaxrs-generator-common': ^0.28.0
-      '@openapi-generator-plus/java-jaxrs-server-generator': ^0.32.0
+      '@openapi-generator-plus/java-jaxrs-server-generator': ^0.33.0
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common': link:../java-jaxrs-common
@@ -167,7 +167,7 @@ importers:
   packages/java-retrofit-client:
     specifiers:
       '@openapi-generator-plus/handlebars-templates': ^0.18.0
-      '@openapi-generator-plus/java-jaxrs-client-generator': ^0.35.0
+      '@openapi-generator-plus/java-jaxrs-client-generator': ^0.36.0
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-client-generator': link:../java-jaxrs-client
@@ -221,7 +221,7 @@ importers:
     specifiers:
       '@openapi-generator-plus/generator-common': ^0.17.1
       '@openapi-generator-plus/handlebars-templates': ^0.18.0
-      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.24.0
+      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.25.0
       '@openapi-generator-plus/typescript-generator-common': ^0.22.1
       '@types/node-fetch': ^3.0.2
       node-fetch: ^3.0.0
@@ -237,7 +237,7 @@ importers:
   packages/typescript-fetch-rn-client:
     specifiers:
       '@openapi-generator-plus/handlebars-templates': ^0.18.0
-      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.24.0
+      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.25.0
       '@openapi-generator-plus/typescript-generator-common': ^0.22.1
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
