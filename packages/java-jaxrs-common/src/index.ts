@@ -262,7 +262,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			throw new Error(`Unsupported type name: ${type}`)
 		},
 		toNativeType: (options) => {
-			const { type, format, vendorExtensions } = options
+			const { format, schemaType, vendorExtensions } = options
 
 			/* Note that we return separate componentTypes in this function in case the type
 			   is transformed, using nativeTypeTransformer, and the native type becomes primitive
@@ -275,8 +275,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 			
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
-			switch (type) {
-				case 'integer': {
+			switch (schemaType) {
+				case CodegenSchemaType.INTEGER: {
 					if (format === 'int32' || !format) {
 						return new context.NativeType('java.lang.Integer', {
 							componentType: new context.NativeType('java.lang.Integer'),
@@ -286,10 +286,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 							componentType: new context.NativeType('java.lang.Long'),
 						})
 					} else {
-						throw new Error(`Unsupported ${type} format: ${format}`)
+						throw new Error(`Unsupported integer format: ${format}`)
 					}
 				}
-				case 'number': {
+				case CodegenSchemaType.NUMBER: {
 					if (!format) {
 						return new context.NativeType('java.math.BigDecimal')
 					} else if (format === 'float') {
@@ -301,27 +301,27 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 							componentType: new context.NativeType('java.lang.Double'),
 						})
 					} else {
-						throw new Error(`Unsupported ${type} format: ${format}`)
+						throw new Error(`Unsupported number format: ${format}`)
 					}
 				}
-				case 'string': {
+				case CodegenSchemaType.DATE:
+					return new context.NativeType(generatorOptions.dateImplementation, {
+						serializedType: 'java.lang.String',
+					})
+				case CodegenSchemaType.TIME:
+					return new context.NativeType(generatorOptions.timeImplementation, {
+						serializedType: 'java.lang.String',
+					})
+				case CodegenSchemaType.DATETIME:
+					return new context.NativeType(generatorOptions.dateTimeImplementation, {
+						serializedType: 'java.lang.String',
+					})
+				case CodegenSchemaType.STRING: {
 					if (format === 'byte') {
 						/* base64 encoded characters */
 						return new context.NativeType('java.lang.String')
 					} else if (format === 'binary') {
 						return new context.NativeType('byte[]')
-					} else if (format === 'date') {
-						return new context.NativeType(generatorOptions.dateImplementation, {
-							serializedType: 'java.lang.String',
-						})
-					} else if (format === 'time') {
-						return new context.NativeType(generatorOptions.timeImplementation, {
-							serializedType: 'java.lang.String',
-						})
-					} else if (format === 'date-time') {
-						return new context.NativeType(generatorOptions.dateTimeImplementation, {
-							serializedType: 'java.lang.String',
-						})
 					} else if (format === 'uuid') {
 						return new context.NativeType('java.util.UUID', {
 							serializedType: 'java.lang.String',
@@ -334,17 +334,17 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						return new context.NativeType('java.lang.String')
 					}
 				}
-				case 'boolean': {
+				case CodegenSchemaType.BOOLEAN: {
 					return new context.NativeType('java.lang.Boolean', {
 						componentType: new context.NativeType('java.lang.Boolean'),
 					})
 				}
-				case 'file': {
+				case CodegenSchemaType.FILE: {
 					return new context.NativeType('java.io.InputStream')
 				}
 			}
 	
-			throw new Error(`Unsupported type name: ${type}`)
+			throw new Error(`Unsupported schema type: ${schemaType}`)
 		},
 		toNativeObjectType: function(options) {
 			const { scopedName } = options

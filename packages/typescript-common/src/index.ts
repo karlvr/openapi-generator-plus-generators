@@ -294,7 +294,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			throw new Error(`Unsupported type name: ${type}`)
 		},
 		toNativeType: (options) => {
-			const { type, format, schemaType } = options
+			const { schemaType } = options
 
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (schemaType) {
@@ -304,44 +304,41 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case CodegenSchemaType.NUMBER: {
 					return new context.NativeType('number')
 				}
-				case CodegenSchemaType.STRING: {
-					switch (format) {
-						case 'date':
-							switch (generatorOptions.dateApproach) {
-								case DateApproach.Native:
-								case DateApproach.String:
-									/* We use strings for date and time as JavaScript Date can't support */
-									return new context.NativeType('string')
-								case DateApproach.BlindDate:
-									return new context.NativeType('LocalDateString')
-							}
-							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
-						case 'time':
-							switch (generatorOptions.dateApproach) {
-								case DateApproach.Native:
-								case DateApproach.String:
-									/* We use strings for date and time as JavaScript Date can't support */
-									return new context.NativeType('string')
-								case DateApproach.BlindDate:
-									return new context.NativeType('LocalTimeString')
-							}
-							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
-						case 'date-time':
-							switch (generatorOptions.dateApproach) {
-								case DateApproach.Native:
-									/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
-									return new context.NativeType('Date', {
-										serializedType: 'string',
-									})
-								case DateApproach.BlindDate:
-									return new context.NativeType('OffsetDateTimeString')
-								case DateApproach.String:
-									return new context.NativeType('string')
-							}
-							throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
-						default:
+				case CodegenSchemaType.DATE:
+					switch (generatorOptions.dateApproach) {
+						case DateApproach.Native:
+						case DateApproach.String:
+							/* We use strings for date and time as JavaScript Date can't support */
+							return new context.NativeType('string')
+						case DateApproach.BlindDate:
+							return new context.NativeType('LocalDateString')
+					}
+					throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
+				case CodegenSchemaType.TIME:
+					switch (generatorOptions.dateApproach) {
+						case DateApproach.Native:
+						case DateApproach.String:
+							/* We use strings for date and time as JavaScript Date can't support */
+							return new context.NativeType('string')
+						case DateApproach.BlindDate:
+							return new context.NativeType('LocalTimeString')
+					}
+					throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
+				case CodegenSchemaType.DATETIME:
+					switch (generatorOptions.dateApproach) {
+						case DateApproach.Native:
+							/* We don't have a mapping library to convert incoming and outgoing JSON, so the rawType of dates is string */
+							return new context.NativeType('Date', {
+								serializedType: 'string',
+							})
+						case DateApproach.BlindDate:
+							return new context.NativeType('OffsetDateTimeString')
+						case DateApproach.String:
 							return new context.NativeType('string')
 					}
+					throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
+				case CodegenSchemaType.STRING: {
+					return new context.NativeType('string')
 				}
 				case CodegenSchemaType.BOOLEAN: {
 					return new context.NativeType('boolean')
@@ -354,7 +351,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				}
 			}
 
-			throw new Error(`Unsupported type name: ${type}`)
+			throw new Error(`Unsupported schema type: ${schemaType}`)
 		},
 		toNativeObjectType: function(options) {
 			const { scopedName } = options
