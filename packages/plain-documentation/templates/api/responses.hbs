@@ -43,5 +43,11 @@
         {{#if produces}}
         <p>{{#each produces}}<span class="type">{{mediaType}}</span> {{/each}}</p>
         {{/if}}
+
+        {{#each responses}}
+        {{#if defaultContent.schema.anonymous}}
+        {{>api/model model=defaultContent.schema anchor="/definitions"}}
+        {{/if}}
+        {{/each}}
     </div>
 {{/if}}

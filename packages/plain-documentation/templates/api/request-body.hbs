@@ -7,7 +7,11 @@
         <h5>Request</h5>
             {{{md description}}}
 
+            {{#if schema.anonymous}}
+            {{>api/model model=schema anchor="/definitions" hideName="true"}}
+            {{else}}
             <p class="meta">{{>model/datatype anchor='/definitions'}}</p>
+            {{/if}}
 
             {{#hasExamples .}}
                 <p><a href="#" class="example-trigger">Examples</a></p>
