@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 0.22.3
+
+### Patch Changes
+
+- b4cbf98: Export the DateApproach type
+
 ## 0.22.2
 
 ### Patch Changes
