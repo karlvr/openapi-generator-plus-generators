@@ -6,7 +6,7 @@ import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
-export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions } from './types'
+export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions, DateApproach } from './types'
 
 function escapeString(value: string | number | boolean) {
 	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
