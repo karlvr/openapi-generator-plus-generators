@@ -18,7 +18,7 @@
 		<javax.validation.version>{{lookup maven.versions 'javax_validation' '2.0.0.Final'}}</javax.validation.version>
 		{{/if}}
 		{{#if includeTests}}
-		<junit-jupiter.version>5.5.2</junit-jupiter.version>
+		<junit-jupiter.version>{{lookup maven.version 'junit_jupiter' '5.7.2'}}</junit-jupiter.version>
 		<weld-junit5.version>2.0.1.Final</weld-junit5.version>
 		{{/if}}
 	</properties>
@@ -102,6 +102,11 @@
 			<version>${weld-junit5.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
 		{{/if}}
     </dependencies>
 
@@ -114,6 +119,15 @@
 			    <scope>import</scope>
 			    <type>pom</type>
 			</dependency>
+			{{#if includeTests}}
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit-jupiter.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			{{/if}}
 		</dependencies>
 	</dependencyManagement>
 
@@ -135,14 +149,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>{{lookup maven.versions 'maven-surefire-plugin' '3.0.0-M4'}}</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.junit.jupiter</groupId>
-							<artifactId>junit-jupiter-engine</artifactId>
-							<version>${junit-jupiter.version}</version>
-						</dependency>
-					</dependencies>
+					<version>{{lookup maven.versions 'maven-surefire-plugin' '3.0.0-M5'}}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
