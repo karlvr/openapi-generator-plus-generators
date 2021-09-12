@@ -27,7 +27,7 @@
     "pluralize": "^8.0.0"
   },
   "peerDependencies": {
-    "@openapi-generator-plus/core": "^0.34.0"
+    "@openapi-generator-plus/core": "^0.34.1"
   },
   "publishConfig": {
     "access": "public"
