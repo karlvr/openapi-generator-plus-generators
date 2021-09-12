@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 0.29.0
+
+### Minor Changes
+
+- 48c6e39: Add support for CodegenWrapperSchema to support wrapping primitives
+
+### Patch Changes
+
+- Updated dependencies [cc30b0d]
+  - @openapi-generator-plus/handlebars-templates@0.19.1
+
 ## 0.28.1
 
 ### Patch Changes

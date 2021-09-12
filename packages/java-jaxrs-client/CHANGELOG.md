@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 0.36.2
+
+### Patch Changes
+
+- 29040b5: Upgrade junit-jupiter from 5.5.2 to 5.7.2 and maven-surefire-plugin to from 3.0.0M4 to 3.0.0M5
+- Updated dependencies [48c6e39]
+- Updated dependencies [cc30b0d]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.29.0
+  - @openapi-generator-plus/handlebars-templates@0.19.1
+
 ## 0.36.1
 
 ### Patch Changes

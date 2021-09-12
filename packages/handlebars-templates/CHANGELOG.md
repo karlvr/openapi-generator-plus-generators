@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.19.1
+
+### Patch Changes
+
+- cc30b0d: Add an isWrapper helper
+
 ## 0.19.0
 
 ### Minor Changes
