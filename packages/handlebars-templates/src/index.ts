@@ -826,6 +826,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	registerPropertyTypeHelper('isAnyOf', CodegenSchemaType.ANYOF, hbs)
 	registerPropertyTypeHelper('isOneOf', CodegenSchemaType.ONEOF, hbs)
 	registerPropertyTypeHelper('isInterface', CodegenSchemaType.INTERFACE, hbs)
+	registerPropertyTypeHelper('isWrapper', CodegenSchemaType.WRAPPER, hbs)
 	registerPropertyTypeHelper('isMap', CodegenSchemaType.MAP, hbs)
 	registerPropertyTypeHelper('isArray', CodegenSchemaType.ARRAY, hbs)
 	registerPropertyTypeHelper('isBoolean', CodegenSchemaType.BOOLEAN, hbs)
