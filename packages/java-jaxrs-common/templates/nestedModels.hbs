@@ -5,6 +5,8 @@
 {{>interfaceNested}}
 {{else if (isObject)}}
 {{>pojoNested}}
+{{else if (isWrapper)}}
+{{>wrapperNested}}
 {{/if}}
 
 {{/each}}

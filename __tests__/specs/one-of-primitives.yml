@@ -1,0 +1,39 @@
+---
+openapi: '3.0.3'
+info:
+  version: 1.0.1
+  title: oneOf with primitive types
+paths:
+  /pet/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            java:
+              value: test
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: 37
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyResponseType'
+components:
+  schemas:
+    MyResponseType:
+      oneOf:
+      - type: number
+      - type: string
+      - type: boolean
+      - type: array
+        items:
+          type: string

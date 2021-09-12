@@ -1,0 +1,13 @@
+package {{modelPackage}};
+
+{{#with schema}}
+{{>frag/pojoDocumentation}}
+{{>generatedAnnotation}}
+{{>frag/wrapperHeader}}
+public class {{className name}} {{>pojoImplements}}{
+
+	private static final long serialVersionUID = 1L;
+	
+	{{>wrapperContents}}
+}
+{{/with}}

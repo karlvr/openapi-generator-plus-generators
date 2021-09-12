@@ -1,0 +1,36 @@
+{{#with property}}
+private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{{initialValue.literalValue}}}{{/if}};
+
+public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
+	{{#if nullable}}
+	set{{capitalize (identifier name)}}(java.util.Optional.of({{identifier name}}));
+	{{else}}
+	set{{capitalize (identifier name)}}({{identifier name}});
+	{{/if}}
+	return this;
+}
+
+{{>frag/propertyAnnotations}}
+{{#if (lookup schema.vendorExtensions 'x-extra-annotation')}}
+{{{schema.vendorExtensions.x-extra-annotation}}}
+{{/if}}
+@com.fasterxml.jackson.annotation.JsonValue
+{{#if @root.useBeanValidation}}
+{{>beanValidation}}
+{{/if}}
+public {{>frag/pojoPropertyType}} {{getter .}}() {
+	return this.{{identifier name}};
+}
+
+{{>frag/propertyAnnotations}}
+public void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}}) {
+	this.{{identifier name}} = {{identifier name}};
+}
+
+@com.fasterxml.jackson.annotation.JsonCreator
+public static {{../nativeType}} create{{className ../name}}({{>frag/pojoPropertyType}} {{identifier name}}) {
+	{{../nativeType}} result = new {{className ../name}}();
+	result.{{setter .}}({{identifier name}});
+	return result;
+}
+{{/with}}

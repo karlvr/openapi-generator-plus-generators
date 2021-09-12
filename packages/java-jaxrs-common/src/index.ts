@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -557,6 +557,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				} else if (isCodegenInterfaceSchema(schema)) {
 					await emit('interface', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
 						{ ...rootContext, interface: schema }, true, hbs)
+				} else if (isCodegenWrapperSchema(schema)) {
+					await emit('wrapper', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
+						{ ...rootContext, schema }, true, hbs)
 				}
 			}
 	
