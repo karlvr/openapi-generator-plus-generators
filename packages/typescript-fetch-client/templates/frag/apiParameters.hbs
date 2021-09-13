@@ -13,19 +13,19 @@ if ({{{var}}} !== undefined) {
 	/* array form exploded */
 	for (const localVarArrayElement of {{{var}}}) {
 		if (localVarArrayElement !== undefined) {
-			{{{dest}}}.append('{{serializedName}}', localVarArrayElement !== null ? {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='			'~}} : '');
+			{{{dest}}}.append('{{serializedName}}', localVarArrayElement !== null ? {{>frag/schemaToString component value='localVarArrayElement' parameter=. separator=',' indent='			'}} : '');
 		}
 	}
 {{else}}
 	/* array form */
-	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(','));
+	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' parameter=. separator=',' indent='		'~}}).join(','));
 {{/if}}
 {{else ifeq encoding.style 'spaceDelimited'}}
 	/* array space delimited */
-	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join(' '));
+	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' parameter=. separator=',' indent='		'~}}).join(' '));
 {{else ifeq encoding.style 'pipeDelimited'}}
 	/* array pipe delimited */
-	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' separator=',' indent='		'~}}).join('|'));
+	{{{dest}}}.append('{{serializedName}}', {{{var}}}.map(localVarArrayElement => {{>frag/schemaToString component value='localVarArrayElement' parameter=. separator=',' indent='		'~}}).join('|'));
 {{else}}
 	// unsupported
 	{{warn (concat 'Array encoding style ' encoding.style ' not supported')}}
@@ -36,21 +36,21 @@ if ({{{var}}} !== undefined) {
 	/* object form exploded */
 {{#each (allProperties schema)}}
 	if ({{{concat ../var '["' serializedName '"]'}}} !== undefined) {
-		{{{../dest}}}.append('{{serializedName}}', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') separator=',' indent='			'}} : '');
+		{{{../dest}}}.append('{{serializedName}}', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') parameter=.. separator=',' indent='			'}} : '');
 	}
 {{/each}}
 {{else}}
-	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator=',' indent='		'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var parameter=. separator=',' indent='		'}});
 {{/if}}
 {{else ifeq encoding.style 'spaceDelimited'}}
-	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator=' ' indent='		'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var parameter=. separator=' ' indent='		'}});
 {{else ifeq encoding.style 'pipeDelimited'}}
-	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator='|' indent='		'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var parameter=. separator='|' indent='		'}});
 {{else ifeq encoding.style 'deepObject'}}
 	/* object deepObject */
 {{#each (allProperties schema)}}
 	if ({{{concat ../var '["' serializedName '"]'}}} !== undefined) {
-		{{{../dest}}}.append('{{../serializedName}}[{{serializedName}}]', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') separator=',' indent='			'}} : '');
+		{{{../dest}}}.append('{{../serializedName}}[{{serializedName}}]', {{{concat ../var '["' serializedName '"]'}}} !== null ? {{>frag/schemaToString value=(concat ../var '["' serializedName '"]') parameter=.. separator=',' indent='			'}} : '');
 	}
 {{/each}}
 {{else}}
@@ -58,6 +58,6 @@ if ({{{var}}} !== undefined) {
 	{{warn (concat 'Object encoding style ' encoding.style ' not supported')}}
 {{/ifeq}}
 {{else}}
-	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var separator=',' indent='					'}});
+	{{{dest}}}.append('{{serializedName}}', {{>frag/schemaToString value=var parameter=. separator=',' indent='					'}});
 {{/if}}
 }

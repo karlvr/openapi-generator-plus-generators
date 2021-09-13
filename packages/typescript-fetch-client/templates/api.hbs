@@ -102,7 +102,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{/each}}
 	{{#each headerParams}}
 			if ({{identifier name}} !== undefined && {{identifier name}} !== null) {
-				localVarHeaderParameter['{{serializedName}}'] = {{>frag/schemaToString value=(identifier name) separator=',' indent='					'}};
+				localVarHeaderParameter['{{serializedName}}'] = {{>frag/schemaToString value=(identifier name) parameter=. separator=',' indent='					'}};
 			}
 
 	{{/each}}

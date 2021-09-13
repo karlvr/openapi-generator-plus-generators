@@ -68,3 +68,11 @@ This generator supports a `customTemplates` config file property to specify a di
 Any custom template will have the original template available as a partial named by prefixing the template name with `original`, and then upper-casing the first letter, e.g. `originalModelEnum`.
 
 Some of the templates in the generator are designed to support overriding for custom requirements. Please inspect the templates in the `templates` directory.
+
+## Vendor Extensions
+
+This generator supports the following vendor extensions:
+
+|Extension|Context|Description|
+|---------|-------|-----------|
+|x-serialize-nested-as-json|Parameter|Serialize any array or object values nested inside this parameter's array or object value using JSON.|

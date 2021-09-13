@@ -2,6 +2,7 @@
 @param value the expression containing the value
 @param separator the separator string to use if we need to join multiple values
 @param indent a string to indent multiline results
+@param parameter the CodegenParameter
 --}}
 {{#indent indent}}
 {{#if (isDateTime)}}
@@ -12,14 +13,16 @@ String({{{value}}})
 {{~/ifeq}}
 {{~else or (isDate) (isTime)}}
 String({{{value}}})
+{{else and (or (isObject) (isArray)) (ifvex 'x-serialize-nested-as-json' parameter)}}
+JSON.stringify({{{value}}})
 {{~else if (isObject)}}
 [
 {{#each (allProperties schema)}}
-{{{../value}}}["{{serializedName}}"] !== undefined ? {{{../value}}}["{{serializedName}}"] !== null ? `{{serializedName}},{{safe '${'}}{{>frag/schemaToString value=(concat ../value '["' serializedName '"]') separator=../separator indent=../indent}}{{safe '}'}}` : '{{serializedName}},' : undefined{{#hasMore}},{{/hasMore}}{{safe ' '}}
+{{{../value}}}["{{serializedName}}"] !== undefined ? {{{../value}}}["{{serializedName}}"] !== null ? `{{serializedName}},{{safe '${'}}{{>frag/schemaToString value=(concat ../value '["' serializedName '"]') parameter=../parameter separator=../separator indent=../indent}}{{safe '}'}}` : '{{serializedName}},' : undefined{{#hasMore}},{{/hasMore}}{{safe ' '}}
 {{/each}}
 ].filter(localVarObjectElement => localVarObjectElement !== undefined).join('{{separator}}')
 {{~else if (isArray)}}
-{{{value}}}.map(localVarArrayMapElement => {{>frag/schemaToString component value='localVarArrayMapElement' separator=separator indent=indent}}).join('{{separator}}')
+{{{value}}}.map(localVarArrayMapElement => {{>frag/schemaToString component value='localVarArrayMapElement' parameter=parameter separator=separator indent=indent}}).join('{{separator}}')
 {{~else}}
 String({{{value}}})
 {{~/if~}}
