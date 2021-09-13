@@ -469,7 +469,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	})
 
 	/** A custom helper to check for vendor extensions */
-	hbs.registerHelper('ifvex', function(this: UnknownObject, extensionName: string, nestedProperty?: string) {
+	hbs.registerHelper('ifvex', function(this: UnknownObject, extensionName: string, nestedPropertyOrContext?: string | UnknownObject) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (arguments.length !== 2 && arguments.length !== 3) {
@@ -477,7 +477,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 
 		if (arguments.length === 2) {
-			nestedProperty = undefined
+			nestedPropertyOrContext = undefined
 		}
 
 		if (extensionName === undefined) {
@@ -485,14 +485,18 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 
 		let source: UnknownObject
-		if (nestedProperty) {
-			source = options.lookupProperty(this, nestedProperty) as UnknownObject
+		if (typeof nestedPropertyOrContext === 'string') {
+			source = options.lookupProperty(this, nestedPropertyOrContext) as UnknownObject
 			if (source === null) {
 				return options.inverse(this)
 			}
 			if (source === undefined) {
-				throw new Error(`ifvex helper couldn't find nested object "${nestedProperty} @ ${sourcePosition(options)}: ${stringify(this)}`)
+				throw new Error(`ifvex helper couldn't find nested object "${nestedPropertyOrContext} @ ${sourcePosition(options)}: ${stringify(this)}`)
 			}
+		} else if (typeof nestedPropertyOrContext === 'object') {
+			source = nestedPropertyOrContext
+		} else if (nestedPropertyOrContext) {
+			throw new Error(`ifvex helper called with unknown second argument of type ${typeof nestedPropertyOrContext} @ ${sourcePosition(options)}: ${stringify(nestedPropertyOrContext)}`)
 		} else {
 			source = this
 		}
