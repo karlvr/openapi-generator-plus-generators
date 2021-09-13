@@ -5,10 +5,10 @@ importers:
   .:
     specifiers:
       '@changesets/cli': ^2.17.0
-      '@openapi-generator-plus/core': ^0.34.1
+      '@openapi-generator-plus/core': ^0.35.0
       '@openapi-generator-plus/indexed-type': ^0.1.6
-      '@openapi-generator-plus/testing': ^0.31.4
-      '@openapi-generator-plus/types': ^0.33.1
+      '@openapi-generator-plus/testing': ^0.31.5
+      '@openapi-generator-plus/types': ^0.34.0
       '@types/jest': ^27.0.1
       '@types/less': ^3.0.3
       '@types/lodash': ^4.14.172
@@ -29,10 +29,10 @@ importers:
       ts-jest: ^27.0.5
       typescript: ^4.4.2
     dependencies:
-      '@openapi-generator-plus/core': 0.34.1
+      '@openapi-generator-plus/core': 0.35.0
       '@openapi-generator-plus/indexed-type': 0.1.6
-      '@openapi-generator-plus/testing': 0.31.4
-      '@openapi-generator-plus/types': 0.33.1
+      '@openapi-generator-plus/testing': 0.31.5
+      '@openapi-generator-plus/types': 0.34.0
     devDependencies:
       '@changesets/cli': 2.17.0
       '@types/jest': 27.0.1
@@ -1060,8 +1060,8 @@ packages:
       fastq: 1.13.0
     dev: true
 
-  /@openapi-generator-plus/core/0.34.1:
-    resolution: {integrity: sha512-ppfwAYJ3kSsrtsnAV4n7EN/NZt9fOhI8D9MuKceS1MjGrJ05GJqeizsUBy7AwoJu5WMSJSU7gci3YvqhzwaRjA==}
+  /@openapi-generator-plus/core/0.35.0:
+    resolution: {integrity: sha512-5r00EvozaaqBzZTFStG5a2bZdaNuit1+VUGpUJMImS4CmQavn3pcg/TjvePP6qMemkrZrAneoVQkBREcqA3FiQ==}
     dependencies:
       '@openapi-generator-plus/indexed-type': 0.1.6
       '@openapi-generator-plus/swagger-parser': 10.0.6
@@ -1095,17 +1095,17 @@ packages:
       z-schema: 4.2.4
     dev: false
 
-  /@openapi-generator-plus/testing/0.31.4:
-    resolution: {integrity: sha512-ftXHRLNdSXEtQAqQG2kn0uYJaCKNirwqVZntmgfnWh5KtemjFA64jsRoY9LTZm2+nebmdqZx9y44kNiqcJ8UmQ==}
+  /@openapi-generator-plus/testing/0.31.5:
+    resolution: {integrity: sha512-udOFoJolpuV9IR+SP1LaYxOUR0V+lt6TvDSYxQ/QqN82kd9bpqCMf5Qa4ZULgCahxsQoNAG2lMjngWe7t7zQDg==}
     dependencies:
-      '@openapi-generator-plus/core': 0.34.1
-      '@openapi-generator-plus/types': 0.33.1
+      '@openapi-generator-plus/core': 0.35.0
+      '@openapi-generator-plus/types': 0.34.0
     transitivePeerDependencies:
       - openapi-types
     dev: false
 
-  /@openapi-generator-plus/types/0.33.1:
-    resolution: {integrity: sha512-b3tROw9Xz6uyIs9/GzVfWAevzKCZnSLJL863Ej6tQI5Mi2SBpMty9WX/hekLUaBMH4JAQH1ExtDo78T71lra/Q==}
+  /@openapi-generator-plus/types/0.34.0:
+    resolution: {integrity: sha512-n8PzCGmETojlT29jzau6TEPnN1ygsn2sGulROApGRzGWZ6fOPTTerreq/WNewPhP3vuXYW/N4baw5BmNWX7maQ==}
     dependencies:
       '@openapi-generator-plus/indexed-type': 0.1.6
       openapi-types: 9.3.0
