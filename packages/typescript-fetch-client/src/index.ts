@@ -29,6 +29,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		...typescriptCommonOptions(config, myContext),
 		legacyUnnamespacedModelSupport: !!config.legacyUnnamespacedModelSupport,
 		withInterfaces: !!config.withInterfaces,
+		includePolyfills: config.includePolyfills !== undefined ? !!config.includePolyfills : true,
 	}
 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {

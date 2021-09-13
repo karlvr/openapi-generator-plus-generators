@@ -6,4 +6,8 @@ import { CodegenOptionsTypeScript } from '@openapi-generator-plus/typescript-gen
 export interface CodegenOptionsTypeScriptFetchClient extends CodegenOptionsTypeScript {
 	legacyUnnamespacedModelSupport: boolean
 	withInterfaces: boolean
+	/**
+	 * Whether polyfills should be included for features that browsers might not have, or might not do well.
+	 */
+	includePolyfills: boolean
 }
