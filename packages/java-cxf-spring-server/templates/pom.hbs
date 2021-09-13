@@ -23,7 +23,7 @@
 		<junit.version>{{lookup maven.versions 'junit' '4.13'}}</junit.version>
 		{{/ifeq}}
 		{{#ifeq junitVersion 5}}
-		<junit.version>{{lookup maven.versions 'junit' '5.7.1'}}</junit.version>
+		<junit-jupiter.version>{{lookup maven.versions 'junit' '5.7.1'}}</junit-jupiter.version>
 		{{/ifeq}}
 		{{/if}}
 	</properties>
