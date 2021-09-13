@@ -221,7 +221,7 @@ importers:
     specifiers:
       '@openapi-generator-plus/generator-common': ^0.18.0
       '@openapi-generator-plus/handlebars-templates': ^0.19.0
-      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.25.1
+      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.26.0
       '@openapi-generator-plus/typescript-generator-common': ^0.22.2
       node-fetch: ^3.0.0
     dependencies:
@@ -235,7 +235,7 @@ importers:
   packages/typescript-fetch-rn-client:
     specifiers:
       '@openapi-generator-plus/handlebars-templates': ^0.19.0
-      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.25.1
+      '@openapi-generator-plus/typescript-fetch-client-generator': ^0.26.0
       '@openapi-generator-plus/typescript-generator-common': ^0.22.2
     dependencies:
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates

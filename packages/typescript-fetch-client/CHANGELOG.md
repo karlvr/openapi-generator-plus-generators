@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.26.0
+
+### Minor Changes
+
+- a6146f6: Add a configuration option to exclude polyfills
+
 ## 0.25.1
 
 ### Patch Changes
