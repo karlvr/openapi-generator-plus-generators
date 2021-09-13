@@ -1,0 +1,109 @@
+# https://github.com/karlvr/openapi-generator-plus-generators/issues/12
+openapi: 3.0.0
+paths:
+  /api/list/{type}:
+    get:
+      operationId: TimerecordDetailController_getTimeRecordDetailList
+      summary: ''
+      description: Return list of particular time record detail
+      parameters:
+        - name: searchQuery
+          required: false
+          in: query
+          description: Uses to filter out list items
+          schema:
+            type: string
+        - name: context
+          required: false
+          in: query
+          description: Uses to filter out list items
+          schema:
+            description: Array of context
+            type: array
+            items:
+              $ref: '#/components/schemas/GetTimeRecordDetailsListContextQuery'
+        - name: type
+          required: true
+          in: path
+          example: client
+          description: Type of requested time record detail list
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Time record detail list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTimeRecordDetailsListResponse'
+      tags:
+        - Time record details
+  
+info:
+  title: Example API
+  description: Define API
+  version: '1.0'
+  contact: {}
+tags: []
+servers:
+  - url: /
+    description: Implementation
+components:
+  schemas:
+    BaseTimeRecordDetailValue:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of the provided value
+          example: client-id-1
+        label:
+          type: string
+          description: Label of the provided value
+          example: Big Client
+      required:
+        - id
+        - label
+    TimeRecordDetail:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Unique detail type. Should be mapped to the time record detail type
+          example: client
+        value:
+          description: Particular detail value
+          allOf:
+            - $ref: '#/components/schemas/BaseTimeRecordDetailValue'
+      required:
+        - type
+        - value
+    GetTimeRecordDetailsListContextQuery:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Time record detail type
+          example: client
+        value:
+          type: string
+          description: Unique identifier of the time record detail value
+          example: client-id-1
+      required:
+        - type
+        - value
+    GetTimeRecordDetailsListResponse:
+      type: object
+      properties:
+        items:
+          description: List of particular time record detail type
+          example:
+            - id: client-id-0
+              label: John Doe
+            - id: client-id-1
+              label: Big Client
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseTimeRecordDetailValue'
+      required:
+        - items

@@ -274,8 +274,10 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case 'oneOf':
 					if (typeof value === 'string') {
 						return value
+					} else if (typeof value === 'object') {
+						return JSON.stringify(value)
 					} else {
-						context.log(CodegenLogLevel.WARN, `Literal is unsupported for schema type object: ${JSON.stringify(value)}`)
+						context.log(CodegenLogLevel.WARN, `Literal value of type ${typeof value} is unsupported for schema type object: ${JSON.stringify(value)}`)
 						return 'null'
 					}
 					break
