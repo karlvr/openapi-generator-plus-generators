@@ -15,7 +15,7 @@ String({{{value}}})
 {{~else if (isObject)}}
 [
 {{#each (allProperties schema)}}
-{{{../value}}}["{{serializedName}}"] !== undefined ? {{{../value}}}["{{serializedName}}"] !== null ? `{{name}},{{safe '${'}}{{>frag/schemaToString value=(concat ../value '["' serializedName '"]') separator=../separator indent=../indent}}{{safe '}'}}` : '{{name}},' : undefined{{#hasMore}},{{/hasMore}}{{safe ' '}}
+{{{../value}}}["{{serializedName}}"] !== undefined ? {{{../value}}}["{{serializedName}}"] !== null ? `{{serializedName}},{{safe '${'}}{{>frag/schemaToString value=(concat ../value '["' serializedName '"]') separator=../separator indent=../indent}}{{safe '}'}}` : '{{serializedName}},' : undefined{{#hasMore}},{{/hasMore}}{{safe ' '}}
 {{/each}}
 ].filter(localVarObjectElement => localVarObjectElement !== undefined).join('{{separator}}')
 {{~else if (isArray)}}
