@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 0.22.4
+
+### Patch Changes
+
+- cdc41e6: Support formatting object literals
+- Updated dependencies [6f81fa5]
+- Updated dependencies [c34292b]
+  - @openapi-generator-plus/handlebars-templates@0.20.0
+  - @openapi-generator-plus/generator-common@0.19.0
+  - @openapi-generator-plus/java-like-generator-helper@0.15.3
+
 ## 0.22.3
 
 ### Patch Changes

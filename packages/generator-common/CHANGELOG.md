@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 0.19.0
+
+### Minor Changes
+
+- c34292b: Update to core 0.35.0
+
 ## 0.18.0
 
 ### Minor Changes

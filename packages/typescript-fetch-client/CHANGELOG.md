@@ -1,5 +1,21 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.27.0
+
+### Minor Changes
+
+- 38d4257: Support x-serialize-nested-as-json on CodegenParameter to serialize nested items as JSON
+
+### Patch Changes
+
+- 37478df: Fix the serializedName of a property not being correctly used when serializing an object in a parameter
+- Updated dependencies [6f81fa5]
+- Updated dependencies [c34292b]
+- Updated dependencies [cdc41e6]
+  - @openapi-generator-plus/handlebars-templates@0.20.0
+  - @openapi-generator-plus/generator-common@0.19.0
+  - @openapi-generator-plus/typescript-generator-common@0.22.4
+
 ## 0.26.0
 
 ### Minor Changes

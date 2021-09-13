@@ -1,5 +1,17 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.20.0
+
+### Minor Changes
+
+- 6f81fa5: ifvex helper can now accept an object as its second argument to look for vendor extensions in that object, rather than just a property name to lookup relative to the current context
+- c34292b: Update to core 0.35.0
+
+### Patch Changes
+
+- Updated dependencies [c34292b]
+  - @openapi-generator-plus/generator-common@0.19.0
+
 ## 0.19.1
 
 ### Patch Changes
