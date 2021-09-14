@@ -146,34 +146,73 @@ paths:
   /testHeader:
     get:
       parameters:
-        - name: headerObject
+        - name: object
           in: header
           schema:
             $ref: '#/components/schemas/ChildRequestObject'
-        - name: headerObjectExploded
+        - name: objectExploded
           in: header
           explode: true
           schema:
             $ref: '#/components/schemas/ChildRequestObject'
-        - name: headerString
+        - name: string
           in: header
           schema:
             type: string
-        - name: headerStringArray
+        - name: stringArray
           in: header
           schema:
             type: array
             items:
               type: string
-        - name: headerStringArrayExploded
+        - name: stringArrayExploded
           in: header
           explode: true
           schema:
             type: array
             items:
               type: string
-        - name: headerDateTimeArray
+        - name: dateTimeArray
           in: header
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
+      responses:
+        200:
+          description: OK
+  /testCookie:
+    get:
+      parameters:
+        - name: object
+          in: cookie
+          schema:
+            $ref: '#/components/schemas/ChildRequestObject'
+        - name: objectExploded
+          in: cookie
+          explode: true
+          schema:
+            $ref: '#/components/schemas/ChildRequestObject'
+        - name: string
+          in: cookie
+          schema:
+            type: string
+        - name: stringArray
+          in: cookie
+          schema:
+            type: array
+            items:
+              type: string
+        - name: stringArrayExploded
+          in: cookie
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: dateTimeArray
+          in: cookie
           schema:
             type: array
             items:
