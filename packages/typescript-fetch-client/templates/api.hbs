@@ -30,7 +30,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				.replace('{{safe '{'}}{{{serializedName}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/each}};
 			const localVarPathQueryStart = localVarPath.indexOf("?");
 			const localVarRequestOptions: RequestInit = Object.assign({ method: '{{httpMethod}}' }, options);
-			const localVarHeaderParameter: HeadersInit = {};
+			const localVarHeaderParameter: Headers = options.headers ? new Headers(options.headers) : new Headers();
 			const localVarQueryParameter = new URLSearchParams(localVarPathQueryStart !== -1 ? localVarPath.substring(localVarPathQueryStart + 1) : "");
 			if (localVarPathQueryStart !== -1) {
 				localVarPath = localVarPath.substring(0, localVarPathQueryStart);
@@ -50,7 +50,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 					? configuration.apiKey("{{identifier scheme.name}}")
 					: configuration.apiKey;
 				if (localVarApiKeyValue !== null) {
-					localVarHeaderParameter["{{identifier scheme.name}}"] = localVarApiKeyValue;
+					localVarHeaderParameter.set("{{identifier scheme.name}}", localVarApiKeyValue);
 				}
 			}
 			{{/if}}
@@ -68,7 +68,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{#if scheme.isBasic}}
 			// http basic authentication required
 			if (configuration && (configuration.username || configuration.password)) {
-				localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+				localVarHeaderParameter.set("Authorization", "Basic " + btoa(configuration.username + ":" + configuration.password));
 			}
 			{{/if}}
 			{{#or scheme.isOAuth scheme.isOpenIdConnect}}
@@ -78,7 +78,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 					? configuration.authorization("{{scheme.name}}", [{{#each scopes}}"{{{name}}}"{{#unless @last}}, {{/unless}}{{/each}}])
 					: configuration.authorization;
 				if (localVarAuthorizationValue !== null) {
-					localVarHeaderParameter["Authorization"] = "Bearer " + localVarAuthorizationValue;
+					localVarHeaderParameter.set("Authorization", "Bearer " + localVarAuthorizationValue);
 				}
 			}
 			{{/or}}
@@ -89,7 +89,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 					? configuration.authorization("{{scheme.name}}")
 					: configuration.authorization;
 				if (localVarAuthorizationValue !== null) {
-					localVarHeaderParameter["Authorization"] = "{{capitalize scheme.scheme}} " + localVarAuthorizationValue;
+					localVarHeaderParameter.set("Authorization", "{{capitalize scheme.scheme}} " + localVarAuthorizationValue);
 				}
 			}
 			{{/if}}
@@ -97,35 +97,33 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 		{{/each}}
 	{{/if}}
 	{{#each queryParams}}
-			{{>frag/apiParameters dest='localVarQueryParameter' var=(identifier name) encoding=encoding}}
+			{{>frag/requestParameter dest='localVarQueryParameter' var=(identifier name) encoding=encoding}}
 
 	{{/each}}
 	{{#each headerParams}}
-			if ({{identifier name}} !== undefined && {{identifier name}} !== null) {
-				localVarHeaderParameter['{{serializedName}}'] = {{>frag/schemaToString value=(identifier name) parameter=. separator=',' indent='					'}};
-			}
+			{{>frag/requestParameter dest='localVarHeaderParameter' var=(identifier name) encoding=encoding}}
 
 	{{/each}}
 	{{#each formParams}}
-			{{>frag/apiParameters dest='localVarFormParams' var=(identifier name) encoding=encoding}}
+			{{>frag/requestParameter dest='localVarFormParams' var=(identifier name) encoding=encoding}}
 
 	{{/each}}
 	{{#if formParams}}
-			localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
+			localVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');
 
 	{{/if}}
 	{{#with requestBody}}
 			{{#unless consumes}}
-			localVarHeaderParameter['Content-Type'] = 'application/json';
+			localVarHeaderParameter.set('Content-Type', 'application/json');
 			{{/unless}}
 			{{#each consumes}}
 			{{#if @first}}
-			localVarHeaderParameter['Content-Type'] = '{{{mediaType}}}';
+			localVarHeaderParameter.set('Content-Type', '{{{mediaType}}}');
 			{{/if}}
 			{{/each}}
 
 	{{/with}}
-			localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+			localVarRequestOptions.headers = localVarHeaderParameter;
 	{{#if formParams}}
 			localVarRequestOptions.body = localVarFormParams.toString();
 	{{/if}}
@@ -136,7 +134,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{#ifeq mediaType.mimeType 'application/x-www-form-urlencoded'}}
 				const localVarFormParams = new URLSearchParams();
 				{{#each (allProperties schema)}}
-				{{>frag/apiParameters dest='localVarFormParams' var=(concat (identifier ../../name) '["' serializedName '"]') encoding=(lookup ../encoding.properties name)}}
+				{{>frag/requestParameter dest='localVarFormParams' var=(concat (identifier ../../name) '["' serializedName '"]') encoding=(lookup ../encoding.properties name)}}
 				{{/each}}
 				localVarRequestOptions.body = localVarFormParams;
 			{{else ifeq mediaType.mimeType 'application/json'}}

@@ -1,4 +1,4 @@
-# Demonstrates different approaches to serializing an array parameter with a object items
+# Demonstrates serializing nested array and objet parameters
 # https://github.com/karlvr/openapi-generator-plus-generators/issues/12
 openapi: 3.0.0
 paths:
@@ -14,7 +14,7 @@ paths:
           description: Uses to filter out list items
           schema:
             type: string
-        # Array parameter with nested object with NO serialization vendor extension
+        # Array parameter with nested object
         - name: context
           required: false
           in: query
@@ -24,17 +24,7 @@ paths:
             type: array
             items:
               $ref: '#/components/schemas/GetTimeRecordDetailsListContextQuery'
-        # Array parameter with nested object WITH a serialization vendor extension
-        - name: contextWithSerialize
-          required: false
-          in: query
-          description: Uses to filter out list items
-          x-serialize-nested-as-json: true
-          schema:
-            description: Array of context
-            type: array
-            items:
-              $ref: '#/components/schemas/GetTimeRecordDetailsListContextQuery'
+        # Object parameter in query
         - name: contextQuery
           required: false
           in: query
@@ -49,25 +39,9 @@ paths:
               type: array
               items:
                 type: string
-        - name: twoDimensionalArrayWithSerialize
-          required: false
-          in: query
-          x-serialize-nested-as-json: true
-          schema:
-            type: array
-            items:
-              type: array
-              items:
-                type: string
         - name: nestedObject
           required: false
           in: query
-          schema:
-            $ref: '#/components/schemas/TimeRecordDetail'
-        - name: nestedObjectWithSerialize
-          required: false
-          in: query
-          x-serialize-nested-as-json: true
           schema:
             $ref: '#/components/schemas/TimeRecordDetail'
         - name: type

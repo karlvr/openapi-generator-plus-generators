@@ -150,12 +150,24 @@ paths:
           in: header
           schema:
             $ref: '#/components/schemas/ChildRequestObject'
+        - name: headerObjectExploded
+          in: header
+          explode: true
+          schema:
+            $ref: '#/components/schemas/ChildRequestObject'
         - name: headerString
           in: header
           schema:
             type: string
         - name: headerStringArray
           in: header
+          schema:
+            type: array
+            items:
+              type: string
+        - name: headerStringArrayExploded
+          in: header
+          explode: true
           schema:
             type: array
             items:

@@ -1,0 +1,9 @@
+{{!--  
+@param value the expression containing the value
+@param separator the separator string to use if we need to join multiple values
+@param indent a string to indent multiline results
+@param parameter the CodegenParameter
+--}}
+{{#indent indent}}
+{{{value}}}.map(localVarArrayMapElement => escape({{>frag/schemaToString component value='localVarArrayMapElement' parameter=parameter indent=indent}})).join('{{separator}}')
+{{~/indent}}
