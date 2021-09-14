@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.28.0
+
+### Minor Changes
+
+- 419828e: Improve parameter serialization including removing x-serialize-nested-as-json vendor extension and making that the default (as that's what editor.swagger.io) does, fixing serialization of header parameters
+- 742a47d: Add support for readOnly and writeOnly properties
+- 15d56ca: Add support for cookie params
+
+  Note that this doesn't work in browser API clients, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
+
 ## 0.27.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 0.4.0
+
+### Minor Changes
+
+- 419828e: Improve parameter serialization including removing x-serialize-nested-as-json vendor extension and making that the default (as that's what editor.swagger.io) does, fixing serialization of header parameters
+
+### Patch Changes
+
+- Updated dependencies [419828e]
+- Updated dependencies [742a47d]
+- Updated dependencies [15d56ca]
+  - @openapi-generator-plus/typescript-fetch-client-generator@0.28.0
+
 ## 0.3.2
 
 ### Patch Changes

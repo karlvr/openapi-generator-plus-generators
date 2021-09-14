@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 0.30.0
+
+### Minor Changes
+
+- b9878c8: Add support for cookie params
+- 742a47d: Add support for readOnly and writeOnly properties
+
 ## 0.29.1
 
 ### Patch Changes

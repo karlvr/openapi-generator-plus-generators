@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 0.30.2
+
+### Patch Changes
+
+- Updated dependencies [b9878c8]
+- Updated dependencies [742a47d]
+  - @openapi-generator-plus/java-jaxrs-client-generator@0.37.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.30.0
+
 ## 0.30.1
 
 ### Patch Changes

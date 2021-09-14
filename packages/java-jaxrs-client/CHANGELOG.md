@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 0.37.0
+
+### Minor Changes
+
+- b9878c8: Add support for cookie params
+
+### Patch Changes
+
+- Updated dependencies [b9878c8]
+- Updated dependencies [742a47d]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.30.0
+
 ## 0.36.3
 
 ### Patch Changes
