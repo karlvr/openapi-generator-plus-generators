@@ -19,7 +19,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 
 	{{/if}}
 {{#each operations}}
-	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{>serviceQueryParams}}{{>servicePathParams}}{{>serviceHeaderParams}}{{>serviceFormParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>serviceBodyParam}}{{/if}}) {
+	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}) {
 		{{#with defaultResponse}}
 		final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
 		{{/with}}
