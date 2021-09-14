@@ -38,6 +38,9 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{#if formParams}}
 			const localVarFormParams = new URLSearchParams();
 	{{/if}}
+	{{#if cookieParams}}
+			const localVarCookieParams = new URLSearchParams();
+	{{/if}}
 
 	{{#if securityRequirements}}
 		{{#each securityRequirements.requirements}}
@@ -104,12 +107,21 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{>frag/requestParameter dest='localVarHeaderParameter' var=(identifier name) encoding=encoding}}
 
 	{{/each}}
+	{{#if formParams}}
 	{{#each formParams}}
 			{{>frag/requestParameter dest='localVarFormParams' var=(identifier name) encoding=encoding}}
 
 	{{/each}}
-	{{#if formParams}}
 			localVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');
+
+	{{/if}}
+	{{#if cookieParams}}
+	{{#each cookieParams}}
+			{{>frag/requestParameter dest='localVarCookieParams' var=(identifier name) encoding=encoding}}
+
+	{{/each}}
+			/* NB: setting Cookies does not work in a browser, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
+			localVarHeaderParameter.set("Cookie", localVarCookieParams.toString().replace(/&/g, "; "));
 
 	{{/if}}
 	{{#with requestBody}}
