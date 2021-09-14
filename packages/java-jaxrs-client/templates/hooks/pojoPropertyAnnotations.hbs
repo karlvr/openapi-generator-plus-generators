@@ -1,0 +1,5 @@
+{{!--
+Note that the concepts of readOnly and writeOnly are reversed for clients. A writeOnly property in OpenAPI is one that is only sent in requests,
+while READ_ONLY access in Jackson means a property that is only serialized (to send in a request or response).
+--}}
+@com.fasterxml.jackson.annotation.JsonProperty(value = {{{stringLiteral serializedName}}}{{#if writeOnly}}, access = com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY{{else if readOnly}}, access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY{{/if}})
