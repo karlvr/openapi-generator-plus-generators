@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 0.15.4
+
+### Patch Changes
+
+- 72a3bbc: Fix modelClassPrefix for new schema types: interface, wrapper, allOf etc
+
 ## 0.15.3
 
 ### Patch Changes

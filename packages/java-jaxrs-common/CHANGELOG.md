@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 0.30.1
+
+### Patch Changes
+
+- 3e9eda3: Fix setting nullable properties to null when using java.util.Optional
+- Updated dependencies [72a3bbc]
+  - @openapi-generator-plus/java-like-generator-helper@0.15.4
+
 ## 0.30.0
 
 ### Minor Changes
