@@ -3,7 +3,7 @@ private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{{
 
 public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	{{#if nullable}}
-	set{{capitalize (identifier name)}}(java.util.Optional.of({{identifier name}}));
+	set{{capitalize (identifier name)}}({{identifier name}} != null ? java.util.Optional.of({{identifier name}}) : java.util.Optional.empty());
 	{{else}}
 	set{{capitalize (identifier name)}}({{identifier name}});
 	{{/if}}
