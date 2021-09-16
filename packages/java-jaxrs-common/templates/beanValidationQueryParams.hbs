@@ -1,1 +1,5 @@
-{{#and required (not nullable)}}@javax.validation.constraints.NotNull{{/and}}{{>beanValidationCore schema}}
+{{#join '_annotations' ' '}}
+{{#and required (not nullable)}}@javax.validation.constraints.NotNull{{/and}}
+{{>beanValidationCore schema}}
+{{/join}}
+{{{_annotations}}}

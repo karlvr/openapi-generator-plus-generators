@@ -331,7 +331,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	hbs.registerHelper('stringLiteral', function(value: string) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
-		if (value === null || value === undefined || typeof value === 'string') {
+		if (value === null || value === undefined || typeof value !== 'object') {
 			return generator().toLiteral(value, utils.stringLiteralValueOptions())
 		} else {
 			throw new Error(`Unexpected argument type to stringLiteral helper "${value}" of type ${typeof value} @ ${sourcePosition(options)}`)

@@ -1,0 +1,10 @@
+{{#join '_groups' ', '}}
+{{#or readOnly writeOnly}}
+{{#if writeOnly}}{{@root.validationPackage}}.Request.class{{/if}}
+{{#if readOnly}}{{@root.validationPackage}}.Response.class{{/if}}
+{{else}}
+{{@root.validationPackage}}.Request.class
+{{@root.validationPackage}}.Response.class
+{{/or}}
+{{/join}}
+groups = { {{{_groups}}} }

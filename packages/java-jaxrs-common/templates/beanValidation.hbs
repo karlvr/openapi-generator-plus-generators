@@ -5,7 +5,11 @@
 {{#unless (lookup schema.vendorExtensions 'x-not-blank')}}
 {{#unless (lookup schema.vendorExtensions 'x-not-empty')}}
 {{#unless nullable}}
-@javax.validation.constraints.NotNull{{#if (lookup schema.vendorExtensions 'x-required-message')}}(message="{{{schema.vendorExtensions.x-required-message}}}"){{/if}}
+{{#join '_validationAnnotationProperties' ', '}}
+{{#ifvex 'x-required-message' schema}}message = {{{stringLiteral schema.vendorExtensions.x-required-message}}}{{/ifvex}}
+{{>hooks/beanValidationAnnotationProperties}}
+{{/join}}
+@javax.validation.constraints.NotNull{{#if _validationAnnotationProperties}}({{{_validationAnnotationProperties}}}){{/if}}
 {{/unless}}
 {{/unless}}
 {{/unless}}

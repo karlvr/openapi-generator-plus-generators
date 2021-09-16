@@ -30,6 +30,7 @@ The available config file properties are:
 |`apiServiceImplPackage`|`string`|Package for API service implementation classes.|`"${apiPackage}.service.impl"`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
 |`invokerPackage`|`string` \| `null`|Package for API invoker classes.|`"${package}.app"`|
+|`validationPackage`|`string`|Package for API validation classes.|`"${package}.validation"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|
 
 ### Code style

@@ -1,0 +1,263 @@
+openapi: '3.0.3'
+info:
+  title: Simple example spec
+  version: '1.0'
+paths:
+  /testWithMessages:
+    get:
+      parameters:
+        - name: lengthMinMax
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+            x-length-message: Hello world
+        - name: lengthMin
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            x-length-message: Hello world
+        - name: lengthMax
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+            x-length-message: Hello world
+        - name: notBlank
+          in: query
+          schema:
+            type: string
+            x-not-blank: true
+            x-not-blank-message: Hello world
+        - name: numberMinMax
+          in: query
+          schema:
+            type: number
+            minimum: 1
+            maximum: 10
+            x-minimum-message: Hello world
+            x-maximum-message: Hello world
+        - name: numberMin
+          in: query
+          schema:
+            type: number
+            minimum: 1
+            x-minimum-message: Hello world
+        - name: numberMax
+          in: query
+          schema:
+            type: number
+            maximum: 10
+            x-maximum-message: Hello world
+        - name: integerMinMax
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            x-minimum-message: Hello world
+            x-maximum-message: Hello world
+        - name: integerMin
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            x-minimum-message: Hello world
+        - name: integerMax
+          in: query
+          schema:
+            type: integer
+            maximum: 10
+            x-maximum-message: Hello world
+        - name: arrayMinMax
+          in: query
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 10
+            x-length-message: Hello world
+            items:
+              type: string
+        - name: arrayMin
+          in: query
+          schema:
+            type: array
+            minItems: 1
+            x-length-message: Hello world
+            items:
+              type: string
+        - name: arrayMax
+          in: query
+          schema:
+            type: array
+            maxItems: 10
+            x-length-message: Hello world
+            items:
+              type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Test1'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        423:
+          description: No response
+  /testWithoutMessages:
+    get:
+      parameters:
+        - name: lengthMinMax
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+        - name: lengthMin
+          in: query
+          schema:
+            type: string
+            minLength: 1
+        - name: lengthMax
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 10
+        - name: notBlank
+          in: query
+          schema:
+            type: string
+            x-not-blank: true
+        - name: numberMinMax
+          in: query
+          schema:
+            type: number
+            minimum: 1
+            maximum: 10
+        - name: numberMin
+          in: query
+          schema:
+            type: number
+            minimum: 1
+        - name: numberMax
+          in: query
+          schema:
+            type: number
+            maximum: 10
+        - name: integerMinMax
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+        - name: integerMin
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: integerMax
+          in: query
+          schema:
+            type: integer
+            maximum: 10
+        - name: arrayMinMax
+          in: query
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 10
+            items:
+              type: string
+        - name: arrayMin
+          in: query
+          schema:
+            type: array
+            minItems: 1
+            items:
+              type: string
+        - name: arrayMax
+          in: query
+          schema:
+            type: array
+            maxItems: 10
+            items:
+              type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Test1'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+        423:
+          description: No response
+components:
+  schemas:
+    Test1:
+      type: object
+      properties:
+        lengthMinMax:
+          type: string
+          minLength: 1
+          maxLength: 10
+        lengthMin:
+          type: string
+          minLength: 1
+        lengthMax:
+          type: string
+          minLength: 1
+          maxLength: 10
+        notBlank:
+          type: string
+          x-not-blank: true
+        numberMinMax:
+          type: number
+          minimum: 1
+          maximum: 10
+        numberMin:
+          type: number
+          minimum: 1
+        numberMax:
+          type: number
+          maximum: 10
+        integerMinMax:
+          type: integer
+          minimum: 1
+          maximum: 10
+        integerMin:
+          type: integer
+          minimum: 1
+        integerMax:
+          type: integer
+          maximum: 10
+        arrayMinMax:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: string
+        arrayMin:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        arrayMax:
+          type: array
+          maxItems: 10
+          items:
+            type: string

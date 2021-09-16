@@ -97,6 +97,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		apiImplPackage: config.apiImplPackage || `${apiPackage}.impl`,
 		modelPackage: config.modelPackage || `${packageName}.model`,
 		useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
+		validationPackage: config.validationPackage || `${packageName}.validation`,
 		includeTests: config.includeTests !== undefined ? config.includeTests : false,
 		junitVersion: typeof config.junitVersion === 'number' ? config.junitVersion : 5,
 		dateImplementation: config.dateImplementation || 'java.time.LocalDate',
@@ -487,11 +488,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 			const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
+			const validationPackagePath = packageToPath(generatorOptions.validationPackage)
 	
 			const result = [
 				path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
 				path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
 				path.join(relativeSourceOutputPath, modelPackagePath, '*.java'),
+				path.join(relativeSourceOutputPath, validationPackagePath, 'Request.java'),
+				path.join(relativeSourceOutputPath, validationPackagePath, 'Response.java'),
 			]
 			if (context.additionalCleanPathPatterns) {
 				result.push(...context.additionalCleanPathPatterns())
@@ -561,6 +565,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					await emit('wrapper', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
 						{ ...rootContext, schema }, true, hbs)
 				}
+			}
+
+			if (generatorOptions.useBeanValidation) {
+				const validationPackagePath = packageToPath(generatorOptions.validationPackage)
+				await emit('validation/Request', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Request.java'), rootContext, true, hbs)
+				await emit('validation/Response', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Response.java'), rootContext, true, hbs)
 			}
 	
 			const maven = generatorOptions.maven
