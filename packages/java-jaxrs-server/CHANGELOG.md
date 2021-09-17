@@ -1,5 +1,18 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.35.0
+
+### Minor Changes
+
+- 6c1300d: Validation enhanced to support asymmetric validation for when a readOnly or writeOnly is present
+
+### Patch Changes
+
+- Updated dependencies [6c1300d]
+- Updated dependencies [6c1300d]
+  - @openapi-generator-plus/handlebars-templates@0.20.1
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.31.0
+
 ## 0.34.0
 
 ### Minor Changes

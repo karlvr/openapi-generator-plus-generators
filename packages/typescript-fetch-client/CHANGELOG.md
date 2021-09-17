@@ -1,5 +1,17 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.29.0
+
+### Minor Changes
+
+- 83a47f4: Update blind-date to 3.2.0 to fix timestamp regex bug
+
+### Patch Changes
+
+- cb453ba: Fix missing includePolyfills check around the import of whatwg-fetch
+- Updated dependencies [6c1300d]
+  - @openapi-generator-plus/handlebars-templates@0.20.1
+
 ## 0.28.0
 
 ### Minor Changes

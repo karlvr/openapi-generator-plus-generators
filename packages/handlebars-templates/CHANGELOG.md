@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.20.1
+
+### Patch Changes
+
+- 6c1300d: Expand stringLiteral to support numeric and other types that we want to turn into strings
+
 ## 0.20.0
 
 ### Minor Changes
