@@ -16,6 +16,14 @@ function computeCustomTemplatesPath(configPath: string | undefined, customTempla
 	}
 }
 
+function toSafeTypeForComposing(nativeType: string): string {
+	if (/[^a-zA-Z0-9_.[\]]/.test(nativeType)) {
+		return `(${nativeType})`
+	} else {
+		return nativeType
+	}
+}
+
 export const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 	const javaLikeContext: JavaLikeContext = {
 		...context,
@@ -72,7 +80,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		},
 		toNativeArrayType: (options) => {
 			const { componentNativeType } = options
-			return new context.NativeType(`${componentNativeType}[]`)
+			return new context.NativeType(`${toSafeTypeForComposing(componentNativeType.nativeType)}[]`)
 		},
 		toNativeMapType: (options) => {
 			const { keyNativeType, componentNativeType } = options
@@ -81,7 +89,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		nativeTypeUsageTransformer: ({ nullable }) => ({
 			default: function(nativeType, nativeTypeString) {
 				if (nullable) {
-					return `${nativeTypeString} | null`
+					return `${toSafeTypeForComposing(nativeTypeString)} | null`
 				}
 				return nativeTypeString
 			},
