@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 0.23.1
+
+### Patch Changes
+
+- 7d893d3: Fix bug where the generator would post-process the disjunction schemas it created and remove them
+
 ## 0.23.0
 
 ### Minor Changes
