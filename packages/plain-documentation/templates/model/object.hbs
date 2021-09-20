@@ -19,3 +19,7 @@
 {{#if children}}
     {{>model/children anchor=anchor}}
 {{/if}}
+
+{{#each schemas}}
+    {{>model/main-panel anchor=../anchor}}
+{{/each}}

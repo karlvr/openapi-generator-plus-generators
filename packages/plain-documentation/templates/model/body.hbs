@@ -25,6 +25,9 @@ renders a model without the surrounding panel.
 {{#if (isObject)}}
     {{>model/object anchor=anchor}}
 {{/if}}
+{{#if (isInterface)}}
+    {{>model/interface anchor=anchor}}
+{{/if}}
 {{#if (isEnum)}}
     {{>model/enum}}
 {{/if}}

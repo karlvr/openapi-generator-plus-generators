@@ -33,4 +33,15 @@ renders a model "allOf"-definition.
                 </table>
             </div>
     {{/unless}}
+
+    {{!-- We don’t render our immediately inline schemas as they are assumed to be our anonymous consumes that we display above
+          but we do render their subschemas as we might use things from them.
+    --}}
+    {{#each schemas}}
+        {{#ifdef schemas}}
+            {{#each schemas}}
+                {{>model/main-panel anchor=../../anchor}}
+            {{/each}}
+        {{/ifdef}}
+    {{/each}}
 </div>

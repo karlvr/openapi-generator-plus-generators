@@ -12,4 +12,8 @@ renders a model "allOf"-definition.
     {{#if discriminator}}
     {{>model/discriminator}}
     {{/if}}
+
+    {{#each schemas}}
+        {{>model/main-panel anchor=../anchor}}
+    {{/each}}
 </div>
