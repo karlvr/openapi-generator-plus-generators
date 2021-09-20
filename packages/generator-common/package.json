@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/generator-common",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Common utilities for openapi-generator-plus generators",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

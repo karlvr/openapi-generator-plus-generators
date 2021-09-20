@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 0.38.2
+
+### Patch Changes
+
+- Updated dependencies [fa0f593]
+  - @openapi-generator-plus/generator-common@0.21.0
+  - @openapi-generator-plus/handlebars-templates@0.22.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.31.2
+  - @openapi-generator-plus/java-like-generator-helper@0.15.6
+
 ## 0.38.1
 
 ### Patch Changes
