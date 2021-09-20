@@ -189,10 +189,12 @@ importers:
       '@openapi-generator-plus/generator-common': ^0.20.0
       '@openapi-generator-plus/handlebars-templates': ^0.21.0
       '@openapi-generator-plus/java-like-generator-helper': ^0.15.5
+      pluralize: ^8.0.0
     dependencies:
       '@openapi-generator-plus/generator-common': link:../generator-common
       '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
       '@openapi-generator-plus/java-like-generator-helper': link:../java-like
+      pluralize: 8.0.0
 
   packages/typescript-express-example-server:
     specifiers:

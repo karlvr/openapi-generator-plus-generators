@@ -1,10 +1,11 @@
-import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenOneOfSchema, isCodegenAnyOfSchema, isCodegenInterfaceSchema, isCodegenObjectSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenOneOfSchema, isCodegenAnyOfSchema, isCodegenInterfaceSchema, isCodegenObjectSchema, CodegenOneOfSchema, CodegenSchemaPurpose, CodegenSchema, CodegenNamedSchema, CodegenScope } from '@openapi-generator-plus/types'
 import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import pluralize, { isPlural } from 'pluralize'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions, DateApproach } from './types'
 
@@ -492,16 +493,49 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			}
 		},
 
-		postProcessSchema: (schema) => {
-			/* We don't have access to the schema when we create the native type, so we post-process to change the native type
+		postProcessSchema: (schema, helper) => {
+			/* We don't have access to the completed schema when we create the native type, so we post-process to change the native type
 			   to represent the disjunctions that we support.
 			 */
 			if (isCodegenOneOfSchema(schema) || isCodegenAnyOfSchema(schema)) {
-				schema.nativeType.nativeType = schema.composes.map(s => s.nativeType.parentType).join(' | ')
+				/* If the schema is anonymous (wasn't actually named in the spec) then we
+				   replace it with its disjunction wherever it appears, and remove it from
+				   the output.
+
+				   If it's not anonymous, then we retain the type as it will be output as a
+				   disjunction (or equivalent).
+				 */
+				if (schema.anonymous) {
+					schema.nativeType.nativeType = schema.composes.map(s => s.nativeType.parentType).join(' | ')
+					schema.nativeType.serializedType = schema.nativeType.nativeType
+					schema.nativeType.componentType = null
+					return false
+				}
 			} else if (isCodegenObjectSchema(schema) && schema.discriminator && schema.children) {
-				schema.nativeType.nativeType = schema.children.map(s => s.nativeType.parentType).join(' | ')
+				createDisjunction(schema, schema.discriminator.references.map(r => r.model))
 			} else if (isCodegenInterfaceSchema(schema) && schema.discriminator && schema.implementors) {
-				schema.nativeType.nativeType = schema.implementors.map(s => s.nativeType.parentType).join(' | ')
+				createDisjunction(schema, schema.discriminator.references.map(r => r.model))
+			}
+
+			/**
+			 * Create a new disjunction schema to represent the possible schemas that a type might be.
+			 * @param schema 
+			 * @param members 
+			 */
+			function createDisjunction(schema: CodegenNamedSchema & CodegenScope, members: CodegenSchema[]) {
+				let disjunction: CodegenOneOfSchema
+				const scope = helper.scopeOf(schema)
+				if (!isPlural(schema.name) && !helper.findSchema(pluralize(schema.name), scope)) {
+					disjunction = helper.createOneOfSchema(pluralize(schema.name), scope, CodegenSchemaPurpose.GENERAL)
+					helper.addToScope(disjunction, scope)
+				} else {
+					disjunction = helper.createOneOfSchema('children', schema, CodegenSchemaPurpose.GENERAL)
+					helper.addToScope(disjunction, schema)
+				}
+				disjunction.composes.push(...members)
+
+				schema.nativeType.nativeType = disjunction.nativeType.nativeType
+				schema.nativeType.serializedType = schema.nativeType.nativeType
 			}
 		},
 	}
