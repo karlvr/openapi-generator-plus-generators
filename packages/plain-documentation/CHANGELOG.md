@@ -1,5 +1,20 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 0.18.0
+
+### Minor Changes
+
+- 6100cd1: Improve discriminator to show discriminator property information
+- c79b56b: Improve nested schema rendering, especially for allOf
+
+### Patch Changes
+
+- 8437d28: Improve display of composed types
+- Updated dependencies [b5ad150]
+  - @openapi-generator-plus/generator-common@0.20.0
+  - @openapi-generator-plus/handlebars-templates@0.21.0
+  - @openapi-generator-plus/java-like-generator-helper@0.15.5
+
 ## 0.17.1
 
 ### Patch Changes

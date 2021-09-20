@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 0.22.5
+
+### Patch Changes
+
+- Updated dependencies [b5ad150]
+  - @openapi-generator-plus/generator-common@0.20.0
+  - @openapi-generator-plus/handlebars-templates@0.21.0
+  - @openapi-generator-plus/java-like-generator-helper@0.15.5
+
 ## 0.22.4
 
 ### Patch Changes

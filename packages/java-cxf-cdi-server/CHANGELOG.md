@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 0.31.4
+
+### Patch Changes
+
+- Updated dependencies [b5ad150]
+  - @openapi-generator-plus/handlebars-templates@0.21.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.31.1
+  - @openapi-generator-plus/java-jaxrs-server-generator@0.35.1
+
 ## 0.31.3
 
 ### Patch Changes

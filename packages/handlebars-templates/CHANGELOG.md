@@ -1,5 +1,16 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.21.0
+
+### Minor Changes
+
+- b5ad150: Upgrade core
+
+### Patch Changes
+
+- Updated dependencies [b5ad150]
+  - @openapi-generator-plus/generator-common@0.20.0
+
 ## 0.20.1
 
 ### Patch Changes

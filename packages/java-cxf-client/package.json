@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-cxf-client-generator",
-  "version": "0.30.3",
+  "version": "0.30.4",
   "description": "An OpenAPI Generator+ module for a Java API client using CXF",
   "keywords": [
     "openapi-generator-plus",
@@ -30,12 +30,12 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/handlebars-templates": "^0.20.1",
-    "@openapi-generator-plus/java-jaxrs-generator-common": "^0.31.0",
-    "@openapi-generator-plus/java-jaxrs-client-generator": "^0.38.0"
+    "@openapi-generator-plus/handlebars-templates": "^0.21.0",
+    "@openapi-generator-plus/java-jaxrs-generator-common": "^0.31.1",
+    "@openapi-generator-plus/java-jaxrs-client-generator": "^0.38.1"
   },
   "devDependencies": {
-    "@openapi-generator-plus/generator-common": "^0.19.0"
+    "@openapi-generator-plus/generator-common": "^0.20.0"
   },
   "publishConfig": {
     "access": "public"
