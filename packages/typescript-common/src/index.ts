@@ -206,6 +206,8 @@ function createJavaLikeContext(context: TypeScriptGeneratorContext): JavaLikeCon
 export default function createGenerator(config: CodegenConfig, context: TypeScriptGeneratorContext): Omit<CodegenGenerator, 'generatorType'> {
 	const generatorOptions = options(config, context)
 
+	const createdSchemas = new Set()
+
 	const aCommonGenerator = commonGenerator(config, context)
 	return {
 		...context.baseGenerator(config, context),
@@ -494,6 +496,11 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 
 		postProcessSchema: (schema, helper) => {
+			if (createdSchemas.has(schema)) {
+				/* Skip schemas we create below */
+				return
+			}
+
 			/* We don't have access to the completed schema when we create the native type, so we post-process to change the native type
 			   to represent the disjunctions that we support.
 			 */
@@ -533,6 +540,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					helper.addToScope(disjunction, schema)
 				}
 				disjunction.composes.push(...members)
+				createdSchemas.add(disjunction)
 
 				schema.nativeType.nativeType = disjunction.nativeType.nativeType
 				schema.nativeType.serializedType = schema.nativeType.nativeType
