@@ -8,7 +8,7 @@
     "link": "pnpm link --global @openapi-generator-plus/core @openapi-generator-plus/types @openapi-generator-plus/indexed-type @openapi-generator-plus/testing && pnpm --recursive --workspace-concurrency=1 exec pnpm link --global",
     "release": "pnpm clean && pnpm build && pnpm test && pnpx changeset publish && pnpm install",
     "release:version": "pnpm changeset version && pnpm install",
-    "test": "pnpm test --recursive",
+    "test": "pnpm test --recursive --workspace-concurrency 1",
     "watch": "pnpm watch --parallel"
   },
   "devDependencies": {
