@@ -50,20 +50,20 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{#if scheme.isInHeader}}
 			if (configuration && configuration.apiKey) {
 				const localVarApiKeyValue = typeof configuration.apiKey === 'function'
-					? configuration.apiKey("{{identifier scheme.name}}")
+					? configuration.apiKey({{{stringLiteral scheme.name}}})
 					: configuration.apiKey;
 				if (localVarApiKeyValue !== null) {
-					localVarHeaderParameter.set("{{identifier scheme.name}}", localVarApiKeyValue);
+					localVarHeaderParameter.set({{{stringLiteral scheme.paramName}}}, localVarApiKeyValue);
 				}
 			}
 			{{/if}}
 			{{#if scheme.isInQuery}}
 			if (configuration && configuration.apiKey) {
 				const localVarApiKeyValue = typeof configuration.apiKey === 'function'
-					? configuration.apiKey("{{identifier scheme.name}}")
+					? configuration.apiKey({{{stringLiteral scheme.name}}})
 					: configuration.apiKey;
 				if (localVarApiKeyValue !== null) {
-					localVarQueryParameter.set("{{identifier scheme.name}}", localVarApiKeyValue);
+					localVarQueryParameter.set({{{stringLiteral scheme.paramName}}}, localVarApiKeyValue);
 				}
 			}
 			{{/if}}
@@ -78,7 +78,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			// oauth or openIdConnect required
 			if (configuration && configuration.authorization) {
 				const localVarAuthorizationValue = typeof configuration.authorization === 'function'
-					? configuration.authorization("{{scheme.name}}", [{{#each scopes}}"{{{name}}}"{{#unless @last}}, {{/unless}}{{/each}}])
+					? configuration.authorization({{{stringLiteral scheme.name}}}, [{{#each scopes}}{{{stringLiteral name}}}{{#unless @last}}, {{/unless}}{{/each}}])
 					: configuration.authorization;
 				if (localVarAuthorizationValue !== null) {
 					localVarHeaderParameter.set("Authorization", "Bearer " + localVarAuthorizationValue);
@@ -89,7 +89,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			// http authorization required
 			if (configuration && configuration.authorization) {
 				const localVarAuthorizationValue = typeof configuration.authorization === 'function'
-					? configuration.authorization("{{scheme.name}}")
+					? configuration.authorization({{{stringLiteral scheme.name}}})
 					: configuration.authorization;
 				if (localVarAuthorizationValue !== null) {
 					localVarHeaderParameter.set("Authorization", "{{capitalize scheme.scheme}} " + localVarAuthorizationValue);
