@@ -469,7 +469,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		oneOfStrategy: () => CodegenOneOfStrategy.INTERFACE,
 		supportsInheritance: () => true,
 		supportsMultipleInheritance: () => false,
-		nativeOneOfCanBeScope: () => false,
+		nativeCompositionCanBeScope: () => false,
+		nativeComposedSchemaRequiresName: () => false,
+		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
 	
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]

@@ -2,19 +2,19 @@ import { CodegenObjectSchema, CodegenProperties, CodegenProperty } from '@openap
 import { idx } from '@openapi-generator-plus/core'
 
 /**
- * Return an object containing all of the unique properties, including inherited properties, for a model, where properties
- * in submodels override any same-named properties in parent models.
- * @param model 
+ * Return an object containing all of the unique properties, including inherited properties, for a schema, where properties
+ * in child schemas override any same-named properties in parent schemas.
+ * @param schemas 
  * @param result 
  */
-export function uniquePropertiesIncludingInherited(models: CodegenObjectSchema[], result: CodegenProperties = idx.create()): CodegenProperty[] {
-	const open = [...models]
-	for (const model of open) {
-		if (model.properties) {
-			idx.merge(result, model.properties)
+export function uniquePropertiesIncludingInherited(schemas: CodegenObjectSchema[], result: CodegenProperties = idx.create()): CodegenProperty[] {
+	const open = [...schemas]
+	for (const schema of open) {
+		if (schema.properties) {
+			idx.merge(result, schema.properties)
 		}
-		if (model.parents) {
-			for (const aParent of model.parents) {
+		if (schema.parents) {
+			for (const aParent of schema.parents) {
 				if (open.indexOf(aParent) === -1) {
 					open.push(aParent)
 				}

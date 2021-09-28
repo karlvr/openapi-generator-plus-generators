@@ -113,7 +113,9 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		oneOfStrategy: () => CodegenOneOfStrategy.NATIVE,
 		supportsInheritance: () => false,
 		supportsMultipleInheritance: () => false,
-		nativeOneOfCanBeScope: () => true,
+		nativeCompositionCanBeScope: () => true,
+		nativeComposedSchemaRequiresName: () => false,
+		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]

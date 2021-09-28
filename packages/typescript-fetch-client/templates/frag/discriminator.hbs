@@ -3,14 +3,14 @@
 	/**
 	 * Discriminator property
 	 */
-	{{name}}: {{{nativeType.serializedType}}};
+	{{serializedName}}: {{{nativeType.serializedType}}};
 	
 {{/with}}
 {{/if}}
 {{#each discriminatorValues}}
 	/**
-	 * Value for discriminator in {{model.nativeType.parentType}}
+	 * Value for discriminator in {{schema.nativeType.parentType}}
 	 */
-	{{model.discriminator.name}}: {{{value}}};
+	{{schema.discriminator.serializedName}}: {{{literalValue}}};
 
 {{/each}}

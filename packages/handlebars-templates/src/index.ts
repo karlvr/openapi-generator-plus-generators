@@ -864,7 +864,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 	})
 
-	/** Return an array of unique and not shadowed inherited properties for the current model. */
+	/** Return an array of unique and not shadowed inherited properties for the current schema. */
 	hbs.registerHelper('inheritedProperties', function(this: CodegenObjectSchema) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
@@ -885,7 +885,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 	})
 
-	/** Return an array of unique and not shadowed properties, including inherited, for the current model. */
+	/** Return an array of unique and not shadowed properties, including inherited, for the current schema. */
 	hbs.registerHelper('allProperties', function(this: CodegenObjectSchema, schema?: CodegenObjectSchema) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions

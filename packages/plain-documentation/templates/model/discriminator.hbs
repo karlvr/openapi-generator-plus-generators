@@ -12,7 +12,7 @@
 			</thead>
 			<tr data-property-name="{{name}}">
 				<td class="name">
-					{{name}}
+					{{serializedName}}
 					{{#if required}}<span class="type">Required</span>{{/if}}
 				</td>
 				<td class="type">
@@ -39,8 +39,8 @@
 			<tbody>
 				{{#each discriminator.references}}
 				<tr>
-					<td>{{name}}</td>
-					<td><a class="model-ref" href="#{{../anchor}}/{{htmlId model.nativeType}}">{{model.nativeType}}</a></td>
+					<td>{{value}}</td>
+					<td><a class="model-ref" href="#{{../anchor}}/{{htmlId schema.nativeType}}">{{schema.nativeType}}</a></td>
 				</tr>
 				{{/each}}
 			</tbody>

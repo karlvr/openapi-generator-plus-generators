@@ -443,7 +443,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		oneOfStrategy: () => CodegenOneOfStrategy.NATIVE,
 		supportsInheritance: () => true,
 		supportsMultipleInheritance: () => true, /* As we use interfaces not classes */
-		nativeOneOfCanBeScope: () => true,
+		nativeCompositionCanBeScope: () => true,
+		nativeComposedSchemaRequiresName: () => false,
+		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
@@ -519,9 +521,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					return false
 				}
 			} else if (isCodegenObjectSchema(schema) && schema.discriminator && schema.children) {
-				createDisjunction(schema, schema.discriminator.references.map(r => r.model))
+				createDisjunction(schema, schema.discriminator.references.map(r => r.schema))
 			} else if (isCodegenInterfaceSchema(schema) && schema.discriminator && schema.implementors) {
-				createDisjunction(schema, schema.discriminator.references.map(r => r.model))
+				createDisjunction(schema, schema.discriminator.references.map(r => r.schema))
 			}
 
 			/**
