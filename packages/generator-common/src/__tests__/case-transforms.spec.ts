@@ -13,6 +13,11 @@ test('camelCase changes case on first word', () => {
 	expect(camelCase('One_two')).toBe('oneTwo')
 })
 
+test('camelCase changes an all upper-case word to all lower-case', () => {
+	expect(camelCase('FAQS')).toBe('faqs')
+	expect(camelCase('ARRAY2')).toBe('array2')
+})
+
 test('camelCase preserves case on later words', () => {
 	expect(camelCase('get_FAQ_section')).toBe('getFAQSection')
 	expect(camelCase('get-FAQ-section')).toBe('getFAQSection')
