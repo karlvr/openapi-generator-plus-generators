@@ -5,7 +5,7 @@ package {{apiServicePackage}};
 public interface {{className name}}ApiService {
 	{{#each operations}}
 	{{>frag/operationDocumentation}}
-	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}{{#unless returnNativeType}}{{#or parameters requestBody}}, {{/or}}javax.ws.rs.core.Response.ResponseBuilder response{{/unless}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{{className ../name}}}{{{code}}}Exception{{/each}};
+	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}{{#unless returnNativeType}}{{#or parameters requestBody.nativeType}}, {{/or}}javax.ws.rs.core.Response.ResponseBuilder response{{/unless}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{{className ../name}}}{{{code}}}Exception{{/each}};
 	{{/each}}
 	
 	{{#each operations}}

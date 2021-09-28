@@ -14,7 +14,7 @@ public interface {{className name}}Api {
 	{{#if deprecated}}
 	@java.lang.Deprecated
 	{{/if}}
-	{{#if returnNativeType}}retrofit2.Call<{{{returnNativeType}}}>{{else}}retrofit2.Call<Void>{{/if}} {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
+	{{#if returnNativeType}}retrofit2.Call<{{{returnNativeType}}}>{{else}}retrofit2.Call<Void>{{/if}} {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
 
 {{/each}}
 }

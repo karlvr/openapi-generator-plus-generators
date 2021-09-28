@@ -19,7 +19,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options: RequestInit = {}): FetchArgs {
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}): FetchArgs {
 	{{#each parameters}}
 	{{>frag/validateParameter operation=..}}
 	{{/each}}
@@ -139,6 +139,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{#if formParams}}
 			localVarRequestOptions.body = localVarFormParams.toString();
 	{{/if}}
+	{{#if requestBody.nativeType}}
 	{{#with requestBody}}
 	
 			if ({{identifier name}} !== undefined) {
@@ -173,6 +174,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			}
 		{{/with}}
 	{{/with}}
+	{{/if}}
 
 			const localVarQueryParameterString = localVarQueryParameter.toString();
 			if (localVarQueryParameterString) {
@@ -195,8 +197,8 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.serializedType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
-			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options);
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{#if returnNativeType.serializedType}}{{{returnNativeType}}}{{else}}Response{{/if}}> {
+			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 			return (fetch: FetchAPI = defaultFetch, basePath: string = BASE_PATH) => {
 				return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
 					if (response.status >= 200 && response.status < 300) {
@@ -247,8 +249,8 @@ export class {{className name}}Api extends BaseAPI {
 {{/if}}
 	{{#each operations}}
 	{{>frag/operationDocumentation}}
-	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}options?: RequestInit) {
-		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#with requestBody}}{{identifier name}}, {{/with}}options)(this.fetch, this.basePath);
+	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit) {
+		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
 	}
 
 	{{/each}}

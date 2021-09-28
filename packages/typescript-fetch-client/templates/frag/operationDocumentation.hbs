@@ -14,9 +14,11 @@
 {{#each parameters}}
  * {{>frag/parameterDocumentation}}
 {{/each}}
+{{#if requestBody.nativeType}}
 {{#with requestBody}}
  * {{>frag/parameterDocumentation}}
 {{/with}}
+{{/if}}
  * @param {RequestInit} [options] Override http request option.
  * @throws {RequiredError}
  */

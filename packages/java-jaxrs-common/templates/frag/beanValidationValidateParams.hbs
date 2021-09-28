@@ -1,3 +1,4 @@
+{{#if requestBody.nativeType}}
 {{#with requestBody}}
 if ({{identifier name }} != null) {
 	java.util.Set<javax.validation.ConstraintViolation<{{{nativeType}}}>> __validations = this.validatorFactory.getValidator().validate({{identifier name}}, {{{@root.validationPackage}}}.Request.class);
@@ -11,3 +12,4 @@ if ({{identifier name }} != null) {
 }
 
 {{/with}}
+{{/if}}

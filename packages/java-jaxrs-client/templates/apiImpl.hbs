@@ -11,7 +11,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 	{{>hooks/apiImplClassBody}}
 {{#each operations}}
 	@Override
-	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}} {
+	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}} {
 		{{#if securityRequirements}}
 		if (authorizationProvider != null) {
 			authorizationProvider.authorize(this);
@@ -49,17 +49,17 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		try {
 			{{#if securityRequirements}}
 			try {
-				{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
+				{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
 			} catch (javax.ws.rs.WebApplicationException __e) {
 				if (__e.getResponse().getStatus() == 401 && authorizationProvider != null) {
 					if (authorizationProvider.reauthorize(this, __e.getResponse())) {
-						{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
+						{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
 					}
 				}
 				throw __e;
 			}
 			{{else}}
-			{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
+			{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
 			{{/if}}
 		} catch (javax.ws.rs.WebApplicationException __e) {
 			{{#each (nonDefaultResponses)}}

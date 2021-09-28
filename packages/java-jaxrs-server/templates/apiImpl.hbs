@@ -19,7 +19,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 
 	{{/if}}
 {{#each operations}}
-	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}) {
+	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}) {
 		{{#with defaultResponse}}
 		final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
 		{{/with}}
@@ -28,7 +28,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#with defaultResponse}}
-			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless defaultContent.nativeType}}{{#or ../parameters ../requestBody}}, {{/or}}__response{{/unless}});
+			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{#if (isFile)}}{{identifier name}}InputStream, {{identifier name}}Detail{{else}}{{identifier name}}{{/if}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody.nativeType}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless defaultContent.nativeType}}{{#or ../parameters ../requestBody.nativeType}}, {{/or}}__response{{/unless}});
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__entity'}}
