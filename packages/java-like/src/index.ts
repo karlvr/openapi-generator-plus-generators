@@ -67,23 +67,22 @@ export interface JavaLikeContext extends CodegenGeneratorContext {
 export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContext): Pick<CodegenGenerator, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toSuggestedSchemaName' | 'toOperationGroupName'> {
 	const generatorOptions = options(config, context)
 
+	function applyReservedWords(input: string, transform: (value: string) => string) {
+		let result = transform(input)
+		const reservedWords = context.reservedWords ? context.reservedWords() : []
+		while (reservedWords.indexOf(result) !== -1) {
+			result = transform(`a_${input}`)
+		}
+		return result
+	}
+
 	const cg = commonGenerator(config, context)
 	return {
 		toClassName: (name) => {
-			let result = classCamelCase(name)
-			const reservedWords = context.reservedWords ? context.reservedWords() : []
-			while (reservedWords.indexOf(result) !== -1) {
-				result = classCamelCase(`a_${name}`)
-			}
-			return result
+			return applyReservedWords(name, classCamelCase)
 		},
 		toIdentifier: (name) => {
-			let result = identifierCamelCase(name)
-			const reservedWords = context.reservedWords ? context.reservedWords() : []
-			while (reservedWords.indexOf(result) !== -1) {
-				result = identifierCamelCase(`a_${name}`)
-			}
-			return result
+			return applyReservedWords(name, identifierCamelCase)
 		},
 		toConstantName: (name) => {
 			if (!name) {
@@ -93,13 +92,13 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			const constantStyle = generatorOptions.constantStyle
 			switch (constantStyle) {
 				case ConstantStyle.allCaps:
-					return identifierSafe(constantCase(identifierSafe(name)).replace(/_/g, ''))
+					return applyReservedWords(name, input => identifierSafe(constantCase(identifierSafe(input)).replace(/_/g, '')))
 				case ConstantStyle.camelCase:
-					return identifierCamelCase(name)
+					return applyReservedWords(name, input => identifierCamelCase(input))
 				case ConstantStyle.allCapsSnake:
-					return identifierSafe(constantCase(identifierSafe(name)))
+					return applyReservedWords(name, input => identifierSafe(constantCase(identifierSafe(input))))
 				case ConstantStyle.pascalCase:
-					return identifierSafe(pascalCase(identifierSafe(name)))
+					return applyReservedWords(name, input => identifierSafe(pascalCase(identifierSafe(input))))
 				default:
 					throw new Error(`Invalid valid for constantStyle: ${constantStyle}`)
 			}
