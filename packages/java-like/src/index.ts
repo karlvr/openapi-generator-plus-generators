@@ -4,7 +4,7 @@ import { constantCase } from 'change-case'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
 /** Returns the string converted to a string that is safe as an identifier in java-like languages */
-function identifierSafe(value: string) {
+export function identifierSafe(value: string): string {
 	if (typeof value !== 'string') {
 		throw new Error(`identifierSafe called with non-string: ${typeof value} (${value})`)
 	}
@@ -14,8 +14,11 @@ function identifierSafe(value: string) {
 		value = `_${value}`
 	}
 
-	/* Convert any illegal characters to underscores */
-	value = value.replace(/[^a-zA-Z0-9_]/g, '_')
+	/* Convert any illegal characters to underscores, as long as they're followed by legal characters */
+	value = value.replace(/[^a-zA-Z0-9_]([a-zA-Z0-9_])/g, '_$1')
+
+	/* Remove any remaining illegal characters */
+	value = value.replace(/[^a-zA-Z0-9_]/g, '')
 
 	return value
 }
