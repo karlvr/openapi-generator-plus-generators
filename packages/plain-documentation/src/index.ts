@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, compareHttpMethods } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, compareHttpMethods, configString } from '@openapi-generator-plus/generator-common'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
 
@@ -30,9 +30,10 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		defaultConstantStyle: ConstantStyle.allCapsSnake,
 	}
 	
+	const customTemplates = configString(config, 'customTemplates', undefined)
 	const generatorOptions: CodegenOptionsDocumentation = {
 		...javaLikeOptions(config, javaLikeContext),
-		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
+		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
 	}
 
 	const aCommonGenerator = commonGenerator(config, context)
@@ -121,8 +122,8 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 			const result = [path.resolve(__dirname, '..', 'templates')]
 			result.push(path.resolve(__dirname, '..', 'less'))
 			result.push(path.resolve(__dirname, '..', 'static'))
-			if (config.customTemplates) {
-				result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
+			if (generatorOptions.customTemplatesPath) {
+				result.push(generatorOptions.customTemplatesPath)
 			}
 			return result
 		},

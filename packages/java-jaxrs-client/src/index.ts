@@ -3,6 +3,7 @@ import path from 'path'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaClient } from './types'
+import { configNumber, configString } from '@openapi-generator-plus/generator-common'
 export { CodegenOptionsJavaClient } from './types'
 export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
@@ -10,10 +11,10 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 	const parentOptions = javaGeneratorOptions(config, context)
 	const generatorOptions: CodegenOptionsJavaClient = {
 		...parentOptions,
-		apiSpecPackage: config.apiSpecPackage || `${parentOptions.apiPackage}.spec`,
-		apiSpiPackage: config.apiSpiPackage || `${parentOptions.apiPackage}.spi`,
-		connectionTimeoutMillis: config.connectionTimeoutMillis || 30000,
-		receiveTimeoutMillis: config.receiveTimeoutMillis || 60000,
+		apiSpecPackage: configString(config, 'apiSpecPackage', `${parentOptions.apiPackage}.spec`),
+		apiSpiPackage: configString(config, 'apiSpiPackage', `${parentOptions.apiPackage}.spi`),
+		connectionTimeoutMillis: configNumber(config, 'connectionTimeoutMillis', 30000),
+		receiveTimeoutMillis: configNumber(config, 'receiveTimeoutMillis', 60000),
 	}
 	return generatorOptions
 }

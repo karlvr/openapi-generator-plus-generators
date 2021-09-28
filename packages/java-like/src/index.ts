@@ -1,5 +1,5 @@
 import { CodegenGenerator, CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
-import { pascalCase, camelCase } from '@openapi-generator-plus/generator-common'
+import { pascalCase, camelCase, configString } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
@@ -52,9 +52,9 @@ export interface JavaLikeOptions {
 
 export function options(config: CodegenConfig, context: JavaLikeContext): JavaLikeOptions {
 	const result: JavaLikeOptions = {
-		apiClassPrefix: config.apiClassPrefix,
-		modelClassPrefix: config.modelClassPrefix,
-		constantStyle: config.constantStyle || context.defaultConstantStyle,
+		apiClassPrefix: configString(config, 'apiClassPrefix', undefined),
+		modelClassPrefix: configString(config, 'modelClassPrefix', undefined),
+		constantStyle: configString(config, 'constantStyle', context.defaultConstantStyle) as ConstantStyle,
 	}
 	return result
 }

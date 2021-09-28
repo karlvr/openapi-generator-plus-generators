@@ -33,6 +33,6 @@ export interface MavenOptions {
 	artifactId: string
 	version: string
 	versions: {
-		[name: string]: string
+		[name: string]: unknown
 	}
 }

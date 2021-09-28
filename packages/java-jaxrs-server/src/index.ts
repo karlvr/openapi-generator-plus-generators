@@ -1,6 +1,6 @@
 import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
-import { apiBasePath } from '@openapi-generator-plus/generator-common'
+import { apiBasePath, configString } from '@openapi-generator-plus/generator-common'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaServer } from './types'
@@ -10,15 +10,15 @@ export { CodegenOptionsJavaServer } from './types'
 export function options(config: CodegenConfig, context: JavaGeneratorContext): CodegenOptionsJavaServer {
 	const options = javaGeneratorOptions(config, context)
 
-	const packageName = config.package || 'com.example'
-	const apiServicePackage = config.apiServicePackage || `${options.apiPackage}.service`
+	const packageName = configString(config, 'package', 'com.example')
+	const apiServicePackage = configString(config, 'apiServicePackage', `${options.apiPackage}.service`)
 	const result: CodegenOptionsJavaServer = {
 		...options,
 		apiServicePackage,
-		apiServiceImplPackage: config.apiServiceImplPackage || `${apiServicePackage}.impl`,
-		apiProviderPackage: config.apiProviderPackage || `${packageName}.providers`,
-		invokerPackage: config.invokerPackage !== undefined ? config.invokerPackage : `${packageName}.app`,
-		authenticationRequiredAnnotation: config.authenticationRequiredAnnotation || config.authenticatedOperationAnnotation || null,
+		apiServiceImplPackage: configString(config, 'apiServiceImplPackage', `${apiServicePackage}.impl`),
+		apiProviderPackage: configString(config, 'apiProviderPackage', `${packageName}.providers`),
+		invokerPackage: configString(config, 'invokerPackage', `${packageName}.app`),
+		authenticationRequiredAnnotation: configString(config, 'authenticationRequiredAnnotation', configString(config, 'authenticatedOperationAnnotation', null)),
 	}
 	
 	return result

@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
-import { capitalize, commonGenerator } from '@openapi-generator-plus/generator-common'
+import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray } from '@openapi-generator-plus/generator-common'
 
 export { CodegenOptionsJava } from './types'
 
@@ -41,28 +41,28 @@ function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	const maven = config.maven
 	const defaultPath = maven ? path.join('src', 'main', 'java') : ''
 	
-	return config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultPath
+	return configString(config, 'relativeSourceOutputPath', defaultPath)
 }
 
 function computeRelativeResourcesOutputPath(config: CodegenConfig) {
 	const maven = config.maven
 	const defaultPath = maven ? path.join('src', 'main', 'resources') : undefined
 	
-	return config.relativeResourcesOutputPath !== undefined ? config.relativeResourcesOutputPath : defaultPath
+	return configString(config, 'relativeResourcesOutputPath', defaultPath)
 }
 
 function computeRelativeTestOutputPath(config: CodegenConfig) {
 	const maven = config.maven
 	const defaultPath = maven ? path.join('src', 'test', 'java') : ''
 	
-	return config.relativeTestOutputPath !== undefined ? config.relativeTestOutputPath : defaultPath
+	return configString(config, 'relativeTestOutputPath', defaultPath)
 }
 
 function computeRelativeTestResourcesOutputPath(config: CodegenConfig) {
 	const maven = config.maven
 	const defaultPath = maven ? path.join('src', 'test', 'resources') : undefined
 	
-	return config.relativeTestResourcesOutputPath !== undefined ? config.relativeTestResourcesOutputPath : defaultPath
+	return configString(config, 'relativeTestResourcesOutputPath', defaultPath)
 }
 
 export interface JavaGeneratorContext extends CodegenGeneratorContext {
@@ -89,33 +89,35 @@ const RESERVED_WORDS = [
 ]
 
 export function options(config: CodegenConfig, context: JavaGeneratorContext): CodegenOptionsJava {
-	const packageName = config.package || 'com.example'
-	const apiPackage = config.apiPackage || `${packageName}`
+	const packageName = configString(config, 'package', 'com.example')
+	const apiPackage = configString(config, 'apiPackage', packageName)
+	const maven = configObject(config, 'maven', undefined)
+	const customTemplates = configString(config, 'customTemplates', undefined)
 	const options: CodegenOptionsJava = {
 		...javaLikeOptions(config, createJavaLikeContext(context)),
 		apiPackage,
-		apiImplPackage: config.apiImplPackage || `${apiPackage}.impl`,
-		modelPackage: config.modelPackage || `${packageName}.model`,
-		useBeanValidation: config.useBeanValidation !== undefined ? config.useBeanValidation : true,
-		validationPackage: config.validationPackage || `${packageName}.validation`,
-		includeTests: config.includeTests !== undefined ? config.includeTests : false,
-		junitVersion: typeof config.junitVersion === 'number' ? config.junitVersion : 5,
-		dateImplementation: config.dateImplementation || 'java.time.LocalDate',
-		timeImplementation: config.timeImplementation || 'java.time.LocalTime',
-		dateTimeImplementation: config.dateTimeImplementation || 'java.time.OffsetDateTime',
-		hideGenerationTimestamp: config.hideGenerationTimestamp !== undefined ? config.hideGenerationTimestamp : false,
-		imports: config.imports || null,
-		maven: config.maven ? {
-			groupId: config.maven.groupId || 'com.example',
-			artifactId: config.maven.artifactId || 'api',
-			version: config.maven.version || '0.0.1',
-			versions: config.maven.versions || {},
+		apiImplPackage: configString(config, 'apiImplPackage', `${apiPackage}.impl`),
+		modelPackage: configString(config, 'modelPackage', `${packageName}.model`),
+		useBeanValidation: configBoolean(config, 'useBeanValidation', true),
+		validationPackage: configString(config, 'validationPackage', `${packageName}.validation`),
+		includeTests: configBoolean(config, 'includeTests', false),
+		junitVersion: configNumber(config, 'junitVersion', 5),
+		dateImplementation: configString(config, 'dateImplementation', 'java.time.LocalDate'),
+		timeImplementation: configString(config, 'timeImplementation', 'java.time.LocalTime'),
+		dateTimeImplementation: configString(config, 'dateTimeImplementation', 'java.time.OffsetDateTime'),
+		hideGenerationTimestamp: configBoolean(config, 'hideGenerationTimestamp', false),
+		imports: configStringArray(config, 'imports', null),
+		maven: maven ? {
+			groupId: configString(maven, 'groupId', 'com.example', 'maven.'),
+			artifactId: configString(maven, 'artifactId', 'api', 'maven.'), 
+			version: configString(maven, 'version', '0.0.1', 'maven.'),
+			versions: configObject(maven, 'versions', {}, 'maven.'),
 		} : null,
 		relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
 		relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
 		relativeTestOutputPath: computeRelativeTestOutputPath(config),
 		relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
-		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
+		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
 	}
 
 	return options
@@ -270,8 +272,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			   as the component type must still be non-primitive.
 			 */
 			if (vendorExtensions && vendorExtensions['x-java-type']) {
-				return new context.NativeType(vendorExtensions['x-java-type'], {
-					componentType: new context.NativeType(vendorExtensions['x-java-type']),
+				return new context.NativeType(String(vendorExtensions['x-java-type']), {
+					componentType: new context.NativeType(String(vendorExtensions['x-java-type'])),
 				})
 			}
 			
@@ -478,8 +480,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			if (context.additionalWatchPaths) {
 				result.push(...context.additionalWatchPaths())
 			}
-			if (config.customTemplates) {
-				result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
+			if (generatorOptions.customTemplatesPath) {
+				result.push(generatorOptions.customTemplatesPath)
 			}
 			return result
 		},

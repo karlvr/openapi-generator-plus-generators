@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, configBoolean, configObject, configString, configStringArray } from '@openapi-generator-plus/generator-common'
 import pluralize, { isPlural } from 'pluralize'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions, DateApproach } from './types'
@@ -111,10 +111,10 @@ const RESERVED_WORDS = [
 ]
 
 export function options(config: CodegenConfig, context: TypeScriptGeneratorContext): CodegenOptionsTypeScript {
-	const npm = config.npm
+	const npm = configObject(config, 'npm', undefined)
 	const defaultRelativeSourceOutputPath = npm ? 'src' : ''
 	
-	const relativeSourceOutputPath: string = config.relativeSourceOutputPath !== undefined ? config.relativeSourceOutputPath : defaultRelativeSourceOutputPath
+	const relativeSourceOutputPath = configString(config, 'relativeSourceOutputPath', defaultRelativeSourceOutputPath)
 
 	const defaultDefaultNpmOptions: NpmOptions = {
 		name: 'typescript-gen',
@@ -124,10 +124,10 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	}
 	const defaultNpmOptions: NpmOptions = context.defaultNpmOptions ? context.defaultNpmOptions(config, defaultDefaultNpmOptions) : defaultDefaultNpmOptions
 	const npmConfig: NpmOptions | undefined = npm ? {
-		name: npm.name || defaultNpmOptions.name,
-		version: npm.version || defaultNpmOptions.version,
-		repository: npm.repository || defaultNpmOptions.repository,
-		private: npm.private !== undefined ? npm.private : defaultNpmOptions.private,
+		name: configString(npm, 'name', defaultNpmOptions.name, 'npm.'),
+		version: configString(npm, 'version', defaultNpmOptions.version, 'npm.'),
+		repository: configString(npm, 'repository', defaultNpmOptions.repository, 'npm.'),
+		private: configBoolean(npm, 'private', defaultNpmOptions.private, 'npm.'),
 	} : undefined
 
 	const defaultDefaultTypeScriptOptions: TypeScriptOptions = typeof config.typescript === 'object' ? {
@@ -140,14 +140,12 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	const defaultTypeScriptOptions: TypeScriptOptions = context.defaultTypeScriptOptions ? context.defaultTypeScriptOptions(config, defaultDefaultTypeScriptOptions) : defaultDefaultTypeScriptOptions
 
 	let typeScriptOptions: TypeScriptOptions | undefined
-	if (typeof config.typescript === 'object') {
+	if (config.typescript && typeof config.typescript === 'object') {
 		typeScriptOptions = defaultTypeScriptOptions
-		if (typeof config.typescript.target === 'string') {
-			typeScriptOptions.target = config.typescript.target
-		}
-		if (config.typescript.libs) {
-			typeScriptOptions.libs = config.typescript.libs
-		}
+
+		const typescriptConfig = configObject(config, 'typescript', {} as Record<string, unknown>)
+		typeScriptOptions.target = configString(typescriptConfig, 'target', defaultDefaultTypeScriptOptions.target, 'typescript.')
+		typeScriptOptions.libs = configStringArray(typescriptConfig, 'libs', defaultDefaultTypeScriptOptions.libs, 'typescript.')
 	} else if (typeof config.typescript === 'boolean') {
 		if (config.typescript) {
 			typeScriptOptions = defaultTypeScriptOptions
@@ -166,20 +164,21 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	}
 
 	const dateApproach = parseDateApproach(config.dateApproach)
+	const customTemplates = configString(config, 'customTemplates', undefined)
 
 	const options: CodegenOptionsTypeScript = {
 		...javaLikeOptions(config, createJavaLikeContext(context)),
 		relativeSourceOutputPath,
 		npm: npmConfig || null,
 		typescript: typeScriptOptions || null,
-		customTemplatesPath: config.customTemplates && computeCustomTemplatesPath(config.configPath, config.customTemplates),
+		customTemplatesPath: customTemplates ? computeCustomTemplatesPath(config.configPath, customTemplates) : null,
 		dateApproach,
 	}
 
 	return options
 }
 
-function parseDateApproach(approach: string) {
+function parseDateApproach(approach: unknown) {
 	if (!approach) {
 		return DateApproach.Native
 	} else if (approach === DateApproach.BlindDate) {
@@ -452,8 +451,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			if (context.additionalWatchPaths) {
 				result.push(...context.additionalWatchPaths())
 			}
-			if (config.customTemplates) {
-				result.push(computeCustomTemplatesPath(config.configPath, config.customTemplates))
+			if (generatorOptions.customTemplatesPath) {
+				result.push(generatorOptions.customTemplatesPath)
 			}
 			return result
 		},
