@@ -709,10 +709,14 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			if (typeInfo.schemaType === undefined || typeInfo.nativeType === undefined) {
 				throw new Error(`undefinedValueLiteral helper must be called with a CodegenSchemaInfo argument @ ${sourcePosition(options)}`)
 			}
-			return generator().defaultValue({
+			const defaultValue = generator().defaultValue({
 				...typeInfo,
 				required: false,
-			}).literalValue
+			})
+			if (defaultValue === null) {
+				throw new Error(`undefinedValueLiteral helper cannot format a literal for type ${typeInfo.schemaType}`)
+			}
+			return defaultValue.literalValue
 		} else {
 			return undefined
 		}

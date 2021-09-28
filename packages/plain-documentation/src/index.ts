@@ -46,7 +46,11 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		toIdentifier: (name) => name,
 		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return context.generator().defaultValue(options).literalValue
+				const defaultValue = context.generator().defaultValue(options)
+				if (defaultValue === null) {
+					return null
+				}
+				return defaultValue.literalValue
 			}
 
 			return `${value}`

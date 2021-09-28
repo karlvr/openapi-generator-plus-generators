@@ -214,7 +214,11 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		...javaLikeGenerator(config, createJavaLikeContext(context)),
 		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return context.generator().defaultValue(options).literalValue
+				const defaultValue = context.generator().defaultValue(options)
+				if (defaultValue === null) {
+					return null
+				}
+				return defaultValue.literalValue
 			}
 			if (value === null) {
 				return 'null'
@@ -223,7 +227,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			const { type, format, schemaType } = options
 
 			if (schemaType === CodegenSchemaType.ENUM) {
-				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
+				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(String(value))}`
 			}
 
 			switch (type) {
@@ -266,7 +270,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 						}
 						throw new Error(`Unsupported date approach: ${generatorOptions.dateApproach}`)
 					} else {
-						return `'${escapeString(value)}'`
+						return `'${escapeString(String(value))}'`
 					}
 				}
 				case 'boolean':
@@ -398,10 +402,20 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			}
 
 			switch (schemaType) {
-				case CodegenSchemaType.NUMBER:
-					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
-				case CodegenSchemaType.INTEGER:
-					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
+				case CodegenSchemaType.NUMBER: {
+					const literalValue = context.generator().toLiteral(0.0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0.0, literalValue }
+				}
+				case CodegenSchemaType.INTEGER: {
+					const literalValue = context.generator().toLiteral(0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0, literalValue }
+				}
 				case CodegenSchemaType.BOOLEAN:
 					return { value: false, literalValue: 'false' }
 				case CodegenSchemaType.ARRAY:
@@ -420,10 +434,20 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			}
 
 			switch (schemaType) {
-				case CodegenSchemaType.NUMBER:
-					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
-				case CodegenSchemaType.INTEGER:
-					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
+				case CodegenSchemaType.NUMBER: {
+					const literalValue = context.generator().toLiteral(0.0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0.0, literalValue }
+				}
+				case CodegenSchemaType.INTEGER: {
+					const literalValue = context.generator().toLiteral(0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0, literalValue }
+				}
 				case CodegenSchemaType.BOOLEAN:
 					return { value: false, literalValue: 'false' }
 				case CodegenSchemaType.ARRAY:

@@ -143,7 +143,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		...javaLikeGenerator(config, createJavaLikeContext(context)),
 		toLiteral: (value, options) => {
 			if (value === undefined) {
-				return context.generator().defaultValue(options).literalValue
+				const defaultValue = context.generator().defaultValue(options)
+				if (defaultValue === null) {
+					return null
+				}
+				return defaultValue.literalValue
 			}
 	
 			const { type, format, required, nullable, schemaType } = options
@@ -152,11 +156,15 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					return 'null'
 				}
 
-				return context.generator().defaultValue(options).literalValue
+				const defaultValue = context.generator().defaultValue(options)
+				if (defaultValue === null) {
+					return null
+				}
+				return defaultValue.literalValue
 			}
 	
 			if (schemaType === CodegenSchemaType.ENUM) {
-				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(value)}`
+				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(String(value))}`
 			}
 
 			/* We use the same logic as in nativeTypeUsageTransformer  */
@@ -419,12 +427,27 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.MAP:
 				case CodegenSchemaType.INTERFACE:
 					return { value: null, literalValue: 'null' }
-				case CodegenSchemaType.NUMBER:
-					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
-				case CodegenSchemaType.INTEGER:
-					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
-				case CodegenSchemaType.BOOLEAN:
-					return { value: false, literalValue: context.generator().toLiteral(false, options) }
+				case CodegenSchemaType.NUMBER: {
+					const literalValue = context.generator().toLiteral(0.0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0.0, literalValue }
+				}
+				case CodegenSchemaType.INTEGER: {
+					const literalValue = context.generator().toLiteral(0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0, literalValue }
+				}
+				case CodegenSchemaType.BOOLEAN: {
+					const literalValue = context.generator().toLiteral(false, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: false, literalValue }
+				}
 			}
 	
 			throw new Error(`Unsupported type name: ${schemaType}`)
@@ -451,12 +474,27 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					return { value: [], literalValue: `new ${nativeType.concreteType}()` }
 				case CodegenSchemaType.MAP:
 					return { value: {}, literalValue: `new ${nativeType.concreteType}()` }
-				case CodegenSchemaType.NUMBER:
-					return { value: 0.0, literalValue: context.generator().toLiteral(0.0, options) }
-				case CodegenSchemaType.INTEGER:
-					return { value: 0, literalValue: context.generator().toLiteral(0, options) }
-				case CodegenSchemaType.BOOLEAN:
-					return { value: false, literalValue: context.generator().toLiteral(false, options) }
+				case CodegenSchemaType.NUMBER: {
+					const literalValue = context.generator().toLiteral(0.0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0.0, literalValue }
+				}
+				case CodegenSchemaType.INTEGER: {
+					const literalValue = context.generator().toLiteral(0, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: 0, literalValue }
+				}
+				case CodegenSchemaType.BOOLEAN: {
+					const literalValue = context.generator().toLiteral(false, options)
+					if (literalValue === null) {
+						return null
+					}
+					return { value: false, literalValue }
+				}
 			}
 	
 			throw new Error(`Unsupported type name: ${schemaType}`)
