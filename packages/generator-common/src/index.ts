@@ -3,6 +3,7 @@ import { camelCase } from './case-transforms'
 export * from './case-transforms'
 export * from './http-methods'
 export * from './utils'
+export * from './config'
 import Url from 'url-parse'
 import pluralize from 'pluralize'
 
