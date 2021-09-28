@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, stringify } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent, CodegenLogLevel } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent, CodegenLogLevel, CodegenSchemaUsage } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -1003,17 +1003,22 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars): void
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType[], hbs: typeof Handlebars): void
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType | CodegenSchemaType[], hbs: typeof Handlebars): void {
-	hbs.registerHelper(name, function(this: CodegenTypeInfo, anObject?: CodegenTypeInfo) {
+	hbs.registerHelper(name, function(this: CodegenSchemaUsage, target?: CodegenSchemaUsage) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (arguments.length < 2) {
-			anObject = undefined
+			target = this
+		} else if (target === undefined) {
+			throw new Error(`${name} helper called with an undefined target argument @ ${sourcePosition(options)}`)
 		}
 
-		const target = anObject || this
-		const aPropertyType = target.schemaType
-		if (schemaType === undefined) {
-			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}`)
+		let aPropertyType = target.schemaType
+		if (aPropertyType === undefined && target.schema) {
+			/* We might be looking at a CodegenContent, CodegenRequestBody or CodegenParameter */
+			aPropertyType = target.schema.schemaType
+		}
+		if (aPropertyType === undefined) {
+			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}: ${JSON.stringify(target, undefined, 2)}`)
 		}
 
 		if (typeof schemaType === 'string') {
