@@ -5,5 +5,5 @@
 @param parameter the CodegenParameter
 --}}
 {{#indent indent}}
-{{{value}}}.map(localVarArrayMapElement => escape({{>frag/schemaToString component value='localVarArrayMapElement' parameter=parameter indent=indent}})).join('{{separator}}')
+{{{value}}}.map(localVarArrayMapElement => escape({{>frag/schemaToString schema.component value='localVarArrayMapElement' parameter=parameter indent=indent}})).join({{{stringLiteral separator}}})
 {{~/indent}}

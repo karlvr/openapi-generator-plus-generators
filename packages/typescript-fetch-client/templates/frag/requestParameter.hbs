@@ -13,7 +13,7 @@ if ({{{var}}} !== undefined) {
 	/* array form exploded */
 	for (const localVarArrayElement of {{{var}}}) {
 		if (localVarArrayElement !== undefined) {
-			{{{dest}}}.append('{{serializedName}}', localVarArrayElement !== null ? {{>frag/schemaToString component value='localVarArrayElement' parameter=. indent='			'}} : '');
+			{{{dest}}}.append('{{serializedName}}', localVarArrayElement !== null ? {{>frag/schemaToString schema.component value='localVarArrayElement' parameter=. indent='			'}} : '');
 		}
 	}
 {{else}}
