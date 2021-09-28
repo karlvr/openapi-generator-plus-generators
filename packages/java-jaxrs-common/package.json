@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-jaxrs-generator-common",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "description": "An OpenAPI Generator+ module for a Java API using JAX-RS",
   "keywords": [
     "openapi-generator-plus",
@@ -29,9 +29,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "^0.22.0",
-    "@openapi-generator-plus/handlebars-templates": "^0.23.0",
-    "@openapi-generator-plus/java-like-generator-helper": "^0.15.7",
+    "@openapi-generator-plus/generator-common": "^0.23.0",
+    "@openapi-generator-plus/handlebars-templates": "^0.24.0",
+    "@openapi-generator-plus/java-like-generator-helper": "^0.16.0",
     "change-case": "^4.1.2"
   },
   "publishConfig": {

@@ -1,5 +1,26 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.37.0
+
+### Minor Changes
+
+- 10aeb32: Fixes for CodegenRequestBody.nativeType changing to nullable
+- 9c992d5: Fixes for CodegenConfig changing to having unknown values
+
+### Patch Changes
+
+- Updated dependencies [60ef5fe]
+- Updated dependencies [ff4ee4f]
+- Updated dependencies [20967c4]
+- Updated dependencies [2f5e239]
+- Updated dependencies [10aeb32]
+- Updated dependencies [9c992d5]
+- Updated dependencies [11b32c0]
+  - @openapi-generator-plus/java-like-generator-helper@0.16.0
+  - @openapi-generator-plus/handlebars-templates@0.24.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.33.0
+  - @openapi-generator-plus/generator-common@0.23.0
+
 ## 0.36.0
 
 ### Minor Changes

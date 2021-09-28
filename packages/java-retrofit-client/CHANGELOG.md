@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 0.30.0
+
+### Minor Changes
+
+- 10aeb32: Fixes for CodegenRequestBody.nativeType changing to nullable
+
+### Patch Changes
+
+- Updated dependencies [ff4ee4f]
+- Updated dependencies [10aeb32]
+- Updated dependencies [9c992d5]
+  - @openapi-generator-plus/handlebars-templates@0.24.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@0.39.0
+
 ## 0.29.9
 
 ### Patch Changes

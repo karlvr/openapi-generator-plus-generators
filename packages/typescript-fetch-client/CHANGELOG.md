@@ -1,5 +1,21 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.31.0
+
+### Minor Changes
+
+- 10aeb32: Fixes for CodegenRequestBody.nativeType changing to nullable
+- 11b32c0: No longer need to check for nullable parameters due to core change
+
+### Patch Changes
+
+- Updated dependencies [ff4ee4f]
+- Updated dependencies [2f5e239]
+- Updated dependencies [9c992d5]
+  - @openapi-generator-plus/handlebars-templates@0.24.0
+  - @openapi-generator-plus/typescript-generator-common@0.25.0
+  - @openapi-generator-plus/generator-common@0.23.0
+
 ## 0.30.0
 
 ### Minor Changes

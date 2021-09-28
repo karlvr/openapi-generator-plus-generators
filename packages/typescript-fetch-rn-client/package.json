@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-fetch-rn-client-generator",
-  "version": "0.14.10",
+  "version": "0.14.11",
   "description": "An OpenAPI Generator+ module for a TypeScript API client using Fetch in React Native",
   "keywords": [
     "openapi-generator-plus",
@@ -30,9 +30,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/handlebars-templates": "^0.23.0",
-    "@openapi-generator-plus/typescript-fetch-client-generator": "^0.30.0",
-    "@openapi-generator-plus/typescript-generator-common": "^0.24.0"
+    "@openapi-generator-plus/handlebars-templates": "^0.24.0",
+    "@openapi-generator-plus/typescript-fetch-client-generator": "^0.31.0",
+    "@openapi-generator-plus/typescript-generator-common": "^0.25.0"
   },
   "publishConfig": {
     "access": "public"

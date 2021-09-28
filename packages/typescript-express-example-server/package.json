@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-express-example-server-generator",
-  "version": "0.17.6",
+  "version": "0.17.7",
   "description": "An OpenAPI Generator+ module for a TypeScript API server using Express to output example responses",
   "keywords": [
     "openapi-generator-plus",
@@ -30,11 +30,11 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
   "dependencies": {
-    "@openapi-generator-plus/handlebars-templates": "^0.23.0",
-    "@openapi-generator-plus/typescript-generator-common": "^0.24.0"
+    "@openapi-generator-plus/handlebars-templates": "^0.24.0",
+    "@openapi-generator-plus/typescript-generator-common": "^0.25.0"
   },
   "devDependencies": {
-    "@openapi-generator-plus/generator-common": "^0.22.0"
+    "@openapi-generator-plus/generator-common": "^0.23.0"
   },
   "publishConfig": {
     "access": "public"

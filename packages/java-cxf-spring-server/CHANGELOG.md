@@ -1,5 +1,21 @@
 # @openapi-generator-plus/java-cxf-spring-server-generator
 
+## 0.31.0
+
+### Minor Changes
+
+- 10aeb32: Fixes for CodegenRequestBody.nativeType changing to nullable
+
+### Patch Changes
+
+- Updated dependencies [ff4ee4f]
+- Updated dependencies [10aeb32]
+- Updated dependencies [9c992d5]
+- Updated dependencies [11b32c0]
+  - @openapi-generator-plus/handlebars-templates@0.24.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.33.0
+  - @openapi-generator-plus/java-jaxrs-server-generator@0.37.0
+
 ## 0.30.6
 
 ### Patch Changes

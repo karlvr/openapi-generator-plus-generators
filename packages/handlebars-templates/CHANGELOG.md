@@ -1,5 +1,16 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.24.0
+
+### Minor Changes
+
+- ff4ee4f: Fixes for toLiteral and defaultValue being able to return null
+
+### Patch Changes
+
+- Updated dependencies [2f5e239]
+  - @openapi-generator-plus/generator-common@0.23.0
+
 ## 0.23.0
 
 ### Minor Changes

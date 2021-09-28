@@ -1,5 +1,18 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 0.16.0
+
+### Minor Changes
+
+- 20967c4: Support reserved words in constant names
+- 9c992d5: Fixes for CodegenConfig changing to having unknown values
+
+### Patch Changes
+
+- 60ef5fe: Remove added trailing underscores from identifiers
+- Updated dependencies [2f5e239]
+  - @openapi-generator-plus/generator-common@0.23.0
+
 ## 0.15.7
 
 ### Patch Changes

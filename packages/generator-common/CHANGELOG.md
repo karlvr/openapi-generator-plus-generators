@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 0.23.0
+
+### Minor Changes
+
+- 2f5e239: Add helpers for config now having unknown values
+
 ## 0.22.0
 
 ### Minor Changes
