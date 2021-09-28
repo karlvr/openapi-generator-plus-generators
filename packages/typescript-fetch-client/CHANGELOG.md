@@ -1,5 +1,20 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.30.0
+
+### Minor Changes
+
+- 135a732: Update for core discriminator changes and additional generator options
+
+### Patch Changes
+
+- Updated dependencies [26e7810]
+- Updated dependencies [135a732]
+- Updated dependencies [24823f9]
+  - @openapi-generator-plus/handlebars-templates@0.23.0
+  - @openapi-generator-plus/generator-common@0.22.0
+  - @openapi-generator-plus/typescript-generator-common@0.24.0
+
 ## 0.29.2
 
 ### Patch Changes

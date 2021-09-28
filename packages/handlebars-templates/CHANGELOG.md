@@ -1,5 +1,18 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.23.0
+
+### Minor Changes
+
+- 135a732: Update for core discriminator changes and additional generator options
+
+### Patch Changes
+
+- 26e7810: Fix helpers that convert to strings when receiving a null
+- Updated dependencies [135a732]
+- Updated dependencies [24823f9]
+  - @openapi-generator-plus/generator-common@0.22.0
+
 ## 0.22.0
 
 ### Minor Changes

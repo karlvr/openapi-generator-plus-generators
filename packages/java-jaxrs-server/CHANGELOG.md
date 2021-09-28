@@ -1,5 +1,22 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.36.0
+
+### Minor Changes
+
+- 135a732: Update for core discriminator changes and additional generator options
+
+### Patch Changes
+
+- Updated dependencies [26e7810]
+- Updated dependencies [d4e4122]
+- Updated dependencies [135a732]
+- Updated dependencies [24823f9]
+  - @openapi-generator-plus/handlebars-templates@0.23.0
+  - @openapi-generator-plus/java-like-generator-helper@0.15.7
+  - @openapi-generator-plus/generator-common@0.22.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.32.0
+
 ## 0.35.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @openapi-generator-plus/generator-common
 
+## 0.22.0
+
+### Minor Changes
+
+- 135a732: Update for core discriminator changes and additional generator options
+
+### Patch Changes
+
+- 24823f9: Fix camelCase for all upper-case words
+
 ## 0.21.0
 
 ### Minor Changes

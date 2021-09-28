@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 0.17.6
+
+### Patch Changes
+
+- Updated dependencies [26e7810]
+- Updated dependencies [135a732]
+  - @openapi-generator-plus/handlebars-templates@0.23.0
+  - @openapi-generator-plus/typescript-generator-common@0.24.0
+
 ## 0.17.5
 
 ### Patch Changes

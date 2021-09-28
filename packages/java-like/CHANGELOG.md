@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 0.15.7
+
+### Patch Changes
+
+- d4e4122: Support reserved words for class names
+- Updated dependencies [135a732]
+- Updated dependencies [24823f9]
+  - @openapi-generator-plus/generator-common@0.22.0
+
 ## 0.15.6
 
 ### Patch Changes
