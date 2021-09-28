@@ -67,7 +67,12 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 	const cg = commonGenerator(config, context)
 	return {
 		toClassName: (name) => {
-			return classCamelCase(name)
+			let result = classCamelCase(name)
+			const reservedWords = context.reservedWords ? context.reservedWords() : []
+			while (reservedWords.indexOf(result) !== -1) {
+				result = classCamelCase(`a_${name}`)
+			}
+			return result
 		},
 		toIdentifier: (name) => {
 			let result = identifierCamelCase(name)
