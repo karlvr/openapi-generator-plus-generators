@@ -168,6 +168,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		if (value === undefined) {
 			return undefined
 		}
+		if (value === null) {
+			return null
+		}
 		if (typeof value === 'string') {
 			return value
 		}
