@@ -13,24 +13,49 @@ paths:
               properties:
                 defaultEncoding:
                   type: string
+                defaultEncodingNullable:
+                  type: string
+                  nullable: true
                 formExplode:
                   type: string
+                formExplodeNullable:
+                  type: string
+                  nullable: true
                 formNoExplode:
                   type: string
+                formNoExplodeNullable:
+                  type: string
+                  nullable: true
                 spaceDelimited:
                   type: string
+                spaceDelimitedNullable:
+                  type: string
+                  nullable: true
                 pipeDelimited:
                   type: string
+                pipeDelimitedNullable:
+                  type: string
+                  nullable: true
             encoding:
               formExplode:
+                style: form
+                explode: true
+              formExplodeNullable:
                 style: form
                 explode: true
               formNoExplode:
                 style: form
                 explode: false
+              formNoExplodeNullable:
+                style: form
+                explode: false
               spaceDelimited:
                 style: spaceDelimited
+              spaceDelimitedNullable:
+                style: spaceDelimited
               pipeDelimited:
+                style: pipeDelimited
+              pipeDelimitedNullable:
                 style: pipeDelimited
       responses:
         200:
@@ -47,32 +72,67 @@ paths:
                   type: array
                   items:
                     type: string
+                defaultEncodingNullable:
+                  type: array
+                  nullable: true
+                  items:
+                    type: string
                 formExplode:
                   type: array
+                  items:
+                    type: string
+                formExplodeNullable:
+                  type: array
+                  nullable: true
                   items:
                     type: string
                 formNoExplode:
                   type: array
                   items:
                     type: string
+                formNoExplodeNullable:
+                  type: array
+                  nullable: true
+                  items:
+                    type: string
                 spaceDelimited:
                   type: array
+                  items:
+                    type: string
+                spaceDelimitedNullable:
+                  type: array
+                  nullable: true
                   items:
                     type: string
                 pipeDelimited:
                   type: array
                   items:
                     type: string
+                pipeDelimitedNullable:
+                  type: array
+                  nullable: true
+                  items:
+                    type: string
             encoding:
               formExplode:
+                style: form
+                explode: true
+              formExplodeNullable:
                 style: form
                 explode: true
               formNoExplode:
                 style: form
                 explode: false
+              formNoExplodeNullable:
+                style: form
+                explode: false
               spaceDelimited:
                 style: spaceDelimited
+              spaceDelimitedNullable:
+                style: spaceDelimited
               pipeDelimited:
+                style: pipeDelimited
+              pipeDelimitedNullable:
                 style: pipeDelimited
       responses:
         200:
@@ -90,36 +150,76 @@ paths:
                   items:
                     type: string
                     format: date-time
+                defaultEncodingNullable:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                    nullable: true
                 formExplode:
                   type: array
                   items:
                     type: string
                     format: date-time
+                formExplodeNullable:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                    nullable: true
                 formNoExplode:
                   type: array
                   items:
                     type: string
                     format: date-time
+                formNoExplodeNullable:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                    nullable: true
                 spaceDelimited:
                   type: array
                   items:
                     type: string
                     format: date-time
+                spaceDelimitedNullable:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                    nullable: true
                 pipeDelimited:
                   type: array
                   items:
                     type: string
                     format: date-time
+                pipeDelimitedNullable:
+                  type: array
+                  items:
+                    type: string
+                    format: date-time
+                    nullable: true
             encoding:
               formExplode:
+                style: form
+                explode: true
+              formExplodeNullable:
                 style: form
                 explode: true
               formNoExplode:
                 style: form
                 explode: false
+              formNoExplodeNullable:
+                style: form
+                explode: false
               spaceDelimited:
                 style: spaceDelimited
+              spaceDelimitedNullable:
+                style: spaceDelimited
               pipeDelimited:
+                style: pipeDelimited
+              pipeDelimitedNullable:
                 style: pipeDelimited
       responses:
         200:
@@ -134,28 +234,137 @@ paths:
               properties:
                 defaultEncoding:
                   $ref: '#/components/schemas/RequestObject'
+                defaultEncodingNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
                 formExplode:
+                  $ref: '#/components/schemas/RequestObject'
+                formExplodeNullable:
+                  nullable: true
                   $ref: '#/components/schemas/RequestObject'
                 formNoExplode:
                   $ref: '#/components/schemas/RequestObject'
+                formNoExplodeNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
                 spaceDelimited:
+                  $ref: '#/components/schemas/RequestObject'
+                spaceDelimitedNullable:
+                  nullable: true
                   $ref: '#/components/schemas/RequestObject'
                 pipeDelimited:
                   $ref: '#/components/schemas/RequestObject'
+                pipeDelimitedNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
                 deepObject:
+                  $ref: '#/components/schemas/RequestObject'
+                deepObjectNullable:
+                  nullable: true
                   $ref: '#/components/schemas/RequestObject'
             encoding:
               formExplode:
                 style: form
                 explode: true
+              formExplodeNullable:
+                style: form
+                explode: true
               formNoExplode:
+                style: form
+                explode: false
+              formNoExplodeNullable:
                 style: form
                 explode: false
               spaceDelimited:
                 style: spaceDelimited
+              spaceDelimitedNullable:
+                style: spaceDelimited
               pipeDelimited:
                 style: pipeDelimited
+              pipeDelimitedNullable:
+                style: pipeDelimited
               deepObject:
+                style: deepObject
+              deepObjectNullable:
+                style: deepObject
+      responses:
+        200:
+          description: OK
+  /object/required:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              required:
+                - defaultEncoding
+                - defaultEncodingNullable
+                - formExplode
+                - formExplodeNullable
+                - formNoExplode
+                - formNoExplodeNullable
+                - spaceDelimited
+                - spaceDelimitedNullable
+                - pipeDelimited
+                - pipeDelimitedNullable
+                - deepObject
+                - deepObjectNullable
+              properties:
+                defaultEncoding:
+                  $ref: '#/components/schemas/RequestObject'
+                defaultEncodingNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
+                formExplode:
+                  $ref: '#/components/schemas/RequestObject'
+                formExplodeNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
+                formNoExplode:
+                  $ref: '#/components/schemas/RequestObject'
+                formNoExplodeNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
+                spaceDelimited:
+                  $ref: '#/components/schemas/RequestObject'
+                spaceDelimitedNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
+                pipeDelimited:
+                  $ref: '#/components/schemas/RequestObject'
+                pipeDelimitedNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
+                deepObject:
+                  $ref: '#/components/schemas/RequestObject'
+                deepObjectNullable:
+                  nullable: true
+                  $ref: '#/components/schemas/RequestObject'
+            encoding:
+              formExplode:
+                style: form
+                explode: true
+              formExplodeNullable:
+                style: form
+                explode: true
+              formNoExplode:
+                style: form
+                explode: false
+              formNoExplodeNullable:
+                style: form
+                explode: false
+              spaceDelimited:
+                style: spaceDelimited
+              spaceDelimitedNullable:
+                style: spaceDelimited
+              pipeDelimited:
+                style: pipeDelimited
+              pipeDelimitedNullable:
+                style: pipeDelimited
+              deepObject:
+                style: deepObject
+              deepObjectNullable:
                 style: deepObject
       responses:
         200:
@@ -164,11 +373,45 @@ components:
   schemas:
     RequestObject:
       type: object
+      required:
+        - requiredString
+        - nullableRequiredString
+        - requiredInteger
+        - nullableRequiredInteger
+        - requiredDateTime
+        - nullableRequiredDateTime
       properties:
-        a:
+        string:
           type: string
-        b:
+        requiredString:
+          type: string
+        nullableString:
+          type: string
+          nullable: true
+        nullableRequiredString:
+          type: string
+          nullable: true
+        integer:
           type: integer
-        c:
+        requiredInteger:
+          type: integer
+        nullableInteger:
+          type: integer
+          nullable: true
+        nullableRequiredInteger:
+          type: integer
+          nullable: true
+        dateTime:
           type: string
           format: date-time
+        requiredDateTime:
+          type: string
+          format: date-time
+        nullableDateTime:
+          type: string
+          format: date-time
+          nullable: true
+        nullableRequiredDateTime:
+          type: string
+          format: date-time
+          nullable: true
