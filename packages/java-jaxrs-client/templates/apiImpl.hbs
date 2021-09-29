@@ -31,11 +31,21 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		{{/set}}
 		if ({{{__propertyVar}}} != null) {
 			{{#if (isArray property)}}
-			for ({{{property.schema.component.nativeType}}} __anObject : {{{__propertyVar}}}) {
-				{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent}}
+			// property {{{property.name}}}, nullable {{{property.nullable}}}, native type {{{property.nativeType}}}
+			// component nullable {{{property.schema.component.nullable}}}, native type {{property.schema.component.nativeType.componentType}}
+			{{#if property.nullable}}
+			if ({{{__propertyVar}}}.isPresent()) {
+				for ({{{property.schema.component.nativeType.componentType}}} __anObject : {{{__propertyVar}}}.get()) {
+					{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent schemaUsage=property.schema.component}}
+				}
 			}
 			{{else}}
-			{{>frag/multipartProperty . propertyVar=__propertyVar bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent}}
+			for ({{{property.schema.component.nativeType.componentType}}} __anObject : {{{__propertyVar}}}) {
+				{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent schemaUsage=property.schema.component}}
+			}
+			{{/if}}
+			{{else}}
+			{{>frag/multipartProperty . propertyVar=__propertyVar bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent schemaUsage=property}}
 			{{/if}}
 		}
 		{{/each}}

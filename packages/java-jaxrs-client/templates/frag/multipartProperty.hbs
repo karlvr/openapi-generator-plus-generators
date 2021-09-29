@@ -4,12 +4,19 @@ Add a multipart property to the body
 @param propertyVar the variable name (or expression) containing the property
 @param bodyPartsVar the variable name containing the list of body parts
 @param content the CodegenContent
+@param schemaUsage the schema usage for this value
 --}}
+{{#set '_nullable'}}
+{{!-- We dont make array components into Optionals --}}
+{{#and schemaUsage.nullable (not (isArray property))}}
+true
+{{/and}}
+{{/set}}
 {{{bodyPartsVar}}}.add(new org.apache.cxf.jaxrs.ext.multipart.AttachmentBuilder()
-	.object({{{propertyVar}}}{{#if valueProperty}}.{{getter valueProperty}}(){{/if}})
+	.object({{{propertyVar}}}{{#if _nullable}}.isEmpty() ? null : {{{propertyVar}}}.get(){{/if}}{{#if valueProperty}}.{{getter valueProperty}}(){{#if valueProperty.nullable}}.orElse(null){{/if}}{{/if}})
 	.mediaType({{{stringLiteral contentType}}})
 	{{#ifeq content.mediaType.mimeType 'multipart/form-data'}}
-	.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"{{{escapeString property.serializedName}}}\"{{#if filenameProperty}}; filename=\"" + ({{{propertyVar}}}.{{getter filenameProperty}}() != null ? {{{propertyVar}}}.{{getter filenameProperty}}() : "") + "\"{{/if}}"))
+	.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"{{{escapeString property.serializedName}}}\"{{#if filenameProperty}}; filename=\"" + ({{{propertyVar}}}{{#if _nullable}}.isEmpty() ? null : {{{propertyVar}}}.get(){{/if}}.{{getter filenameProperty}}(){{#if filenameProperty.nullable}}.orElse(null){{/if}} != null ? {{{propertyVar}}}{{#if _nullable}}.get(){{/if}}.{{getter filenameProperty}}(){{#if filenameProperty.nullable}}.get(){{/if}} : "") + "\"{{/if}}"))
 	{{else}}
 	.id({{{stringLiteral property.serializedName}}})
 	{{/ifeq}}
