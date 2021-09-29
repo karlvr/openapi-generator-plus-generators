@@ -270,7 +270,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
-			throw new Error(`Unsupported type name: ${type}`)
+			throw new Error(`Unsupported literal type name "${type}" in options: ${JSON.stringify(options)}`)
 		},
 		toNativeType: (options) => {
 			const { format, schemaType, vendorExtensions } = options
@@ -450,7 +450,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
-			throw new Error(`Unsupported type name: ${schemaType}`)
+			throw new Error(`Unsupported default value type: ${schemaType}`)
 		},
 
 		initialValue: (options) => {
@@ -497,7 +497,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
-			throw new Error(`Unsupported type name: ${schemaType}`)
+			throw new Error(`Unsupported initial value type: ${schemaType}`)
 		},
 		
 		operationGroupingStrategy: () => {

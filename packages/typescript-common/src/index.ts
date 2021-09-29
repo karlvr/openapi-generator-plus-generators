@@ -299,7 +299,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				}
 			}
 
-			throw new Error(`Unsupported type name: ${type}`)
+			throw new Error(`Unsupported literal type name "${type}" in options: ${JSON.stringify(options)}`)
 		},
 		toNativeType: (options) => {
 			const { schemaType } = options
