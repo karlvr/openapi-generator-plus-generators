@@ -280,22 +280,16 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			   as the component type must still be non-primitive.
 			 */
 			if (vendorExtensions && vendorExtensions['x-java-type']) {
-				return new context.NativeType(String(vendorExtensions['x-java-type']), {
-					componentType: new context.NativeType(String(vendorExtensions['x-java-type'])),
-				})
+				return new context.NativeType(String(vendorExtensions['x-java-type']))
 			}
 			
 			/* See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types */
 			switch (schemaType) {
 				case CodegenSchemaType.INTEGER: {
 					if (format === 'int32' || !format) {
-						return new context.NativeType('java.lang.Integer', {
-							componentType: new context.NativeType('java.lang.Integer'),
-						})
+						return new context.NativeType('java.lang.Integer')
 					} else if (format === 'int64') {
-						return new context.NativeType('java.lang.Long', {
-							componentType: new context.NativeType('java.lang.Long'),
-						})
+						return new context.NativeType('java.lang.Long')
 					} else {
 						throw new Error(`Unsupported integer format: ${format}`)
 					}
@@ -304,13 +298,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (!format) {
 						return new context.NativeType('java.math.BigDecimal')
 					} else if (format === 'float') {
-						return new context.NativeType('java.lang.Float', {
-							componentType: new context.NativeType('java.lang.Float'),
-						})
+						return new context.NativeType('java.lang.Float')
 					} else if (format === 'double') {
-						return new context.NativeType('java.lang.Double', {
-							componentType: new context.NativeType('java.lang.Double'),
-						})
+						return new context.NativeType('java.lang.Double')
 					} else {
 						throw new Error(`Unsupported number format: ${format}`)
 					}
@@ -346,9 +336,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					}
 				}
 				case CodegenSchemaType.BOOLEAN: {
-					return new context.NativeType('java.lang.Boolean', {
-						componentType: new context.NativeType('java.lang.Boolean'),
-					})
+					return new context.NativeType('java.lang.Boolean')
 				}
 				case CodegenSchemaType.FILE: {
 					return new context.NativeType('java.io.InputStream')
@@ -409,8 +397,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 				return nativeTypeString
 			},
-			/* Don't transform component types, as we mustn't make them primitives */
-			componentType: null,
+			componentType: {
+				default: function(nativeType, nativeTypeString) {
+					/* Return the original type so none of our transformations above apply to the type when used as a component.
+					   Particularly, we mustn't use our primitive transformations as primitives can't be components, e.g. java.util.List<int>
+					 */
+					return nativeTypeString
+				},
+			},
 		}),
 		defaultValue: (options) => {
 			const { schemaType } = options
