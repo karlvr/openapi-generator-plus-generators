@@ -24,6 +24,78 @@ paths:
       responses:
         200:
           description: OK
+  /object/create/required:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - info
+                - file
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: OK
+  /object/create/nullable:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                info:
+                  type: object
+                  nullable: true
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+                file:
+                  type: string
+                  format: binary
+                  nullable: true
+      responses:
+        200:
+          description: OK
+  /object/create/requiredNullable:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - info
+                - file
+              properties:
+                info:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    size:
+                      type: number
+                file:
+                  type: string
+                  format: binary
+                  nullable: true
+      responses:
+        200:
+          description: OK
   /object/update:
     post:
       requestBody:
@@ -76,6 +148,7 @@ paths:
               properties:
                 info:
                   type: object
+                  description: Info is an optional property
                   properties:
                     name:
                       type: string
@@ -84,6 +157,7 @@ paths:
                 file:
                   type: string
                   format: binary
+                  description: File is an optional property
             encoding:
               info:
                 headers:
@@ -164,13 +238,88 @@ paths:
               properties:
                 values:
                   type: array
+                  description: Values is an optional array
                   items:
                     type: string
                 files:
                   type: array
+                  description: Files is an optional array
                   items:
                     type: string
                     format: binary
+      responses:
+        200:
+          description: OK
+  /object/array/required:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - values
+                - files
+              properties:
+                values:
+                  type: array
+                  description: Values is an optional array
+                  items:
+                    type: string
+                files:
+                  type: array
+                  description: Files is an optional array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: OK
+  /object/array/nullable:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                values:
+                  type: array
+                  nullable: true
+                  description: Values is an optional array
+                  items:
+                    type: string
+                files:
+                  type: array
+                  nullable: true
+                  description: Files is an optional array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: OK
+  /object/array/nullableItems:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                values:
+                  type: array
+                  description: Values is an optional array
+                  items:
+                    type: string
+                    nullable: true
+                files:
+                  type: array
+                  description: Files is an optional array
+                  items:
+                    type: string
+                    format: binary
+                    nullable: true
       responses:
         200:
           description: OK
