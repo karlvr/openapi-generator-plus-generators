@@ -1,5 +1,18 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.25.0
+
+### Minor Changes
+
+- ad19364: Upgrade to core 0.40.0
+
+### Patch Changes
+
+- e72fec6: Fixes for core changes including CodegenSchemaUsage decoupling
+- a2ae651: Fix property type helpers now that we don't have type info in CodegenContent and CodegenRequestBody
+- Updated dependencies [ad19364]
+  - @openapi-generator-plus/generator-common@0.24.0
+
 ## 0.24.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 0.24.0
+
+### Minor Changes
+
+- ad19364: Upgrade to core 0.40.0
+
 ## 0.23.0
 
 ### Minor Changes

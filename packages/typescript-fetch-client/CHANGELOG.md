@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.31.1
+
+### Patch Changes
+
+- c1da0ee: Fix incorrect reference to component schema after core changes
+- Updated dependencies [e72fec6]
+- Updated dependencies [9afa386]
+- Updated dependencies [ad19364]
+- Updated dependencies [a2ae651]
+  - @openapi-generator-plus/handlebars-templates@0.25.0
+  - @openapi-generator-plus/typescript-generator-common@0.25.1
+  - @openapi-generator-plus/generator-common@0.24.0
+
 ## 0.31.0
 
 ### Minor Changes
