@@ -14,7 +14,7 @@ describe('compile test cases', () => {
 				includeTests: true,
 				junitVersion: 4,
 			})
-			await testGenerate(result, compile, `junit4/${file}`)
+			await testGenerate(result, { postProcess: compile, testName: `junit4/${file}` })
 		})
 	}
 })

@@ -7,5 +7,5 @@ import { compile, DEFAULT_CONFIG } from './common'
 test('shadowed model', async() => {
 	const result = await createCodegenResult(path.resolve(__dirname, 'shadowed-model-v2.yml'), DEFAULT_CONFIG, createGenerator)
 
-	await testGenerate(result, compile, 'shadowed-model')
+	await testGenerate(result, { postProcess: compile, testName: 'shadowed-model' })
 }, 20000)

@@ -7,5 +7,5 @@ test('one of no discriminator', async() => {
 		legacyUnnamespacedModelSupport: true,
 	})
 
-	await testGenerate(result, compile, 'one-of')
+	await testGenerate(result, { postProcess: compile, testName: 'one-of' })
 }, 20000)
