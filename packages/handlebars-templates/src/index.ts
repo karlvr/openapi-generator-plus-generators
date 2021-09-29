@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, stringify } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenTypeInfo, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenSchemaInfo, CodegenContent, CodegenLogLevel, CodegenSchemaUsage } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
@@ -701,7 +701,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	})
 
 	/** Output the undefined value literal for the given typed object. */
-	hbs.registerHelper('undefinedValueLiteral', function(typeInfo: CodegenSchemaInfo) {
+	hbs.registerHelper('undefinedValueLiteral', function(typeInfo: CodegenSchema) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 
@@ -1003,7 +1003,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars): void
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType[], hbs: typeof Handlebars): void
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType | CodegenSchemaType[], hbs: typeof Handlebars): void {
-	hbs.registerHelper(name, function(this: CodegenSchemaUsage, target?: CodegenSchemaUsage) {
+	hbs.registerHelper(name, function(this: CodegenSchemaUsage & CodegenSchema, target?: CodegenSchemaUsage & CodegenSchema) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (arguments.length < 2) {

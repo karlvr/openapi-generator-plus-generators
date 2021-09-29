@@ -35,11 +35,11 @@ void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}});
 {{#if (isArray)}}
 
 {{>frag/propertyAnnotations}}
-{{className ../name}} add{{capitalize (singular (identifier name))}}({{{component.nativeType}}} {{identifier (singular name)}});
-{{#if (isObject component)}}
+{{className ../name}} add{{capitalize (singular (identifier name))}}({{{schema.component.nativeType}}} {{identifier (singular name)}});
+{{#if (isObject schema.component)}}
 
 {{>frag/propertyAnnotations}}
-{{{component.nativeType}}} add{{capitalize (singular (identifier name))}}();
+{{{schema.component.nativeType}}} add{{capitalize (singular (identifier name))}}();
 {{/if}}
 {{/if}}
 

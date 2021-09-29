@@ -31,7 +31,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		{{/set}}
 		if ({{{__propertyVar}}} != null) {
 			{{#if (isArray property)}}
-			for ({{{property.component.nativeType}}} __anObject : {{{__propertyVar}}}) {
+			for ({{{property.schema.component.nativeType}}} __anObject : {{{__propertyVar}}}) {
 				{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='__multipartBodyParts' content=../requestBody.defaultContent}}
 			}
 			{{else}}

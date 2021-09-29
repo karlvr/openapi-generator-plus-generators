@@ -295,7 +295,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					if (!component) {
 						throw new Error(`toLiteral cannot format array literal without a component type: ${value}`)
 					}
-					return `[${arrayValue.map(v => context.generator().toLiteral(v, component)).join(', ')}]`
+					return `[${arrayValue.map(v => context.generator().toLiteral(v, { ...component.schema, ...component })).join(', ')}]`
 				}
 			}
 

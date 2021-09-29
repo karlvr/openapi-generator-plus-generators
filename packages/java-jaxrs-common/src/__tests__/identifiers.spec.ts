@@ -18,7 +18,7 @@ test('invalid identifiers', async() => {
 	expect(isCodegenObjectSchema(NumericProperties)).toBeTruthy()
 	expect(NumericProperties!.properties).not.toBeUndefined()
 	expect(idx.get(NumericProperties!.properties!, '1')).not.toBeUndefined()
-	expect(idx.get(NumericProperties!.properties!, '1')!.type).toEqual('string')
+	expect(idx.get(NumericProperties!.properties!, '1')!.schema.type).toEqual('string')
 	// expect(idx.get(NumericProperties!.properties!, '1')!.name).toEqual('_1') // TODO we currently rely on templates to make properties identifier-safe
 
 	const NumericEnum = idx.get(doc.schemas, 'NumericEnum') as CodegenEnumSchema

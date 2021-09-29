@@ -104,7 +104,7 @@ public void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}}) {
 {{#if (isArray)}}
 
 {{>frag/propertyAnnotations}}
-public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{component.nativeType}}} {{identifier (singular name)}}) {
+public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{schema.component.nativeType}}} {{identifier (singular name)}}) {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
 		this.{{identifier name}} = java.util.Optional.of(new {{{nativeType.concreteType}}}());
@@ -118,11 +118,11 @@ public {{className ../name}} add{{capitalize (singular (identifier name))}}({{{c
 	{{/if}}
 	return this;
 }
-{{#if (isObject component)}}
+{{#if (isObject schema.component)}}
 
 {{>frag/propertyAnnotations}}
-public {{{component.nativeType}}} add{{capitalize (singular (identifier name))}}() {
-	{{{component.nativeType}}} {{identifier (singular name)}} = new {{{component.nativeType.concreteType}}}();
+public {{{schema.component.nativeType}}} add{{capitalize (singular (identifier name))}}() {
+	{{{schema.component.nativeType}}} {{identifier (singular name)}} = new {{{schema.component.nativeType.concreteType}}}();
 	add{{capitalize (singular (identifier name))}}({{identifier (singular name)}});
 	return {{identifier (singular name)}};
 }

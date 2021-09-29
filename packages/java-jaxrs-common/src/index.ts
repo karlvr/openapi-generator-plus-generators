@@ -266,7 +266,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (!component) {
 						throw new Error(`toLiteral cannot format array literal without a component type: ${value}`)
 					}
-					return `java.util.Arrays.asList(${arrayValue.map(v => context.generator().toLiteral(v, component)).join(', ')})`
+					return `java.util.Arrays.asList(${arrayValue.map(v => context.generator().toLiteral(v, { ...component.schema, ...component })).join(', ')})`
 				}
 			}
 	
@@ -559,7 +559,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			registerStandardHelpers(hbs, context)
 
 			hbs.registerHelper('getter', function(property: CodegenProperty) {
-				if (property.type === 'boolean' && property.required && !property.nullable) {
+				if (property.schema.schemaType === CodegenSchemaType.BOOLEAN && property.required && !property.nullable) {
 					return `is${capitalize(context.generator().toIdentifier(property.name))}`
 				} else {
 					return `get${capitalize(context.generator().toIdentifier(property.name))}`
