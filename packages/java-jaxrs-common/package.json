@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
   },
-  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-jaxrs-common#readme",
   "dependencies": {
     "@openapi-generator-plus/generator-common": "^0.25.0",
     "@openapi-generator-plus/handlebars-templates": "^0.26.0",

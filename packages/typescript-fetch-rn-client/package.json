@@ -28,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
   },
-  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators#readme",
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-rn-client#readme",
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "^0.26.0",
     "@openapi-generator-plus/typescript-fetch-client-generator": "^0.31.2",
