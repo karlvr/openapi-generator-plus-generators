@@ -164,7 +164,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 	
 			if (schemaType === CodegenSchemaType.ENUM) {
-				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(String(value))}`
+				return `${options.nativeType.concreteType}.${context.generator().toEnumMemberName(String(value))}`
 			}
 
 			/* We use the same logic as in nativeTypeUsageTransformer  */

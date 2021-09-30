@@ -227,7 +227,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			const { type, format, schemaType } = options
 
 			if (schemaType === CodegenSchemaType.ENUM) {
-				return `${options.nativeType.toString()}.${context.generator().toEnumMemberName(String(value))}`
+				return `${options.nativeType.concreteType}.${context.generator().toEnumMemberName(String(value))}`
 			}
 
 			switch (type) {
