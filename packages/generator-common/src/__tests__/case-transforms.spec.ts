@@ -16,6 +16,7 @@ test('camelCase changes case on first word', () => {
 test('camelCase changes an all upper-case word to all lower-case', () => {
 	expect(camelCase('FAQS')).toBe('faqs')
 	expect(camelCase('ARRAY2')).toBe('array2')
+	expect(camelCase('FAQS_AND_MORE')).toBe('faqsAndMore')
 })
 
 test('camelCase preserves case on later words', () => {
@@ -30,4 +31,12 @@ test('pascalCase preserves case', () => {
 	expect(pascalCase('FAQ-section')).toBe('FAQSection')
 	expect(pascalCase('FAQSection')).toBe('FAQSection')
 	expect(pascalCase('One_two')).toBe('OneTwo')
+})
+
+test('camelCase works on SNAKE_CASE', () => {
+	expect(camelCase('HE_HIM_HIS')).toBe('heHimHis')
+	expect(camelCase('he_him_his')).toBe('heHimHis')
+	expect(camelCase('HE_him_his')).toBe('heHimHis')
+	expect(camelCase('HE_him_HIS')).toBe('heHimHIS')
+	expect(camelCase('he_HIM_HIS')).toBe('heHIMHIS')
 })
