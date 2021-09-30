@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-retrofit-client-generator",
-  "version": "0.30.4",
+  "version": "0.30.5",
   "description": "An OpenAPI Generator Plus template for a Java API client using Retrofit",
   "keywords": [
     "openapi-generator-plus",
@@ -30,7 +30,7 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-retrofit-client#readme",
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "^0.26.1",
-    "@openapi-generator-plus/java-jaxrs-client-generator": "^0.39.4"
+    "@openapi-generator-plus/java-jaxrs-client-generator": "^0.39.5"
   },
   "publishConfig": {
     "access": "public"

@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 0.25.4
+
+### Patch Changes
+
+- 2e840bb: Standardise on OpenAPI Generator Plus instead of OpenAPI Generator+
+
 ## 0.25.3
 
 ### Patch Changes

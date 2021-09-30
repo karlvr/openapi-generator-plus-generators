@@ -1,5 +1,11 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 0.20.5
+
+### Patch Changes
+
+- 2e840bb: Standardise on OpenAPI Generator Plus instead of OpenAPI Generator+
+
 ## 0.20.4
 
 ### Patch Changes

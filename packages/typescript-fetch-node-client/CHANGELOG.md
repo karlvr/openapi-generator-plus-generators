@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 0.4.10
+
+### Patch Changes
+
+- 2e840bb: Standardise on OpenAPI Generator Plus instead of OpenAPI Generator+
+- Updated dependencies [2e840bb]
+  - @openapi-generator-plus/typescript-generator-common@0.25.4
+  - @openapi-generator-plus/typescript-fetch-client-generator@0.31.5
+
 ## 0.4.9
 
 ### Patch Changes

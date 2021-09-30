@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 0.39.5
+
+### Patch Changes
+
+- 2e840bb: Standardise on OpenAPI Generator Plus instead of OpenAPI Generator+
+- Updated dependencies [2e840bb]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.33.5
+
 ## 0.39.4
 
 ### Patch Changes

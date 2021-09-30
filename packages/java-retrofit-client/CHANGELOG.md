@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 0.30.5
+
+### Patch Changes
+
+- 2e840bb: Standardise on OpenAPI Generator Plus instead of OpenAPI Generator+
+- Updated dependencies [2e840bb]
+  - @openapi-generator-plus/java-jaxrs-client-generator@0.39.5
+
 ## 0.30.4
 
 ### Patch Changes
