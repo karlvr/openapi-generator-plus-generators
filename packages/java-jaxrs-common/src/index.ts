@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
-import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray } from '@openapi-generator-plus/generator-common'
+import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify } from '@openapi-generator-plus/generator-common'
 
 export { CodegenOptionsJava } from './types'
 
@@ -254,7 +254,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 							return 'null'
 						}
 					} else {
-						context.log(CodegenLogLevel.WARN, `Literal is unsupported for schema type object: ${JSON.stringify(value)}`)
+						context.log(CodegenLogLevel.WARN, `Literal is unsupported for schema type object: ${debugStringify(value)}`)
 						return 'null'
 					}
 					break
@@ -270,7 +270,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
-			throw new Error(`Unsupported literal type name "${type}" in options: ${JSON.stringify(options)}`)
+			throw new Error(`Unsupported literal type name "${type}" in options: ${debugStringify(options)}`)
 		},
 		toNativeType: (options) => {
 			const { format, schemaType, vendorExtensions } = options

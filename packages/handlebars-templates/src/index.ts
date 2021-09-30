@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
-import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, stringify } from '@openapi-generator-plus/generator-common'
+import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, debugStringify } from '@openapi-generator-plus/generator-common'
 import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
@@ -494,19 +494,19 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 				return options.inverse(this)
 			}
 			if (source === undefined) {
-				throw new Error(`ifvex helper couldn't find nested object "${nestedPropertyOrContext} @ ${sourcePosition(options)}: ${stringify(this)}`)
+				throw new Error(`ifvex helper couldn't find nested object "${nestedPropertyOrContext} @ ${sourcePosition(options)}: ${debugStringify(this)}`)
 			}
 		} else if (typeof nestedPropertyOrContext === 'object') {
 			source = nestedPropertyOrContext
 		} else if (nestedPropertyOrContext) {
-			throw new Error(`ifvex helper called with unknown second argument of type ${typeof nestedPropertyOrContext} @ ${sourcePosition(options)}: ${stringify(nestedPropertyOrContext)}`)
+			throw new Error(`ifvex helper called with unknown second argument of type ${typeof nestedPropertyOrContext} @ ${sourcePosition(options)}: ${debugStringify(nestedPropertyOrContext)}`)
 		} else {
 			source = this
 		}
 
 		const vendorExtensions: CodegenVendorExtensions = source.vendorExtensions as CodegenVendorExtensions
 		if (vendorExtensions === undefined) {
-			throw new Error(`ifvex helper called with an object that doesn't support vendor extensions @ ${sourcePosition(options)}: ${stringify(this)}`)
+			throw new Error(`ifvex helper called with an object that doesn't support vendor extensions @ ${sourcePosition(options)}: ${debugStringify(this)}`)
 		}
 
 		if (vendorExtensions && vendorExtensions[extensionName]) {
@@ -525,7 +525,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 
 		const examples: CodegenExamples = this.examples as CodegenExamples
 		if (examples === undefined) {
-			throw new Error(`ifeg helper called with an object that doesn't support examples @ ${sourcePosition(options)}: ${stringify(this)}`)
+			throw new Error(`ifeg helper called with an object that doesn't support examples @ ${sourcePosition(options)}: ${debugStringify(this)}`)
 		}
 
 		if (examples && examples[exampleName]) {
@@ -1019,7 +1019,7 @@ function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType 
 			aPropertyType = target.schema.schemaType
 		}
 		if (aPropertyType === undefined) {
-			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}: ${stringify(target)}`)
+			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}: ${debugStringify(target)}`)
 		}
 
 		if (typeof schemaType === 'string') {
