@@ -1,6 +1,6 @@
-# Java JAX-RS Client API generator for OpenAPI Generator+
+# Java JAX-RS Client API generator for OpenAPI Generator Plus
 
-An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) template for a Java API client using JAX-RS.
+An [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) template for a Java API client using JAX-RS.
 
 ## Overview
 
@@ -10,7 +10,7 @@ The generated code has useful features:
 
 ## Using
 
-See the [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
+See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
 generator templates.
 
 ## Config file

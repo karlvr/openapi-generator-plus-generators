@@ -1,11 +1,11 @@
-# TypeScript Fetch Node API generator for OpenAPI Generator+
+# TypeScript Fetch Node API generator for OpenAPI Generator Plus
 
-An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) template for a TypeScript API client using Fetch in Node.
+An [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) template for a TypeScript API client using Fetch in Node.
 For an API client to use in browsers, see [typescript-fetch-client-generator](https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-client).
 
 ## Using
 
-See the [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
+See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
 generator templates.
 
 ## Config file

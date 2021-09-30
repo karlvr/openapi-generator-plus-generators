@@ -1,13 +1,13 @@
-# TypeScript Express Example Server API generator for OpenAPI Generator+
+# TypeScript Express Example Server API generator for OpenAPI Generator Plus
 
-An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) template for a TypeScript API server using Express to serve example responses.
+An [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) template for a TypeScript API server using Express to serve example responses.
 
 If you've added example responses in your OpenAPI spec then this server will output them in response to API requests. If you've specified
 multiple requests it will randomly choose between them.
 
 ## Using
 
-See the [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
+See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
 generator templates.
 
 Once the generator has been run, the generated package can be run using:
