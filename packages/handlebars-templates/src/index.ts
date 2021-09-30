@@ -850,7 +850,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	registerPropertyTypeHelper('isDateTime', CodegenSchemaType.DATETIME, hbs)
 	registerPropertyTypeHelper('isDate', CodegenSchemaType.DATE, hbs)
 	registerPropertyTypeHelper('isTime', CodegenSchemaType.TIME, hbs)
-	registerPropertyTypeHelper('isFile', CodegenSchemaType.FILE, hbs)
+	registerPropertyTypeHelper('isBinary', CodegenSchemaType.BINARY, hbs)
 
 	function isEmpty(ob: UnknownObject) {
 		for (const name in ob) {

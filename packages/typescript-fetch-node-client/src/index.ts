@@ -1,4 +1,4 @@
-import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenGeneratorConstructor, CodegenGeneratorType, CodegenSchemaType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import typescriptGenerator from '@openapi-generator-plus/typescript-fetch-client-generator'
@@ -29,8 +29,8 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		},
 		generatorType: () => CodegenGeneratorType.CLIENT,
 		toNativeType: function(options) {
-			const { type, format } = options
-			if (type === 'string' && format === 'binary') {
+			const { schemaType } = options
+			if (schemaType === CodegenSchemaType.BINARY) {
 				return new context.NativeType('string | Buffer')
 			} else {
 				return base.toNativeType(options)

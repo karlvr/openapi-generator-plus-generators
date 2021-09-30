@@ -1,4 +1,4 @@
-import { CodegenGeneratorConstructor, CodegenGeneratorType, isCodegenAnyOfSchema, isCodegenEnumSchema, isCodegenInterfaceSchema, isCodegenObjectSchema, isCodegenOneOfSchema } from '@openapi-generator-plus/types'
+import { CodegenGeneratorConstructor, CodegenGeneratorType, CodegenSchemaType, isCodegenAnyOfSchema, isCodegenEnumSchema, isCodegenInterfaceSchema, isCodegenObjectSchema, isCodegenOneOfSchema } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
 import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext, chainTypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
@@ -59,8 +59,8 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		},
 		generatorType: () => CodegenGeneratorType.CLIENT,
 		toNativeType: function(options) {
-			const { type, format } = options
-			if (type === 'string' && format === 'binary') {
+			const { schemaType } = options
+			if (schemaType === CodegenSchemaType.BINARY) {
 				/* We support string and Blob, which is what FormData supports. It also enables us to handle literal binary values
 				   created from strings... which is hopefully a good idea.
 				 */

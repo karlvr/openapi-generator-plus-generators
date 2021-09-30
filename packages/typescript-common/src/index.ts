@@ -351,11 +351,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case CodegenSchemaType.BOOLEAN: {
 					return new context.NativeType('boolean')
 				}
-				case CodegenSchemaType.FILE: {
-					/* JavaScript does have a File type, but it isn't supported by JSON serialization... we say string as we have to say something, it will need to be handled in the generated code */
-					return new context.NativeType('File', {
-						serializedType: 'string',
-					})
+				case CodegenSchemaType.BINARY: {
+					/* Subclasses override this with a type appropriate to their environment, such as blob */
+					return new context.NativeType('string')
 				}
 			}
 

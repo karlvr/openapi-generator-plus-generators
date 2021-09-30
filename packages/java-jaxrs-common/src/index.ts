@@ -321,8 +321,6 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (format === 'byte') {
 						/* base64 encoded characters */
 						return new context.NativeType('java.lang.String')
-					} else if (format === 'binary') {
-						return new context.NativeType('byte[]')
 					} else if (format === 'uuid') {
 						return new context.NativeType('java.util.UUID', {
 							serializedType: 'java.lang.String',
@@ -338,8 +336,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.BOOLEAN: {
 					return new context.NativeType('java.lang.Boolean')
 				}
-				case CodegenSchemaType.FILE: {
-					return new context.NativeType('java.io.InputStream')
+				case CodegenSchemaType.BINARY: {
+					return new context.NativeType('byte[]')
 				}
 			}
 	
@@ -414,7 +412,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.DATE:
 				case CodegenSchemaType.TIME:
 				case CodegenSchemaType.DATETIME:
-				case CodegenSchemaType.FILE:
+				case CodegenSchemaType.BINARY:
 				case CodegenSchemaType.OBJECT:
 				case CodegenSchemaType.STRING:
 				case CodegenSchemaType.ARRAY:
@@ -460,7 +458,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.DATE:
 				case CodegenSchemaType.TIME:
 				case CodegenSchemaType.DATETIME:
-				case CodegenSchemaType.FILE:
+				case CodegenSchemaType.BINARY:
 				case CodegenSchemaType.STRING:
 				case CodegenSchemaType.INTERFACE:
 					return null
