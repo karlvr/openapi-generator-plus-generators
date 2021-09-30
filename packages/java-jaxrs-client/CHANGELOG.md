@@ -1,5 +1,20 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 0.39.2
+
+### Patch Changes
+
+- 7ccb797: Fix multipart serialization support for nullables
+- Updated dependencies [fc32aaf]
+- Updated dependencies [630ba24]
+- Updated dependencies [e74d3ef]
+- Updated dependencies [25a8ab6]
+- Updated dependencies [0cfd306]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.33.2
+  - @openapi-generator-plus/handlebars-templates@0.26.0
+  - @openapi-generator-plus/generator-common@0.25.0
+  - @openapi-generator-plus/java-like-generator-helper@0.16.2
+
 ## 0.39.1
 
 ### Patch Changes

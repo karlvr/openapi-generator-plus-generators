@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 0.25.2
+
+### Patch Changes
+
+- 25a8ab6: Add debugStringify to improve logging of objects
+- Updated dependencies [630ba24]
+- Updated dependencies [e74d3ef]
+- Updated dependencies [25a8ab6]
+- Updated dependencies [0cfd306]
+  - @openapi-generator-plus/handlebars-templates@0.26.0
+  - @openapi-generator-plus/generator-common@0.25.0
+  - @openapi-generator-plus/java-like-generator-helper@0.16.2
+
 ## 0.25.1
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @openapi-generator-plus/generator-common
 
+## 0.25.0
+
+### Minor Changes
+
+- e74d3ef: Add options to testGenerate for extensibility, and option not to clean
+- 0cfd306: Upgrade to core 0.41.0
+
+### Patch Changes
+
+- 25a8ab6: Add debugStringify to improve logging of objects
+
 ## 0.24.0
 
 ### Minor Changes
