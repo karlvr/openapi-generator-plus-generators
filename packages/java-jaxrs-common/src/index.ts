@@ -506,6 +506,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		nativeCompositionCanBeScope: () => false,
 		nativeComposedSchemaRequiresName: () => false,
 		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
+		interfaceCanBeNested: () => true,
 	
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]

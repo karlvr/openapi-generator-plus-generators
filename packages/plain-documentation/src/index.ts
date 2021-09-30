@@ -121,6 +121,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		nativeCompositionCanBeScope: () => true,
 		nativeComposedSchemaRequiresName: () => false,
 		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
+		interfaceCanBeNested: () => true,
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]

@@ -469,6 +469,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		nativeCompositionCanBeScope: () => true,
 		nativeComposedSchemaRequiresName: () => false,
 		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
+		interfaceCanBeNested: () => true,
 
 		watchPaths: () => {
 			const result = [path.resolve(__dirname, '..', 'templates')]
