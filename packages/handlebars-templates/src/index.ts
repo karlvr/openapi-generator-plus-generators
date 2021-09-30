@@ -836,6 +836,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	registerPropertyTypeHelper('isAllOf', CodegenSchemaType.ALLOF, hbs)
 	registerPropertyTypeHelper('isAnyOf', CodegenSchemaType.ANYOF, hbs)
 	registerPropertyTypeHelper('isOneOf', CodegenSchemaType.ONEOF, hbs)
+	registerPropertyTypeHelper('isHierarchy', CodegenSchemaType.HIERARCHY, hbs)
 	registerPropertyTypeHelper('isInterface', CodegenSchemaType.INTERFACE, hbs)
 	registerPropertyTypeHelper('isWrapper', CodegenSchemaType.WRAPPER, hbs)
 	registerPropertyTypeHelper('isMap', CodegenSchemaType.MAP, hbs)
@@ -1018,7 +1019,7 @@ function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType 
 			aPropertyType = target.schema.schemaType
 		}
 		if (aPropertyType === undefined) {
-			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}: ${JSON.stringify(target, undefined, 2)}`)
+			throw new Error(`${name} helper used without schemaType in the context @ ${sourcePosition(options)}: ${stringify(target)}`)
 		}
 
 		if (typeof schemaType === 'string') {
