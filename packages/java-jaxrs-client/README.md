@@ -1,6 +1,6 @@
 # Java JAX-RS Client API generator for OpenAPI Generator+
 
-An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) module for a Java API client using JAX-RS.
+An [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) template for a Java API client using JAX-RS.
 
 ## Overview
 
@@ -11,7 +11,7 @@ The generated code has useful features:
 ## Using
 
 See the [OpenAPI Generator+](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
-generator modules.
+generator templates.
 
 ## Config file
 
@@ -56,9 +56,9 @@ The available config file properties are:
 
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
-|`groupId`|`string`|The Maven module groupId|`com.example`|
-|`artifactId`|`string`|The Maven module artifactId|`api-server`|
-|`version`|`string`|The Maven module version|`0.0.1`|
+|`groupId`|`string`|The Maven template groupId|`com.example`|
+|`artifactId`|`string`|The Maven template artifactId|`api-server`|
+|`version`|`string`|The Maven template version|`0.0.1`|
 |`versions`|`{ name: version }`|Custom dependency versions (see `pom.hbs`)|`undefined`|
 
 ### General
