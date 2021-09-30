@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.37.3
+
+### Patch Changes
+
+- b45576a: Update package.json metadata to include better homepage URLs
+- Updated dependencies [51206bb]
+- Updated dependencies [b45576a]
+  - @openapi-generator-plus/generator-common@0.25.1
+  - @openapi-generator-plus/handlebars-templates@0.26.1
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.33.3
+  - @openapi-generator-plus/java-like-generator-helper@0.16.3
+
 ## 0.37.2
 
 ### Patch Changes

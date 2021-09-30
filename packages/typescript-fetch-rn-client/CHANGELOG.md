@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 0.14.14
+
+### Patch Changes
+
+- b45576a: Update package.json metadata to include better homepage URLs
+- Updated dependencies [b45576a]
+  - @openapi-generator-plus/handlebars-templates@0.26.1
+  - @openapi-generator-plus/typescript-generator-common@0.25.3
+  - @openapi-generator-plus/typescript-fetch-client-generator@0.31.3
+
 ## 0.14.13
 
 ### Patch Changes

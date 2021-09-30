@@ -1,5 +1,14 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.26.1
+
+### Patch Changes
+
+- b45576a: Update package.json metadata to include better homepage URLs
+- Updated dependencies [51206bb]
+- Updated dependencies [b45576a]
+  - @openapi-generator-plus/generator-common@0.25.1
+
 ## 0.26.0
 
 ### Minor Changes

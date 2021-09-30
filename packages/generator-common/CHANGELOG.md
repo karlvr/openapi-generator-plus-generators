@@ -1,5 +1,12 @@
 # @openapi-generator-plus/generator-common
 
+## 0.25.1
+
+### Patch Changes
+
+- 51206bb: Fix camelCase behaviour with SNAKE_CASE
+- b45576a: Update package.json metadata to include better homepage URLs
+
 ## 0.25.0
 
 ### Minor Changes

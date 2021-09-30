@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 0.30.3
+
+### Patch Changes
+
+- b45576a: Update package.json metadata to include better homepage URLs
+- Updated dependencies [b45576a]
+  - @openapi-generator-plus/handlebars-templates@0.26.1
+  - @openapi-generator-plus/java-jaxrs-client-generator@0.39.3
+
 ## 0.30.2
 
 ### Patch Changes

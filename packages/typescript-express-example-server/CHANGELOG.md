@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 0.17.10
+
+### Patch Changes
+
+- b45576a: Update package.json metadata to include better homepage URLs
+- Updated dependencies [b45576a]
+  - @openapi-generator-plus/handlebars-templates@0.26.1
+  - @openapi-generator-plus/typescript-generator-common@0.25.3
+
 ## 0.17.9
 
 ### Patch Changes

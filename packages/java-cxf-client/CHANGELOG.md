@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 0.31.3
+
+### Patch Changes
+
+- b45576a: Update package.json metadata to include better homepage URLs
+- Updated dependencies [b45576a]
+  - @openapi-generator-plus/handlebars-templates@0.26.1
+  - @openapi-generator-plus/java-jaxrs-client-generator@0.39.3
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.33.3
+
 ## 0.31.2
 
 ### Patch Changes
