@@ -19,6 +19,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Pet'
+  /pet:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        200:
+          description: OK
 components:
   schemas:
     Pet:
