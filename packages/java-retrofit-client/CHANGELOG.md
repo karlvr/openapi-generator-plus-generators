@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 0.30.4
+
+### Patch Changes
+
+- 28e4e3b: Standardise terminology from generator module to generator template
+- Updated dependencies [28e4e3b]
+  - @openapi-generator-plus/java-jaxrs-client-generator@0.39.4
+
 ## 0.30.3
 
 ### Patch Changes

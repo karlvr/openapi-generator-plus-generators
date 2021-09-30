@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 0.17.11
+
+### Patch Changes
+
+- 28e4e3b: Standardise terminology from generator module to generator template
+
 ## 0.17.10
 
 ### Patch Changes

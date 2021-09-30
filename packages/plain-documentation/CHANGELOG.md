@@ -1,5 +1,11 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 0.20.4
+
+### Patch Changes
+
+- 28e4e3b: Standardise terminology from generator module to generator template
+
 ## 0.20.3
 
 ### Patch Changes

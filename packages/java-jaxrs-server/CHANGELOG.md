@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.37.4
+
+### Patch Changes
+
+- 28e4e3b: Standardise terminology from generator module to generator template
+- Updated dependencies [28e4e3b]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.33.4
+
 ## 0.37.3
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 0.4.9
+
+### Patch Changes
+
+- 28e4e3b: Standardise terminology from generator module to generator template
+- Updated dependencies [28e4e3b]
+  - @openapi-generator-plus/typescript-fetch-client-generator@0.31.4
+
 ## 0.4.8
 
 ### Patch Changes
