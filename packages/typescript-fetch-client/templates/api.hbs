@@ -222,7 +222,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 							{{/ifmatch}}
 						}
 						{{/each}}
-						throw new Error(`Unexpected contentType "${contentType}" for {{code}} response`);
+						throw response;
 						{{else}}
 						return response;
 						{{/if}}
@@ -235,13 +235,14 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 							throw response;
 						}
 						{{/each}}
-						throw new Error(`Unexpected contentType "${contentType}" for {{code}} response`);
+						throw response;
 						{{else}}
 						throw response;
 						{{/if}}
 					}
 					{{/if}}
 					{{/each}}
+					throw response;
 				});
 			};
 		},
