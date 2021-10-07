@@ -1,1 +1,10 @@
-extends java.io.Serializable{{#each parents}}, {{{nativeType.parentType}}}{{/each}}{{#if vendorExtensions.x-implements-interfaces}}, {{{vendorExtensions.x-implements-interfaces}}}{{/if}}
+{{#join '_extends' ', '}}
+{{#each parents}}
+{{{nativeType.parentType}}}
+{{/each}}
+{{#ifvex 'x-implements-interfaces'}}
+{{{vendorExtensions.x-implements-interfaces}}}
+{{/ifvex}}
+{{/join}}
+{{#if _extends}}
+extends {{{_extends}}} {{/if}}

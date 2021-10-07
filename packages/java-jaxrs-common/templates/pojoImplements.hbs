@@ -6,9 +6,6 @@
 {{{vendorExtensions.x-implements-interfaces}}}
 {{/ifvex}}
 {{>hooks/pojoImplementsExtras}}
-{{#and (not parents)}}
-java.io.Serializable
-{{/and}}
 {{/join}}
 {{#if _implements}}
 implements {{{_implements}}} {{/if}}
