@@ -15,6 +15,7 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	dateImplementation: string
 	timeImplementation: string
 	dateTimeImplementation: string
+	binaryRepresentation: string
 
 	imports: string[] | null
 

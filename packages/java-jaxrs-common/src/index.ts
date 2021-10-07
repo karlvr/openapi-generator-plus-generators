@@ -105,6 +105,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		dateImplementation: configString(config, 'dateImplementation', 'java.time.LocalDate'),
 		timeImplementation: configString(config, 'timeImplementation', 'java.time.LocalTime'),
 		dateTimeImplementation: configString(config, 'dateTimeImplementation', 'java.time.OffsetDateTime'),
+		binaryRepresentation: configString(config, 'binaryRepresentation', 'byte[]'),
 		hideGenerationTimestamp: configBoolean(config, 'hideGenerationTimestamp', false),
 		imports: configStringArray(config, 'imports', null),
 		maven: maven ? {
@@ -337,7 +338,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					return new context.NativeType('java.lang.Boolean')
 				}
 				case CodegenSchemaType.BINARY: {
-					return new context.NativeType('byte[]')
+					return new context.NativeType(generatorOptions.binaryRepresentation)
 				}
 			}
 	
