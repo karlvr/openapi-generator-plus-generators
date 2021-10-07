@@ -201,11 +201,47 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 			return (fetch: FetchAPI = defaultFetch, basePath: string = BASE_PATH) => {
 				return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
-					if (response.status >= 200 && response.status < 300) {
-						return response{{#if returnNativeType.serializedType}}.json() as Promise<any>{{/if}};
-					} else {
-						throw response;
+					const contentType = response.headers.get('Content-Type');
+					const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
+					
+					{{#each responses}}
+					{{#if isDefault}}
+					if (response.status === {{code}}) {
+						{{#if contents}}
+						{{#each contents}} 
+						if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+							{{#ifmatch mediaType.mimeType '/json'}}
+							return response.json();
+							{{else ifmatch mediaType.mimeType 'text/'}}
+							return response.text();
+							{{else ifmatch mediaType.mimeType '/octet-stream'}}
+							return response.blob();
+							{{else}}
+							/* Unsupported mimeType */
+							return response;
+							{{/ifmatch}}
+						}
+						{{/each}}
+						throw new Error(`Unexpected contentType "${contentType}" for {{code}} response`);
+						{{else}}
+						return response;
+						{{/if}}
 					}
+					{{else}}
+					if (response.status === {{code}}) {
+						{{#if contents}}
+						{{#each contents}} 
+						if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+							throw response;
+						}
+						{{/each}}
+						throw new Error(`Unexpected contentType "${contentType}" for {{code}} response`);
+						{{else}}
+						throw response;
+						{{/if}}
+					}
+					{{/if}}
+					{{/each}}
 				});
 			};
 		},
