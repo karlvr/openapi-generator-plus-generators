@@ -210,16 +210,19 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 						{{#if contents}}
 						{{#each contents}} 
 						if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+							{{#unless schema}}
+							return response; /* No schema */
+							{{else}}
 							{{#ifmatch mediaType.mimeType '/json'}}
 							return response.json();
-							{{else ifmatch mediaType.mimeType 'text/'}}
-							return response.text();
-							{{else ifmatch mediaType.mimeType '/octet-stream'}}
+							{{else if (isBinary schema)}}
 							return response.blob();
+							{{else if (isString schema)}}
+							return response.text();
 							{{else}}
-							/* Unsupported mimeType */
-							return response;
+							return response; /* Unsupported mimeType */
 							{{/ifmatch}}
+							{{/unless}}
 						}
 						{{/each}}
 						throw response;
