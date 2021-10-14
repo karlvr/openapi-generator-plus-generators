@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.27.0
+
+### Minor Changes
+
+- 23171d5: Add count, gt, ge, lt, le helpers
+
 ## 0.26.1
 
 ### Patch Changes
