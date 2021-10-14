@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.32.0
+
+### Minor Changes
+
+- 3b2b515: Handle response codes and media types as defined by the specification
+- 807775a: Change response handling to examine schema type to decide whether to use binary or text handling if the mime type isn't JSON
+
+  The client can now handle arbitrary binary responses such as images and PDFs, and arbitrary string responses.
+
+### Patch Changes
+
+- Updated dependencies [0cc86ee]
+  - @openapi-generator-plus/typescript-generator-common@0.25.5
+
 ## 0.31.5
 
 ### Patch Changes

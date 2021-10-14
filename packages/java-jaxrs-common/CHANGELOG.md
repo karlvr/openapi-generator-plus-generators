@@ -1,5 +1,18 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 0.34.0
+
+### Minor Changes
+
+- 3592e5a: Remove `java.io.Serializable` from models [#28]
+
+  We use `java.util.Optional` which isn't serializable.
+
+### Patch Changes
+
+- 8558822: Add a config option for the binary data representation to use
+- 0cc86ee: Fix enum literals where the enum property isn't required
+
 ## 0.33.5
 
 ### Patch Changes

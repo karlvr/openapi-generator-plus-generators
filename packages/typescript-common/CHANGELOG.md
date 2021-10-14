@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 0.25.5
+
+### Patch Changes
+
+- 0cc86ee: Fix enum literals where the enum property isn't required
+
 ## 0.25.4
 
 ### Patch Changes

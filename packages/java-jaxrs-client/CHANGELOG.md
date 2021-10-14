@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 0.39.6
+
+### Patch Changes
+
+- 8558822: Add a config option for the binary data representation to use
+- Updated dependencies [8558822]
+- Updated dependencies [3592e5a]
+- Updated dependencies [0cc86ee]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.34.0
+
 ## 0.39.5
 
 ### Patch Changes
