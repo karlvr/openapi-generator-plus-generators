@@ -999,6 +999,53 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 
 		return options.fn(this).split('\n').join(`\n${indent}`)
 	})
+
+	/**
+	 * Count the number of items in the collection argument and return.
+	 */
+	hbs.registerHelper('count', function(collection: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`count helper must be called with 1 argument @ ${sourcePosition(options)}`)
+		}
+		if (collection === undefined) {
+			throw new Error(`count helper missing collection argument @ ${sourcePosition(options)}`)
+		}
+
+		if (!collection) {
+			return 0
+		} else if (Array.isArray(collection) || typeof collection === 'string') {
+			return collection.length
+		} else if (typeof collection === 'object') {
+			return Object.keys(collection!).length
+		} else {
+			return String(collection).length
+		}
+	})
+
+	registerComparisonHelper('gt', (a, b) => a > b, hbs)
+	registerComparisonHelper('ge', (a, b) => a >= b, hbs)
+	registerComparisonHelper('lt', (a, b) => a < b, hbs)
+	registerComparisonHelper('le', (a, b) => a <= b, hbs)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function registerComparisonHelper(name: string, comparison: (a: any, b: any) => boolean, hbs: typeof Handlebars): void {
+	hbs.registerHelper(name, function(a: unknown, b: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 3) {
+			throw new Error(`${name} helper must be called with 2 argument @ ${sourcePosition(options)}`)
+		}
+		if (a === undefined) {
+			throw new Error(`${name} helper missing first argument @ ${sourcePosition(options)}`)
+		}
+		if (b === undefined) {
+			throw new Error(`${name} helper missing second argument @ ${sourcePosition(options)}`)
+		}
+		return comparison(a, b)
+	})
 }
 
 function registerPropertyTypeHelper(name: string, schemaType: CodegenSchemaType, hbs: typeof Handlebars): void
