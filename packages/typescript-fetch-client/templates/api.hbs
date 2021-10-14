@@ -213,15 +213,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 							{{#unless schema}}
 							return response; /* No schema */
 							{{else}}
-							{{#ifmatch mediaType.mimeType '/json'}}
-							return response.json();
-							{{else if (isBinary schema)}}
-							return response.blob();
-							{{else if (isString schema)}}
-							return response.text();
-							{{else}}
-							return response; /* Unsupported mimeType */
-							{{/ifmatch}}
+							{{>frag/apiResponseContent}}
 							{{/unless}}
 						}
 						{{/each}}
