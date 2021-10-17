@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 0.34.2
+
+### Patch Changes
+
+- 15dc644: Remove defunct serialVersionUID static finals that should have been removed when java.io.Serializable was removed
+
 ## 0.34.1
 
 ### Patch Changes
