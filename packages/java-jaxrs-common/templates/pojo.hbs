@@ -6,7 +6,6 @@ package {{modelPackage}};
 {{>frag/pojoHeader}}
 public {{#if abstract}}abstract {{/if}}class {{className name}}{{#if parents}} extends {{#each parents}}{{{nativeType.concreteType}}}{{/each}}{{/if}} {{>pojoImplements}}{
 
-	private static final long serialVersionUID = 1L;
 	{{>pojoContents}}
 }
 {{/with}}
