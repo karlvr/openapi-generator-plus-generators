@@ -25,6 +25,7 @@ paths:
                 type: string
         423:
           description: No response
+      deprecated: true
 components:
   schemas:
     Test1:
