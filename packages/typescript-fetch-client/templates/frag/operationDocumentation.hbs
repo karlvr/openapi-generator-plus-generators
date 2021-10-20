@@ -12,11 +12,11 @@
  * @summary {{{summary}}}
 {{/if}}
 {{#each parameters}}
- * {{>frag/parameterDocumentation}}
+ * {{#indent ' *   '}}{{>frag/parameterDocumentation}}{{/indent}}
 {{/each}}
 {{#if requestBody.nativeType}}
 {{#with requestBody}}
- * {{>frag/parameterDocumentation}}
+ * {{#indent ' *   '}}{{>frag/parameterDocumentation}}{{/indent}}
 {{/with}}
 {{/if}}
  * @param {RequestInit} [options] Override http request option.
