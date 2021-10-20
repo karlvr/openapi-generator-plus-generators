@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.33.0
+
+### Minor Changes
+
+- 9056504: Add @deprecated annotation on deprecated schemas
+- 8793a55: Add @deprecated annotation on deprecated parameters
+- 94ff264: Add @deprecated annotation on deprecated API calls
+- 29f4f58: Parameter documentation now supports markdown
+
 ## 0.32.1
 
 ### Patch Changes
