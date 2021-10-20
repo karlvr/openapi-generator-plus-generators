@@ -1,4 +1,4 @@
-{{#or description (isNumeric schema)}}
+{{#or description (isNumeric schema) deprecated}}
 /**
  {{#if description}}
  * {{#indent ' * '}}{{{md description}}}{{/indent}}
@@ -15,5 +15,8 @@
  * maximum: {{schema.maximum}}
  {{/if}}
  {{/if}}
+{{#if deprecated}}
+ * @deprecated
+{{/if}}
  */
 {{/or}}

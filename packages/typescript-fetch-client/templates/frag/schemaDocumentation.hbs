@@ -1,4 +1,4 @@
-{{#or description externalDocs}}
+{{#or description externalDocs deprecated}}
 /**
 {{#if description}}
  * {{#indent ' * '}}{{{md description}}}{{/indent}}
@@ -8,6 +8,9 @@
 {{#if externalDocs.description}}
  * {{#indent ' * '}}{{{md externalDocs.description}}}{{/indent}}
 {{/if}}
+{{/if}}
+{{#if deprecated}}
+ * @deprecated
 {{/if}}
  */
 {{/or}}

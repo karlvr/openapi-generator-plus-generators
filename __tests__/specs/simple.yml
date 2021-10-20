@@ -39,8 +39,10 @@ components:
   schemas:
     Test1:
       type: object
+      deprecated: true
       properties:
         name:
           type: string
+          deprecated: true
         size:
           type: integer
