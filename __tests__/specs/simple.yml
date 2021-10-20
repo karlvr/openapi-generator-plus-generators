@@ -12,6 +12,7 @@ paths:
             type: string
         - name: b
           in: query
+          deprecated: true
           description: |
             A multiple line description.
 
