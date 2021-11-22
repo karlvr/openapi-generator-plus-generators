@@ -85,6 +85,7 @@ public {{{nativeType}}} {{identifier name}}() {
 }
 
 {{/or}}
+{{>frag/propertyDocumentation}}
 {{>frag/propertyAnnotations}}
 {{#if (lookup schema.vendorExtensions 'x-extra-annotation')}}
 {{{schema.vendorExtensions.x-extra-annotation}}}
