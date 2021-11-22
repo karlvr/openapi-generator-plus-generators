@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.37.8
+
+### Patch Changes
+
+- Updated dependencies [f99980e]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.35.0
+
 ## 0.37.7
 
 ### Patch Changes

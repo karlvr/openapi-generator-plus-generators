@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.34.0
+
+### Minor Changes
+
+- 3fc7ccf: Change property documentation style to fix use of HTML markup
+
 ## 0.33.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 0.35.0
+
+### Minor Changes
+
+- f99980e: Add property documentation to getter in addition to fluent getter
+
 ## 0.34.2
 
 ### Patch Changes
