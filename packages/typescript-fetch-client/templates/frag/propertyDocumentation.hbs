@@ -1,7 +1,7 @@
 {{#or description (isNumeric schema) deprecated}}
 /**
  {{#if description}}
- * {{#indent ' * '}}{{{md description}}}{{/indent}}
+ * {{#indent ' *  '}}@description {{{md description}}}{{/indent}}
  {{/if}}
  * @type {{safe '{'}}{{{nativeType.serializedType}}}{{safe '}'}}
 {{#if memberOf}}
