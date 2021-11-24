@@ -1,6 +1,6 @@
 import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
-import { apiBasePath, configString } from '@openapi-generator-plus/generator-common'
+import { apiBasePath, configString, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaServer } from './types'
@@ -17,8 +17,8 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		apiServicePackage,
 		apiServiceImplPackage: configString(config, 'apiServiceImplPackage', `${apiServicePackage}.impl`),
 		apiProviderPackage: configString(config, 'apiProviderPackage', `${packageName}.providers`),
-		invokerPackage: configString(config, 'invokerPackage', `${packageName}.app`),
-		authenticationRequiredAnnotation: configString(config, 'authenticationRequiredAnnotation', configString(config, 'authenticatedOperationAnnotation', null)),
+		invokerPackage: nullableConfigString(config, 'invokerPackage', `${packageName}.app`),
+		authenticationRequiredAnnotation: nullableConfigString(config, 'authenticationRequiredAnnotation', nullableConfigString(config, 'authenticatedOperationAnnotation', null)),
 	}
 	
 	return result

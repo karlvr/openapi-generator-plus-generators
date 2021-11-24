@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, configBoolean, configObject, configString, configStringArray, debugStringify } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, configBoolean, configObject, configString, configStringArray, debugStringify, nullableConfigBoolean, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import pluralize, { isPlural } from 'pluralize'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions, DateApproach } from './types'
@@ -126,8 +126,8 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	const npmConfig: NpmOptions | undefined = npm ? {
 		name: configString(npm, 'name', defaultNpmOptions.name, 'npm.'),
 		version: configString(npm, 'version', defaultNpmOptions.version, 'npm.'),
-		repository: configString(npm, 'repository', defaultNpmOptions.repository, 'npm.'),
-		private: configBoolean(npm, 'private', defaultNpmOptions.private, 'npm.'),
+		repository: nullableConfigString(npm, 'repository', defaultNpmOptions.repository, 'npm.'),
+		private: nullableConfigBoolean(npm, 'private', defaultNpmOptions.private, 'npm.'),
 	} : undefined
 
 	const defaultDefaultTypeScriptOptions: TypeScriptOptions = typeof config.typescript === 'object' ? {
