@@ -1,3 +1,14 @@
+/**
+ * Extract a config string that may be explicitly set to null, but has a non-null default value.
+ */
+export function nullableConfigString<T extends string | null | undefined>(config: { [name: string]: unknown }, key: string, defaultValue: T, path = ''): string | null | T {
+	const value = config[key]
+	if (value === null) {
+		return null
+	}
+	return configString(config, key, defaultValue, path)
+}
+
 export function configString<T extends string | null | undefined>(config: { [name: string]: unknown }, key: string, defaultValue: T, path = ''): string | T {
 	const value = config[key]
 	if (value === null || value === undefined) {
@@ -23,6 +34,14 @@ export function configStringArray<T extends string[] | null | undefined>(config:
 		}
 	}
 	return value
+}
+
+export function nullableConfigBoolean<T extends boolean | null | undefined>(config: { [name: string]: unknown }, key: string, defaultValue: T, path = ''): boolean | null | T {
+	const value = config[key]
+	if (value === null) {
+		return null
+	}
+	return configBoolean(config, key, defaultValue, path)
 }
 
 export function configBoolean<T extends boolean | null | undefined>(config: { [name: string]: unknown }, key: string, defaultValue: T, path = ''): boolean | T {
