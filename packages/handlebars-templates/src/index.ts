@@ -6,7 +6,7 @@ import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenReq
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import { idx } from '@openapi-generator-plus/core'
-import marked from 'marked'
+import { marked } from 'marked'
 import { EOL } from 'os'
 
 type UnknownObject = Record<string, unknown>
