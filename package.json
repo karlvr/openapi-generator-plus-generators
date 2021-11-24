@@ -2,7 +2,9 @@
   "name": "openapi-generator-plus-generators",
   "private": true,
   "scripts": {
+    "apply-updates": "pnpx -y npm-check-updates -u && pnpm --recursive exec pnpx -y npm-check-updates -u",
     "build": "pnpm build --recursive",
+    "check-updates": "pnpx -y npm-check-updates && pnpm --recursive exec pnpx -y npm-check-updates",
     "clean": "pnpm clean --recursive",
     "clean:node": "pnpm --recursive exec rm -rf node_modules",
     "link": "pnpm link --global @openapi-generator-plus/core @openapi-generator-plus/types @openapi-generator-plus/indexed-type @openapi-generator-plus/testing && pnpm --recursive --workspace-concurrency=1 exec pnpm link --global",
