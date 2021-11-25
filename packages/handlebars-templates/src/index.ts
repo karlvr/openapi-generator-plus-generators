@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
-import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, debugStringify } from '@openapi-generator-plus/generator-common'
+import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, debugStringify, uniquePropertiesIncludingInheritedForParents } from '@openapi-generator-plus/generator-common'
 import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
@@ -878,7 +878,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 
 		if (this.parents) {
-			const parentProperties = uniquePropertiesIncludingInherited(this.parents)
+			const parentProperties = idx.allValues(uniquePropertiesIncludingInheritedForParents(this.parents))
 			if (this.properties) {
 				const myProperties = this.properties
 				return parentProperties.filter(p => !idx.get(myProperties, p.name))
@@ -903,7 +903,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`allProperties helper called with undefined schema argument @ ${sourcePosition(options)}`)
 		}
 
-		return uniquePropertiesIncludingInherited([schema])
+		return uniquePropertiesIncludingInherited(schema)
 	})
 
 	hbs.registerHelper('nonDefaultResponses', function(this: CodegenOperation) {
