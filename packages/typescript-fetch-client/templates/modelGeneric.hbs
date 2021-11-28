@@ -3,7 +3,7 @@ export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{n
 --}}{{#if implements}}{{#unless parents}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
 {{>frag/discriminator}}
 {{#if additionalProperties}}
-	[key: string]: {{{additionalProperties.component.nativeType}}};
+	[key: string]: {{{additionalProperties.component.nativeType}}} | undefined;
 
 {{/if}}
 {{#if component}}
