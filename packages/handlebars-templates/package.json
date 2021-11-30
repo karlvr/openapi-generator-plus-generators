@@ -23,7 +23,7 @@
     "@openapi-generator-plus/generator-common": "^0.25.1",
     "change-case": "^4.1.2",
     "handlebars": "^4.7.7",
-    "marked": "^4.0.4",
+    "marked": "^4.0.5",
     "pluralize": "^8.0.0"
   },
   "peerDependencies": {
