@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/plain-documentation-generator",
-  "version": "0.20.6",
+  "version": "0.20.7",
   "description": "An OpenAPI Generator Plus template for generating plain documentation",
   "keywords": [
     "openapi-generator-plus",
@@ -27,9 +27,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/plain-documentation#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "^0.25.1",
-    "@openapi-generator-plus/handlebars-templates": "^0.27.0",
-    "@openapi-generator-plus/java-like-generator-helper": "^0.16.3",
+    "@openapi-generator-plus/generator-common": "^0.26.0",
+    "@openapi-generator-plus/handlebars-templates": "^0.27.1",
+    "@openapi-generator-plus/java-like-generator-helper": "^0.16.4",
     "less": "^4.1.2"
   },
   "publishConfig": {

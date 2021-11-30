@@ -1,5 +1,15 @@
 # @openapi-generator-plus/generator-common
 
+## 0.26.0
+
+### Minor Changes
+
+- a16fa0b: Add config functions that support a config that is explicitly null overriding a default value
+
+### Patch Changes
+
+- 1109255: Use uniquePropertiesIncludingInherited from core
+
 ## 0.25.1
 
 ### Patch Changes

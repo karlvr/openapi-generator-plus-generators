@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 0.37.9
+
+### Patch Changes
+
+- 7c0f5ec: Fix ability to explicitly set some config options to null
+- Updated dependencies [b6297ef]
+- Updated dependencies [a16fa0b]
+- Updated dependencies [efaea2a]
+- Updated dependencies [1109255]
+  - @openapi-generator-plus/java-jaxrs-generator-common@0.36.0
+  - @openapi-generator-plus/generator-common@0.26.0
+  - @openapi-generator-plus/handlebars-templates@0.27.1
+  - @openapi-generator-plus/java-like-generator-helper@0.16.4
+
 ## 0.37.8
 
 ### Patch Changes

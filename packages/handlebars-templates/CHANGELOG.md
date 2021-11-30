@@ -1,5 +1,14 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.27.1
+
+### Patch Changes
+
+- 1109255: Use uniquePropertiesIncludingInherited from core
+- Updated dependencies [a16fa0b]
+- Updated dependencies [1109255]
+  - @openapi-generator-plus/generator-common@0.26.0
+
 ## 0.27.0
 
 ### Minor Changes

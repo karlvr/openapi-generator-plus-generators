@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-cxf-cdi-server-generator",
-  "version": "0.32.8",
+  "version": "0.32.9",
   "description": "An OpenAPI Generator Plus template for a Java API server using CXF and CDI",
   "keywords": [
     "openapi-generator-plus",
@@ -30,12 +30,12 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-cxf-cdi-server#readme",
   "dependencies": {
-    "@openapi-generator-plus/handlebars-templates": "^0.27.0",
-    "@openapi-generator-plus/java-jaxrs-generator-common": "^0.35.0",
-    "@openapi-generator-plus/java-jaxrs-server-generator": "^0.37.8"
+    "@openapi-generator-plus/handlebars-templates": "^0.27.1",
+    "@openapi-generator-plus/java-jaxrs-generator-common": "^0.36.0",
+    "@openapi-generator-plus/java-jaxrs-server-generator": "^0.37.9"
   },
   "devDependencies": {
-    "@openapi-generator-plus/generator-common": "^0.25.1"
+    "@openapi-generator-plus/generator-common": "^0.26.0"
   },
   "publishConfig": {
     "access": "public"

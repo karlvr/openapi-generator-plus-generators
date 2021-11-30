@@ -1,5 +1,20 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 0.35.0
+
+### Minor Changes
+
+- b5f3bf9: The value type for additionalProperties should include undefined so they don't conflict with real properties that may be undefined
+
+### Patch Changes
+
+- Updated dependencies [7c0f5ec]
+- Updated dependencies [a16fa0b]
+- Updated dependencies [1109255]
+  - @openapi-generator-plus/typescript-generator-common@0.25.7
+  - @openapi-generator-plus/generator-common@0.26.0
+  - @openapi-generator-plus/handlebars-templates@0.27.1
+
 ## 0.34.0
 
 ### Minor Changes
