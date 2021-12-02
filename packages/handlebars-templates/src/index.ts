@@ -528,7 +528,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`ifeg helper called with an object that doesn't support examples @ ${sourcePosition(options)}: ${debugStringify(this)}`)
 		}
 
-		if (examples && examples[exampleName]) {
+		if (examples && examples[exampleName] !== undefined) {
 			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
 			return typeof options.inverse === 'function' ? options.inverse(this) : false
