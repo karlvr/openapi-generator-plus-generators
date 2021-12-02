@@ -504,12 +504,12 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			source = this
 		}
 
-		const vendorExtensions: CodegenVendorExtensions = source.vendorExtensions as CodegenVendorExtensions
+		const vendorExtensions: CodegenVendorExtensions | null = source.vendorExtensions as CodegenVendorExtensions | null
 		if (vendorExtensions === undefined) {
 			throw new Error(`ifvex helper called with an object that doesn't support vendor extensions @ ${sourcePosition(options)}: ${debugStringify(this)}`)
 		}
 
-		if (vendorExtensions && vendorExtensions[extensionName]) {
+		if (vendorExtensions && vendorExtensions[extensionName] !== undefined) {
 			return typeof options.fn === 'function' ? options.fn(this) : true
 		} else {
 			return typeof options.inverse === 'function' ? options.inverse(this) : false
