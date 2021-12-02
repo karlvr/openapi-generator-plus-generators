@@ -1,5 +1,12 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 0.27.2
+
+### Patch Changes
+
+- 81f05fa: Fix ifeg helper to correctly detect the presence of examples with a falsy value
+- fabe1ac: Fix ifvex helper to correctly detect the presence of vendor extensions with a falsy value
+
 ## 0.27.1
 
 ### Patch Changes
