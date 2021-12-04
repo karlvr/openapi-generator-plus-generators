@@ -13,10 +13,10 @@ true
 {{/and}}
 {{/set}}
 {{{bodyPartsVar}}}.add(new org.apache.cxf.jaxrs.ext.multipart.AttachmentBuilder()
-	.object({{{propertyVar}}}{{#if _nullable}}.isEmpty() ? null : {{{propertyVar}}}.get(){{/if}}{{#if valueProperty}}.{{getter valueProperty}}(){{#if valueProperty.nullable}}.orElse(null){{/if}}{{/if}})
+	.object({{#if _nullable}}!{{{propertyVar}}}.isPresent() ? null : {{{propertyVar}}}.get(){{else}}{{{propertyVar}}}{{/if}}{{#if valueProperty}}.{{getter valueProperty}}(){{#if valueProperty.nullable}}.orElse(null){{/if}}{{/if}})
 	.mediaType({{{stringLiteral contentType}}})
 	{{#ifeq content.mediaType.mimeType 'multipart/form-data'}}
-	.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"{{{escapeString property.serializedName}}}\"{{#if filenameProperty}}; filename=\"" + ({{{propertyVar}}}{{#if _nullable}}.isEmpty() ? null : {{{propertyVar}}}.get(){{/if}}.{{getter filenameProperty}}(){{#if filenameProperty.nullable}}.orElse(null){{/if}} != null ? {{{propertyVar}}}{{#if _nullable}}.get(){{/if}}.{{getter filenameProperty}}(){{#if filenameProperty.nullable}}.get(){{/if}} : "") + "\"{{/if}}"))
+	.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\"{{{escapeString property.serializedName}}}\"{{#if filenameProperty}}; filename=\"" + ({{#if _nullable}}!{{{propertyVar}}}.isPresent() ? null : {{{propertyVar}}}.get(){{else}}{{{propertyVar}}}{{/if}}.{{getter filenameProperty}}(){{#if filenameProperty.nullable}}.orElse(null){{/if}} != null ? {{{propertyVar}}}{{#if _nullable}}.get(){{/if}}.{{getter filenameProperty}}(){{#if filenameProperty.nullable}}.get(){{/if}} : "") + "\"{{/if}}"))
 	{{else}}
 	.id({{{stringLiteral property.serializedName}}})
 	{{/ifeq}}
