@@ -1,5 +1,21 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 1.0.0
+
+### Major Changes
+
+- 8717cfb: First major release
+
+### Patch Changes
+
+- 5f3d600: Fix use of java.util.Optional.isEmpty() for Java < 11
+- Updated dependencies [63e4795]
+- Updated dependencies [8717cfb]
+  - @openapi-generator-plus/generator-common@1.0.0
+  - @openapi-generator-plus/handlebars-templates@1.0.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@1.0.0
+  - @openapi-generator-plus/java-like-generator-helper@1.0.0
+
 ## 0.39.9
 
 ### Patch Changes

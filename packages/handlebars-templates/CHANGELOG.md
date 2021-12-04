@@ -1,5 +1,18 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.0.0
+
+### Major Changes
+
+- 63e4795: Upgrade core to 1.0.0
+- 8717cfb: First major release
+
+### Patch Changes
+
+- Updated dependencies [63e4795]
+- Updated dependencies [8717cfb]
+  - @openapi-generator-plus/generator-common@1.0.0
+
 ## 0.27.2
 
 ### Patch Changes

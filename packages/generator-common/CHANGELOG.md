@@ -1,5 +1,12 @@
 # @openapi-generator-plus/generator-common
 
+## 1.0.0
+
+### Major Changes
+
+- 63e4795: Upgrade core to 1.0.0
+- 8717cfb: First major release
+
 ## 0.26.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.0.0
+
+### Major Changes
+
+- 8717cfb: First major release
+
+### Patch Changes
+
+- Updated dependencies [63e4795]
+- Updated dependencies [8717cfb]
+  - @openapi-generator-plus/handlebars-templates@1.0.0
+  - @openapi-generator-plus/typescript-generator-common@1.0.0
+  - @openapi-generator-plus/typescript-fetch-client-generator@3.0.0
+
 ## 0.4.15
 
 ### Patch Changes

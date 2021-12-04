@@ -1,5 +1,20 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 1.0.0
+
+### Major Changes
+
+- 8717cfb: First major release
+
+### Patch Changes
+
+- Updated dependencies [63e4795]
+- Updated dependencies [8717cfb]
+- Updated dependencies [5f3d600]
+  - @openapi-generator-plus/handlebars-templates@1.0.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@1.0.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@1.0.0
+
 ## 0.31.9
 
 ### Patch Changes

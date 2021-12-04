@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.0.0
+
+### Major Changes
+
+- 8717cfb: First major release
+
+### Patch Changes
+
+- Updated dependencies [63e4795]
+- Updated dependencies [8717cfb]
+  - @openapi-generator-plus/generator-common@1.0.0
+  - @openapi-generator-plus/handlebars-templates@1.0.0
+  - @openapi-generator-plus/java-like-generator-helper@1.0.0
+
 ## 0.25.7
 
 ### Patch Changes
