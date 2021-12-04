@@ -37,9 +37,9 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@openapi-generator-plus/core": "^0.42.0",
-    "@openapi-generator-plus/indexed-type": "^0.1.6",
-    "@openapi-generator-plus/testing": "^0.42.0",
-    "@openapi-generator-plus/types": "^0.42.0"
+    "@openapi-generator-plus/core": "^1.0.0",
+    "@openapi-generator-plus/indexed-type": "^1.0.0",
+    "@openapi-generator-plus/testing": "^1.0.0",
+    "@openapi-generator-plus/types": "^1.0.0"
   }
 }
