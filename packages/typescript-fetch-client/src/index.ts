@@ -69,7 +69,32 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 				return base.toNativeType(options)
 			}
 		},
+		postProcessDocument: (doc) => {
+			for (const group of doc.groups) {
+				for (const op of group.operations) {
+					if (op.parameters) {
+						op.parameters = idx.filter(op.parameters, param => param.in !== 'header' || !isForbiddenHeaderName(param.name))
+					}
+					if (op.headerParams) {
+						op.headerParams = idx.filter(op.headerParams, param => !isForbiddenHeaderName(param.name))
+					}
+				}
+			}
+		},
 	}
+}
+
+/** See https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
+function isForbiddenHeaderName(name: string): boolean {
+	console.log('checking forbidden', name)
+	if (name.toLowerCase().startsWith('proxy-') || name.toLowerCase().startsWith('sec-')) {
+		return true
+	}
+	return [
+		'Accept-Charset', 'Accept-Encoding', 'Access-Control-Request-Headers', 'Access-Control-Request-Method',
+		'Connection', 'Content-Length', 'Cookie', 'Cookie2', 'Date', 'DNT', 'Expect', 'Feature-Policy', 'Host',
+		'Keep-Alive', 'Origin', 'Referer', 'TE', 'Trailer', 'Transfer-Encoding', 'Upgrade', 'Via',
+	].map(h => h.toLowerCase()).includes(name.toLowerCase())
 }
 
 export default createGenerator
