@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.0.0
+
+### Major Changes
+
+- 8717cfb: First major release
+
 ## 0.35.0
 
 ### Minor Changes
