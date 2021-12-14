@@ -86,7 +86,6 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 
 /** See https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
 function isForbiddenHeaderName(name: string): boolean {
-	console.log('checking forbidden', name)
 	if (name.toLowerCase().startsWith('proxy-') || name.toLowerCase().startsWith('sec-')) {
 		return true
 	}
