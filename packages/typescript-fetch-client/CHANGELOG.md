@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.1.0
+
+### Minor Changes
+
+- 555ee39: Don't include forbidden headers in the client API
+
+### Patch Changes
+
+- b46fa0c: Use pnpm to install for speed-up, and to build to avoid using TypeScript API
+
 ## 1.0.0
 
 ### Major Changes

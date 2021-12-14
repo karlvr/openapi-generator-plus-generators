@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.0.1
+
+### Patch Changes
+
+- b46fa0c: Use pnpm to install for speed-up, and to build to avoid using TypeScript API
+
 ## 1.0.0
 
 ### Major Changes

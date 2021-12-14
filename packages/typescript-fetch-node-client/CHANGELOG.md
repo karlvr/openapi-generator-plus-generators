@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.0.1
+
+### Patch Changes
+
+- b46fa0c: Use pnpm to install for speed-up, and to build to avoid using TypeScript API
+- Updated dependencies [555ee39]
+- Updated dependencies [b46fa0c]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.1.0
+
 ## 1.0.0
 
 ### Major Changes
