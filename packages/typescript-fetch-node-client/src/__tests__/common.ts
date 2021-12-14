@@ -15,7 +15,7 @@ export async function prepare(spec: string, config?: CodegenConfig): Promise<Cod
 export async function compile(basePath: string): Promise<void> {
 	return new Promise(function(resolve, reject) {
 		exec(
-			'npm install', 
+			'pnpm install', 
 			{
 				cwd: basePath,
 			},
