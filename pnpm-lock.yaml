@@ -221,6 +221,18 @@ importers:
       '@openapi-generator-plus/typescript-generator-common': link:../typescript-common
       change-case: 4.1.2
 
+  packages/typescript-fetch-client2:
+    specifiers:
+      '@openapi-generator-plus/generator-common': ^1.0.0
+      '@openapi-generator-plus/handlebars-templates': ^1.0.0
+      '@openapi-generator-plus/typescript-generator-common': ^1.0.0
+      change-case: ^4.1.2
+    dependencies:
+      '@openapi-generator-plus/generator-common': link:../generator-common
+      '@openapi-generator-plus/handlebars-templates': link:../handlebars-templates
+      '@openapi-generator-plus/typescript-generator-common': link:../typescript-common
+      change-case: 4.1.2
+
   packages/typescript-fetch-node-client:
     specifiers:
       '@openapi-generator-plus/generator-common': ^1.0.0

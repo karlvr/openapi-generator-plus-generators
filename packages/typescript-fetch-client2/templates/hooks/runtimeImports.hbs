@@ -1,0 +1,4 @@
+{{#if @root.includePolyfills}}
+import "whatwg-fetch";
+{{/if}}
+export const defaultFetch = window.fetch;

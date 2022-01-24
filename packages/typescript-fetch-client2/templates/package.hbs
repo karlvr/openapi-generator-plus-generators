@@ -1,0 +1,42 @@
+{
+	"name": "{{name}}",
+	{{#if private}}
+	"private": true,
+	{{/if}}
+	"version": "{{version}}",
+	"description": "API client for {{name}}",
+	"author": "{{{generatorClass}}}",
+	"keywords": [
+		"fetch",
+		"typescript",
+		"swagger",
+		"openapi",
+		"{{name}}"
+	],
+	"license": "UNLICENSED",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"prepare": "npm run build"
+	},
+	"dependencies": {
+{{#join '__dependencies' ',
+		'}}
+{{>hooks/packageDependencies}}
+{{#ifeq dateApproach 'blind-date'}}
+"blind-date": "^3.2.0"
+{{/ifeq}}
+{{/join}}
+		{{{__dependencies}}}
+	},
+	"devDependencies": {
+		"@types/node": "^8.0.9",
+		"typescript": "^3.0"
+	{{#if repository}}
+	},
+	"publishConfig": {
+		"registry": "{{{repository}}}"
+	{{/if}}
+	}
+}

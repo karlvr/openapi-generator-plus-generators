@@ -1,0 +1,42 @@
+{
+  "name": "@openapi-generator-plus/typescript-fetch-client-generator2",
+  "version": "0.0.1",
+  "description": "An OpenAPI Generator Plus template for a TypeScript API client using Fetch",
+  "keywords": [
+    "openapi-generator-plus",
+    "openapi-generator-plus-generator",
+    "openapi",
+    "openapi-generator",
+    "typescript",
+    "fetch",
+    "client"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "clean": "../../node_modules/.bin/rimraf dist",
+    "test": "../../node_modules/.bin/jest",
+    "watch": "../../node_modules/.bin/tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
+  "author": "Karl von Randow",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-client#readme",
+  "dependencies": {
+    "@openapi-generator-plus/generator-common": "^1.0.0",
+    "@openapi-generator-plus/handlebars-templates": "^1.0.0",
+    "@openapi-generator-plus/typescript-generator-common": "^1.0.0",
+    "change-case": "^4.1.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "4d7336969427733ca316dfb48219f166adb9182a"
+}

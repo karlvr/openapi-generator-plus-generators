@@ -1,0 +1,13 @@
+{{!--
+Add a multipart property to the body
+@param this CodegenContentPropertyEncoding
+@param propertyVar the variable name (or expression) containing the property
+@param bodyPartsVar the variable name containing the list of body parts
+--}}
+{{#ifeq contentType 'application/json'}}
+{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, JSON.stringify({{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}));
+{{else ifeq contentType 'application/octet-stream'}}
+{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, {{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}{{#if filenameProperty}}, {{{propertyVar}}}.{{identifier filenameProperty.name}}{{/if}});
+{{else}}
+{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, String({{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}} || ''));
+{{/ifeq}}

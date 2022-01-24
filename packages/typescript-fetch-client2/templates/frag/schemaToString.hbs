@@ -1,0 +1,21 @@
+{{!--  
+@param value the expression containing the value
+@param indent a string to indent multiline results
+@param parameter the CodegenParameter
+--}}
+{{#indent indent}}
+{{#if (isDateTime)}}
+{{#ifeq @root.dateApproach 'native'}}
+dateToString({{{value}}})
+{{~else}}
+String({{{value}}})
+{{~/ifeq}}
+{{~else or (isDate) (isTime)}}
+String({{{value}}})
+{{~else or (isObject) (isArray)}}
+{{!-- The behaviour for nested objects and arrays is undefined, but editor.swagger.io transforms these into JSON --}}
+JSON.stringify({{{value}}})
+{{~else}}
+String({{{value}}})
+{{~/if~}}
+{{/indent}}

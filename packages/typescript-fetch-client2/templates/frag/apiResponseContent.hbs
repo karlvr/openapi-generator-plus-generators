@@ -1,0 +1,37 @@
+{{!--
+Return the content of the response.
+
+@param this CodegenContent
+@param response CodegenResponse
+@param operation CodegenOperation
+@param group CodegenOperationGroup
+
+NOTE: see apiResponseTypes.hbs for reproduced logic around what's parseable and what's not
+--}}
+return {
+	status: {{response.code}},
+{{#ifdef mediaType}}
+	contentType: {{{stringLiteral mediaType.mimeType}}},
+{{#unless schema}}
+	/* No schema */
+{{else ifmatch mediaType.mimeType '/json'}}
+	body: await response.json() as {{{nativeType}}},
+{{else if (isBinary schema)}}
+	body: await response.blob(),
+{{else if (isString schema)}}
+	body: await response.text(),
+{{else}}
+	/* Unsupported mimeType for parsing */
+	response,
+{{/unless}}
+{{else}}
+	/* No content */
+{{/ifdef}}
+{{#if response.headers}}
+	headers: {
+{{#each response.headers}}
+		{{identifier name}}: response.headers.get({{{stringLiteral serializedName}}}),
+{{/each}}
+	},
+{{/if}}
+}

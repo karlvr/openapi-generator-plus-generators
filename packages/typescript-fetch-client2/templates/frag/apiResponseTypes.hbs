@@ -1,0 +1,64 @@
+export type {{className name}}Response =
+{{#each responses}}
+{{#if contents}}
+{{#each contents}}
+	| {{className ../../name}}{{../code}}{{#if (gt (count ../contents) 1)}}{{className mediaType.mimeType}}{{/if}}Response
+{{/each}}
+{{else}}
+	| {{className ../name}}{{code}}Response
+{{/if}}
+{{/each}}
+
+{{#each responses}}
+{{#if contents}}
+{{#each contents}}
+export interface {{className ../../name}}{{../code}}{{#if (gt (count ../contents) 1)}}{{className mediaType.mimeType}}{{/if}}Response {
+	status: {{../code}}
+	contentType: {{{stringLiteral mediaType.mimeType}}}
+{{#if nativeType}}
+{{!-- NOTE: see apiResponseContent.hbs for reproduced logic around what's parseable and what's not --}}
+{{#unless schema}}
+	/* No schema */
+	body?: undefined
+{{else ifmatch mediaType.mimeType '/json'}}
+	body: {{{nativeType}}}
+{{else if (isBinary schema)}}
+	body: {{{nativeType}}}
+{{else if (isString schema)}}
+	body: {{{nativeType}}}
+{{else}}
+	/* Unsupported mimeType for parsing */
+	response: Response
+{{/unless}}
+{{else}}
+	body?: undefined
+{{/if}}
+{{#if ../headers}}
+	headers: {
+		{{#each ../headers}}
+		{{{stringLiteral name}}}: {{{nativeType}}}
+		{{/each}}
+	}
+{{else}}
+	headers?: undefined
+{{/if}}
+}
+
+{{/each}}
+{{else}}
+export interface {{className ../name}}{{code}}Response {
+	status: {{code}}
+	body?: undefined
+	{{#if headers}}
+	headers: {
+		{{#each headers}}
+		{{{stringLiteral name}}}: {{{nativeType}}}
+		{{/each}}
+	}
+	{{else}}
+	headers?: undefined
+	{{/if}}
+}
+
+{{/if}}
+{{/each}}

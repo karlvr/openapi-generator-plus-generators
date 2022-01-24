@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"target": "{{{target}}}",
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"outDir": "dist",
+		"lib": [
+			{{#each libs}}
+			"{{{.}}}"{{#hasMore}},{{/hasMore}}
+			{{/each}}
+		]
+	},
+	"include": [
+		"./{{{relativeSourceOutputPath}}}"
+	]
+}

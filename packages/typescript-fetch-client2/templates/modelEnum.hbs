@@ -1,0 +1,6 @@
+{{>frag/schemaDocumentation}}
+export enum {{className name}} {
+{{#each enumValues}}
+	{{{name}}} = {{{literalValue}}}{{#hasMore}},{{/hasMore}}
+{{/each}}
+}

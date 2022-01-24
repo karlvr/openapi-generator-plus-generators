@@ -1,0 +1,16 @@
+{{#if discriminator}}
+{{#with discriminator}}
+	/**
+	 * Discriminator property
+	 */
+	{{serializedName}}: {{{nativeType.serializedType}}};
+	
+{{/with}}
+{{/if}}
+{{#each discriminatorValues}}
+	/**
+	 * Value for discriminator in {{schema.nativeType.parentType}}
+	 */
+	{{schema.discriminator.serializedName}}: {{{literalValue}}};
+
+{{/each}}

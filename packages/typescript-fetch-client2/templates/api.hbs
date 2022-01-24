@@ -1,0 +1,252 @@
+{{>header}}
+
+import { Configuration } from "./configuration";
+import { BASE_PATH, COLLECTION_FORMATS, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch } from "./runtime";
+import { Api } from "./models";
+{{#ifeq dateApproach 'blind-date'}}
+import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
+{{/ifeq}}
+{{>hooks/apiImports}}
+
+export type FactoryFunction<T> = (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) => T;
+
+{{#each groups}}
+export namespace {{className name}}Api {
+{{#each operations}}
+{{#if (gt (count parameters) 1)}}
+	{{>frag/apiParametersInterface}}
+{{/if}}
+	{{>frag/apiResponseTypes}}
+{{/each}}
+}
+
+/**
+ * {{className name}}Api - fetch parameter creator
+ * @export
+ */
+export const {{className name}}ApiFetchParamCreator = function (configuration?: Configuration) {
+	return {
+	{{#each operations}}
+		{{>frag/operationDocumentation}}
+		{{#if (gt (count parameters) 1)}}
+		{{#set '_parameterPrefix'}}__params.{{/set}}
+		{{identifier name}}(__params: {{className ../name}}Api.{{className name}}Request, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}): FetchArgs {
+		{{else}}
+		{{#set '_parameterPrefix'}}{{/set}}
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}): FetchArgs {
+		{{/if}}
+			{{#each parameters}}
+			{{>frag/validateParameter operation=.. parameterPrefix=../_parameterPrefix}}
+			{{/each}}
+			{{#with requestBody}}
+			{{>frag/validateParameter operation=.. parameterPrefix=''}}
+			{{/with}}
+
+			let localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
+				.replace('{{safe '{'}}{{{serializedName}}}{{safe '}'}}', encodeURIComponent(String({{../_parameterPrefix}}{{identifier name}}))){{/each}};
+			const localVarPathQueryStart = localVarPath.indexOf("?");
+			const localVarRequestOptions: RequestInit = Object.assign({ method: '{{httpMethod}}' }, options);
+			const localVarHeaderParameter: Headers = options.headers ? new Headers(options.headers) : new Headers();
+			const localVarQueryParameter = new URLSearchParams(localVarPathQueryStart !== -1 ? localVarPath.substring(localVarPathQueryStart + 1) : "");
+			if (localVarPathQueryStart !== -1) {
+				localVarPath = localVarPath.substring(0, localVarPathQueryStart);
+			}
+	{{#if formParams}}
+			const localVarFormParams = new URLSearchParams();
+	{{/if}}
+	{{#if cookieParams}}
+			const localVarCookieParams = new URLSearchParams();
+	{{/if}}
+
+			{{>frag/apiSecurityRequirements}}
+	{{#each queryParams}}
+			{{>frag/requestParameter dest='localVarQueryParameter' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+	{{/each}}
+	{{#each headerParams}}
+			{{>frag/requestParameter dest='localVarHeaderParameter' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+	{{/each}}
+	{{#if formParams}}
+	{{#each formParams}}
+			{{>frag/requestParameter dest='localVarFormParams' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+	{{/each}}
+			localVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');
+
+	{{/if}}
+	{{#if cookieParams}}
+	{{#each cookieParams}}
+			{{>frag/requestParameter dest='localVarCookieParams' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+	{{/each}}
+			/* NB: setting Cookies does not work in a browser, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
+			localVarHeaderParameter.set("Cookie", localVarCookieParams.toString().replace(/&/g, "; "));
+
+	{{/if}}
+	{{#with requestBody}}
+			{{#unless consumes}}
+			localVarHeaderParameter.set('Content-Type', 'application/json');
+			{{/unless}}
+			{{#each consumes}}
+			{{#if @first}}
+			localVarHeaderParameter.set('Content-Type', '{{{mediaType}}}');
+			{{/if}}
+			{{/each}}
+
+	{{/with}}
+			localVarRequestOptions.headers = localVarHeaderParameter;
+	{{#if formParams}}
+			localVarRequestOptions.body = localVarFormParams.toString();
+	{{/if}}
+	{{#if requestBody.nativeType}}
+	{{#with requestBody}}
+	
+			if ({{identifier name}} !== undefined) {
+		{{#with defaultContent}}
+			{{#ifeq mediaType.mimeType 'application/x-www-form-urlencoded'}}
+				const localVarFormParams = new URLSearchParams();
+				{{#each (allProperties schema)}}
+				{{>frag/requestParameter dest='localVarFormParams' var=(concat (identifier ../../name) '["' serializedName '"]') encoding=(lookup ../encoding.properties name)}}
+				{{/each}}
+				localVarRequestOptions.body = localVarFormParams;
+			{{else ifeq mediaType.mimeType 'application/json'}}
+				localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
+			{{else ifeq mediaType.mimeType 'text/json'}}
+				localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
+			{{else ifmatch mediaType.mimeType 'multipart/.*'}}
+				const localVarFormData = new FormData();
+			{{#each encoding.properties}}
+				if ({{identifier ../../name}}.{{identifier property.name}} !== undefined) {
+{{#if (isArray property)}}
+					for (const __anObject of {{identifier ../../name}}.{{identifier property.name}}{{#if property.nullable}} || []{{/if}}) {
+						{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='localVarFormData'}}
+					}
+{{else}}
+					{{>frag/multipartProperty . propertyVar=(concat (identifier ../../name) '.' (identifier property.name)) bodyPartsVar='localVarFormData'}}
+{{/if}}
+				}
+			{{/each}}
+				localVarRequestOptions.body = localVarFormData;
+			{{else}}
+				localVarRequestOptions.body = {{identifier ../name}};
+{{/ifeq}}
+			}
+		{{/with}}
+	{{/with}}
+	{{/if}}
+
+			const localVarQueryParameterString = localVarQueryParameter.toString();
+			if (localVarQueryParameterString) {
+				localVarPath += "?" + localVarQueryParameterString;
+			}
+			return {
+				url: localVarPath,
+				options: localVarRequestOptions,
+			};
+		},
+	{{/each}}
+	}
+};
+
+/**
+ * {{className name}}Api - functional programming interface
+ * @export
+ */
+export const {{className name}}ApiFp = function(configuration?: Configuration) {
+	return {
+	{{#each operations}}
+		{{>frag/operationDocumentation}}
+		{{#if (gt (count parameters) 1)}}
+		{{identifier name}}(__params: {{className ../name}}Api.{{className name}}Request, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
+			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+		{{else}}
+		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
+			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+		{{/if}}
+			return async (fetch: FetchAPI = defaultFetch, basePath: string = BASE_PATH) => {
+				const response = await fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
+				const contentType = response.headers.get('Content-Type');
+				const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
+				
+				{{#each responses}}
+				if (response.status === {{code}}) {
+					{{#if contents}}
+					{{#each contents}} 
+					if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+						{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
+					}
+					{{/each}}
+					throw response;
+					{{else}}
+					{{>frag/apiResponseContent group=../.. operation=.. response=.}}
+					{{/if}}
+				}
+				{{/each}}
+				throw response;
+			};
+		},
+	{{/each}}
+	}
+};
+
+/**
+ * {{className name}}Api - factory interface
+ * @export
+ */
+export const {{className name}}ApiFactory: FactoryFunction<{{className name}}ApiInterface> = function (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) {
+	return new {{className name}}Api(configuration, basePath, fetch);
+};
+
+/**
+ * {{className name}}Api - interface
+ * @export
+ * @interface {{className name}}Api
+ */
+export interface {{className name}}ApiInterface {
+{{#each operations}}
+	{{>frag/operationDocumentation}}
+	{{#if (gt (count parameters) 1)}}
+	{{identifier name}}(__params: {{className ../name}}Api.{{className name}}Request, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): Promise<{{className ../name}}Api.{{className name}}Response>
+	{{else}}
+	{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): Promise<{{{className ../name}}}Api.{{{className name}}}Response>
+	{{/if}}
+
+{{/each}}
+}
+
+/**
+ * {{className name}}Api - object-oriented interface
+ * @export
+ * @class {{className name}}Api
+ * @extends {BaseAPI}
+ */
+export class {{className name}}Api extends BaseAPI implements {{className name}}ApiInterface {
+	{{#each operations}}
+	{{>frag/operationDocumentation}}
+	{{#if (gt (count parameters) 1)}}
+	public {{identifier name}}(__params: {{className ../name}}Api.{{className name}}Request, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit) {
+		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
+	{{else}}
+	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit) {
+		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
+	{{/if}}
+	}
+
+	{{/each}}
+}
+{{/each}}
+
+/**
+ * We sometimes represent dates as strings (in models) and as Dates (in parameters) so this
+ * function converts them both to a string.
+ */
+function dateToString(value: Date | string | undefined): string | undefined {
+	if (value instanceof Date) {
+		return value.toISOString();
+	} else if (typeof value === 'string') {
+		return value;
+	} else {
+		return undefined;
+	}
+}

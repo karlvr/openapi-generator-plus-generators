@@ -1,0 +1,27 @@
+/**
+{{#if description}}
+ * {{#indent ' * '}}{{{md description}}}{{/indent}}
+{{/if}}
+{{#if externalDocs}}
+ * <p>External documentation: {{{externalDocs.url}}}</p>
+{{#if externalDocs.description}}
+ * {{#indent ' * '}}{{{md externalDocs.description}}}{{/indent}}
+{{/if}}
+{{/if}}
+{{#if summary}}
+ * @summary {{{summary}}}
+{{/if}}
+{{#each parameters}}
+ * {{#indent ' *   '}}{{>frag/parameterDocumentation}}{{/indent}}
+{{/each}}
+{{#if requestBody.nativeType}}
+{{#with requestBody}}
+ * {{#indent ' *   '}}{{>frag/parameterDocumentation}}{{/indent}}
+{{/with}}
+{{/if}}
+ * @param {RequestInit} [options] Override http request option.
+ * @throws {RequiredError}
+{{#if deprecated}}
+ * @deprecated
+{{/if}}
+ */

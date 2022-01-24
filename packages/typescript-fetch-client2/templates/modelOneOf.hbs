@@ -1,0 +1,2 @@
+export type {{className name}} = {{#each composes}}{{nativeType.parentType}}{{#hasMore}} | {{/hasMore}}{{/each}};
+{{>modelNestedModels}}

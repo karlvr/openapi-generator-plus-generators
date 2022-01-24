@@ -1,0 +1,18 @@
+{{>frag/schemaDocumentation}}
+export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{nativeType.parentType}}}{{#hasMore}}, {{/hasMore}}{{/each}} {{/if}}{{!--
+--}}{{#if implements}}{{#unless parents}}extends{{else}},{{/unless}} {{#each implements}}{{{nativeType}}}{{#hasMore}},{{/hasMore}} {{/each}}{{/if}}{
+{{>frag/discriminator}}
+{{#if additionalProperties}}
+	[key: string]: {{{additionalProperties.component.nativeType}}} | undefined;
+
+{{/if}}
+{{#if component}}
+	[key: string]: {{{component.nativeType}}};
+
+{{/if}}
+{{#each properties}}
+	{{>frag/propertyDocumentation memberOf=../name}}
+	{{#if readOnly}}readonly {{/if}}{{serializedName}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
+{{/each}}
+}
+{{>modelNestedModels}}

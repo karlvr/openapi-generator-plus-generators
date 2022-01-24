@@ -1,0 +1,57 @@
+{{#if securityRequirements}}
+{{#each securityRequirements.requirements}}
+{{#each schemes}}
+// authentication {{scheme.name}} required
+{{#if scheme.isApiKey}}
+{{#if scheme.isInHeader}}
+if (configuration && configuration.apiKey) {
+	const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+		? configuration.apiKey({{{stringLiteral scheme.name}}})
+		: configuration.apiKey;
+	if (localVarApiKeyValue !== null) {
+		localVarHeaderParameter.set({{{stringLiteral scheme.paramName}}}, localVarApiKeyValue);
+	}
+}
+{{/if}}
+{{#if scheme.isInQuery}}
+if (configuration && configuration.apiKey) {
+	const localVarApiKeyValue = typeof configuration.apiKey === 'function'
+		? configuration.apiKey({{{stringLiteral scheme.name}}})
+		: configuration.apiKey;
+	if (localVarApiKeyValue !== null) {
+		localVarQueryParameter.set({{{stringLiteral scheme.paramName}}}, localVarApiKeyValue);
+	}
+}
+{{/if}}
+{{/if}}
+{{#if scheme.isBasic}}
+// http basic authentication required
+if (configuration && (configuration.username || configuration.password)) {
+	localVarHeaderParameter.set("Authorization", "Basic " + btoa(configuration.username + ":" + configuration.password));
+}
+{{/if}}
+{{#or scheme.isOAuth scheme.isOpenIdConnect}}
+// oauth or openIdConnect required
+if (configuration && configuration.authorization) {
+	const localVarAuthorizationValue = typeof configuration.authorization === 'function'
+		? configuration.authorization({{{stringLiteral scheme.name}}}, [{{#each scopes}}{{{stringLiteral name}}}{{#unless @last}}, {{/unless}}{{/each}}])
+		: configuration.authorization;
+	if (localVarAuthorizationValue !== null) {
+		localVarHeaderParameter.set("Authorization", "Bearer " + localVarAuthorizationValue);
+	}
+}
+{{/or}}
+{{#if scheme.isHttp}}
+// http authorization required
+if (configuration && configuration.authorization) {
+	const localVarAuthorizationValue = typeof configuration.authorization === 'function'
+		? configuration.authorization({{{stringLiteral scheme.name}}})
+		: configuration.authorization;
+	if (localVarAuthorizationValue !== null) {
+		localVarHeaderParameter.set("Authorization", "{{capitalize scheme.scheme}} " + localVarAuthorizationValue);
+	}
+}
+{{/if}}
+{{/each}}
+{{/each}}
+{{/if}}

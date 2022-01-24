@@ -1,0 +1,14 @@
+{{!--  
+@param value the expression containing the value
+@param separator the separator string to use if we need to join multiple values
+@param keyValueSeparator the separator string between keys and values
+@param indent a string to indent multiline results
+@param parameter the CodegenParameter
+--}}
+{{#indent indent}}
+[
+{{#each (allProperties schema)}}
+{{{../value}}}["{{serializedName}}"] !== undefined ? {{{../value}}}["{{serializedName}}"] !== null ? `{{serializedName}}{{{../keyValueSeparator}}}{{safe '${'}}escape({{>frag/schemaToString value=(concat ../value '["' serializedName '"]') parameter=../parameter indent=../indent}}){{safe '}'}}` : '{{serializedName}}{{{../keyValueSeparator}}}' : undefined{{#hasMore}},{{/hasMore}}{{safe ' '}}
+{{/each}}
+].filter(localVarObjectElement => localVarObjectElement !== undefined).join('{{separator}}')
+{{/indent}}
