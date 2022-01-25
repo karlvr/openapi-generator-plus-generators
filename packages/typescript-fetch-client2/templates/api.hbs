@@ -29,10 +29,13 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
 		{{#if (gt (count parameters) 1)}}
-		{{#set '_parameterPrefix'}}__params.{{/set}}
+		{{#set '_parameterPrefix'}}
+		__params.
+		{{/set}}
 		{{identifier name}}(__params: {{className ../name}}Api.{{className name}}Request, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}): FetchArgs {
 		{{else}}
-		{{#set '_parameterPrefix'}}{{/set}}
+		{{#set '_parameterPrefix'}}
+		{{/set}}
 		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}): FetchArgs {
 		{{/if}}
 			{{#each parameters}}
