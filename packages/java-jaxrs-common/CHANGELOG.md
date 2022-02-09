@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 1.0.1
+
+### Patch Changes
+
+- a7f4840: Fix incorrect overriding method signature when superclass has a property using java.util.Optional
+
 ## 1.0.0
 
 ### Major Changes
