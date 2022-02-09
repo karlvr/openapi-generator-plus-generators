@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 1.0.2
+
+### Patch Changes
+
+- d96304c: Fix infinite loop from previous change
+
 ## 1.0.1
 
 ### Patch Changes
