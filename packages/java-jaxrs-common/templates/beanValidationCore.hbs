@@ -3,7 +3,7 @@
 {{#join '_validationAnnotationProperties' ', '}}
 regexp = {{{stringLiteral pattern}}}
 {{#ifvex 'x-pattern-message'}}message = {{{stringLiteral vendorExtensions.x-pattern-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.Pattern({{{_validationAnnotationProperties}}})
 {{/if}}
@@ -12,7 +12,7 @@ regexp = {{{stringLiteral pattern}}}
 {{#if minLength}}min = {{minLength}}{{/if}}
 {{#if maxLength}}max = {{maxLength}}{{/if}}
 {{#ifvex 'x-length-message'}}message = {{{stringLiteral vendorExtensions.x-length-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.Size({{{_validationAnnotationProperties}}})
 {{/or}}
@@ -23,7 +23,7 @@ regexp = {{{stringLiteral pattern}}}
 {{#if minItems}}min = {{minItems}}{{/if}}
 {{#if maxItems}}max = {{maxItems}}{{/if}}
 {{#ifvex 'x-length-message'}}message = {{{stringLiteral vendorExtensions.x-length-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.Size({{{_validationAnnotationProperties}}})
 {{/or}}
@@ -33,7 +33,7 @@ regexp = {{{stringLiteral pattern}}}
 {{#join '_validationAnnotationProperties' ', '}}
 value = {{{minimum}}}
 {{#ifvex 'x-minimum-message'}}message = {{{stringLiteral vendorExtensions.x-minimum-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.Min({{{_validationAnnotationProperties}}})
 {{/if}}
@@ -41,7 +41,7 @@ value = {{{minimum}}}
 {{#join '_validationAnnotationProperties' ', '}}
 value = {{{maximum}}}
 {{#ifvex 'x-maximum-message'}}message = {{{stringLiteral vendorExtensions.x-maximum-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.Max({{{_validationAnnotationProperties}}})
 {{/if}}
@@ -51,7 +51,7 @@ value = {{{maximum}}}
 {{#join '_validationAnnotationProperties' ', '}}
 value = {{{stringLiteral minimum}}}
 {{#ifvex 'x-minimum-message'}}message = {{{stringLiteral vendorExtensions.x-minimum-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.DecimalMin({{{_validationAnnotationProperties}}})
 {{/if}}
@@ -59,7 +59,7 @@ value = {{{stringLiteral minimum}}}
 {{#join '_validationAnnotationProperties' ', '}}
 value = {{{stringLiteral maximum}}}
 {{#ifvex 'x-maximum-message'}}message = {{{stringLiteral vendorExtensions.x-maximum-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.DecimalMax({{{_validationAnnotationProperties}}})
 {{/if}}
@@ -69,7 +69,7 @@ Email addresses
 }}
 {{#join '_validationAnnotationProperties' ', '}}
 {{#ifvex 'x-email-message'}}message = {{{stringLiteral vendorExtensions.x-email-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 {{#ifeq format 'email'}}
 @javax.validation.constraints.Email{{#if _validationAnnotationProperties}}({{{_validationAnnotationProperties}}}){{/if}}
@@ -82,7 +82,7 @@ Not blank
 {{#ifvex 'x-not-blank'}}
 {{#join '_validationAnnotationProperties' ', '}}
 {{#ifvex 'x-not-blank-message'}}message = {{{stringLiteral vendorExtensions.x-not-blank-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.NotBlank{{#if _validationAnnotationProperties}}({{{_validationAnnotationProperties}}}){{/if}}
 {{/ifvex}}
@@ -92,7 +92,7 @@ Not empty
 {{#if (lookup vendorExtensions 'x-not-empty')}}
 {{#join '_validationAnnotationProperties' ', '}}
 {{#ifvex 'x-not-empty-message'}}message = {{{stringLiteral vendorExtensions.x-not-empty-message}}}{{/ifvex}}
-{{>hooks/beanValidationAnnotationProperties}}
+{{>frag/beanValidationAnnotationProperties}}
 {{/join}}
 @javax.validation.constraints.NotEmpty{{#if _validationAnnotationProperties}}({{{_validationAnnotationProperties}}}){{/if}}
 {{/if}}
