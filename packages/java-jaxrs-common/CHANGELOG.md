@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 1.1.0
+
+### Minor Changes
+
+- 38b8995: Validation: unwrap java.util.Optional to apply validation to the wrapped value
+
 ## 1.0.2
 
 ### Patch Changes
