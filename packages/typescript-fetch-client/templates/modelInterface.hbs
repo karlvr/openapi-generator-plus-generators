@@ -10,7 +10,7 @@ export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{n
 
 {{/if}}
 {{#each properties}}
-	{{frag/propertyDocumentation memberOf=../name}}
+	{{>frag/propertyDocumentation memberOf=../name}}
 	{{serializedName}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
 {{/each}}
 }

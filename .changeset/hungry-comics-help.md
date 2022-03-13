@@ -1,0 +1,6 @@
+---
+"@openapi-generator-plus/typescript-fetch-client-generator": patch
+"@openapi-generator-plus/typescript-fetch-client-generator2": patch
+---
+
+Fix interface properties' use of `frag/propertyDocumentation`
