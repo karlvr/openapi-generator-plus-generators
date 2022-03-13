@@ -41,6 +41,6 @@
   "gitHead": "4d7336969427733ca316dfb48219f166adb9182a",
   "devDependencies": {
     "@openapi-generator-plus/generator-common": "^1.0.0",
-    "node-fetch": "^3.1.0"
+    "node-fetch": "^3.2.3"
   }
 }
