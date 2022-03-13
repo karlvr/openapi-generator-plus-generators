@@ -1,5 +1,15 @@
 # @openapi-generator-plus/generator-common
 
+## 1.1.0
+
+### Minor Changes
+
+- be034fb: Upgrade @openapi-generator-plus/core
+
+### Patch Changes
+
+- cb18c75: Upgrade dependencies
+
 ## 1.0.0
 
 ### Major Changes

@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.0.2
+
+### Patch Changes
+
+- cb18c75: Upgrade dependencies
+- Updated dependencies [be034fb]
+- Updated dependencies [53b8a63]
+- Updated dependencies [cb18c75]
+  - @openapi-generator-plus/handlebars-templates@1.1.0
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.1.1
+
 ## 1.0.1
 
 ### Patch Changes

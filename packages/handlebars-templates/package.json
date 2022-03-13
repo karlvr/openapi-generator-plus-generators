@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/handlebars-templates",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Utility for openapi-generator-plus generators to use with Handlebars templates",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/handlebars-templates#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "^1.0.0",
+    "@openapi-generator-plus/generator-common": "^1.1.0",
     "change-case": "^4.1.2",
     "handlebars": "^4.7.7",
     "marked": "^4.0.12",

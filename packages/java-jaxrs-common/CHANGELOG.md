@@ -1,5 +1,18 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 1.2.0
+
+### Minor Changes
+
+- 6ebd170: Check property compatibility for inheritance: null values aren't compatible as we use java.util.Optional
+
+### Patch Changes
+
+- Updated dependencies [be034fb]
+- Updated dependencies [cb18c75]
+  - @openapi-generator-plus/generator-common@1.1.0
+  - @openapi-generator-plus/handlebars-templates@1.1.0
+
 ## 1.1.0
 
 ### Minor Changes
