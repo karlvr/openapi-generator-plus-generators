@@ -540,7 +540,11 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					schema.nativeType.nativeType = schema.composes.map(s => s.nativeType.parentType).join(' | ')
 					schema.nativeType.serializedType = schema.nativeType.nativeType
 					schema.nativeType.componentType = null
-					return false
+
+					if (!schema.schemas) {
+						/* We can remove this schema as it was anonymous and it doesn't contain any nested schemas that we need to output */
+						return false
+					}
 				}
 			} else if (isCodegenObjectSchema(schema) && schema.discriminator && schema.children) {
 				createDisjunction(schema, schema.discriminator.references.map(r => r.schema))
