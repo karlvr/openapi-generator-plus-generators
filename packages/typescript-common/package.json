@@ -20,9 +20,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-common#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "^1.1.1",
-    "@openapi-generator-plus/handlebars-templates": "^1.1.1",
-    "@openapi-generator-plus/java-like-generator-helper": "^1.0.0",
+    "@openapi-generator-plus/generator-common": "1.1.1",
+    "@openapi-generator-plus/handlebars-templates": "1.1.1",
+    "@openapi-generator-plus/java-like-generator-helper": "1.0.0",
     "pluralize": "^8.0.0"
   },
   "publishConfig": {
