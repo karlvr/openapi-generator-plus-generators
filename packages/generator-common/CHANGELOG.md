@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.1.1
+
+### Patch Changes
+
+- feed9d5: Update @openapi-generator-plus/core to 1.5.0
+
 ## 1.1.0
 
 ### Minor Changes

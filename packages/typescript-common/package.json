@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-generator-common",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A common OpenAPI Generator Plus module for TypeScript generators",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-common#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "^1.0.0",
-    "@openapi-generator-plus/handlebars-templates": "^1.0.0",
+    "@openapi-generator-plus/generator-common": "^1.1.1",
+    "@openapi-generator-plus/handlebars-templates": "^1.1.1",
     "@openapi-generator-plus/java-like-generator-helper": "^1.0.0",
     "pluralize": "^8.0.0"
   },

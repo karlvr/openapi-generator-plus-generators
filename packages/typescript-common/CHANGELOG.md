@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.0.1
+
+### Patch Changes
+
+- 1cf2d0a: Fix anonymous oneOf schema that contains nested schemas
+- Updated dependencies [feed9d5]
+  - @openapi-generator-plus/generator-common@1.1.1
+  - @openapi-generator-plus/handlebars-templates@1.1.1
+
 ## 1.0.0
 
 ### Major Changes

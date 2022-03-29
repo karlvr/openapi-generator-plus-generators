@@ -67,7 +67,7 @@ importers:
 
   packages/handlebars-templates:
     specifiers:
-      '@openapi-generator-plus/generator-common': ^1.1.0
+      '@openapi-generator-plus/generator-common': ^1.1.1
       change-case: ^4.1.2
       handlebars: ^4.7.7
       marked: ^4.0.12
@@ -188,8 +188,8 @@ importers:
 
   packages/typescript-common:
     specifiers:
-      '@openapi-generator-plus/generator-common': ^1.0.0
-      '@openapi-generator-plus/handlebars-templates': ^1.0.0
+      '@openapi-generator-plus/generator-common': ^1.1.1
+      '@openapi-generator-plus/handlebars-templates': ^1.1.1
       '@openapi-generator-plus/java-like-generator-helper': ^1.0.0
       pluralize: ^8.0.0
     dependencies:
