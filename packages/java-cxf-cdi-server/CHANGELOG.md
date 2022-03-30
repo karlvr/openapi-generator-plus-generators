@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [94f164c]
+  - @openapi-generator-plus/java-jaxrs-generator-common@1.2.1
+  - @openapi-generator-plus/java-jaxrs-server-generator@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

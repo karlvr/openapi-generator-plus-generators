@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 1.2.1
+
+### Patch Changes
+
+- 94f164c: Fix missing annotations on nested model interfaces
+
 ## 1.2.0
 
 ### Minor Changes
