@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-node-client#readme",
   "dependencies": {
+    "@openapi-generator-plus/generator-common": "1.1.1",
     "@openapi-generator-plus/handlebars-templates": "1.1.1",
     "@openapi-generator-plus/types": "^1.4.1",
     "@openapi-generator-plus/typescript-fetch-client-generator": "1.1.1",
@@ -42,7 +43,6 @@
   },
   "gitHead": "4d7336969427733ca316dfb48219f166adb9182a",
   "devDependencies": {
-    "@openapi-generator-plus/generator-common": "^1.1.0",
-    "node-fetch": "^3.2.3"
+    "node-fetch": "^3.2.4"
   }
 }
