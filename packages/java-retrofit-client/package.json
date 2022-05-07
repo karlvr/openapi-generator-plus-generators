@@ -16,6 +16,7 @@
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
+    "link": "pnpm link --global @openapi-generator-plus/types && pnpm link --global",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
   "repository": {
@@ -30,7 +31,8 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-retrofit-client#readme",
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "1.1.1",
-    "@openapi-generator-plus/java-jaxrs-client-generator": "1.0.1"
+    "@openapi-generator-plus/java-jaxrs-client-generator": "1.0.1",
+    "@openapi-generator-plus/types": "^1.4.1"
   },
   "publishConfig": {
     "access": "public"

@@ -17,6 +17,7 @@
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
+    "link": "pnpm link --global @openapi-generator-plus/types && pnpm link --global",
     "test": "../../node_modules/.bin/jest",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
@@ -31,12 +32,11 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-cxf-spring-server#readme",
   "dependencies": {
+    "@openapi-generator-plus/generator-common": "1.1.1",
     "@openapi-generator-plus/handlebars-templates": "1.1.1",
     "@openapi-generator-plus/java-jaxrs-generator-common": "1.2.1",
-    "@openapi-generator-plus/java-jaxrs-server-generator": "1.0.1"
-  },
-  "devDependencies": {
-    "@openapi-generator-plus/generator-common": "^1.0.0"
+    "@openapi-generator-plus/java-jaxrs-server-generator": "1.0.1",
+    "@openapi-generator-plus/types": "^1.4.1"
   },
   "publishConfig": {
     "access": "public"

@@ -5,7 +5,7 @@ import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, 
 import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
-import { idx } from '@openapi-generator-plus/core'
+import * as idx from '@openapi-generator-plus/indexed-type'
 import { marked } from 'marked'
 import { EOL } from 'os'
 

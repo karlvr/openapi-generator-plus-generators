@@ -16,6 +16,7 @@
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
+    "link": "pnpm link --global @openapi-generator-plus/indexed-type @openapi-generator-plus/types && pnpm link --global",
     "test": "../../node_modules/.bin/jest",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
@@ -32,6 +33,8 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "1.1.1",
     "@openapi-generator-plus/handlebars-templates": "1.1.1",
+    "@openapi-generator-plus/indexed-type": "^1.0.0",
+    "@openapi-generator-plus/types": "^1.4.1",
     "@openapi-generator-plus/typescript-generator-common": "1.0.1",
     "change-case": "^4.1.2"
   },

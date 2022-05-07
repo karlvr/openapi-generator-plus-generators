@@ -1,5 +1,4 @@
-import { createCodegenResult } from '@openapi-generator-plus/testing'
-import { idx } from '@openapi-generator-plus/core'
+import { createCodegenResult, idx } from '@openapi-generator-plus/testing'
 import path from 'path'
 import createGenerator from '..'
 import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
