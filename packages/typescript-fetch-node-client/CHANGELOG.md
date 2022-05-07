@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.0.3
+
+### Patch Changes
+
+- 4ea4845: Tidy dependencies on @openapi-generator-plus core modules
+- cab735b: Upgrade dependencies
+- Updated dependencies [4ea4845]
+- Updated dependencies [cab735b]
+  - @openapi-generator-plus/generator-common@1.1.2
+  - @openapi-generator-plus/handlebars-templates@1.1.2
+  - @openapi-generator-plus/typescript-generator-common@1.0.2
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.1.2
+
 ## 1.0.2
 
 ### Patch Changes

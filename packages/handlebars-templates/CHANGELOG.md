@@ -1,5 +1,14 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.1.2
+
+### Patch Changes
+
+- 4ea4845: Tidy dependencies on @openapi-generator-plus core modules
+- cab735b: Upgrade dependencies
+- Updated dependencies [4ea4845]
+  - @openapi-generator-plus/generator-common@1.1.2
+
 ## 1.1.1
 
 ### Patch Changes

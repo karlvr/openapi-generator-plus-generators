@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.1.2
+
+### Patch Changes
+
+- 4ea4845: Tidy dependencies on @openapi-generator-plus core modules
+
 ## 1.1.1
 
 ### Patch Changes

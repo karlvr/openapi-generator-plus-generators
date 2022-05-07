@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 1.0.2
+
+### Patch Changes
+
+- 4ea4845: Tidy dependencies on @openapi-generator-plus core modules
+- Updated dependencies [4ea4845]
+- Updated dependencies [cab735b]
+  - @openapi-generator-plus/generator-common@1.1.2
+  - @openapi-generator-plus/handlebars-templates@1.1.2
+  - @openapi-generator-plus/java-jaxrs-client-generator@1.0.2
+  - @openapi-generator-plus/java-jaxrs-generator-common@1.2.2
+
 ## 1.0.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 1.0.1
+
+### Patch Changes
+
+- 4ea4845: Tidy dependencies on @openapi-generator-plus core modules
+- Updated dependencies [4ea4845]
+  - @openapi-generator-plus/generator-common@1.1.2
+
 ## 1.0.0
 
 ### Major Changes
