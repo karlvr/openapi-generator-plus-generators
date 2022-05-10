@@ -1,5 +1,5 @@
 {{#or (isObject) (isArray) (isMap)}}
-@javax.validation.Valid
+@{{javax}}.validation.Valid
 {{/or}}
 {{#if required}}
 {{#unless (lookup schema.vendorExtensions 'x-not-blank')}}
@@ -9,7 +9,7 @@
 {{#ifvex 'x-required-message' schema}}message = {{{stringLiteral schema.vendorExtensions.x-required-message}}}{{/ifvex}}
 {{>hooks/beanValidationAnnotationProperties}}
 {{/join}}
-@javax.validation.constraints.NotNull{{#if _validationAnnotationProperties}}({{{_validationAnnotationProperties}}}){{/if}}
+@{{javax}}.validation.constraints.NotNull{{#if _validationAnnotationProperties}}({{{_validationAnnotationProperties}}}){{/if}}
 {{/unless}}
 {{/unless}}
 {{/unless}}

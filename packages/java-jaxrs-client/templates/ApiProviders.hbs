@@ -9,7 +9,7 @@ public interface ApiProviders {
 		return providers;
 	}
 
-	class MyJacksonJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
+	class MyJacksonJaxbJsonProvider extends com.fasterxml.jackson.{{#if @root.useJakarta}}jakarta.rs{{else}}jaxrs{{/if}}.json.{{#if @root.useJakarta}}JacksonXmlBindJsonProvider{{else}}JacksonJaxbJsonProvider{{/if}} {
 
 		public MyJacksonJaxbJsonProvider() {
 			super();

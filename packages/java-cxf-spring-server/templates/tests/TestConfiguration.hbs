@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.{{#if @root.useJakarta}}jakarta.rs{{else}}jaxrs{{/if}}.json.{{#if @root.useJakarta}}JacksonXmlBindJsonProvider{{else}}JacksonJaxbJsonProvider{{/if}};
 
 @Configuration
 @ComponentScan
@@ -40,7 +40,7 @@ public class TestConfiguration {
 	
 	public static List<Object> defaultProviders() {
 		List<Object> providers = new ArrayList<>();
-		providers.add(new JacksonJaxbJsonProvider());
+		providers.add(new {{#if @root.useJakarta}}JacksonXmlBindJsonProvider{{else}}JacksonJaxbJsonProvider{{/if}}());
 		return providers;
 	}
 

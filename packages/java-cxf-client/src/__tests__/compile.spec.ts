@@ -13,7 +13,7 @@ describe('compile test cases', () => {
 				...DEFAULT_CONFIG,
 				includeTests: true,
 			})
-			await testGenerate(result, { postProcess: compile, testName: file })
+			await testGenerate(result, { postProcess: compile, testName: `javax/${file}` })
 		})
 	}
 })

@@ -27,6 +27,11 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	relativeTestOutputPath: string
 	relativeTestResourcesOutputPath?: string
 	customTemplatesPath?: string
+
+	/**
+	 * Use jakarta instead of javax for imports
+	 */
+	useJakarta: boolean
 }
 
 export interface MavenOptions {

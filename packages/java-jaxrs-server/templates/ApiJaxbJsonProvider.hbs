@@ -5,12 +5,12 @@ package {{apiProviderPackage}};
  * This declares more specific {@code @Produces} and {@code Consumes} so as to survive the
  * provider sorting changes in CXF 3.1.2 http://cxf.apache.org/docs/jax-rs.html#JAX-RS-CXF3.1.2ProviderSortingChanges
  */
-@javax.ws.rs.Produces({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
-@javax.ws.rs.Consumes({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
-@javax.ws.rs.ext.Provider
+@{{javax}}.ws.rs.Produces({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
+@{{javax}}.ws.rs.Consumes({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
+@{{javax}}.ws.rs.ext.Provider
 {{>hooks/jaxbJsonProviderAnnotations}}
 {{>generatedAnnotation}}
-public class ApiJaxbJsonProvider extends com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider {
+public class ApiJaxbJsonProvider extends com.fasterxml.jackson.{{#if @root.useJakarta}}jakarta.rs{{else}}jaxrs{{/if}}.json.{{#if @root.useJakarta}}JacksonXmlBindJsonProvider{{else}}JacksonJaxbJsonProvider{{/if}} {
 
 	public ApiJaxbJsonProvider() {
 		super();

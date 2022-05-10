@@ -1,4 +1,4 @@
-@javax.ws.rs.{{httpMethod}}
+@{{javax}}.ws.rs.{{httpMethod}}
 {{>hooks/apiMethodAnnotations}}
 {{#and securityRequirements (not securityRequirements.optional)}}
 {{#ifdef @root.authenticationRequiredAnnotation}}
@@ -20,13 +20,13 @@
 @java.lang.Deprecated
 {{/if}}
 {{#if path}}
-@javax.ws.rs.Path("{{{path}}}")
+@{{javax}}.ws.rs.Path("{{{path}}}")
 {{/if}}
 {{#if consumes}}
-@javax.ws.rs.Consumes({ {{#each consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
+@{{javax}}.ws.rs.Consumes({ {{#each consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 {{/if}}
 {{#if produces}}
-@javax.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
+@{{javax}}.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 {{/if}}
 @io.swagger.v3.oas.annotations.Operation(
 	summary = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}},

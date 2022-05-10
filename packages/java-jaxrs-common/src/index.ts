@@ -119,6 +119,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		relativeTestOutputPath: computeRelativeTestOutputPath(config),
 		relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
 		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
+		useJakarta: configBoolean(config, 'useJakarta', false),
 	}
 
 	return options
@@ -572,6 +573,13 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					throw new Error(`${error instanceof Error ? error.message : error} @ ${sourcePosition(options)}`)
 				}
 			})
+			hbs.registerHelper('javax', function() {
+				if (generatorOptions.useJakarta) {
+					return 'jakarta'
+				} else {
+					return 'javax'
+				}
+			})
 	
 			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 			if (context.loadAdditionalTemplates) {
@@ -641,7 +649,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (op.requestBody && op.consumes && op.consumes[0].mimeType === 'application/x-www-form-urlencoded') {
 						op.requestBody.nativeType = context.formUrlEncodedImplementation
 							? context.formUrlEncodedImplementation()
-							: new context.NativeType('javax.ws.rs.core.MultivaluedHashMap<java.lang.String, java.lang.String>')
+							: new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.MultivaluedHashMap<java.lang.String, java.lang.String>`)
 					}
 				}
 			}

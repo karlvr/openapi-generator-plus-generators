@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>{{groupId}}</groupId>
-    <artifactId>{{artifactId}}</artifactId>
-    <packaging>jar</packaging>
-    <name>{{artifactId}}</name>
-    <version>{{version}}</version>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>{{groupId}}</groupId>
+	<artifactId>{{artifactId}}</artifactId>
+	<packaging>jar</packaging>
+	<name>{{artifactId}}</name>
+	<version>{{version}}</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,10 +13,18 @@
 		<spring.version>{{lookup maven.versions 'spring' '5.2.5.RELEASE'}}</spring.version>
 		<swagger.version>{{lookup maven.versions 'swagger' '2.1.10'}}</swagger.version>
 		<cxf.version>{{lookup maven.versions 'cxf' '3.4.4'}}</cxf.version>
+		{{#if useJakarta}}
+		<jaxrs.version>{{lookup maven.versions 'jaxrs' '3.1.0'}}</jaxrs.version>
+		{{else}}
 		<jaxrs.version>{{lookup maven.versions 'jaxrs' '2.1.1'}}</jaxrs.version>
+		{{/if}}
 		<jackson.version>{{lookup maven.versions 'jackson' '2.12.5'}}</jackson.version>
 		{{#if useBeanValidation}}
+		{{#if useJakarta}}
+		<jakarta.validation.version>{{lookup maven.versions 'jakarta_validation' '3.0.1'}}</jakarta.validation.version> 
+		{{else}}
 		<javax.validation.version>{{lookup maven.versions 'javax_validation' '2.0.0.Final'}}</javax.validation.version>
+		{{/if}}
 		{{/if}}
 		{{#if includeTests}}
 		{{#ifeq junitVersion 4}}
@@ -28,7 +36,7 @@
 		{{/if}}
 	</properties>
 
-    <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -47,8 +55,8 @@
 			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.cxf</groupId>
-		    <artifactId>cxf-integration-cdi</artifactId>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-integration-cdi</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
@@ -57,11 +65,19 @@
 			<version>${cxf.version}</version>
 		</dependency>
 
+		{{#if useJakarta}}
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+			<version>${jaxrs.version}</version>
+		</dependency>
+		{{else}}
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>${jaxrs.version}</version>
 		</dependency>
+		{{/if}}
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -81,11 +97,19 @@
 		</dependency>
 		{{#if useBeanValidation}}
 
+		{{#if useJakarta}}
 		<dependency>
-		    <groupId>javax.validation</groupId>
-		    <artifactId>validation-api</artifactId>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>${jakarta.validation.version}</version>
+		</dependency>
+		{{else}}
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
 			<version>${javax.validation.version}</version>
 		</dependency>
+		{{/if}}
 		{{/if}}
 		{{#if includeTests}}
 
@@ -123,16 +147,16 @@
 			<scope>test</scope>
 		</dependency>
 		{{/if}}
-    </dependencies>
+	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-			    <groupId>com.fasterxml.jackson</groupId>
-			    <artifactId>jackson-bom</artifactId>
-			    <version>${jackson.version}</version>
-			    <scope>import</scope>
-			    <type>pom</type>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
 			</dependency>
 			{{#ifeq junitVersion 5}}
 			<dependency>

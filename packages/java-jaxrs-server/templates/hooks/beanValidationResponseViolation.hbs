@@ -5,7 +5,7 @@ Handle response validation violations.
 @param violationsVar the name of the local variable holding the ConstraintViolation set
 @param operation the CodegenOperation
 --}}
-throw new javax.ws.rs.InternalServerErrorException("The server produced an invalid response:\n  " + __validations.stream()
+throw new {{javax}}.ws.rs.InternalServerErrorException("The server produced an invalid response:\n  " + __validations.stream()
 	.map(__v -> __v.getPropertyPath() + " " + __v.getMessage())
 	.collect(java.util.stream.Collectors.joining("\n  "))
 );

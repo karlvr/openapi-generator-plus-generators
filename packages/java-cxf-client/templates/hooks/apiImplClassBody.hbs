@@ -48,7 +48,7 @@ public void authorize(java.lang.String apiKeyValue) {
 {{#ifeq in 'header'}}
 	client.header({{{stringLiteral paramName}}}, apiKeyValue);
 {{else ifeq in 'cookie'}}
-	client.cookie(new javax.ws.rs.core.Cookie({{{stringLiteral paramName}}}, apiKeyValue));
+	client.cookie(new {{javax}}.ws.rs.core.Cookie({{{stringLiteral paramName}}}, apiKeyValue));
 {{else ifeq in 'query'}}
 	client.query({{{stringLiteral paramName}}}, apiKeyValue);
 {{/ifeq}}

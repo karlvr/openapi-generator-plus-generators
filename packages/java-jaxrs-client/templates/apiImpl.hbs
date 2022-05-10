@@ -51,7 +51,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		{{/each}}
 		org.apache.cxf.jaxrs.ext.multipart.MultipartBody __multipartBody = new org.apache.cxf.jaxrs.ext.multipart.MultipartBody(
 			__multipartBodyParts,
-			javax.ws.rs.core.MediaType.valueOf({{{stringLiteral requestBody.defaultContent.mediaType.mediaType}}}),
+			{{javax}}.ws.rs.core.MediaType.valueOf({{{stringLiteral requestBody.defaultContent.mediaType.mediaType}}}),
 			true
 		);
 
@@ -60,7 +60,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 			{{#if securityRequirements}}
 			try {
 				{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
-			} catch (javax.ws.rs.WebApplicationException __e) {
+			} catch ({{javax}}.ws.rs.WebApplicationException __e) {
 				if (__e.getResponse().getStatus() == 401 && authorizationProvider != null) {
 					if (authorizationProvider.reauthorize(this, __e.getResponse())) {
 						{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
@@ -71,26 +71,26 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 			{{else}}
 			{{#if returnNativeType}}return {{/if}}api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{#if __requestBodyVar}}{{__requestBodyVar}}{{else}}{{identifier requestBody.name}}{{/if}}{{/if}});
 			{{/if}}
-		} catch (javax.ws.rs.WebApplicationException __e) {
+		} catch ({{javax}}.ws.rs.WebApplicationException __e) {
 			{{#each (nonDefaultResponses)}}
 			if (__e.getResponse().getStatus() == {{code}}) {
 				try {
 					{{#each contents}}
-					if (__e.getResponse().getMediaType().isCompatible(javax.ws.rs.core.MediaType.valueOf({{{stringLiteral mediaType.mediaType}}}))) {
+					if (__e.getResponse().getMediaType().isCompatible({{javax}}.ws.rs.core.MediaType.valueOf({{{stringLiteral mediaType.mediaType}}}))) {
 						throw new {{className ../../name}}{{../code}}{{#unless @first}}{{className mediaType.mediaType}}{{/unless}}Exception({{#if nativeType}}__e.getResponse().readEntity({{{nativeType.literalType}}}.class){{/if}});
 					}
 					{{/each}}
 
-					throw new {{@root/apiPackage}}.UnprocessableResponseException(__e.getResponse(), new javax.ws.rs.ProcessingException("Unsupported media type for response status " + __e.getResponse().getStatus() + ": " + __e.getResponse().getMediaType()));
-				} catch (javax.ws.rs.ProcessingException __processingException) {
+					throw new {{@root/apiPackage}}.UnprocessableResponseException(__e.getResponse(), new {{javax}}.ws.rs.ProcessingException("Unsupported media type for response status " + __e.getResponse().getStatus() + ": " + __e.getResponse().getMediaType()));
+				} catch ({{javax}}.ws.rs.ProcessingException __processingException) {
 					throw new {{@root/apiPackage}}.UnprocessableResponseException(__e.getResponse(), __processingException);
 				}
 			}
 			{{/each}}
 			throw new {{@root/apiPackage}}.UnexpectedResponseException(__e.getResponse(), __e);
-		} catch (javax.ws.rs.client.ResponseProcessingException __e) {
+		} catch ({{javax}}.ws.rs.client.ResponseProcessingException __e) {
 			throw new {{@root/apiPackage}}.UnprocessableResponseException(__e.getResponse(), __e);
-		} catch (javax.ws.rs.ProcessingException __e) {
+		} catch ({{javax}}.ws.rs.ProcessingException __e) {
 			if (__e.getCause() instanceof java.net.SocketTimeoutException) {
 				throw new {{@root/apiPackage}}.UnexpectedTimeoutException((java.net.SocketTimeoutException) __e.getCause());
 			}

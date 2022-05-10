@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>{{groupId}}</groupId>
-    <artifactId>{{artifactId}}</artifactId>
-    <packaging>jar</packaging>
-    <name>{{artifactId}}</name>
-    <version>{{version}}</version>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>{{groupId}}</groupId>
+	<artifactId>{{artifactId}}</artifactId>
+	<packaging>jar</packaging>
+	<name>{{artifactId}}</name>
+	<version>{{version}}</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,11 +13,15 @@
 		<retrofit.version>{{lookup maven.versions 'retrofit' '2.9.0'}}</retrofit.version>
 		<jackson.version>{{lookup maven.versions 'jackson' '2.12.5'}}</jackson.version>
 		{{#if useBeanValidation}}
+		{{#if useJakarta}}
+		<jakarta.validation.version>{{lookup maven.versions 'jakarta_validation' '3.0.1'}}</jakarta.validation.version> 
+		{{else}}
 		<javax.validation.version>{{lookup maven.versions 'javax_validation' '2.0.0.Final'}}</javax.validation.version>
+		{{/if}}
 		{{/if}}
 	</properties>
 
-    <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>retrofit</artifactId>
@@ -42,22 +46,29 @@
 		</dependency>
 		{{#if useBeanValidation}}
 
+		{{#if useJakarta}}
 		<dependency>
-		    <groupId>javax.validation</groupId>
-		    <artifactId>validation-api</artifactId>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>${jakarta.validation.version}</version>
+		</dependency>
+		{{else}}
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
 			<version>${javax.validation.version}</version>
 		</dependency>
 		{{/if}}
-    </dependencies>
+	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-			    <groupId>com.fasterxml.jackson</groupId>
-			    <artifactId>jackson-bom</artifactId>
-			    <version>${jackson.version}</version>
-			    <scope>import</scope>
-			    <type>pom</type>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -2,26 +2,26 @@ package {{apiImplPackage}};
 
 {{>frag/imports}}
 {{>generatedAnnotation}}
-@javax.ws.rs.Path("{{{path}}}")
+@{{javax}}.ws.rs.Path("{{{path}}}")
 {{>hooks/apiImplClassAnnotations}}
 {{#if consumes}}
-@javax.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
+@{{javax}}.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 {{#if produces}}
-@javax.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
+@{{javax}}.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
 public class {{className name}}ApiImpl implements {{apiPackage}}.{{className name}}Api {
 
 	{{>util/inject interface=(concat apiServicePackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
 
 	{{#if @root.useBeanValidation}}
-	private javax.validation.ValidatorFactory validatorFactory = javax.validation.Validation.buildDefaultValidatorFactory();
+	private {{javax}}.validation.ValidatorFactory validatorFactory = {{javax}}.validation.Validation.buildDefaultValidatorFactory();
 
 	{{/if}}
 {{#each operations}}
-	public javax.ws.rs.core.Response {{name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}) {
+	public {{javax}}.ws.rs.core.Response {{name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}) {
 		{{#with defaultResponse}}
-		final javax.ws.rs.core.Response.ResponseBuilder __response = javax.ws.rs.core.Response.status({{code}}).cacheControl(javax.ws.rs.core.CacheControl.valueOf("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
+		final {{javax}}.ws.rs.core.Response.ResponseBuilder __response = {{javax}}.ws.rs.core.Response.status({{code}}).cacheControl({{javax}}.ws.rs.core.CacheControl.valueOf("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
 		{{/with}}
 		try {
 			{{#if @root.useBeanValidation}}
