@@ -51,7 +51,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		{{/each}}
 		org.apache.cxf.jaxrs.ext.multipart.MultipartBody __multipartBody = new org.apache.cxf.jaxrs.ext.multipart.MultipartBody(
 			__multipartBodyParts,
-			{{javax}}.ws.rs.core.MediaType.valueOf({{{stringLiteral requestBody.defaultContent.mediaType.mediaType}}}),
+			javax.ws.rs.core.MediaType.valueOf({{{stringLiteral requestBody.defaultContent.mediaType.mediaType}}}),
 			true
 		);
 

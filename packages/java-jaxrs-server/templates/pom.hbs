@@ -12,11 +12,14 @@
 		<java.version>{{lookup maven.versions 'java' '1.8'}}</java.version>
 		<swagger.version>{{lookup maven.versions 'swagger' '2.1.10'}}</swagger.version>
 		{{#if useJakarta}}
-		<jaxrs.version>{{lookup maven.versions 'jaxrs' '3.1.0'}}</jaxrs.version>
-		{{else}}
-		<jaxrs.version>{{lookup maven.versions 'jaxrs' '2.1.1'}}</jaxrs.version>
+		<jakarta.ws.version>{{lookup maven.versions 'jakarta_ws' '3.1.0'}}</jakarta.ws.version>
 		{{/if}}
-		<jackson.version>{{lookup maven.versions 'jackson' '2.12.5'}}</jackson.version>
+		<jaxrs.version>{{lookup maven.versions 'jaxrs' '2.1.1'}}</jaxrs.version>
+		<jackson.version>{{lookup maven.versions 'jackson' '2.13.2'}}</jackson.version>
+		{{#if useJakarta}}
+		<jakarta.annotation.version>{{lookup maven.versions 'jakarta_annotation' '2.1.0'}}</jakarta.annotation.version>
+		<jakarta.xml.bind.version>{{lookup maven.versions 'jakarta_xml_bind' '3.0.1'}}</jakarta.xml.bind.version>
+		{{/if}}
 		{{#if useBeanValidation}}
 		{{#if useJakarta}}
 		<jakarta.validation.version>{{lookup maven.versions 'jakarta_validation' '3.0.1'}}</jakarta.validation.version> 
@@ -28,6 +31,18 @@
 	</properties>
 
 	<dependencies>
+		{{#if useJakarta}}
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>${jakarta.annotation.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>${jakarta.xml.bind.version}</version>
+		</dependency>
+		{{/if}}
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -38,20 +53,27 @@
 		<dependency>
 			<groupId>jakarta.ws.rs</groupId>
 			<artifactId>jakarta.ws.rs-api</artifactId>
-			<version>${jaxrs.version}</version>
+			<version>${jakarta.ws.version}</version>
 		</dependency>
-		{{else}}
+		{{/if}}
+		<!-- Include javax.ws.rs-api as CXF requires it -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>${jaxrs.version}</version>
 		</dependency>
-		{{/if}}
 
+		{{#if useJakarta}}
+		<dependency>
+			<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+			<artifactId>jackson-jakarta-rs-json-provider</artifactId>
+		</dependency>
+		{{else}}
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 		</dependency>
+		{{/if}}
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
