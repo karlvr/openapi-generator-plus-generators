@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 1.3.0
+
+### Minor Changes
+
+- 7167f85: Add support for jakarta namespace using useJakarta config option
+
 ## 1.2.2
 
 ### Patch Changes

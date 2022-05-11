@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 1.1.0
+
+### Minor Changes
+
+- 7167f85: Add support for jakarta namespace using useJakarta config option
+
+### Patch Changes
+
+- Updated dependencies [7167f85]
+  - @openapi-generator-plus/java-jaxrs-generator-common@1.3.0
+
 ## 1.0.2
 
 ### Patch Changes

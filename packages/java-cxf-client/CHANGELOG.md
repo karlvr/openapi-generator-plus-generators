@@ -1,5 +1,18 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 1.1.0
+
+### Minor Changes
+
+- 7167f85: Add support for jakarta namespace using useJakarta config option
+
+### Patch Changes
+
+- df390c0: Upgrade CXF from 3.4.4 to 3.4.7
+- Updated dependencies [7167f85]
+  - @openapi-generator-plus/java-jaxrs-client-generator@1.1.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@1.3.0
+
 ## 1.0.2
 
 ### Patch Changes
