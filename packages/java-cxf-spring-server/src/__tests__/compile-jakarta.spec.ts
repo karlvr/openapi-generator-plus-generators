@@ -14,7 +14,7 @@ describe('compile test cases with jakarta', () => {
 				includeTests: true,
 				useJakarta: true,
 			})
-			await testGenerate(result, { postProcess: compile, testName: `junit5/${file}` })
+			await testGenerate(result, { postProcess: compile, testName: `jakarta/${file}` })
 		})
 	}
 })
