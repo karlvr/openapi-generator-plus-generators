@@ -98,11 +98,11 @@ export async function emit(templateName: string, outputPath: string, context: Un
 	}
 
 	if (outputPath === '-') {
-		const normalisedOutputString = outputString.replace(/\r\n/g, '\n').replace(/\n/g, EOL)
+		const normalisedOutputString = outputString.replace('\r\n', '\n').replace('\n', EOL)
 		console.log(normalisedOutputString)
 	} else {
 		const preferredLineEnding = await detectPreferredLineEnding(outputPath) || EOL
-		const normalisedOutputString = outputString.replace(/\r\n/g, '\n').replace(/\n/g, preferredLineEnding)
+		const normalisedOutputString = outputString.replace('\r\n', '\n').replace('\n', preferredLineEnding)
 
 		if (!replace) {
 			try {
@@ -979,7 +979,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`join helper must be called with 2 arguments; missing or undefined second argument (separator) @ ${sourcePosition(options)}`)
 		}
 
-		const result = options.fn(this).split('\n').filter(s => s.trim().length > 0).join(separator)
+		const result = options.fn(this).split(/\r?\n/).filter(s => s.trim().length > 0).join(separator)
 		this[varName] = result
 		return null
 	})
@@ -997,7 +997,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`indent helper missing indent argument @ ${sourcePosition(options)}`)
 		}
 
-		return options.fn(this).split('\n').join(`\n${indent}`)
+		return options.fn(this).split(/\r?\n/).join(`\n${indent}`)
 	})
 
 	/**
