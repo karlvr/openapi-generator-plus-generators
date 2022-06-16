@@ -40,6 +40,7 @@ A `tsconfig.json` file will be output if you specify any of the TypeScript confi
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`target`|`string`|The ECMAScript target version.|`ES5`|
+|`lib`|`string[]`|An array of `libs` to use in `tsconfig.json`|The appropriate lib for the `target` + `'DOM'`|
 
 ### Packaging
 
