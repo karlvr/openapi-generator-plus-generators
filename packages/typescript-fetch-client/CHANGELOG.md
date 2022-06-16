@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.2.0
+
+### Minor Changes
+
+- 2842518: Add blind-date configuration for date-time implementation type
+
+### Patch Changes
+
+- Updated dependencies [2842518]
+- Updated dependencies [072fe50]
+  - @openapi-generator-plus/typescript-generator-common@1.1.0
+  - @openapi-generator-plus/handlebars-templates@1.1.3
+
 ## 1.1.2
 
 ### Patch Changes

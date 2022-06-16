@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.1.3
+
+### Patch Changes
+
+- 072fe50: Fix handling of Windows newlines in join and indent helpers
+
 ## 1.1.2
 
 ### Patch Changes
