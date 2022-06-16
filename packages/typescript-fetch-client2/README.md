@@ -27,8 +27,24 @@ The available config file properties are:
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`constantStyle`|`"allCapsSnake"\|"allCaps"\|"camelCase"\|"pascalCase"`|The style to use for constant naming.|`"pascalCase"`|
-|`dateApproach`|`"native"\|"string"\|"blind-date"`|Whether to use `string` for date and time and `Date` for date-time, or just `string`, or whether to use [blind-date](https://npmjs.com/blind-date) for dates and times.|`native`|
+|`dateApproach`|`"native"\|"string"\|"blind-date"`|Whether to use `string` for date and time and `Date` for date-time, or just `string`, or whether to use [`blind-date`](https://npmjs.com/blind-date) for dates and times.|`native`|
+|`legacyUnnamespacedModelSupport`|`boolean`|Generate unnamespaced versions of the models.|`false`|
 |`includePolyfills`|`boolean`|Include polyfills for features that browsers might not support or support well.|`true`|
+
+### `blind-date`
+
+The [blind-date](https://npmjs.com/blind-date) library provides some typesafety for dates and times as strings
+in TypeScript. You can configure the generated code using `blind-date`:
+
+|Property|Type|Description|Default|
+|--------|----|-----------|-------|
+|`blindDate`|`BlindDateConfig`|Configuration for `blind-date`.|`undefined`|
+
+#### `BlindDateConfig`
+
+|Property|Type|Description|Default|
+|--------|----|-----------|-------|
+|`dateTimeImplementation`|`string`|The date-time implementation to use; either `OffsetDateTimeString` or `LocalDateTimeString`.|`OffsetDateTimeString`|
 
 ### TypeScript
 

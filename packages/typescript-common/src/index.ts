@@ -1,5 +1,5 @@
 import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenOneOfSchema, isCodegenAnyOfSchema, isCodegenInterfaceSchema, isCodegenObjectSchema, CodegenOneOfSchema, CodegenSchemaPurpose, CodegenSchema, CodegenNamedSchema, CodegenScope } from '@openapi-generator-plus/types'
-import { CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
+import { BlindDateOptions, CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
@@ -166,6 +166,19 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	const dateApproach = parseDateApproach(config.dateApproach)
 	const customTemplates = configString(config, 'customTemplates', undefined)
 
+	const defaultBlindDateOptions: BlindDateOptions = {
+		dateTimeImplementation: 'OffsetDateTimeString',
+	}
+	let blindDateOptions: BlindDateOptions
+	if (config.blindDate && typeof config.blindDate === 'object') {
+		blindDateOptions = defaultBlindDateOptions
+		
+		const blindDateConfig = configObject(config, 'blindDate', {} as Record<string, unknown>)
+		blindDateOptions.dateTimeImplementation = configString(blindDateConfig, 'dateTimeImplementation', defaultBlindDateOptions.dateTimeImplementation, 'blindDate.')
+	} else {
+		blindDateOptions = defaultBlindDateOptions
+	}
+
 	const options: CodegenOptionsTypeScript = {
 		...javaLikeOptions(config, createJavaLikeContext(context)),
 		relativeSourceOutputPath,
@@ -173,6 +186,7 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 		typescript: typeScriptOptions || null,
 		customTemplatesPath: customTemplates ? computeCustomTemplatesPath(config.configPath, customTemplates) : null,
 		dateApproach,
+		blindDate: blindDateOptions,
 	}
 
 	return options
@@ -264,7 +278,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 								/* The date-time format should be an ISO datetime with an offset timezone */
 								return `new Date("${value}")`
 							case DateApproach.BlindDate:
-								return `toOffsetDateTimeString("${value}")`
+								return `to${generatorOptions.blindDate.dateTimeImplementation}("${value}")`
 							case DateApproach.String:
 								return `"${value}"`
 						}
@@ -340,7 +354,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 								serializedType: 'string',
 							})
 						case DateApproach.BlindDate:
-							return new context.NativeType('OffsetDateTimeString')
+							return new context.NativeType(`${generatorOptions.blindDate.dateTimeImplementation}`)
 						case DateApproach.String:
 							return new context.NativeType('string')
 					}

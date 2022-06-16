@@ -9,6 +9,7 @@ export interface CodegenOptionsTypeScript extends JavaLikeOptions {
 	typescript: TypeScriptOptions | null
 	customTemplatesPath: string | null
 	dateApproach: DateApproach
+	blindDate: BlindDateOptions
 }
 
 export enum DateApproach {
@@ -27,4 +28,9 @@ export interface NpmOptions {
 	version: string
 	repository: string | null
 	private: boolean | null
+}
+
+export interface BlindDateOptions {
+	/** The blind date implementation for date-times; either OffsetDateTimeString (default) or LocalDateTimeString */
+	dateTimeImplementation: string
 }
