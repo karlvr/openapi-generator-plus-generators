@@ -12,7 +12,7 @@ export interface {{className name}} {{#if parents}}extends {{#each parents}}{{{n
 {{/if}}
 {{#each properties}}
 	{{>frag/propertyDocumentation memberOf=../name}}
-	{{#if readOnly}}readonly {{/if}}{{serializedName}}{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
+	{{#if readOnly}}readonly {{/if}}'{{serializedName}}'{{#unless required}}?{{/unless}}: {{{nativeType.serializedType}}};
 {{/each}}
 }
 {{>modelNestedModels}}
