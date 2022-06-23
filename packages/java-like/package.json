@@ -23,7 +23,7 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-like#readme",
   "dependencies": {
     "@openapi-generator-plus/generator-common": "1.1.2",
-    "@openapi-generator-plus/types": "^1.4.1",
+    "@openapi-generator-plus/types": "^2.0.0",
     "change-case": "^4.1.2"
   },
   "publishConfig": {
