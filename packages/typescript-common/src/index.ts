@@ -438,38 +438,6 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					return { value: null, literalValue: 'undefined' }
 			}
 		},
-		initialValue: (options) => {
-			const { schemaType, required } = options
-
-			if (!required) {
-				return null
-			}
-
-			switch (schemaType) {
-				case CodegenSchemaType.NUMBER: {
-					const literalValue = context.generator().toLiteral(0.0, options)
-					if (literalValue === null) {
-						return null
-					}
-					return { value: 0.0, literalValue }
-				}
-				case CodegenSchemaType.INTEGER: {
-					const literalValue = context.generator().toLiteral(0, options)
-					if (literalValue === null) {
-						return null
-					}
-					return { value: 0, literalValue }
-				}
-				case CodegenSchemaType.BOOLEAN:
-					return { value: false, literalValue: 'false' }
-				case CodegenSchemaType.ARRAY:
-					return { value: [], literalValue: '[]' }
-				case CodegenSchemaType.MAP:
-					return { value: {}, literalValue: '{}' }
-				default:
-					return { value: null, literalValue: 'undefined' }
-			}
-		},
 		operationGroupingStrategy: () => {
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},

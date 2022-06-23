@@ -3,7 +3,7 @@
 private {{{additionalProperties.nativeType}}} additionalProperties = new {{{additionalProperties.nativeType.concreteType}}}();
 {{/if}}
 {{#each properties}}
-private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{#if nullable}}java.util.Optional.of({{/if}}{{{initialValue.literalValue}}}{{#if nullable}}){{/if}}{{/if}};
+private {{>frag/pojoPropertyType}} {{identifier name}}{{#if defaultValue}} = {{#if nullable}}java.util.Optional.of({{/if}}{{{defaultValue.literalValue}}}{{#if nullable}}){{/if}}{{/if}};
 {{/each}}
 
 {{#if additionalProperties}}

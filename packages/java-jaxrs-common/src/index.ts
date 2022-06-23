@@ -447,53 +447,6 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			throw new Error(`Unsupported default value type: ${schemaType}`)
 		},
-
-		initialValue: (options) => {
-			const { required, schemaType, nativeType } = options
-	
-			if (!required) {
-				return null
-			}
-	
-			switch (schemaType) {
-				case CodegenSchemaType.ENUM:
-				case CodegenSchemaType.OBJECT:
-				case CodegenSchemaType.DATE:
-				case CodegenSchemaType.TIME:
-				case CodegenSchemaType.DATETIME:
-				case CodegenSchemaType.BINARY:
-				case CodegenSchemaType.STRING:
-				case CodegenSchemaType.INTERFACE:
-					return null
-				case CodegenSchemaType.ARRAY:
-					return { value: [], literalValue: `new ${nativeType.concreteType}()` }
-				case CodegenSchemaType.MAP:
-					return { value: {}, literalValue: `new ${nativeType.concreteType}()` }
-				case CodegenSchemaType.NUMBER: {
-					const literalValue = context.generator().toLiteral(0.0, options)
-					if (literalValue === null) {
-						return null
-					}
-					return { value: 0.0, literalValue }
-				}
-				case CodegenSchemaType.INTEGER: {
-					const literalValue = context.generator().toLiteral(0, options)
-					if (literalValue === null) {
-						return null
-					}
-					return { value: 0, literalValue }
-				}
-				case CodegenSchemaType.BOOLEAN: {
-					const literalValue = context.generator().toLiteral(false, options)
-					if (literalValue === null) {
-						return null
-					}
-					return { value: false, literalValue }
-				}
-			}
-	
-			throw new Error(`Unsupported initial value type: ${schemaType}`)
-		},
 		
 		operationGroupingStrategy: () => {
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
