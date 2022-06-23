@@ -1,5 +1,23 @@
 # @openapi-generator-plus/java-cxf-spring-server-generator
 
+## 2.0.0
+
+### Major Changes
+
+- 19a8994: Update @openapi-generator-plus/core to 2.0.0
+
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+
+### Patch Changes
+
+- Updated dependencies [19a8994]
+- Updated dependencies [0664881]
+- Updated dependencies [87bd6b5]
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.0.0
+  - @openapi-generator-plus/java-jaxrs-server-generator@2.0.0
+  - @openapi-generator-plus/generator-common@1.2.0
+  - @openapi-generator-plus/handlebars-templates@1.1.4
+
 ## 1.1.1
 
 ### Patch Changes

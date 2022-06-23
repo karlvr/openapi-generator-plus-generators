@@ -1,5 +1,19 @@
 # @openapi-generator-plus/generator-common
 
+## 1.2.0
+
+### Minor Changes
+
+- 0664881: Don't generate default values for properties for clients
+
+  Add variables to the template root context to identify the generator type.
+
+### Patch Changes
+
+- 19a8994: Update @openapi-generator-plus/core to 2.0.0
+
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+
 ## 1.1.2
 
 ### Patch Changes

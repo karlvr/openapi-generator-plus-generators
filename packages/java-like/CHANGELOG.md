@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.0.0
+
+### Major Changes
+
+- 19a8994: Update @openapi-generator-plus/core to 2.0.0
+
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+
+### Patch Changes
+
+- Updated dependencies [19a8994]
+- Updated dependencies [0664881]
+  - @openapi-generator-plus/generator-common@1.2.0
+
 ## 1.0.1
 
 ### Patch Changes

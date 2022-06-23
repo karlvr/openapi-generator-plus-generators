@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.0.0
+
+### Major Changes
+
+- 19a8994: Update @openapi-generator-plus/core to 2.0.0
+
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+
+### Patch Changes
+
+- Updated dependencies [19a8994]
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.0.0
+  - @openapi-generator-plus/handlebars-templates@1.1.4
+
 ## 1.1.1
 
 ### Patch Changes

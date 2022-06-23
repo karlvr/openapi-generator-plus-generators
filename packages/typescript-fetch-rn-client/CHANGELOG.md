@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 1.0.3
+
+### Patch Changes
+
+- 19a8994: Update @openapi-generator-plus/core to 2.0.0
+
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+
+- Updated dependencies [19a8994]
+- Updated dependencies [87bd6b5]
+  - @openapi-generator-plus/handlebars-templates@1.1.4
+  - @openapi-generator-plus/typescript-generator-common@1.2.0
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.2.1
+
 ## 1.0.2
 
 ### Patch Changes

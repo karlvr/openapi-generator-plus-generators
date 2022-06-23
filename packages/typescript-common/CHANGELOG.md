@@ -1,5 +1,32 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.2.0
+
+### Minor Changes
+
+- 87bd6b5: Core has removed `initialValue` from the generator and renamed the `CodegenProperty` member to `defaultValue`
+
+  The behaviour of the new `defaultValue` is significantly different to the old `initialValue`. Previously any
+  _required_ property would have a non-null initial value; in Java generators this resulted in a default value
+  non-null value for many properties in generated module objects.
+
+  _NOTE_: For generated Java models some properties may be `null` where they previously had values when the object was constructed. Please check any
+  differences in your generated code and check that your code won't cause a `NullPointerException` at runtime, such as if calling
+  `model.getArrayProperty().add(value)`, assuming that `arrayProperty` will be non-null. Instead change to `model.arrayProperty().add(value)` or
+  `model.addArrayProperty(value)`.
+
+### Patch Changes
+
+- 19a8994: Update @openapi-generator-plus/core to 2.0.0
+
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+
+- Updated dependencies [19a8994]
+- Updated dependencies [0664881]
+  - @openapi-generator-plus/java-like-generator-helper@2.0.0
+  - @openapi-generator-plus/generator-common@1.2.0
+  - @openapi-generator-plus/handlebars-templates@1.1.4
+
 ## 1.1.0
 
 ### Minor Changes

@@ -1,5 +1,44 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.0.0
+
+### Major Changes
+
+- 19a8994: Update @openapi-generator-plus/core to 2.0.0
+
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+
+### Minor Changes
+
+- 0664881: Don't generate default values for properties for clients
+
+  The client should not send a value, and the server is expected to use its default value.
+  Note this from the [OpenAPI specification](https://swagger.io/specification/#schema-object):
+
+  > `default` - The default value represents what would be assumed by the consumer of the input as the value of the schema if one is not provided.
+
+  _NOTE_: For Java clients some properties may be `null` where they previously had values when the object was constructed. Please check any differences in your generated code
+  and check that your code won't cause a `NullPointerException` at runtime.
+
+- 87bd6b5: Core has removed `initialValue` from the generator and renamed the `CodegenProperty` member to `defaultValue`
+
+  The behaviour of the new `defaultValue` is significantly different to the old `initialValue`. Previously any
+  _required_ property would have a non-null initial value; in Java generators this resulted in a default value
+  non-null value for many properties in generated module objects.
+
+  _NOTE_: For generated Java models some properties may be `null` where they previously had values when the object was constructed. Please check any
+  differences in your generated code and check that your code won't cause a `NullPointerException` at runtime, such as if calling
+  `model.getArrayProperty().add(value)`, assuming that `arrayProperty` will be non-null. Instead change to `model.arrayProperty().add(value)` or
+  `model.addArrayProperty(value)`.
+
+### Patch Changes
+
+- Updated dependencies [19a8994]
+- Updated dependencies [0664881]
+  - @openapi-generator-plus/java-like-generator-helper@2.0.0
+  - @openapi-generator-plus/generator-common@1.2.0
+  - @openapi-generator-plus/handlebars-templates@1.1.4
+
 ## 1.3.1
 
 ### Patch Changes
