@@ -1,5 +1,5 @@
 {{#with property}}
-private {{>frag/pojoPropertyType}} {{identifier name}}{{#if defaultValue}} = {{{defaultValue.literalValue}}}{{/if}};
+private {{>frag/pojoPropertyType}} {{identifier name}}{{#unless @root.clientGenerator}}{{#if defaultValue}} = {{{defaultValue.literalValue}}}{{/if}}{{/unless}};
 
 public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	{{#if nullable}}

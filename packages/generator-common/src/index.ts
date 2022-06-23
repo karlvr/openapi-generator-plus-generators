@@ -1,4 +1,4 @@
-import { CodegenGenerator, CodegenServer, CodegenSchemaPurpose, CodegenGeneratorContext, CodegenConfig } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenServer, CodegenSchemaPurpose, CodegenGeneratorContext, CodegenConfig, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { camelCase } from './case-transforms'
 export * from './case-transforms'
 export * from './http-methods'
@@ -33,6 +33,9 @@ export function commonGenerator(config: CodegenConfig, context: CodegenGenerator
 		templateRootContext: () => {
 			return {
 				generatedDate: new Date().toISOString(),
+				clientGenerator: context.generator().generatorType() === CodegenGeneratorType.CLIENT,
+				serverGenerator: context.generator().generatorType() === CodegenGeneratorType.SERVER,
+				documentationGenerator: context.generator().generatorType() === CodegenGeneratorType.DOCUMENTATION,
 			}
 		},
 
