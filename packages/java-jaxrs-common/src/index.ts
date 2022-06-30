@@ -490,9 +490,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.MAP:
 					/* Initialise empty map properties with an empty map */
 					return { value: {}, literalValue: `new ${nativeType.concreteType}()` }
+				default:
+					return null
 			}
-	
-			throw new Error(`Unsupported initial value type: ${schemaType}`)
 		},
 		
 		operationGroupingStrategy: () => {
