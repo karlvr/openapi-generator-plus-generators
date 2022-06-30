@@ -102,7 +102,10 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 			concreteType: null,
 		}),
 		defaultValue: () => {
-			return { value: null, literalValue: 'undefined' }
+			return null
+		},
+		initialValue: () => {
+			return null
 		},
 		toOperationGroupName: (name) => {
 			return name

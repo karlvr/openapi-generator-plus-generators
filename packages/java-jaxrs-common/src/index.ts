@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -446,6 +446,53 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 	
 			throw new Error(`Unsupported default value type: ${schemaType}`)
+		},
+
+		initialValue: (options) => {
+			const { required, schemaType, nativeType, defaultValue } = options
+
+			/*
+			  Default values in the spec are intended to be applied when a client or server receives a
+			  response or request, respectively, and values are missing.
+
+			  This implementation means that properties with defaults will get those default values as
+			  their initial value, meaning that any properties that are omitted in the _received_ request or
+			  response will have the default value.
+
+			  TODO But it also means that any requests or responses _sent_ will _also_ have the default values,
+			  rather than omitting the property and letting the receiving side apply the default value. This
+			  is NOT according to the spec and should be fixed.
+			 */
+			if (defaultValue) {
+				return defaultValue
+			}
+	
+			if (!required) {
+				return null
+			}
+	
+			/*
+			  We create empty collections for required properties in the Java code. This is because we generate
+			  convenience methods for collections that initialise the collection when adding the first element,
+			  which would mean if we didn't initialise required collection properties we might end up sending
+			  a null collection value if the code didn't _add_ any elements. This would then require
+			  explicitly initialising each required collection in user code, either every time, or whenever
+			  no elements are added to it.
+			  
+			  Therfore we are not able to detect whether the user code has forgotten to populate the collection, like
+			  we are with scalar required properties, so we populate it with an empty collection so we always generate
+			  a valid result.
+			 */
+			switch (schemaType) {
+				case CodegenSchemaType.ARRAY:
+					/* Initialise required array properties with an empty array */
+					return { value: [], literalValue: `new ${nativeType.concreteType}()` }
+				case CodegenSchemaType.MAP:
+					/* Initialise empty map properties with an empty map */
+					return { value: {}, literalValue: `new ${nativeType.concreteType}()` }
+			}
+	
+			throw new Error(`Unsupported initial value type: ${schemaType}`)
 		},
 		
 		operationGroupingStrategy: () => {

@@ -438,6 +438,10 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					return { value: null, literalValue: 'undefined' }
 			}
 		},
+		initialValue: () => {
+			/* TypeScript generators don't use initial values */
+			return null
+		},
 		operationGroupingStrategy: () => {
 			return context.operationGroupingStrategies.addToGroupsByTagOrPath
 		},
