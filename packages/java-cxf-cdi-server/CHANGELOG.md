@@ -1,5 +1,23 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 2.1.0
+
+### Minor Changes
+
+- db48add: Upgrade core types to 2.1.0 to return the `initialValue` function removed incorrectly in 2.0.0
+
+  _Note_ The major changes in 2.0.0 have been partially undone; required collections default to empty collections again.
+
+### Patch Changes
+
+- Updated dependencies [02405ff]
+- Updated dependencies [db48add]
+- Updated dependencies [02405ff]
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.1.0
+  - @openapi-generator-plus/generator-common@1.3.0
+  - @openapi-generator-plus/handlebars-templates@1.2.0
+  - @openapi-generator-plus/java-jaxrs-server-generator@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

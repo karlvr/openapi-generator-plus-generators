@@ -1,12 +1,29 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.1.0
+
+### Minor Changes
+
+- 02405ff: Reimplement initialValue after previously removing it, with non-nulls only for required collections which maintains the convenience that we had previously.
+- db48add: Upgrade core types to 2.1.0 to return the `initialValue` function removed incorrectly in 2.0.0
+- 02405ff: Reimplement generating empty collections as initial values for required collections. It was a mistake to undo this behaviour. There is more detail on this decision in the implementation of the `initialValue` function.
+
+  _Note_ The major changes in 2.0.0 have been partially undone; required collections default to empty collections again.
+
+### Patch Changes
+
+- Updated dependencies [db48add]
+  - @openapi-generator-plus/generator-common@1.3.0
+  - @openapi-generator-plus/handlebars-templates@1.2.0
+  - @openapi-generator-plus/java-like-generator-helper@2.1.0
+
 ## 2.0.0
 
 ### Major Changes
 
 - 19a8994: Update @openapi-generator-plus/core to 2.0.0
 
-  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes.
+  _Note_ Please check the changelog for Java generators for breaking changes to the default values in generated model classes. But see the changelog for 2.1.0 above.
 
 ### Minor Changes
 

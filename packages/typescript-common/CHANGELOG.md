@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.3.0
+
+### Minor Changes
+
+- 02405ff: Reimplement initialValue after previously removing it, with non-nulls only for required collections which maintains the convenience that we had previously.
+- db48add: Upgrade core types to 2.1.0 to return the `initialValue` function removed incorrectly in 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [db48add]
+  - @openapi-generator-plus/generator-common@1.3.0
+  - @openapi-generator-plus/handlebars-templates@1.2.0
+  - @openapi-generator-plus/java-like-generator-helper@2.1.0
+
 ## 1.2.0
 
 ### Minor Changes
