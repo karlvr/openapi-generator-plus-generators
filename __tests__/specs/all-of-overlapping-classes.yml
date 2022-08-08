@@ -1,0 +1,21 @@
+openapi: 3.0.3
+info:
+  title: allOf with overlapping classes
+  version: '1.0'
+paths: {}
+components:
+  schemas:
+    Root:
+      type: object
+      discriminator:
+        propertyName: theDiscriminator
+      properties:
+        theDiscriminator:
+          type: string
+    First:
+      allOf:
+        - $ref: '#/components/schemas/Root'
+    Second:
+      # Because this object extends the first, but is part of a discriminator, it has a different discriminator value
+      allOf:
+        - $ref: '#/components/schemas/First'
