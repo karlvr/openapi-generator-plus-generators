@@ -35,7 +35,7 @@
     "@openapi-generator-plus/handlebars-templates": "1.2.0",
     "@openapi-generator-plus/java-jaxrs-generator-common": "2.1.0",
     "@openapi-generator-plus/java-jaxrs-server-generator": "2.1.0",
-    "@openapi-generator-plus/types": "^2.1.0"
+    "@openapi-generator-plus/types": "^2.2.0"
   },
   "publishConfig": {
     "access": "public"
