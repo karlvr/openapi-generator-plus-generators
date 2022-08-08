@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.1.1
+
+### Patch Changes
+
+- 691f556: Update core to 2.2.0
+- 75f9ee3: Include DOM lib for missing functions
+- Updated dependencies [691f556]
+- Updated dependencies [84e4151]
+  - @openapi-generator-plus/generator-common@1.3.1
+  - @openapi-generator-plus/handlebars-templates@1.2.1
+  - @openapi-generator-plus/typescript-generator-common@1.4.0
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.3.1
+
 ## 1.1.0
 
 ### Minor Changes
