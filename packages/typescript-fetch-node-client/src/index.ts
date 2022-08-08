@@ -14,7 +14,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		},
 		defaultTypeScriptOptions: () => ({
 			target: 'ES5',
-			libs: ['$target'],
+			libs: ['$target', 'DOM'],
 		}),
 	})
 	const base = typescriptGenerator(config, myContext)
