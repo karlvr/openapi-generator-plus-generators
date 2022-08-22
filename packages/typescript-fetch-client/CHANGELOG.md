@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.4.0
+
+### Minor Changes
+
+- 7477d77: Change approach for discriminator inheritance incompatibility to use Omit rather than resorting to avoiding inheritance
+
+### Patch Changes
+
+- Updated dependencies [7477d77]
+  - @openapi-generator-plus/typescript-generator-common@1.5.0
+
 ## 1.3.1
 
 ### Patch Changes
