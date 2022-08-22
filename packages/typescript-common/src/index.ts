@@ -560,15 +560,5 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				schema.nativeType.serializedType = schema.nativeType.nativeType
 			}
 		},
-
-		checkAllOfInheritanceCompatibility: (allOfSummary) => {
-			/* We output discriminator properties in our interfaces with fixed values, so we cannot then _extend_ that interface
-			   and declare a different value, so we have to say we cannot use inheritance.
-			 */
-			if (allOfSummary.discriminators.length && allOfSummary.referenceSchemas.length > 1) {
-				return false
-			}
-			return true
-		},
 	}
 }
