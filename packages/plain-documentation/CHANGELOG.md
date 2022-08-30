@@ -1,5 +1,11 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.2.2
+
+### Patch Changes
+
+- 05b4351: Change enum display to show the native value format
+
 ## 1.2.1
 
 ### Patch Changes
