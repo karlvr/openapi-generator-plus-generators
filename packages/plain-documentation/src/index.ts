@@ -75,6 +75,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				serializedType: '', /* To prevent us from outputting in the documentation */
 			})
 		},
+		toEnumMemberName: (name) => name,
 		toNativeObjectType: function(options) {
 			const { scopedName } = options
 			let modelName = ''
