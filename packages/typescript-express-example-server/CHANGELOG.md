@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.1.3
+
+### Patch Changes
+
+- 9732cd1: Update core to 2.3.0
+- Updated dependencies [9732cd1]
+  - @openapi-generator-plus/generator-common@1.3.2
+  - @openapi-generator-plus/handlebars-templates@1.2.2
+  - @openapi-generator-plus/typescript-generator-common@1.5.1
+
 ## 1.1.2
 
 ### Patch Changes

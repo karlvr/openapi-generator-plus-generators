@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.1.2
+
+### Patch Changes
+
+- 9732cd1: Update core to 2.3.0
+- Updated dependencies [9732cd1]
+  - @openapi-generator-plus/generator-common@1.3.2
+
 ## 2.1.1
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 1.1.3
+
+### Patch Changes
+
+- 9732cd1: Update core to 2.3.0
+- Updated dependencies [9732cd1]
+- Updated dependencies [bd75c7d]
+  - @openapi-generator-plus/handlebars-templates@1.2.2
+  - @openapi-generator-plus/typescript-generator-common@1.5.1
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.4.1
+
 ## 1.1.2
 
 ### Patch Changes
