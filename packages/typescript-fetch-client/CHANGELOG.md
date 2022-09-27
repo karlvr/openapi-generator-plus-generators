@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.4.2
+
+### Patch Changes
+
+- 5601ab5: Support illegal identifiers in model interfaces
+- Updated dependencies [5601ab5]
+  - @openapi-generator-plus/handlebars-templates@1.2.3
+  - @openapi-generator-plus/typescript-generator-common@1.5.2
+
 ## 1.4.1
 
 ### Patch Changes

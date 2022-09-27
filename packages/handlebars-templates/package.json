@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/handlebars-templates",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Utility for openapi-generator-plus generators to use with Handlebars templates",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

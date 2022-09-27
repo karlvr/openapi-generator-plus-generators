@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.2.3
+
+### Patch Changes
+
+- 5601ab5: Support illegal identifiers in model interfaces
+
 ## 1.2.2
 
 ### Patch Changes

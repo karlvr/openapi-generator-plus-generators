@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.1.3
+
+### Patch Changes
+
+- 5601ab5: Support illegal identifiers in model interfaces
+
 ## 2.1.2
 
 ### Patch Changes
