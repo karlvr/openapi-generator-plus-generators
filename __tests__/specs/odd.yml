@@ -1,0 +1,12 @@
+openapi: '3.0.3'
+info:
+  title: Oddities
+  version: '1.0'
+paths: {}
+components:
+  schemas:
+    SomeRequest:
+      type: object
+      properties:
+        derp-derp:
+          type: string

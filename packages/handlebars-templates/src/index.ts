@@ -341,6 +341,23 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 	})
 
+	/**
+	 * Quote the given string if it is not a valid identifier.
+	 */
+	hbs.registerHelper('quoteInvalidIdentifier', function(value: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (value === null || value === undefined || typeof value !== 'object') {
+			if (generator().toIdentifier(value) !== value) {
+				return generator().toLiteral(value, utils.stringLiteralValueOptions())
+			} else {
+				return value
+			}
+		} else {
+			throw new Error(`Unexpected argument type to quoteInvalidIdentifier helper "${value}" of type ${typeof value} @ ${sourcePosition(options)}`)
+		}
+	})
+
 	/** Block helper that evaluates if there are more items in the current iteration context */
 	hbs.registerHelper('hasMore', function(this: UnknownObject, options: HelperOptions) {
 		if (options.data.last === false) {

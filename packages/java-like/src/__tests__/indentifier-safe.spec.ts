@@ -14,6 +14,7 @@ test('identifierSafe converts illegals to underscores', () => {
 	expect(identifierSafe('one!two')).toBe('one_two')
 	expect(identifierSafe('one two')).toBe('one_two')
 	expect(identifierSafe('one(two')).toBe('one_two')
+	expect(identifierSafe('one-two')).toBe('one_two')
 })
 
 test('identifierSafe strips trailing illegals', () => {
