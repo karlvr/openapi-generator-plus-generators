@@ -6,4 +6,4 @@ Used to support a variety of different injection approaches.
 @param class A concrete class for the dependency (optional)
 @param name The name of the instance variable
 --}}
-private {{interface}} {{name}} = new {{class}}();
+private {{interface}} {{name}}{{#ifdef class}} = new {{class}}();{{else}}; // TODO a client implementation is required{{/ifdef}}
