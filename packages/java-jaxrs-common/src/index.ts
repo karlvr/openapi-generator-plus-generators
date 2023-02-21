@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -74,6 +74,10 @@ export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	 * Override the class used to capture application/x-www-form-urlencoded messages.
 	 */
 	formUrlEncodedImplementation?: () => CodegenNativeType
+}
+
+interface AugmentedCodegenSchema {
+	__cannotUseDeduction: boolean
 }
 
 const RESERVED_WORDS = [
@@ -655,6 +659,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 		},
 
+		postProcessSchema(schema) {
+			checkCannotUseDeduction(schema)
+		},
+
 		checkPropertyCompatibility: (parentProp, childProp) => {
 			if (!baseGenerator.checkPropertyCompatibility(parentProp, childProp)) {
 				return false
@@ -668,5 +676,29 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 			return true
 		},
+	}
+}
+
+/**
+ * Identify polymorphic schemas that cannot use Jackson's DEDUCTION polymorphism, as it only supports object structures.
+ */
+function checkCannotUseDeduction(schema: CodegenSchema) {
+	if (isCodegenObjectSchema(schema) && schema.polymorphic && schema.children) {
+		(schema as unknown as AugmentedCodegenSchema).__cannotUseDeduction = false
+		for (const child of schema.children) {
+			if (child.type !== 'object') {
+				(schema as unknown as AugmentedCodegenSchema)
+				break
+			}
+		}
+	}
+	if (isCodegenInterfaceSchema(schema) && schema.polymorphic && schema.implementors) {
+		(schema as unknown as AugmentedCodegenSchema).__cannotUseDeduction = false
+		for (const impl of schema.implementors) {
+			if (impl.type !== 'object') {
+				(schema as unknown as AugmentedCodegenSchema)
+				break
+			}
+		}
 	}
 }
