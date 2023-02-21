@@ -687,7 +687,7 @@ function checkCannotUseDeduction(schema: CodegenSchema) {
 		(schema as unknown as AugmentedCodegenSchema).__cannotUseDeduction = false
 		for (const child of schema.children) {
 			if (child.type !== 'object') {
-				(schema as unknown as AugmentedCodegenSchema)
+				(schema as unknown as AugmentedCodegenSchema).__cannotUseDeduction = true
 				break
 			}
 		}
@@ -696,7 +696,7 @@ function checkCannotUseDeduction(schema: CodegenSchema) {
 		(schema as unknown as AugmentedCodegenSchema).__cannotUseDeduction = false
 		for (const impl of schema.implementors) {
 			if (impl.type !== 'object') {
-				(schema as unknown as AugmentedCodegenSchema)
+				(schema as unknown as AugmentedCodegenSchema).__cannotUseDeduction = true
 				break
 			}
 		}
