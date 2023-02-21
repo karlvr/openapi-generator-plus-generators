@@ -1,5 +1,18 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 2.2.0
+
+### Minor Changes
+
+- 2c194dd: Upgrade Jackson to 2.14.2
+
+### Patch Changes
+
+- Updated dependencies [93780ce]
+- Updated dependencies [d64090b]
+- Updated dependencies [8ec1f52]
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.2.0
+
 ## 2.1.4
 
 ### Patch Changes

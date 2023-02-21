@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.2.0
+
+### Minor Changes
+
+- d64090b: Standardise wrapper class value property methods so we have addValue helpers for wrapped array properties
+- 8ec1f52: Don't use Jackson's DEDUCTION if the schema isn't compatible with it
+
+### Patch Changes
+
+- 93780ce: Fix generation failure when we don't have an ApiSpec implementation (as we don't without cxf)
+
 ## 2.1.4
 
 ### Patch Changes
