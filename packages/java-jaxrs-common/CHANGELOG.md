@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.2.1
+
+### Patch Changes
+
+- 4dff720: Fix for Jackson DEDUCTION detection in 8ec1f5209a7ff6787c7a3987b4403843298a9192
+
 ## 2.2.0
 
 ### Minor Changes
