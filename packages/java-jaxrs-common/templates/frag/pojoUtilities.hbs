@@ -1,0 +1,52 @@
+@Override
+public boolean equals(java.lang.Object o) {
+	if (this == o) {
+		return true;
+	}
+	if (o == null || getClass() != o.getClass()) {
+		return false;
+	}
+	{{#if parents}}
+	if (!super.equals(o)) {
+		return false;
+	}
+	{{/if}}
+{{#if (isWrapper)}}
+	{{className name}} {{identifier name}} = ({{className name}}) o;
+	return java.util.Objects.equals(this.{{identifier property.name}}, {{identifier name}}.{{identifier property.name}});
+	{{else if properties}}
+	{{className name}} {{identifier name}} = ({{className name}}) o;
+	return {{#each properties}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}}
+			&& {{/hasMore}}{{/each}};
+{{else}}
+	return true;
+{{/if}}
+}
+
+@Override
+public int hashCode() {
+	return {{#if parents}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#if (isWrapper)}}this.{{identifier property.name}}{{else}}{{#each properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{/if}});
+}
+
+@Override
+public java.lang.String toString() {
+	java.lang.StringBuilder sb = new java.lang.StringBuilder();
+	sb.append("class {{className name}} {\n");
+	{{#if parents}}
+	sb.append("    ").append(java.util.Objects.toString(super.toString(), "null").replace("\n", "\n    ")).append("\n");
+	{{/if}}
+	{{#if (isWrapper)}}
+	sb.append("    {{identifier property.name}}: ").append(java.util.Objects.toString(this.{{identifier property.name}}, "null").replace("\n", "\n    ")).append("\n");
+	{{else}}
+	{{#each properties}}
+	sb.append("    {{identifier name}}: ").append(java.util.Objects.toString(this.{{identifier name}}, "null").replace("\n", "\n    ")).append("\n");
+	{{/each}}
+	{{#if additionalProperties}}
+	for (java.lang.String key : additionalProperties.keySet()) {
+		sb.append("    ").append(key).append(": ").append(java.util.Objects.toString(getAdditionalProperty(key), "null").replace("\n", "\n    ")).append("\n");
+	}
+	{{/if}}
+	{{/if}}
+	sb.append("}");
+	return sb.toString();
+}
