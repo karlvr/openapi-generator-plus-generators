@@ -23,6 +23,13 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 			target: 'ES5',
 			libs: ['$target', 'DOM'],
 		}),
+		toEnumLiteral(value, options) {
+			/* We just want to output the literal string value as we change enums to disjunctions */
+			return myContext.generator().toLiteral(value, {
+				...options,
+				schemaType: CodegenSchemaType.STRING,
+			})
+		},
 	})
 
 	const generatorOptions: CodegenOptionsTypeScriptFetchClient = {

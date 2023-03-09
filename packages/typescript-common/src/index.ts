@@ -44,11 +44,13 @@ export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
 	defaultNpmOptions?: (config: CodegenConfig, defaultValue: NpmOptions) => NpmOptions
 	defaultTypeScriptOptions?: (config: CodegenConfig, defaultValue: TypeScriptOptions) => TypeScriptOptions
+	toEnumLiteral?: CodegenGenerator['toLiteral']
 }
 
 export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext, add: Partial<TypeScriptGeneratorContext>): TypeScriptGeneratorContext {
 	const result: TypeScriptGeneratorContext = {
 		...base,
+		...add,
 		loadAdditionalTemplates: async function(hbs) {
 			/* Load the additional first, so that earlier contexts in the chain have priority */
 			if (add.loadAdditionalTemplates) {
@@ -95,6 +97,13 @@ export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext
 				result = base.defaultTypeScriptOptions(config, result)
 			}
 			return result
+		},
+		toEnumLiteral(value, options) {
+			if (add.toEnumLiteral) {
+				return add.toEnumLiteral(value, options)
+			} else {
+				return `${options.nativeType.concreteType}.${result.generator().toEnumMemberName(String(value))}`
+			}
 		},
 	}
 	return result
@@ -240,8 +249,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			const { type, format, schemaType } = options
 
-			if (schemaType === CodegenSchemaType.ENUM) {
-				return `${options.nativeType.concreteType}.${context.generator().toEnumMemberName(String(value))}`
+			if (schemaType === CodegenSchemaType.ENUM && context.toEnumLiteral) {
+				return context.toEnumLiteral(value, options)
 			}
 
 			switch (type) {
