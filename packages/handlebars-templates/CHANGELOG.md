@@ -1,5 +1,13 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.2.4
+
+### Patch Changes
+
+- da518bb: Update core types
+- Updated dependencies [da518bb]
+  - @openapi-generator-plus/generator-common@1.3.3
+
 ## 1.2.3
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 2.2.2
+
+### Patch Changes
+
+- da518bb: Update core types
+- Updated dependencies [da518bb]
+- Updated dependencies [cd474f9]
+  - @openapi-generator-plus/handlebars-templates@1.2.4
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.3.0
+  - @openapi-generator-plus/generator-common@1.3.3
+  - @openapi-generator-plus/java-like-generator-helper@2.1.4
+
 ## 2.2.1
 
 ### Patch Changes

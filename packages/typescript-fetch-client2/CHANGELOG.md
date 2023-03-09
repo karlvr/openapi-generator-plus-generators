@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 0.5.0
+
+### Minor Changes
+
+- 73e5402: Generate enums as disjunctions, but retain a supporting enum
+
+### Patch Changes
+
+- da518bb: Update core types
+- Updated dependencies [da518bb]
+  - @openapi-generator-plus/handlebars-templates@1.2.4
+  - @openapi-generator-plus/typescript-generator-common@1.5.3
+  - @openapi-generator-plus/generator-common@1.3.3
+
 ## 0.4.0
 
 ### Minor Changes

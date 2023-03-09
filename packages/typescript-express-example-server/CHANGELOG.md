@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.1.5
+
+### Patch Changes
+
+- da518bb: Update core types
+- Updated dependencies [da518bb]
+  - @openapi-generator-plus/handlebars-templates@1.2.4
+  - @openapi-generator-plus/typescript-generator-common@1.5.3
+  - @openapi-generator-plus/generator-common@1.3.3
+
 ## 1.1.4
 
 ### Patch Changes

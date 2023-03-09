@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.2.2
+
+### Patch Changes
+
+- da518bb: Update core types
+- Updated dependencies [da518bb]
+  - @openapi-generator-plus/handlebars-templates@1.2.4
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes

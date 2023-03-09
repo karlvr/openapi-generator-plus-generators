@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.3.0
+
+### Minor Changes
+
+- cd474f9: Add equals, hashCode and toString to wrapper classes
+
+### Patch Changes
+
+- da518bb: Update core types
+- Updated dependencies [da518bb]
+  - @openapi-generator-plus/handlebars-templates@1.2.4
+  - @openapi-generator-plus/generator-common@1.3.3
+  - @openapi-generator-plus/java-like-generator-helper@2.1.4
+
 ## 2.2.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.1.4
+
+### Patch Changes
+
+- da518bb: Update core types
+- Updated dependencies [da518bb]
+  - @openapi-generator-plus/generator-common@1.3.3
+
 ## 2.1.3
 
 ### Patch Changes
