@@ -1,6 +1,13 @@
 {{>frag/schemaDocumentation}}
-export enum {{className name}} {
+export type {{className name}} =
 {{#each enumValues}}
-	{{{name}}} = {{{literalValue}}}{{#hasMore}},{{/hasMore}}
+	{{{literalValue}}}{{#hasMore}} |{{/hasMore}}
 {{/each}}
+
+export namespace {{className name}} {
+	export enum Enum {
+	{{#each enumValues}}
+		{{{name}}} = {{{literalValue}}}{{#hasMore}},{{/hasMore}}
+	{{/each}}
+	}
 }

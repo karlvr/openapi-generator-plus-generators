@@ -67,6 +67,14 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 				return base.toNativeType(options)
 			}
 		},
+		toSuggestedSchemaName: (name, options) => {
+			if (options.schemaType === CodegenSchemaType.ENUM) {
+				/* We don't add a suffix to enums as we generate them as disjunctions */
+				return name
+			} else {
+				return base.toSuggestedSchemaName(name, options)
+			}
+		},
 		postProcessDocument: (doc) => {
 			for (const group of doc.groups) {
 				for (const op of group.operations) {
