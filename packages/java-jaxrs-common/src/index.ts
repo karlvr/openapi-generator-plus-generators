@@ -193,7 +193,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					if (format === 'int32' || !format) {
 						return !primitive ? `java.lang.Integer.valueOf(${value})` : `${value}`
 					} else if (format === 'int64') {
-						return !primitive ? `java.lang.Long.valueOf(${value}l)` : `${value}l`
+						return !primitive ? `java.lang.Long.valueOf(${value}L)` : `${value}l`
 					} else {
 						throw new Error(`Unsupported ${type} format: ${format}`)
 					}
