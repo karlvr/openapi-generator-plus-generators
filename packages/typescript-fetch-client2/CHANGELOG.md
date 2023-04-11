@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 0.6.0
+
+### Minor Changes
+
+- 958a0a8: Bump node dependencies in the package.json in the generator output to workaround lowest version resolution in pnpm 8
+
+### Patch Changes
+
+- Updated dependencies [a5561e1]
+  - @openapi-generator-plus/typescript-generator-common@1.5.4
+
 ## 0.5.0
 
 ### Minor Changes

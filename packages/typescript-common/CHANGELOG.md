@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.5.4
+
+### Patch Changes
+
+- a5561e1: Fix enum literals in TypeScript generators that don't use the chainTypeScriptGeneratorContext method (regression from 57ed79a5f49c95007af80745c86a9c4efd650070)
+
 ## 1.5.3
 
 ### Patch Changes
