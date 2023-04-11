@@ -1,11 +1,10 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
-import typescriptGenerator, { options as typescriptGeneratorOptions, TypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
+import typescriptGenerator, { options as typescriptGeneratorOptions, TypeScriptGeneratorContext, chainTypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
 
 const createGenerator: CodegenGeneratorConstructor<TypeScriptGeneratorContext> = (config, context) => {
-	const myContext: TypeScriptGeneratorContext = {
-		...context,
+	const myContext: TypeScriptGeneratorContext = chainTypeScriptGeneratorContext(context, {
 		loadAdditionalTemplates: async(hbs) => {
 			/* Convert an operation path to an express path */
 			hbs.registerHelper('expressPath', function(path: string) {
@@ -30,7 +29,7 @@ const createGenerator: CodegenGeneratorConstructor<TypeScriptGeneratorContext> =
 			target: 'ES2015',
 			libs: ['$target', 'DOM'],
 		}),
-	}
+	})
 
 	const generatorOptions = typescriptGeneratorOptions(config, myContext)
 

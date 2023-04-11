@@ -98,13 +98,6 @@ export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext
 			}
 			return result
 		},
-		toEnumLiteral(value, options) {
-			if (add.toEnumLiteral) {
-				return add.toEnumLiteral(value, options)
-			} else {
-				return `${options.nativeType.concreteType}.${result.generator().toEnumMemberName(String(value))}`
-			}
-		},
 	}
 	return result
 }
@@ -249,8 +242,12 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			const { type, format, schemaType } = options
 
-			if (schemaType === CodegenSchemaType.ENUM && context.toEnumLiteral) {
-				return context.toEnumLiteral(value, options)
+			if (schemaType === CodegenSchemaType.ENUM) {
+				if (context.toEnumLiteral) {
+					return context.toEnumLiteral(value, options)
+				} else {
+					return `${options.nativeType.concreteType}.${context.generator().toEnumMemberName(String(value))}`
+				}
 			}
 
 			switch (type) {
