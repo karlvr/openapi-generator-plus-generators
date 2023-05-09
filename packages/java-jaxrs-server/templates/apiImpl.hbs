@@ -2,14 +2,7 @@ package {{apiImplPackage}};
 
 {{>frag/imports}}
 {{>generatedAnnotation}}
-@{{javax}}.ws.rs.Path("{{{path}}}")
 {{>hooks/apiImplClassAnnotations}}
-{{#if consumes}}
-@{{javax}}.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
-{{/if}}
-{{#if produces}}
-@{{javax}}.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
-{{/if}}
 public class {{className name}}ApiImpl implements {{apiPackage}}.{{className name}}Api {
 
 	{{>util/inject interface=(concat apiServicePackage '.' (className name) 'ApiService') class=(concat apiServiceImplPackage '.' (className name) 'ApiServiceImpl') name='delegate'}}
