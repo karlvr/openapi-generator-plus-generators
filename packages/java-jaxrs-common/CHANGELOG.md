@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.4.0
+
+### Minor Changes
+
+- 899a92d: Support optional security requirements in swagger v3 annotations
+
 ## 2.3.1
 
 ### Patch Changes
