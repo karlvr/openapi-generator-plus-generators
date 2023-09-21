@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 2.2.5
+
+### Patch Changes
+
+- e45f689: Use preferred cache control from string method. Will prevent deprecated warnings for those using jakarta.
+
 ## 2.2.4
 
 ### Patch Changes
