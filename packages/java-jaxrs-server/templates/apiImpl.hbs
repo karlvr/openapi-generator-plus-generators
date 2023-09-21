@@ -14,7 +14,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 {{#each operations}}
 	public {{javax}}.ws.rs.core.Response {{name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}) {
 		{{#with defaultResponse}}
-		final {{javax}}.ws.rs.core.Response.ResponseBuilder __response = {{javax}}.ws.rs.core.Response.status({{code}}).cacheControl({{javax}}.ws.rs.core.CacheControl.valueOf("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
+		final {{javax}}.ws.rs.core.Response.ResponseBuilder __response = {{javax}}.ws.rs.core.Response.status({{code}}).cacheControl({{javax}}.ws.rs.ext.RuntimeDelegate.getInstance().createHeaderDelegate({{javax}}.ws.rs.core.CacheControl.class).fromString("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
 		{{/with}}
 		try {
 			{{#if @root.useBeanValidation}}
