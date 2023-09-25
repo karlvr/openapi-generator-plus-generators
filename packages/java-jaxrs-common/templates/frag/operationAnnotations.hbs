@@ -46,5 +46,5 @@
 		@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = ""), /* Security is declared as optional */
 	{{/if}}
 	}{{/if}},
-	tags={ {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} }
+	tags = { {{#each tags}}"{{{.}}}"{{#hasMore}}, {{/hasMore}}{{/each}} }
 )
