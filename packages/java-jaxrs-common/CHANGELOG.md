@@ -1,5 +1,20 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.5.0
+
+### Minor Changes
+
+- 8c9c533: Update third party dependencies
+
+### Patch Changes
+
+- 1862f39: Added space around equals sign on Operation tag
+- Updated dependencies [59c2ca9]
+- Updated dependencies [8c9c533]
+  - @openapi-generator-plus/generator-common@1.3.4
+  - @openapi-generator-plus/handlebars-templates@1.3.0
+  - @openapi-generator-plus/java-like-generator-helper@2.1.5
+
 ## 2.4.0
 
 ### Minor Changes

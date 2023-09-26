@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 2.2.5
+
+### Patch Changes
+
+- 4979620: Fix javax reference in JavaDoc when using jakarta
+- e45f689: Use preferred cache control from string method. Will prevent deprecated warnings for those using jakarta.
+- Updated dependencies [59c2ca9]
+- Updated dependencies [1862f39]
+- Updated dependencies [8c9c533]
+  - @openapi-generator-plus/generator-common@1.3.4
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.5.0
+  - @openapi-generator-plus/handlebars-templates@1.3.0
+  - @openapi-generator-plus/java-like-generator-helper@2.1.5
+
 ## 2.2.4
 
 ### Patch Changes

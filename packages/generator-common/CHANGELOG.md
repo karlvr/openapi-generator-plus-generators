@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.3.4
+
+### Patch Changes
+
+- 59c2ca9: Fix rimraf
+
 ## 1.3.3
 
 ### Patch Changes

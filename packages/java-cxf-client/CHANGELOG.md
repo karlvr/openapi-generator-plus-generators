@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 2.1.10
+
+### Patch Changes
+
+- Updated dependencies [59c2ca9]
+- Updated dependencies [1862f39]
+- Updated dependencies [8c9c533]
+  - @openapi-generator-plus/generator-common@1.3.4
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.5.0
+  - @openapi-generator-plus/handlebars-templates@1.3.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.2.5
+
 ## 2.1.9
 
 ### Patch Changes

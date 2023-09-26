@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.6.0
+
+### Minor Changes
+
+- 8c9c533: Update third party dependencies
+
+### Patch Changes
+
+- Updated dependencies [59c2ca9]
+- Updated dependencies [8c9c533]
+  - @openapi-generator-plus/generator-common@1.3.4
+  - @openapi-generator-plus/handlebars-templates@1.3.0
+  - @openapi-generator-plus/java-like-generator-helper@2.1.5
+
 ## 1.5.4
 
 ### Patch Changes

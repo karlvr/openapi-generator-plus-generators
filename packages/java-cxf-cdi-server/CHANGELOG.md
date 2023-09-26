@@ -1,5 +1,23 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 2.3.0
+
+### Minor Changes
+
+- 8c9c533: Update third party dependencies
+
+### Patch Changes
+
+- Updated dependencies [59c2ca9]
+- Updated dependencies [4979620]
+- Updated dependencies [e45f689]
+- Updated dependencies [1862f39]
+- Updated dependencies [8c9c533]
+  - @openapi-generator-plus/generator-common@1.3.4
+  - @openapi-generator-plus/java-jaxrs-server-generator@2.2.5
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.5.0
+  - @openapi-generator-plus/handlebars-templates@1.3.0
+
 ## 2.2.4
 
 ### Patch Changes
