@@ -25,7 +25,7 @@
     "@openapi-generator-plus/handlebars-templates": "1.2.4",
     "@openapi-generator-plus/java-like-generator-helper": "2.1.4",
     "@openapi-generator-plus/types": "^2.5.0",
-    "handlebars": "^4.7.7",
+    "handlebars": "^4.7.8",
     "pluralize": "^8.0.0"
   },
   "publishConfig": {

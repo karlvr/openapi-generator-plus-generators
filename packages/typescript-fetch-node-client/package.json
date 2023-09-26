@@ -43,6 +43,6 @@
   },
   "gitHead": "4d7336969427733ca316dfb48219f166adb9182a",
   "devDependencies": {
-    "node-fetch": "^3.2.4"
+    "node-fetch": "^3.3.2"
   }
 }
