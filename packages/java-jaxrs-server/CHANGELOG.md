@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 2.2.6
+
+### Patch Changes
+
+- 50dd830: Bump to fix broken archive
+
 ## 2.2.5
 
 ### Patch Changes
