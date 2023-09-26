@@ -3,19 +3,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { tmpdir } from 'os'
 import { cwd } from 'process'
-import rimraf from 'rimraf'
-
-function rimrafPromise(path: string, options?: rimraf.Options): Promise<void> {
-	return new Promise(function(resolve, reject) {
-		rimraf(path, options || {}, function(error) {
-			if (error) {
-				reject(error)
-			} else {
-				resolve()
-			}
-		})
-	})
-}
+import { rimraf } from 'rimraf'
 
 /**
  * A function to handle a test generation.
@@ -47,7 +35,7 @@ export async function testGenerate(result: CodegenResult, options: TestGenerateO
 
 	/* Clean the output first */
 	if (clean !== false) {
-		await rimrafPromise(outputPath, { disableGlob: true })
+		await rimraf(outputPath, { glob: false })
 	}
 
 	await fs.mkdir(outputPath, { recursive: true })
