@@ -90,7 +90,7 @@ export async function emit(templateName: string, outputPath: string, context: Un
 		if (error instanceof Error) {
 			const newError = new Error(`Failed to generate template "${templateName}": ${error.message}`)
 			/* Use the original stack so we can see where we failed */
-			newError.stack = `${newError.stack}\nCaused by ${error.stack}`
+			newError.stack = `${newError.stack}\n     Caused by ${error.stack}`
 			throw newError
 		} else {
 			throw new Error(`Failed to generate template "${templateName}": ${error}`)
