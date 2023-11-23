@@ -1,5 +1,16 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.3.1
+
+### Patch Changes
+
+- d41da8d: Upgrade core types
+- b6d16d9: Update dependencies
+- 1f8b503: Improve "caused by" stack trace from handlebars templates
+- Updated dependencies [d41da8d]
+- Updated dependencies [b6d16d9]
+  - @openapi-generator-plus/generator-common@1.3.5
+
 ## 1.3.0
 
 ### Minor Changes

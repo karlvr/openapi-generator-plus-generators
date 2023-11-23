@@ -1,5 +1,12 @@
 # @openapi-generator-plus/generator-common
 
+## 1.3.5
+
+### Patch Changes
+
+- d41da8d: Upgrade core types
+- b6d16d9: Update dependencies
+
 ## 1.3.4
 
 ### Patch Changes
