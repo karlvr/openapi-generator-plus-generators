@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@openapi-generator-plus/testing':
-        specifier: ^2.7.0
-        version: 2.7.0(openapi-types@12.1.3)
+        specifier: ^2.8.0
+        version: 2.8.0(openapi-types@12.1.3)
     devDependencies:
       '@changesets/cli':
         specifier: ^2.26.2
@@ -70,8 +70,8 @@ importers:
   packages/generator-common:
     dependencies:
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       '@openapi-generator-plus/utils':
         specifier: ^1.0.1
         version: 1.0.1
@@ -91,8 +91,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -121,8 +121,8 @@ importers:
         specifier: 2.2.6
         version: link:../java-jaxrs-server
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
 
   packages/java-cxf-client:
     dependencies:
@@ -139,8 +139,8 @@ importers:
         specifier: 2.5.0
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
 
   packages/java-cxf-spring-server:
     dependencies:
@@ -157,8 +157,8 @@ importers:
         specifier: 2.2.6
         version: link:../java-jaxrs-server
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
 
   packages/java-jaxrs-client:
     dependencies:
@@ -175,8 +175,8 @@ importers:
         specifier: 2.1.5
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -193,8 +193,8 @@ importers:
         specifier: 2.1.5
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -217,8 +217,8 @@ importers:
         specifier: 2.1.5
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -229,8 +229,8 @@ importers:
         specifier: 1.3.4
         version: link:../generator-common
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -244,8 +244,8 @@ importers:
         specifier: 2.2.5
         version: link:../java-jaxrs-client
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
 
   packages/plain-documentation:
     dependencies:
@@ -259,8 +259,8 @@ importers:
         specifier: 2.1.5
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
@@ -280,8 +280,8 @@ importers:
         specifier: 2.1.5
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
@@ -298,8 +298,8 @@ importers:
         specifier: 1.3.0
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       '@openapi-generator-plus/typescript-generator-common':
         specifier: 1.6.0
         version: link:../typescript-common
@@ -316,8 +316,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       '@openapi-generator-plus/typescript-generator-common':
         specifier: 1.6.0
         version: link:../typescript-common
@@ -337,8 +337,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       '@openapi-generator-plus/typescript-generator-common':
         specifier: 1.6.0
         version: link:../typescript-common
@@ -355,8 +355,8 @@ importers:
         specifier: 1.3.0
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       '@openapi-generator-plus/typescript-fetch-client-generator':
         specifier: 1.5.1
         version: link:../typescript-fetch-client
@@ -374,8 +374,8 @@ importers:
         specifier: 1.3.0
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^2.7.0
+        version: 2.7.0
       '@openapi-generator-plus/typescript-fetch-client-generator':
         specifier: 1.5.1
         version: link:../typescript-fetch-client
@@ -1306,12 +1306,12 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@openapi-generator-plus/core@2.7.0(openapi-types@12.1.3):
-    resolution: {integrity: sha512-Q73l1HRCfkks05DDZjPNuYFZntdhJGDKaDxnp3HCsOSafAPSOSRvtPP9PPw4mszTnT/5U3zqLmQqI6FTCxMW4Q==}
+  /@openapi-generator-plus/core@2.8.0(openapi-types@12.1.3):
+    resolution: {integrity: sha512-8qI4REChart+le+WvB0UbpKnkr7ssMfWw7zFLeoftZvAnk9qifTwNO1w8ImwmFK52OGp9FhQfy0oU2zB1Ee9MA==}
     dependencies:
       '@openapi-generator-plus/indexed-type': 1.0.0
       '@openapi-generator-plus/swagger-parser': 10.1.0(openapi-types@12.1.3)
-      '@openapi-generator-plus/types': 2.6.0
+      '@openapi-generator-plus/types': 2.7.0
       '@openapi-generator-plus/utils': 1.0.1
       lodash: 4.17.21
     transitivePeerDependencies:
@@ -1346,25 +1346,25 @@ packages:
       openapi-types: 12.1.3
     dev: false
 
-  /@openapi-generator-plus/testing@2.7.0(openapi-types@12.1.3):
-    resolution: {integrity: sha512-JXTRUdrBogrVyrMoAjEyczBJXyhjBP4dh70P8ezAv1Kb4d8LNo+yWpF60enSxQJ/QqKERHiePAqHkpQPIpb+zw==}
+  /@openapi-generator-plus/testing@2.8.0(openapi-types@12.1.3):
+    resolution: {integrity: sha512-v88Y5Ip6UA1mQGbRtTWeiC4etDHHzkQXBgYl3NT/iwyVySoCBjFTaxSSdK4gPrue1NzpTnFMlaaBchMKuhZzfw==}
     dependencies:
-      '@openapi-generator-plus/core': 2.7.0(openapi-types@12.1.3)
+      '@openapi-generator-plus/core': 2.8.0(openapi-types@12.1.3)
       '@openapi-generator-plus/indexed-type': 1.0.0
-      '@openapi-generator-plus/types': 2.6.0
+      '@openapi-generator-plus/types': 2.7.0
     transitivePeerDependencies:
       - openapi-types
     dev: false
 
-  /@openapi-generator-plus/types@2.6.0:
-    resolution: {integrity: sha512-hqC5tsdpeYzoZBKWipepyjEEvs1FkN5VsiI2qbE9yiuMlnD0oH5Cm9ZZLfKp/0LMEmu8CAfuatw9/0kUDOn9Xw==}
+  /@openapi-generator-plus/types@2.7.0:
+    resolution: {integrity: sha512-CvQJXtaQ08dFfIrJpzGnApwEPiKkbtk0J0wEglLZ4+I6kk2szmZE9xaoTo8hvv8tJD5s/rbjz1EfCJXg+O5iSg==}
     dev: false
 
   /@openapi-generator-plus/utils@1.0.1:
     resolution: {integrity: sha512-WceEoFbMmhdqnj2qzdsZTb7ZXH5boNp9LYJHNwD+7A0Y3UfHOh+KHMrKrO6+3K8O0g6dxjYWvG2/ZNLX8VbybA==}
     dependencies:
       '@openapi-generator-plus/indexed-type': 1.0.0
-      '@openapi-generator-plus/types': 2.6.0
+      '@openapi-generator-plus/types': 2.7.0
     dev: false
 
   /@sinclair/typebox@0.27.8:
