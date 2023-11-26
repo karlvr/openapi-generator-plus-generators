@@ -33,6 +33,6 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "@openapi-generator-plus/testing": "^2.8.0"
+    "@openapi-generator-plus/testing": "^2.9.0"
   }
 }
