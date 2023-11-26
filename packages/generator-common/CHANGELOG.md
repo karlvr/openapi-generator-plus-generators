@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.3.6
+
+### Patch Changes
+
+- 81de680: Update to latest core types
+
 ## 1.3.5
 
 ### Patch Changes

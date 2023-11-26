@@ -85,7 +85,7 @@ importers:
   packages/handlebars-templates:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/indexed-type':
         specifier: ^1.0.0
@@ -109,16 +109,16 @@ importers:
   packages/java-cxf-cdi-server:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common':
-        specifier: 2.5.1
+        specifier: 2.5.2
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-jaxrs-server-generator':
-        specifier: 2.2.7
+        specifier: 2.2.8
         version: link:../java-jaxrs-server
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -127,16 +127,16 @@ importers:
   packages/java-cxf-client:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-client-generator':
-        specifier: 2.2.6
+        specifier: 2.2.7
         version: link:../java-jaxrs-client
       '@openapi-generator-plus/java-jaxrs-generator-common':
-        specifier: 2.5.1
+        specifier: 2.5.2
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -145,16 +145,16 @@ importers:
   packages/java-cxf-spring-server:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common':
-        specifier: 2.5.1
+        specifier: 2.5.2
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-jaxrs-server-generator':
-        specifier: 2.2.7
+        specifier: 2.2.8
         version: link:../java-jaxrs-server
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -163,16 +163,16 @@ importers:
   packages/java-jaxrs-client:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common':
-        specifier: 2.5.1
+        specifier: 2.5.2
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-like-generator-helper':
-        specifier: 2.1.6
+        specifier: 2.1.7
         version: link:../java-like
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -184,13 +184,13 @@ importers:
   packages/java-jaxrs-common:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-like-generator-helper':
-        specifier: 2.1.6
+        specifier: 2.1.7
         version: link:../java-like
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -205,16 +205,16 @@ importers:
   packages/java-jaxrs-server:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common':
-        specifier: 2.5.1
+        specifier: 2.5.2
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-like-generator-helper':
-        specifier: 2.1.6
+        specifier: 2.1.7
         version: link:../java-like
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -226,7 +226,7 @@ importers:
   packages/java-like:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -238,10 +238,10 @@ importers:
   packages/java-retrofit-client:
     dependencies:
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-client-generator':
-        specifier: 2.2.6
+        specifier: 2.2.7
         version: link:../java-jaxrs-client
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -250,13 +250,13 @@ importers:
   packages/plain-documentation:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-like-generator-helper':
-        specifier: 2.1.6
+        specifier: 2.1.7
         version: link:../java-like
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -271,13 +271,13 @@ importers:
   packages/typescript-common:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/java-like-generator-helper':
-        specifier: 2.1.6
+        specifier: 2.1.7
         version: link:../java-like
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
@@ -292,25 +292,25 @@ importers:
   packages/typescript-express-example-server:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
         version: 2.8.0
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.6.1
+        specifier: 1.6.2
         version: link:../typescript-common
 
   packages/typescript-fetch-client:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: ^1.0.0
@@ -319,7 +319,7 @@ importers:
         specifier: ^2.8.0
         version: 2.8.0
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.6.1
+        specifier: 1.6.2
         version: link:../typescript-common
       change-case:
         specifier: ^4.1.2
@@ -328,10 +328,10 @@ importers:
   packages/typescript-fetch-client2:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: ^1.0.0
@@ -340,7 +340,7 @@ importers:
         specifier: ^2.8.0
         version: 2.8.0
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.6.1
+        specifier: 1.6.2
         version: link:../typescript-common
       change-case:
         specifier: ^4.1.2
@@ -349,19 +349,19 @@ importers:
   packages/typescript-fetch-node-client:
     dependencies:
       '@openapi-generator-plus/generator-common':
-        specifier: 1.3.5
+        specifier: 1.3.6
         version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
         version: 2.8.0
       '@openapi-generator-plus/typescript-fetch-client-generator':
-        specifier: 1.5.2
+        specifier: 1.5.3
         version: link:../typescript-fetch-client
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.6.1
+        specifier: 1.6.2
         version: link:../typescript-common
     devDependencies:
       node-fetch:
@@ -371,16 +371,16 @@ importers:
   packages/typescript-fetch-rn-client:
     dependencies:
       '@openapi-generator-plus/handlebars-templates':
-        specifier: 1.3.1
+        specifier: 1.3.2
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
         specifier: ^2.8.0
         version: 2.8.0
       '@openapi-generator-plus/typescript-fetch-client-generator':
-        specifier: 1.5.2
+        specifier: 1.5.3
         version: link:../typescript-fetch-client
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.6.1
+        specifier: 1.6.2
         version: link:../typescript-common
 
 packages:

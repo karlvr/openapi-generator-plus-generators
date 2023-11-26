@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 2.1.12
+
+### Patch Changes
+
+- 81de680: Update to latest core types
+- Updated dependencies [81de680]
+  - @openapi-generator-plus/handlebars-templates@1.3.2
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.2.7
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.5.2
+  - @openapi-generator-plus/generator-common@1.3.6
+
 ## 2.1.11
 
 ### Patch Changes

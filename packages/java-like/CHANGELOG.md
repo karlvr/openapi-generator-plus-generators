@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.1.7
+
+### Patch Changes
+
+- 81de680: Update to latest core types
+- Updated dependencies [81de680]
+  - @openapi-generator-plus/generator-common@1.3.6
+
 ## 2.1.6
 
 ### Patch Changes
