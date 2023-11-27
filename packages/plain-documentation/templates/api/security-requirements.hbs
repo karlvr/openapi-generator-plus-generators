@@ -7,7 +7,7 @@
             {{#each schemes}}
                 <tr>
                     <td><a href="#/security/{{htmlId scheme.name}}">{{scheme.type}}</a></td>
-                    <td>
+                    <td class="type">
                         {{#each scopes}}
                             {{name}}{{#hasMore}},{{/hasMore}}
                         {{/each}}

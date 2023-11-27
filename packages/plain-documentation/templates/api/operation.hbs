@@ -8,9 +8,7 @@
 --}}
 
 <section class="summary operation{{#if deprecated}} -deprecated{{/if}}" data-path="{{fullPath}}" data-method="{{httpMethod}}" id="operation-{{htmlId httpMethod}}-{{htmlId fullPath}}">
-    <h4>{{name}}</h4>
-
-    <div class="api-title"><span class="method operation-{{lowerCase httpMethod}}">{{upperCase httpMethod}}</span> {{fullPath}}</div>
+    <h4 class="api-title"><span class="method operation-{{lowerCase httpMethod}}">{{upperCase httpMethod}}</span> {{fullPath}}</h4>
 
 {{>hooks/operation-header}}
 
@@ -20,6 +18,18 @@
 
     {{{md summary "true"}}}
     {{{md description}}}
+
+	<div class="operationId">
+        <h5>Operation ID</h5>
+
+        <table>
+            <tr>
+                <td class="type">
+                    {{name}}
+                </td>
+            </tr>
+        </table>
+    </div>
 
 {{>api/security-requirements}}
 {{>api/request-body}}

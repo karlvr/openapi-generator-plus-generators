@@ -32,7 +32,7 @@
 		</table>
 	{{else if isOAuth}}
 		{{#each flows}}
-			<h4>{{capitalize type}} flow</h4>
+			<h4>{{sentenceCase type}} flow</h4>
 			<table class="auth-flows">
 				<tbody>
 					{{#if authorizationUrl}}

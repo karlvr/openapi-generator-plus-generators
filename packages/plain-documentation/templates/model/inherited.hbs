@@ -3,14 +3,14 @@ renders the inherited properties of a parent class.
 }}
 
 <div class="parent">
-    <h5>Parent</h5>
+    <h4>Parent</h4>
     <div class="detail">
         <p><a class="model-ref" href="#{{anchor}}/{{htmlId nativeType}}">{{nativeType}}</a></p>
     </div>
 
     {{#if properties}}
         <div class="params -inherited-properties">
-            <h5>Inherited Properties</h5>
+            <h4>Inherited Properties</h4>
             <table>
                 {{>model/frag/inherited}}
             </table>
