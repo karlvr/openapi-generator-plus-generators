@@ -15,6 +15,7 @@
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
     "link": "pnpm link --global @openapi-generator-plus/types && pnpm link --global",
+    "test": "../../node_modules/.bin/jest",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
   "repository": {
