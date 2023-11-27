@@ -15,7 +15,15 @@ The available config file properties are:
 
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
+|`operations`|`Operations`|Configuration for operations|`undefined`|
 |`customTemplates`|`string`|The path to a directory containing custom Handlebars templates, relative to the config file. See Customising below.|`undefined`|
+
+### Operations
+
+|Property|Type|Description|Default|
+|--------|----|-----------|-------|
+|`navStyle`|`"name" \| "full-path"`|The display style in the nav.|`"name"`|
+|`exclude`|`string[]`|An array of regex strings to match against operation full-paths to exclude some operations.|`[]`
 
 ## Customising
 

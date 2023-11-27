@@ -5,4 +5,9 @@ import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-hel
  */
 export interface CodegenOptionsDocumentation extends JavaLikeOptions{
 	customTemplatesPath?: string
+
+	operations?: {
+		navStyle?: 'name' | 'full-path'
+		exclude?: string[]
+	}
 }

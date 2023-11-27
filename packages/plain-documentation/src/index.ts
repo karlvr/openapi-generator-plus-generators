@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, compareHttpMethods, configString } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, compareHttpMethods, configObject, configString } from '@openapi-generator-plus/generator-common'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
 
@@ -31,9 +31,18 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 	}
 	
 	const customTemplates = configString(config, 'customTemplates', undefined)
+	const operationsConfig = configObject<CodegenOptionsDocumentation['operations']>(config, 'operations', {})!
+	if (operationsConfig.navStyle === undefined) {
+		operationsConfig.navStyle = 'name'
+	}
+	if (operationsConfig.exclude === undefined) {
+		operationsConfig.exclude = []
+	}
+
 	const generatorOptions: CodegenOptionsDocumentation = {
 		...javaLikeOptions(config, javaLikeContext),
 		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
+		operations: operationsConfig,
 	}
 
 	const aCommonGenerator = commonGenerator(config, context)
@@ -141,6 +150,28 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 				...aCommonGenerator.templateRootContext(),
 				...generatorOptions,
 				generatorClass: '@openapi-generator-plus/plain-documentation-generator',
+			}
+		},
+
+		postProcessDocument(doc) {
+			/* Apply excludes on operations */
+			for (let i = 0; i < doc.groups.length; i++) {
+				const group = doc.groups[i]
+
+				for (let j = 0; j < group.operations.length; j++) {
+					const op = group.operations[j]
+					for (const exclude of generatorOptions.operations?.exclude || []) {
+						if (op.fullPath.match(new RegExp(exclude))) {
+							group.operations.splice(j, 1)
+							j--
+						}
+					}
+				}
+
+				if (group.operations.length === 0) {
+					doc.groups.splice(i, 1)
+					i--
+				}
 			}
 		},
 
