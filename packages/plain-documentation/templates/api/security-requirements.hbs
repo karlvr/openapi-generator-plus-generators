@@ -6,7 +6,7 @@
             {{#each securityRequirements.requirements}}
             {{#each schemes}}
                 <tr>
-                    <td><a href="#/security/{{htmlId scheme.name}}">{{capitalize scheme.type}}</a></td>
+                    <td><a href="#/security/{{htmlId scheme.name}}">{{scheme.type}}</a></td>
                     <td>
                         {{#each scopes}}
                             {{name}}{{#hasMore}},{{/hasMore}}
