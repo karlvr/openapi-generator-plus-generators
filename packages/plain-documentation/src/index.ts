@@ -1,4 +1,4 @@
-import { CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenOneOfStrategy } from '@openapi-generator-plus/types'
+import { CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenOneOfStrategy, isCodegenOperation } from '@openapi-generator-plus/types'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -226,11 +226,17 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 							return -1
 						}
 						
-						if (a.httpMethod && b.httpMethod) {
-							/* Sort CodegenOperations by http method and then by name */
+						if (isCodegenOperation(a) && isCodegenOperation(b)) {
+							/* Sort CodegenOperations first by http method */
 							const result = compareHttpMethods(a.httpMethod, b.httpMethod)
 							if (result !== 0) {
 								return result
+							}
+
+							if (generatorOptions.operations?.navStyle === 'full-path') {
+								if (a.fullPath && b.fullPath) {
+									return a.fullPath.localeCompare(b.fullPath)
+								}
 							}
 						}
 						

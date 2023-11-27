@@ -259,8 +259,8 @@ importers:
         specifier: 2.1.7
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.8.0
-        version: 2.8.0
+        specifier: ^2.8.1
+        version: 2.8.1
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
@@ -1359,6 +1359,10 @@ packages:
 
   /@openapi-generator-plus/types@2.8.0:
     resolution: {integrity: sha512-Yk2PYa20J4ntLqtubQqgK1UfPL0tOvX1fa5uorHqWg7YAkGLtPoLmv0MD4K//AngJY6uTu/WrCefvBew65puNQ==}
+    dev: false
+
+  /@openapi-generator-plus/types@2.8.1:
+    resolution: {integrity: sha512-vLWeG+XCFDPe91kjzKkEYCx/lx7aO+ynMP4G7qdvh+g5hEJg+CxiirAbCqlby2MeZ58lpVv2sGUTrd+f4BC3fQ==}
     dev: false
 
   /@openapi-generator-plus/utils@1.0.1:
