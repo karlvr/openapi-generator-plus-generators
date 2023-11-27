@@ -4,12 +4,12 @@
 	@api public
 --}}
 
-<article id="definitions" class="content">
-	<h2>Definitions</h2>
+<article id="schemas" class="content">
+	<h2>Schemas</h2>
 
 	{{#eachSorted schemas}}
 		{{#unless anonymous}}
-		{{>api/model model=. anchor="/definitions" }}
+		{{>api/model model=. anchor="/schemas" }}
 		{{/unless}}
 	{{/eachSorted}}
 </article>

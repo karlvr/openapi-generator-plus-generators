@@ -9,9 +9,9 @@
 
             {{#if schema}}
             {{#if schema.anonymous}}
-            {{>api/model model=schema anchor="/definitions" hideName="true"}}
+            {{>api/model model=schema anchor="/schemas" hideName="true"}}
             {{else}}
-            <p class="meta">{{>model/datatype anchor='/definitions'}}</p>
+            <p class="meta">{{>model/datatype anchor='/schemas'}}</p>
             {{/if}}
             {{else}}
             <p class="meta"><em>Undocumented</em></p>
