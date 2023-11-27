@@ -33,7 +33,7 @@
 	{{else if isOAuth}}
 		{{#each flows}}
 			<h4>{{capitalize type}} flow</h4>
-			<table>
+			<table class="auth-flows">
 				<tbody>
 					{{#if authorizationUrl}}
 					<tr>
@@ -53,14 +53,24 @@
 						<td class="type">{{refreshUrl}}</td>
 					</tr>
 					{{/if}}
-					{{#if scopes}}
-					<tr>
-						<td class="name">Scopes</td>
-						<td class="type">{{scopes}}</td>
-					</tr>
-					{{/if}}
 				</tbody>
 			</table>
+
+			{{#if scopes}}
+			<h5>Scopes</h5>
+			<table class="auth-scopes">
+				<tbody>
+					{{#each scopes}}
+					<tr>
+						<td class="type">{{name}}</td>
+						<td>
+							{{description}}
+						</td>
+					</tr>
+					{{/each}}
+				</tbody>
+			</table>
+			{{/if}}
 		{{/each}}
 	{{else if isOpenIdConnect}}
 		<table>
