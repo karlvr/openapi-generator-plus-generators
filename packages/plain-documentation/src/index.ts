@@ -7,6 +7,7 @@ import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeO
 import { commonGenerator, compareHttpMethods, configObject, configString } from '@openapi-generator-plus/generator-common'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
+import { existsSync, promises as fs } from 'fs'
 
 function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
 	if (configPath) {
@@ -143,7 +144,14 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 			return result
 		},
 
-		cleanPathPatterns: () => undefined,
+		cleanPathPatterns: () => {
+			return [
+				'index.html',
+				'static/**',
+				'main.css',
+				'custom.css',
+			]
+		},
 
 		templateRootContext: () => {
 			return {
@@ -261,8 +269,23 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 
 			await emit('index', path.join(outputPath, 'index.html'), { ...rootContext, ...doc }, true, hbs)
 
-			emitLess('style.less', path.join(outputPath, 'main.css'))
-			copyContents(path.resolve(__dirname, '..', 'static'), outputPath)
+			await emitLess(path.resolve(__dirname, '../less', 'style.less'), path.join(outputPath, 'static/css/main.css'))
+
+			await fs.writeFile(path.join(outputPath, 'custom.css'), '', {})
+			if (generatorOptions.customTemplatesPath) {
+				const customLessPath = path.resolve(generatorOptions.customTemplatesPath, 'less/custom.less')
+				if (existsSync(customLessPath)) {
+					await emitLess(customLessPath, path.join(outputPath, 'static/css/custom.css'))
+				}
+			}
+
+			await copyContents(path.resolve(__dirname, '..', 'static'), path.join(outputPath, 'static'))
+			if (generatorOptions.customTemplatesPath) {
+				const customStaticPath = path.resolve(generatorOptions.customTemplatesPath, 'static')
+				if (existsSync(customStaticPath)) {
+					await copyContents(customStaticPath, path.join(outputPath, 'static'))
+				}
+			}
 		},
 	}
 }

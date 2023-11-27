@@ -2,13 +2,12 @@ import less from 'less'
 import { promises as fs } from 'fs'
 import path from 'path'
 
-export async function emit(fileName: string, outputPath: string) {
-	const resolvedFileName = path.resolve(__dirname, '../less', fileName)
+export async function emit(filename: string, outputPath: string) {
 	const lessOptions: Less.Options = {
-		filename: resolvedFileName,
+		filename,
 	}
 
-	const templateSource = await fs.readFile(resolvedFileName, { encoding: 'utf-8' })
+	const templateSource = await fs.readFile(filename, { encoding: 'utf-8' })
 	const result = await less.render(templateSource as string, lessOptions)
 
 	await fs.mkdir(path.dirname(outputPath), { recursive: true })
