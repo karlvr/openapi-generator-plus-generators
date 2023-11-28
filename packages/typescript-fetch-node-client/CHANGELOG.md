@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.2.3
+
+### Patch Changes
+
+- cc2bb308: Update core types
+- Updated dependencies [cc2bb308]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.5.4
+  - @openapi-generator-plus/handlebars-templates@1.3.3
+  - @openapi-generator-plus/typescript-generator-common@1.6.3
+  - @openapi-generator-plus/generator-common@1.3.7
+
 ## 1.2.2
 
 ### Patch Changes

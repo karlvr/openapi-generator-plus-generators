@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.6.3
+
+### Patch Changes
+
+- cc2bb308: Update core types
+- Updated dependencies [cc2bb308]
+  - @openapi-generator-plus/handlebars-templates@1.3.3
+  - @openapi-generator-plus/generator-common@1.3.7
+  - @openapi-generator-plus/java-like-generator-helper@2.1.8
+
 ## 1.6.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.3.7
+
+### Patch Changes
+
+- cc2bb308: Update core types
+
 ## 1.3.6
 
 ### Patch Changes

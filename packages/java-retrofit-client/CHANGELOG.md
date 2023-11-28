@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.2.8
+
+### Patch Changes
+
+- cc2bb308: Update core types
+- Updated dependencies [cc2bb308]
+  - @openapi-generator-plus/handlebars-templates@1.3.3
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.2.8
+
 ## 2.2.7
 
 ### Patch Changes

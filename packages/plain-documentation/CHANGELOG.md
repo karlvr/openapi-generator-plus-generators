@@ -1,5 +1,25 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.4.0
+
+### Minor Changes
+
+- f28c157e: Support custom CSS, clean, custom head fragment
+- fc5f6d5f: Don't capitalise security schema names
+- 031bd040: Rename Definitions to Schemas and change anchors and ids
+- 58814a5d: Restructure headings
+- 727c2b33: Allow customisation of nav presentation style for operations
+- 20f08d11: Sort operations by full path if using that nav style
+- 65519a13: Display auth scope names and descriptions
+
+### Patch Changes
+
+- 66022cb8: Add support for missing request body and response schemas
+- Updated dependencies [cc2bb308]
+  - @openapi-generator-plus/handlebars-templates@1.3.3
+  - @openapi-generator-plus/generator-common@1.3.7
+  - @openapi-generator-plus/java-like-generator-helper@2.1.8
+
 ## 1.3.2
 
 ### Patch Changes

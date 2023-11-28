@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-jaxrs-generator-common",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "An OpenAPI Generator Plus template for a Java API using JAX-RS",
   "keywords": [
     "openapi-generator-plus",
@@ -30,9 +30,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-jaxrs-common#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "1.3.6",
-    "@openapi-generator-plus/handlebars-templates": "1.3.2",
-    "@openapi-generator-plus/java-like-generator-helper": "2.1.7",
+    "@openapi-generator-plus/generator-common": "1.3.7",
+    "@openapi-generator-plus/handlebars-templates": "1.3.3",
+    "@openapi-generator-plus/java-like-generator-helper": "2.1.8",
     "@openapi-generator-plus/types": "^2.8.1",
     "change-case": "^4.1.2",
     "handlebars": "^4.7.8"
