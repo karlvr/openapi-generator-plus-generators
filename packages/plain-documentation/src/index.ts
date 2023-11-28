@@ -78,12 +78,14 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 					return new context.NativeType(format, {
 						serializedType: 'number',
 					})
+				} else {
+					return new context.NativeType(type, {
+						serializedType: 'number',
+					})
 				}
 			}
 
-			return new context.NativeType(type, {
-				serializedType: '', /* To prevent us from outputting in the documentation */
-			})
+			return new context.NativeType(type)
 		},
 		toEnumMemberName: (name) => name,
 		toNativeObjectType: function(options) {

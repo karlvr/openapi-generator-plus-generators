@@ -17,7 +17,9 @@
         {{else}}
             {{nativeType}}
             {{#if nativeType.serializedType}}
+            {{#ifneq nativeType.serializedType nativeType}}
             ({{nativeType.serializedType}})
+            {{/ifneq}}
             {{/if}}
         {{/if}}
     {{else}}
