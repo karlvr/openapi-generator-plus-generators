@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 1.1.11
+
+### Patch Changes
+
+- 9b87ba44: Update core
+- Updated dependencies [9b87ba44]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.5.5
+  - @openapi-generator-plus/handlebars-templates@1.3.4
+  - @openapi-generator-plus/typescript-generator-common@1.6.4
+
 ## 1.1.10
 
 ### Patch Changes

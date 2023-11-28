@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 2.3.5
+
+### Patch Changes
+
+- 9b87ba44: Update core
+- Updated dependencies [9b87ba44]
+  - @openapi-generator-plus/handlebars-templates@1.3.4
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.5.4
+  - @openapi-generator-plus/java-jaxrs-server-generator@2.2.10
+  - @openapi-generator-plus/generator-common@1.3.8
+
 ## 2.3.4
 
 ### Patch Changes

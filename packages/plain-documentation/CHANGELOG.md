@@ -1,5 +1,17 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.4.1
+
+### Patch Changes
+
+- 2184bb37: Fix support for collectionFormat
+- e4766dcf: Fix parameter examples colspan
+- 9b87ba44: Update core
+- Updated dependencies [9b87ba44]
+  - @openapi-generator-plus/handlebars-templates@1.3.4
+  - @openapi-generator-plus/generator-common@1.3.8
+  - @openapi-generator-plus/java-like-generator-helper@2.1.9
+
 ## 1.4.0
 
 ### Minor Changes
