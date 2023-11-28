@@ -10,7 +10,12 @@
         <table>
             {{#each parameters}}
                 <tr>
-                    <td class="name">{{name}} {{#if required}}<span class="type">Required</span>{{/if}} {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}</td>
+                    <td class="name">
+                        {{name}}
+                        {{#if required}}<span class="type">Required</span>{{/if}}
+			            {{#if deprecated}}<strong class="parameter-label -deprecated">DEPRECATED</strong>{{/if}}
+                        {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}
+                    </td>
                     <td class="type">
                         {{>model/datatype . anchor='/schemas'}}
                         {{#if (isArray)}}

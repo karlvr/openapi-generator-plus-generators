@@ -287,9 +287,9 @@ body.api-docs {
 		hyphens: auto;
 	}
 
-	.operation-label {
+	.operation-label, .parameter-label, .property-label {
 		display: inline-block;
-		padding: 4px 5px;
+		padding: 4px 5px 3px;
 		letter-spacing: 0.2em;
 		line-height: 1;
 		color: white;
@@ -302,7 +302,7 @@ body.api-docs {
 		.border-radius(2px);
 
 		&.-deprecated {
-			background-color: @delete;
+			background-color: @deprecated;
 		}
 	}
 
