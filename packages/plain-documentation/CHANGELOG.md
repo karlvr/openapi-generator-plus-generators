@@ -1,5 +1,12 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.5.0
+
+### Minor Changes
+
+- 013c2c2b: Add deprecated labels to properties and parameters
+- 72e76679: Improve serialized type display to only show if it's different from the native type
+
 ## 1.4.1
 
 ### Patch Changes
