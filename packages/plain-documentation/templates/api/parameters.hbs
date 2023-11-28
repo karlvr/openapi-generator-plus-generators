@@ -13,8 +13,10 @@
                     <td class="name">{{name}} {{#if required}}<span class="type">Required</span>{{/if}} {{#if examples}}<a href="#" class="example-trigger">Examples</a>{{/if}}</td>
                     <td class="type">
                         {{>model/datatype . anchor='/schemas'}}
-                        {{#if collectionFormat}}
-                            <div class="sw-param-collection-format">{{{md (swagger--collection-format collectionFormat)}}}</div>
+                        {{#if (isArray)}}
+                            <div class="collection-format">
+                                ({{#if encoding.explode}}exploded {{/if}}{{encoding.style}}-style)
+                            </div>
                         {{/if}}
                     </td>
                     <td class="in">{{in}}</td>
