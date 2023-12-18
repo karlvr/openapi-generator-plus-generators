@@ -7,6 +7,23 @@ An [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) te
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
 generator templates.
 
+For convenience when editing the API spec, or editing custom templates, you can setup a watch script and an automatically
+reloading web browser:
+
+```shell
+npm add -D live-server
+```
+
+Then add the following `npm` script, adjusting paths to your config file and output folder (`./dist` in this example):
+
+```json
+{
+	"scripts": {
+        "watch": "openapi-generator-plus -c config.yml --clean --watch & live-server --port=9123 ./dist & wait"
+    }
+}
+```
+
 ## Config file
 
 The available config file properties are:
