@@ -39,10 +39,13 @@ components:
     ObjectProperty:
       allOf:
         - $ref: '#/components/schemas/AbstractProperty'
-        - type: object
-          required:
-            - id
-          nullable: true
-          properties:
-            id:
-              type: string
+        # Because this allOf is two refs, rather than one inline schema, the generator switches to interfaces if it cannot use multiple-inheritance
+        - $ref: '#/components/schemas/ObjectValue'
+    ObjectValue:
+      type: object
+      required:
+        - id
+      nullable: true
+      properties:
+        id:
+          type: string
