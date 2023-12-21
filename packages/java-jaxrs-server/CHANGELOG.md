@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 2.2.11
+
+### Patch Changes
+
+- bc8647d6: Update core
+- Updated dependencies [a1322325]
+- Updated dependencies [bc8647d6]
+  - @openapi-generator-plus/java-jaxrs-generator-common@2.6.0
+  - @openapi-generator-plus/handlebars-templates@1.3.5
+  - @openapi-generator-plus/generator-common@1.3.9
+  - @openapi-generator-plus/java-like-generator-helper@2.1.10
+
 ## 2.2.10
 
 ### Patch Changes

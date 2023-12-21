@@ -1,5 +1,13 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.3.5
+
+### Patch Changes
+
+- bc8647d6: Update core
+- Updated dependencies [bc8647d6]
+  - @openapi-generator-plus/generator-common@1.3.9
+
 ## 1.3.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.3.9
+
+### Patch Changes
+
+- bc8647d6: Update core
+
 ## 1.3.8
 
 ### Patch Changes
