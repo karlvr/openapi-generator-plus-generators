@@ -1,6 +1,6 @@
 openapi: '3.0.3'
 info:
-  title: Test APIKey
+  title: Test OAuth2
   version: '1.0'
 paths:
   /test1:
@@ -33,7 +33,13 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: http://example.org/
+          tokenUrl: https://example.org/auth/token
+          refreshUrl: https://example.org/auth/token
+        clientCredentials:
+          tokenUrl: https://example.org/auth/token
+        authorizationCode:
+          authorizationUrl: https://example.org/auth/authorize
+          tokenUrl: https://example.org/auth/token
   schemas:
     Test1:
       type: object
