@@ -340,7 +340,6 @@ body.api-docs {
 	}
 
 	.model-property-enum {
-		display: block;
 		font-family: @f-meta;
 		font-size: @fs - 2;
 		line-height: 1.75;
@@ -348,9 +347,12 @@ body.api-docs {
 		margin-top: @base;
 	}
 
-	// .model-property-enum-item .model-ref {
-	// 	font-size: 15px;
-	// }
+	.model-property-type {
+		.model-property-enum-item {
+			display: block;
+			margin-left: 1em;
+		}
+	}
 	
 	span.type .model-ref {
 		color: @text-light;
@@ -359,10 +361,6 @@ body.api-docs {
 		&:hover, &:active {
 			color: @text;
 		}
-	}
-	
-	.model-property-enum-item::before, .model-property-enum-item::after {
-		content: "";
 	}
 	
 	.model-property-type { font-style: normal; }

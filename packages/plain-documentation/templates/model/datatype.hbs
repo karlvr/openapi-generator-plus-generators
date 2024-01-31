@@ -9,11 +9,29 @@
         {{else if (isOneOf)}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
         {{else if (isMap)}}
+            {{#unless schema.component.schema.anonymous}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId schema.component.nativeType.concreteType}}">{{nativeType}}</a>
+            {{else}}
+            map of {{>model/datatype schema.component anchor=anchor}}
+            {{/unless}}
         {{else if (isArray)}}
+            {{#unless schema.component.schema.anonymous}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId schema.component.nativeType.concreteType}}">{{nativeType}}</a>
+            {{else}}
+            array of {{>model/datatype schema.component anchor=anchor}}
+            {{/unless}}
         {{else if (isEnum)}}
+            {{#unless schema.anonymous}}
             <a class="model-ref" href="#{{anchor}}/{{htmlId nativeType.concreteType}}">{{nativeType}}</a>
+            {{else}}
+            <span class="model-property-enum">
+            enum ∈ {
+                {{#each schema.enumValues}}
+                    <span class="model-property-enum-item" title="{{literalValue}}">{{name}}{{#hasMore}}, {{/hasMore}}</span>
+                {{/each}}
+            }
+            </span>
+            {{/unless}}
         {{else}}
             {{nativeType}}
             {{#if nativeType.serializedType}}
