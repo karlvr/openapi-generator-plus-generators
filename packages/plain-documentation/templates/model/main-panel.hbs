@@ -12,6 +12,7 @@
                         <h3 class="schema-title">
                             {{nativeType}}
                             {{#if (isInterface)}}<span class="type">INTERFACE</span>{{/if}}
+                            {{#if (isEnum)}}<span class="type">ENUM</span>{{/if}}
                         </h3>
                     {{/if}}
                     {{/ifdef}}
