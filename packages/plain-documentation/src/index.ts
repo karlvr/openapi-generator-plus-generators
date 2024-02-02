@@ -174,6 +174,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 						if (op.fullPath.match(new RegExp(exclude))) {
 							group.operations.splice(j, 1)
 							j--
+							break
 						}
 					}
 				}
