@@ -38,7 +38,7 @@ The available config file properties are:
 |`timeImplementation`|`string`|Time type class.|`"java.time.LocalTime"`|
 |`dateTimeImplementation`|`string`|Date time type class.|`"java.time.OffsetDateTime"`|
 |`binaryRepresentation`|`string`|Binary data representation.|`"byte[]"`|
-|`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"`|The style to use for constant naming.|`"allCapsSnake"`|
+|`constantStyle`|`"allCapsSnake"\|"allCaps"\|"camelCase"`|The style to use for constant naming.|`"allCapsSnake"`|
 |`useJakarta`|`boolean`|Whether to use `jakarta` packages instead of `javax` packages.|`false`|
 
 ### Behaviour
