@@ -1,5 +1,19 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.3.0
+
+### Minor Changes
+
+- 26c8e2bd: Fix handling of catch-all responses
+
+### Patch Changes
+
+- Updated dependencies [26c8e2bd]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.6.0
+  - @openapi-generator-plus/handlebars-templates@1.4.0
+  - @openapi-generator-plus/typescript-generator-common@1.7.0
+  - @openapi-generator-plus/generator-common@1.4.0
+
 ## 1.2.5
 
 ### Patch Changes

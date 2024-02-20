@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.3.0
+
+### Minor Changes
+
+- 26c8e2bd: Fix handling of catch-all responses
+
+### Patch Changes
+
+- Updated dependencies [26c8e2bd]
+  - @openapi-generator-plus/handlebars-templates@1.4.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.3.0
+
 ## 2.2.10
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.6.0
+
+### Minor Changes
+
+- 932f102e: Hide anonymous inner schemas
+
+  These should be display inline where they are referenced now.
+
+- 37dfc586: Fix display of anonymous schemas inside models, especially enums
+
+  This was broken as anonymous schemas were often omitted from the documentation, but linked where they were referenced in a model.
+
+- 26c8e2bd: Fix handling of catch-all responses
+- b8e368ea: Identify enum schemas with a badge
+- 5afcda40: Tidy enum schema value presentation
+
+### Patch Changes
+
+- cc2ef00e: Fix bug if multiple operation exclude patterns match a single operation
+- Updated dependencies [26c8e2bd]
+  - @openapi-generator-plus/handlebars-templates@1.4.0
+  - @openapi-generator-plus/generator-common@1.4.0
+  - @openapi-generator-plus/java-like-generator-helper@2.2.0
+
 ## 1.5.1
 
 ### Patch Changes

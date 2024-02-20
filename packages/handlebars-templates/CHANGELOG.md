@@ -1,5 +1,16 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.4.0
+
+### Minor Changes
+
+- 26c8e2bd: Fix handling of catch-all responses
+
+### Patch Changes
+
+- Updated dependencies [26c8e2bd]
+  - @openapi-generator-plus/generator-common@1.4.0
+
 ## 1.3.5
 
 ### Patch Changes

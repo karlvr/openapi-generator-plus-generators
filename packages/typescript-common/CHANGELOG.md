@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.7.0
+
+### Minor Changes
+
+- 26c8e2bd: Fix handling of catch-all responses
+
+### Patch Changes
+
+- Updated dependencies [26c8e2bd]
+  - @openapi-generator-plus/handlebars-templates@1.4.0
+  - @openapi-generator-plus/generator-common@1.4.0
+  - @openapi-generator-plus/java-like-generator-helper@2.2.0
+
 ## 1.6.5
 
 ### Patch Changes

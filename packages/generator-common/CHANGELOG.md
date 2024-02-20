@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.4.0
+
+### Minor Changes
+
+- 26c8e2bd: Fix handling of catch-all responses
+
 ## 1.3.9
 
 ### Patch Changes
