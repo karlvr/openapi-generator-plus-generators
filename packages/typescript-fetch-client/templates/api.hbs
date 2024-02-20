@@ -205,16 +205,20 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 					const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
 					
 					{{#each responses}}
-					{{#if isDefault}}
+					{{#unless isCatchAll}}
 					if (response.status === {{code}}) {
 						{{#if contents}}
 						{{#each contents}} 
 						if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+							{{#if ../isDefault}}
 							{{#unless schema}}
 							return response; /* No schema */
 							{{else}}
 							{{>frag/apiResponseContent}}
 							{{/unless}}
+							{{else}}
+							throw response;
+							{{/if}}
 						}
 						{{/each}}
 						throw response;
@@ -222,22 +226,33 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 						return response;
 						{{/if}}
 					}
-					{{else}}
-					if (response.status === {{code}}) {
-						{{#if contents}}
-						{{#each contents}} 
-						if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
-							throw response;
-						}
-						{{/each}}
-						throw response;
+					{{/unless}}
+					{{/each}}
+					{{#if catchAllResponse}}
+					/* Catch-all response */
+					{{#with catchAllResponse}}
+					{{#if contents}}
+					{{#each contents}} 
+					if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+						{{#if ../isDefault}}
+						{{#unless schema}}
+						return response; /* No schema */
+						{{else}}
+						{{>frag/apiResponseContent}}
+						{{/unless}}
 						{{else}}
 						throw response;
 						{{/if}}
 					}
-					{{/if}}
 					{{/each}}
 					throw response;
+					{{else}}
+					return response;
+					{{/if}}
+					{{/with}}
+					{{else}}
+					throw response;
+					{{/if}}
 				});
 			};
 		},

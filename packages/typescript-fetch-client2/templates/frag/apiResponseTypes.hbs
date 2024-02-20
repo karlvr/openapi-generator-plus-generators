@@ -2,18 +2,22 @@ export type {{className name}}Response =
 {{#each responses}}
 {{#if contents}}
 {{#each contents}}
-	| {{className ../../name}}{{../code}}{{#if (gt (count ../contents) 1)}}{{className mediaType.mimeType}}{{/if}}Response
+	| {{className (concat ../../name '_' ../code)}}{{#if (gt (count ../contents) 1)}}{{className mediaType.mimeType}}{{/if}}Response
 {{/each}}
 {{else}}
-	| {{className ../name}}{{code}}Response
+	| {{className (concat ../name '_' code)}}Response
 {{/if}}
 {{/each}}
 
 {{#each responses}}
 {{#if contents}}
 {{#each contents}}
-export interface {{className ../../name}}{{../code}}{{#if (gt (count ../contents) 1)}}{{className mediaType.mimeType}}{{/if}}Response {
+export interface {{className (concat ../../name '_' ../code)}}{{#if (gt (count ../contents) 1)}}{{className mediaType.mimeType}}{{/if}}Response {
+	{{#unless ../isCatchAll}}
 	status: {{../code}}
+	{{else}}
+	status: number
+	{{/unless}}
 	contentType: {{{stringLiteral mediaType.mimeType}}}
 {{#if nativeType}}
 {{!-- NOTE: see apiResponseContent.hbs for reproduced logic around what's parseable and what's not --}}

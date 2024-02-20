@@ -32,8 +32,12 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{/with}}
 		{{#each responses}}
 		{{#unless isDefault}}
-		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className ../name}}}{{{code}}}Exception __e) {
+		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className (concat ../name '_' code)}}}Exception __e) {
+			{{#unless isCatchAll}}
 			__response.status({{code}});
+			{{else}}
+			__response.status(__e.getResponseCode());
+			{{/unless}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()'}}

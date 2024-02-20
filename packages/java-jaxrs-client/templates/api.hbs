@@ -13,7 +13,7 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 	{{#if deprecated}}
 	@java.lang.Deprecated
 	{{/if}}
-	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}};
+	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}};
 	{{/each}}
 
 	{{#each operations}}
@@ -22,18 +22,18 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 	/**
 	 * {{{md ../description}}}
 	 */
-	class {{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception extends java.lang.Exception {
+	class {{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception extends java.lang.Exception {
 
 		private static final long serialVersionUID = 1L;
 		
 		{{#unless content.nativeType}}
-		public {{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception() {
+		public {{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception() {
 			
 		}
 		{{else}}
 		private {{{content.nativeType}}} entity;
 		
-		public {{{className ../../name}}}{{{../code}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception({{{content.nativeType}}} entity) {
+		public {{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception({{{content.nativeType}}} entity) {
 			this.entity = entity;
 		}
 		

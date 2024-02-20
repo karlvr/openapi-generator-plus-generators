@@ -9,7 +9,7 @@ Return the content of the response.
 NOTE: see apiResponseTypes.hbs for reproduced logic around what's parseable and what's not
 --}}
 return {
-	status: {{response.code}},
+	status: response.status,
 {{#ifdef mediaType}}
 	contentType: {{{stringLiteral mediaType.mimeType}}},
 {{#unless schema}}

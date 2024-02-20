@@ -176,6 +176,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 				const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
 				
 				{{#each responses}}
+				{{#unless isCatchAll}}
 				if (response.status === {{code}}) {
 					{{#if contents}}
 					{{#each contents}} 
@@ -188,8 +189,25 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 					{{>frag/apiResponseContent group=../.. operation=.. response=.}}
 					{{/if}}
 				}
+				{{/unless}}
+				{{/each}}
+				{{#if catchAllResponse}}
+				/* Catch-all response */
+				{{#with catchAllResponse}}
+				{{#if contents}}
+				{{#each contents}} 
+				if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+					{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
+				}
 				{{/each}}
 				throw response;
+				{{else}}
+				{{>frag/apiResponseContent group=../.. operation=.. response=.}}
+				{{/if}}
+				{{/with}}
+				{{else}}
+				throw response;
+				{{/if}}
 			};
 		},
 	{{/each}}

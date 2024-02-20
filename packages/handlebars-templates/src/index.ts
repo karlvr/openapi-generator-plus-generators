@@ -937,6 +937,20 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 	})
 
+	hbs.registerHelper('nonDefaultAndCatchAllResponses', function(this: CodegenOperation) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 1) {
+			throw new Error(`nonDefaultAndCatchAllResponses helper must be called with no arguments @ ${sourcePosition(options)}`)
+		}
+
+		if (this.responses) {
+			return idx.allValues(this.responses).filter(response => !response.isDefault && !response.isCatchAll)
+		} else {
+			return []
+		}
+	})
+
 	hbs.registerHelper('responseContentAndNone', function(this: CodegenResponse): { content: CodegenContent | null }[] {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
