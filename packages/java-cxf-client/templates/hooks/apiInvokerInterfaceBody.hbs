@@ -5,56 +5,65 @@ The body of the API group invoker interface.
 --}}
 {{#if securitySchemes}}
 {{#each securitySchemes}}
+{{#if (and @first @last)}}
+{{#set '__securitySchemeName'}}
+{{/set}}
+{{else}}
+{{#set '__securitySchemeName'}}
+{{{className name}}}
+{{/set}}
+{{/if}}
 {{#ifeq type 'apiKey'}}
 /**
- * Authorize requests using an API key.
+ * Authorize requests using an API key for the security scheme "{{name}}"
  */
-void authorize(java.lang.String apiKeyValue);
+void authorize{{{__securitySchemeName}}}(java.lang.String apiKeyValue);
 
 /**
- * Returns the API key used to authorize requests.
+ * Returns the API key used to authorize requests for the security scheme "{{name}}".
  */
-java.lang.String getAuthorization();
+java.lang.String get{{{__securitySchemeName}}}Authorization();
 {{/ifeq}}
 {{#ifeq type 'http'}}
 {{#ifeq scheme 'basic'}}
 /**
- * Authorize requests using HTTP Basic authorization.
+ * Authorize requests using HTTP Basic authorization for the security scheme "{{name}}".
  */
-void authorize(java.lang.String username, java.lang.String password);
+void authorize{{{__securitySchemeName}}}(java.lang.String username, java.lang.String password);
 
 /**
- * Returns the username used to authorize requests.
+ * Returns the username used to authorize requests for the security scheme "{{name}}".
  */
-java.lang.String getAuthorizationUsername();
+java.lang.String get{{#if __securitySchemeName}}{{{__securitySchemeName}}}{{else}}Authorization{{/if}}Username();
 
 /**
- * Returns the password used to authorize requests.
+ * Returns the password used to authorize requests for the security scheme "{{name}}".
  */
-java.lang.String getAuthorizationPassword();
+java.lang.String get{{#if __securitySchemeName}}{{{__securitySchemeName}}}{{else}}Authorization{{/if}}Password();
 {{else}}
 /**
- * Authorize requests using {{scheme}} authorization.
+ * Authorize requests using {{scheme}} authorization for the security scheme "{{name}}".
  */
-void authorize(java.lang.String value);
+void authorize{{{__securitySchemeName}}}(java.lang.String value);
 
 /**
- * Returns the value used to authorize requests.
+ * Returns the value used to authorize requests for the security scheme "{{name}}".
  */
-java.lang.String getAuthorization();
+java.lang.String get{{{__securitySchemeName}}}Authorization();
 {{/ifeq}}
 {{/ifeq}}
 {{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
 /**
- * Authorize requests using an OAuth2 Bearer token value.
+ * Authorize requests using an OAuth2 Bearer token value for the security scheme "{{name}}".
  */
-void authorize(java.lang.String bearerToken);
+void authorize{{{__securitySchemeName}}}(java.lang.String bearerToken);
 
 /**
- * Returns the OAuth2 Bearer token value used to authorize requests.
+ * Returns the OAuth2 Bearer token value used to authorize requests for the security scheme "{{name}}".
  */
-java.lang.String getAuthorization();
+java.lang.String get{{{__securitySchemeName}}}Authorization();
 {{/or}}
+
 {{/each}}
 {{/if}}
 org.apache.cxf.jaxrs.client.Client client();

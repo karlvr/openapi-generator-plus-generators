@@ -2,18 +2,18 @@ private org.apache.cxf.jaxrs.client.Client client;
 
 {{#each @root/securitySchemes}}
 {{#ifeq type 'apiKey'}}
-private java.lang.String authorization;
+private java.lang.String {{{identifier name}}}Authorization;
 {{/ifeq}}
 {{#ifeq type 'http'}}
 {{#ifeq scheme 'basic'}}
-private java.lang.String username;
-private java.lang.String password;
+private java.lang.String {{{identifier name}}}Username;
+private java.lang.String {{{identifier name}}}Password;
 {{else}}
-private java.lang.String authorization;
+private java.lang.String {{{identifier name}}}Authorization;
 {{/ifeq}}
 {{/ifeq}}
 {{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
-private java.lang.String authorization;
+private java.lang.String {{{identifier name}}}Authorization;
 {{/or}}
 {{/each}}
 
@@ -42,9 +42,17 @@ public {{className name}}ApiImpl({{@root.apiSpecPackage}}.{{className name}}ApiS
 }
 
 {{#each @root/securitySchemes}}
+{{#if (and @first @last)}}
+{{#set '__securitySchemeName'}}
+{{/set}}
+{{else}}
+{{#set '__securitySchemeName'}}
+{{{className name}}}
+{{/set}}
+{{/if}}
 {{#ifeq type 'apiKey'}}
-public void authorize(java.lang.String apiKeyValue) {
-	this.authorization = apiKeyValue;
+public void authorize{{{__securitySchemeName}}}(java.lang.String apiKeyValue) {
+	this.{{{identifier name}}}Authorization = apiKeyValue;
 {{#ifeq in 'header'}}
 	client.header({{{stringLiteral paramName}}}, apiKeyValue);
 {{else ifeq in 'cookie'}}
@@ -55,54 +63,54 @@ public void authorize(java.lang.String apiKeyValue) {
 }
 
 @java.lang.Override
-public java.lang.String getAuthorization() {
-	return authorization;
+public java.lang.String get{{{__securitySchemeName}}}Authorization() {
+	return {{{identifier name}}}Authorization;
 }
 {{/ifeq}}
 {{#ifeq type 'http'}}
 {{#ifeq scheme 'basic'}}
-public void authorize(java.lang.String username, java.lang.String password) {
-	this.username = username;
-	this.password = password;
+public void authorize{{{__securitySchemeName}}}(java.lang.String username, java.lang.String password) {
+	this.{{{identifier name}}}Username = username;
+	this.{{{identifier name}}}Password = password;
 	client.authorization("Basic " + java.util.Base64.getEncoder().encodeToString((username + ":" + password).getBytes(java.nio.charset.StandardCharsets.UTF_8)));
 }
 
 @java.lang.Override
-public java.lang.String getAuthorizationUsername() {
-	return username;
+public java.lang.String get{{#if __securitySchemeName}}{{{__securitySchemeName}}}{{else}}Authorization{{/if}}Username() {
+	return {{{identifier name}}}Username;
 }
 
 @java.lang.Override
-public java.lang.String getAuthorizationPassword() {
-	return password;
+public java.lang.String get{{#if __securitySchemeName}}{{{__securitySchemeName}}}{{else}}Authorization{{/if}}Password() {
+	return {{{identifier name}}}Password;
 }
 {{else}}
 @java.lang.Override
-public void authorize(java.lang.String value) {
-	this.authorization = value;
+public void authorize{{{__securitySchemeName}}}(java.lang.String value) {
+	this.{{{identifier name}}}Authorization = value;
 	client.authorization({{{stringLiteral (concat (capitalize scheme) ' ')}}} + value);
 }
 
 @java.lang.Override
-public java.lang.String getAuthorization() {
-	return authorization;
+public java.lang.String get{{{__securitySchemeName}}}Authorization() {
+	return {{{identifier name}}}Authorization;
 }
 {{/ifeq}}
 {{/ifeq}}
 {{#or (ifeq type 'oauth2') (ifeq type 'openIdConnect')}}
 @java.lang.Override
-public void authorize(java.lang.String bearerToken) {
-	this.authorization = bearerToken;
+public void authorize{{{__securitySchemeName}}}(java.lang.String bearerToken) {
+	this.{{{identifier name}}}Authorization = bearerToken;
 	client.authorization("Bearer " + bearerToken);
 }
 
 @java.lang.Override
-public java.lang.String getAuthorization() {
-	return authorization;
+public java.lang.String get{{{__securitySchemeName}}}Authorization() {
+	return {{{identifier name}}}Authorization;
 }
 {{/or}}
-{{/each}}
 
+{{/each}}
 @java.lang.Override
 public org.apache.cxf.jaxrs.client.Client client() {
 	return client;
