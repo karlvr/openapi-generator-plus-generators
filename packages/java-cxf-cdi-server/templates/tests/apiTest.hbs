@@ -51,7 +51,7 @@ public class {{className name}}ApiTest {
 		Response response = this.api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}__request{{/if}});
 		Assertions.assertNotNull(response);
 		{{#if returnNativeType}}
-		{{returnNativeType}} result = response.readEntity({{returnNativeType.literalType}}.class);
+		{{{returnNativeType}}} result = response.readEntity({{returnNativeType.literalType}}.class);
 		Assertions.assertNotNull(result);
 		{{/if}}
 	}
