@@ -15,7 +15,21 @@ generator templates.
 
 ## Config file
 
-The available config file properties are:
+The config file is specified on the [command-line](https://github.com/karlvr/openapi-generator-plus/?tab=readme-ov-file#using) when running `openapi-generator-plus` using the `-c <config file>` flag.
+
+The config file is in [YAML](https://yaml.org) format. The config properties below are added to the config file at the top-level.
+
+### Example config
+
+```yml
+inputPath: api.yml
+outputPath: dist
+generator: "@openapi-generator-plus/java-jaxrs-client-generator"
+
+package: com.example
+useBeanValidation: true
+constantStyle: camelCase
+```
 
 ### Project layout
 
