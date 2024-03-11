@@ -22,10 +22,10 @@ The available config file properties are:
 
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
-|`constantStyle`|`"allCapsSnake"|"allCaps"|"camelCase"|"pascalCase"`|The style to use for constant naming.|`"pascalCase"`|
+|`constantStyle`|`"allCapsSnake"\|"allCaps"\|"camelCase"\|"pascalCase"`|The style to use for constant naming.|`"pascalCase"`|
 |`enumMemberStyle`|`"preserve"` \| `"constant"`|The style to use for enum member names: `preserve` _attempts_ to match the enum member name to the literal enum value from the spec; `constant` uses the `constantStyle` rules.|`"constant"`|
 |`legacyUnnamespacedModelSupport`|`boolean`|Generate unnamespaced versions of the models.|`false`|
-|`dateApproach`|`"native"|"string"|"blind-date"`|Whether to use `string` for date and time and `Date` for date-time, or just `string`, or whether to use [blind-date](https://npmjs.com/blind-date) for dates and times.|`native`|
+|`dateApproach`|`"native"\|"string"\|"blind-date"`|Whether to use `string` for date and time and `Date` for date-time, or just `string`, or whether to use [blind-date](https://npmjs.com/blind-date) for dates and times.|`native`|
 
 ### TypeScript
 
