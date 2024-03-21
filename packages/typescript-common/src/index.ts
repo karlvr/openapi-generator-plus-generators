@@ -498,12 +498,12 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 			const rootContext = context.generator().templateRootContext()
 
 			if (generatorOptions.npm) {
-				await emit('package', path.join(outputPath, 'package.json'), { ...rootContext, ...generatorOptions.npm }, true, hbs)
-				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...rootContext, ...doc }, true, hbs)
+				await emit('package', path.join(outputPath, 'package.json'), { ...rootContext, ...generatorOptions.npm }, false, hbs)
+				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...rootContext, ...doc }, false, hbs)
 			}
 			
 			if (generatorOptions.typescript) {
-				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...rootContext, ...generatorOptions.typescript }, true, hbs)
+				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...rootContext, ...generatorOptions.typescript }, false, hbs)
 			}
 	
 			if (context.additionalExportTemplates) {
