@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 2.3.0
+
+### Minor Changes
+
+- 252baab6: Support multiple authentication schemes.
+
 ## 2.2.0
 
 ### Minor Changes

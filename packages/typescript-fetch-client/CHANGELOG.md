@@ -1,5 +1,12 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.6.1
+
+### Patch Changes
+
+- Updated dependencies [b8188524]
+  - @openapi-generator-plus/typescript-generator-common@1.7.1
+
 ## 1.6.0
 
 ### Minor Changes

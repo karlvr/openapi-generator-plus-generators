@@ -1,5 +1,12 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies [b8188524]
+  - @openapi-generator-plus/typescript-generator-common@1.7.1
+
 ## 1.3.0
 
 ### Minor Changes

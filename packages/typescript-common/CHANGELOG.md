@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.7.1
+
+### Patch Changes
+
+- b8188524: Don't overwrite package.json, .gitignore and tsconfig.json
+
 ## 1.7.0
 
 ### Minor Changes

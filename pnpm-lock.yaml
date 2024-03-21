@@ -301,7 +301,7 @@ importers:
         specifier: ^2.12.0
         version: 2.12.0
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.7.0
+        specifier: 1.7.1
         version: link:../typescript-common
 
   packages/typescript-fetch-client:
@@ -319,7 +319,7 @@ importers:
         specifier: ^2.12.0
         version: 2.12.0
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.7.0
+        specifier: 1.7.1
         version: link:../typescript-common
       change-case:
         specifier: ^4.1.2
@@ -340,7 +340,7 @@ importers:
         specifier: ^2.12.0
         version: 2.12.0
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.7.0
+        specifier: 1.7.1
         version: link:../typescript-common
       change-case:
         specifier: ^4.1.2
@@ -358,10 +358,10 @@ importers:
         specifier: ^2.12.0
         version: 2.12.0
       '@openapi-generator-plus/typescript-fetch-client-generator':
-        specifier: 1.6.0
+        specifier: 1.6.1
         version: link:../typescript-fetch-client
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.7.0
+        specifier: 1.7.1
         version: link:../typescript-common
     devDependencies:
       node-fetch:
@@ -377,10 +377,10 @@ importers:
         specifier: ^2.12.0
         version: 2.12.0
       '@openapi-generator-plus/typescript-fetch-client-generator':
-        specifier: 1.6.0
+        specifier: 1.6.1
         version: link:../typescript-fetch-client
       '@openapi-generator-plus/typescript-generator-common':
-        specifier: 1.7.0
+        specifier: 1.7.1
         version: link:../typescript-common
 
 packages:
