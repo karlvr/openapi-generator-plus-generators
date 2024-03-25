@@ -12,7 +12,7 @@ paths:
           description: Survey id
           required: true
           schema:
-            $ref: '#/components/schemas/uuid'
+            type: integer
       responses:
         200:
           description: OK
@@ -23,141 +23,43 @@ paths:
 
 components:
   schemas:
-    uuid:
-      type: string
-      format: uuid
-  
     QuestionTypeEnum:
       type: string
-      description: determines question type, e.g. scale, 
       enum:
-        - scale
-        - multi
-        - matrix
-        - matrix-sub
-        - free-text
+        - q1
+        - q2
 
     Question:
       type: object
-      required: [id, type, title]
+      required: [type, title]
       discriminator:
         propertyName: type
         mapping:
-          matrix: '#/components/schemas/MatrixQuestion'
-          scale: '#/components/schemas/ScaleQuestion'
-          matrix-sub: '#/components/schemas/MatrixSubQuestion'
-          free-text: '#/components/schemas/FreeTextQuestion'
-          multi: '#/components/schemas/MultichoiceQuestion'
+          q1: '#/components/schemas/Question1'
+          q2: '#/components/schemas/Question2'
       properties:
-        id:
-          description: question id
-          $ref: '#/components/schemas/uuid'
         type:
           $ref: '#/components/schemas/QuestionTypeEnum'
         title:
           type: string
           description: Question title
-        subtitle:
-          type: string
-          description: Extra text to go underneath the title to clarify something about the question.
-        introduction:
-          type: string
-          description: Introductory text to the question.
-        answerIndex:
-          type: integer
-          description: index of answer option in options array/within min-max range
-        answerIndices:
-          type: array
-          items:
-            type: integer
-          description: index of answer option in options array/within min-max range
-        answeredStringValue:
-          type: string
-          description: when available, string value that was put as an answer
-        answerNotApplicable:
-          type: boolean
-          description: when available, whether the user chose to mark this question as not applicable
-        otherTitle:
-          type: string
-          description: when matrix sub-question is set to requiresOtherTitle and participant has answered the question and provided other title, it will be set here.
-        optional:
-          type: boolean
-          description: indicates that the answer is not compulsory
-        custom:
-          type: boolean
-          description: indicates that the question is created as a part of custom question
-        locked:
-          type: boolean
-          description: indicates that the question is custom question and is a part of open survey, therefore it can't be edited
-    ScaleQuestion:
+    Question1:
       allOf:
         - $ref: '#/components/schemas/Question'
-        - $ref: '#/components/schemas/AbstractScaleQuestion'
+        - $ref: '#/components/schemas/AbstractQuestion1'
         - type: object
           properties:
             notApplicableOption:
               type: string
-              description: Contains the text label for a not-applicable option, if appropriate.
-    AbstractScaleQuestion:
+    AbstractQuestion1:
       type: object
-      required: [min, max, labels, requiresOtherTitle]
+      required: [min, max]
       properties:
         min: 
           type: integer
-          description: minimum value for scale question and matrix question
         max: 
           type: integer
-          description: maximum value for scale question and matrix question
-        labels:
-          type: array
-          items:
-            type: string
-          description: array of labels of scale question and matrix question
-        requiresOtherTitle:
-          type: boolean
-          description: true if matrix sub-question or scale question require user to set title
-    MultichoiceQuestion:
-      allOf:
-        - $ref: '#/components/schemas/Question'
-        - type: object
-          required: [options, allowOtherAnswer, multichoiceType]
-          properties:
-            options:
-              type: array
-              items:
-                type: string
-              description: array of answer options for multichoice question
-            allowOtherAnswer:
-              type: boolean
-              description: in case of multichoice question flag notifies that participant can provide answer which is not in the initial list of options
-            multichoiceType:
-              type: string
-              enum: [single, multi, long-single]
-    MatrixQuestion:
-      allOf:
-        - $ref: '#/components/schemas/Question'
-        - $ref: '#/components/schemas/AbstractScaleQuestion'
-        - type: object
-          required: [subquestions]
-          properties:
-            subquestions:
-              type: array
-              items:
-                $ref: '#/components/schemas/MatrixSubQuestion'
-              description: matrix question contains subquestions, those would be contained as subquestions here
-    MatrixSubQuestion:
-      allOf:
-        - $ref: '#/components/schemas/Question'
-        - type: object
-          required: [requiresOtherTitle]
-          properties:
-            requiresOtherTitle:
-              type: boolean
-              description: true if matrix sub-question or scale question require user to set title
-            notApplicableOption:
-              type: string
-              description: Contains the text label for a not-applicable option, if appropriate.
-    FreeTextQuestion:
+    Question2:
       allOf:
         - $ref: '#/components/schemas/Question'
         - type: object
@@ -169,32 +71,9 @@ components:
 
     Survey:
       type: object
-      required: [name, status, sections]
-      description: The survey information.
+      required: [questions]
       properties:
-        name:
-          type: string
-        welcome:
-          type: string
-        expectedDuration:
-          type: integer
-        status:
-          type: string
-          enum: [pending, open, closed]
-        dueDate:
-          type: string
-          format: date-time
-        sections:
+        questions:
           type: array
           items:
-            type: object
-            required: [name, questions]
-            properties:
-              name:
-                type: string
-              intro:
-                type: string
-              questions:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Question'
+            $ref: '#/components/schemas/Question'
