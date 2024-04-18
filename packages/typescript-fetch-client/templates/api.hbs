@@ -144,17 +144,15 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	
 			if ({{identifier name}} !== undefined) {
 		{{#with defaultContent}}
-			{{#ifeq mediaType.mimeType 'application/x-www-form-urlencoded'}}
+			{{#if (isContentFormUrlEncoded .)}}
 				const localVarFormParams = new URLSearchParams();
 				{{#each (allProperties schema)}}
 				{{>frag/requestParameter dest='localVarFormParams' var=(concat (identifier ../../name) '["' serializedName '"]') encoding=(lookup ../encoding.properties name)}}
 				{{/each}}
 				localVarRequestOptions.body = localVarFormParams;
-			{{else ifeq mediaType.mimeType 'application/json'}}
+			{{else if (isContentJson .)}}
 				localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
-			{{else ifeq mediaType.mimeType 'text/json'}}
-				localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
-			{{else ifmatch mediaType.mimeType 'multipart/.*'}}
+			{{else if (isContentMultipart .)}}
 				const localVarFormData = new FormData();
 			{{#each encoding.properties}}
 				if ({{identifier ../../name}}.{{identifier property.name}} !== undefined) {
@@ -170,7 +168,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 				localVarRequestOptions.body = localVarFormData;
 			{{else}}
 				localVarRequestOptions.body = {{identifier ../name}};
-{{/ifeq}}
+{{/if}}
 			}
 		{{/with}}
 	{{/with}}

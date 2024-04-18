@@ -24,7 +24,7 @@ export interface {{className (concat ../../name '_' ../code)}}{{#if (gt (count .
 {{#unless schema}}
 	/* No schema */
 	body?: undefined
-{{else ifmatch mediaType.mimeType '/json'}}
+{{else if (isContentJson .)}}
 	body: {{{nativeType}}}
 {{else if (isBinary schema)}}
 	body: {{{nativeType}}}

@@ -3,7 +3,7 @@ Return the content of the response.
 
 @param this CodegenContent
 --}}
-{{#ifmatch mediaType.mimeType '/json'}}
+{{#if (isContentJson .)}}
 return response.json() as any;
 {{else if (isBinary schema)}}
 return response.buffer();
@@ -11,4 +11,4 @@ return response.buffer();
 return response.text();
 {{else}}
 return response; /* Unsupported mimeType */
-{{/ifmatch}}
+{{/if}}

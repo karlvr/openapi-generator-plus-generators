@@ -869,6 +869,17 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	registerPropertyTypeHelper('isTime', CodegenSchemaType.TIME, hbs)
 	registerPropertyTypeHelper('isBinary', CodegenSchemaType.BINARY, hbs)
 
+	/* Content type helpers */
+	hbs.registerHelper('isContentJson', function(value: CodegenContent): boolean {
+		return !!value.mediaType.mimeType.match('\\bjson$')
+	})
+	hbs.registerHelper('isContentMultipart', function(value: CodegenContent): boolean {
+		return !!value.mediaType.mimeType.match('^multipart/.*')
+	})
+	hbs.registerHelper('isContentFormUrlEncoded', function(value: CodegenContent): boolean {
+		return value.mediaType.mimeType === 'application/x-www-form-urlencoded'
+	})
+
 	function isEmpty(ob: UnknownObject) {
 		for (const name in ob) {
 			return false

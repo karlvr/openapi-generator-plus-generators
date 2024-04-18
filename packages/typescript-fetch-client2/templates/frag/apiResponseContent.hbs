@@ -14,7 +14,7 @@ return {
 	contentType: {{{stringLiteral mediaType.mimeType}}},
 {{#unless schema}}
 	/* No schema */
-{{else ifmatch mediaType.mimeType '/json'}}
+{{else if (isContentJson .)}}
 	body: await response.json() as {{{nativeType}}},
 {{else if (isBinary schema)}}
 	body: await response.blob(),
