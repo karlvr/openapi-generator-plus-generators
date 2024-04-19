@@ -1,0 +1,101 @@
+openapi: 3.0.3
+info:
+  title: oneOf three ways
+  description: Three oneOf hierarchies that contain the same schemas, but with different mappings.
+  version: '1.0'
+paths:
+  /test1:
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyInfo'
+  /test2:
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyInfo2'
+  /test3:
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyInfo3'
+        
+components:
+  schemas:
+    PropertyInfo:
+      oneOf:
+        - $ref: '#/components/schemas/IntegerProperty'
+        - $ref: '#/components/schemas/StringProperty'
+        - $ref: '#/components/schemas/ObjectProperty'
+      discriminator:
+        propertyName: type
+        mapping:
+          int: '#/components/schemas/IntegerProperty'
+          string: '#/components/schemas/StringProperty'
+    PropertyInfo2:
+      description: Uses the same discriminator but different mappings
+      oneOf:
+        - $ref: '#/components/schemas/IntegerProperty'
+        - $ref: '#/components/schemas/StringProperty'
+        - $ref: '#/components/schemas/ObjectProperty'
+      discriminator:
+        propertyName: type
+        mapping:
+          int2: '#/components/schemas/IntegerProperty'
+          string2: '#/components/schemas/StringProperty'
+    PropertyInfo3:
+      description: Uses a different discriminator and different mappings
+      oneOf:
+        - $ref: '#/components/schemas/IntegerProperty'
+        - $ref: '#/components/schemas/StringProperty'
+        - $ref: '#/components/schemas/ObjectProperty'
+      discriminator:
+        propertyName: type3
+        mapping:
+          int3: '#/components/schemas/IntegerProperty'
+          string3: '#/components/schemas/StringProperty'
+    AbstractProperty:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+        type3:
+          type: string
+    IntegerProperty:
+      allOf:
+        - $ref: '#/components/schemas/AbstractProperty'
+        - type: object
+          properties:
+            value:
+              type: integer
+    StringProperty:
+      allOf:
+        - $ref: '#/components/schemas/AbstractProperty'
+        - type: object
+          properties:
+            value:
+              type: string
+    ObjectProperty:
+      allOf:
+        - $ref: '#/components/schemas/AbstractProperty'
+        - type: object
+          required:
+            - id
+          nullable: true
+          properties:
+            id:
+              type: string
