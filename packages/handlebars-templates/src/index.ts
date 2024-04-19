@@ -979,8 +979,15 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	})
 
 	hbs.registerHelper('md', function(value: string) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
 		if (typeof value === 'string') {
-			return marked(value).trim()
+			const result = marked(value)
+			if (typeof result === 'string') {
+				return result.trim()
+			} else {
+				throw new Error(`md helper encountered unexpected result from marked @ ${sourcePosition(options)})`)
+			}
 		} else {
 			return value
 		}
