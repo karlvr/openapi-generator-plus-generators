@@ -60,7 +60,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		generatorType: () => CodegenGeneratorType.CLIENT,
 		toNativeType: function(options) {
 			const { schemaType } = options
-			if (schemaType === CodegenSchemaType.BINARY) {
+			if (schemaType === CodegenSchemaType.BINARY || schemaType === CodegenSchemaType.FILE) {
 				/* We support string and Blob, which is what FormData supports. It also enables us to handle literal binary values
 				   created from strings... which is hopefully a good idea.
 				 */

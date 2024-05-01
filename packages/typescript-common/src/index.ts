@@ -371,7 +371,8 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case CodegenSchemaType.BOOLEAN: {
 					return new context.NativeType('boolean')
 				}
-				case CodegenSchemaType.BINARY: {
+				case CodegenSchemaType.BINARY:
+				case CodegenSchemaType.FILE: {
 					/* Subclasses override this with a type appropriate to their environment, such as blob */
 					return new context.NativeType('string')
 				}

@@ -110,6 +110,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		timeImplementation: configString(config, 'timeImplementation', 'java.time.LocalTime'),
 		dateTimeImplementation: configString(config, 'dateTimeImplementation', 'java.time.OffsetDateTime'),
 		binaryRepresentation: configString(config, 'binaryRepresentation', 'byte[]'),
+		fileRepresentation: configString(config, 'fileRepresentation', configString(config, 'binaryRepresentation', 'byte[]')),
 		hideGenerationTimestamp: configBoolean(config, 'hideGenerationTimestamp', false),
 		imports: configStringArray(config, 'imports', null),
 		maven: maven ? {
@@ -346,6 +347,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.BINARY: {
 					return new context.NativeType(generatorOptions.binaryRepresentation)
 				}
+				case CodegenSchemaType.FILE: {
+					return new context.NativeType(generatorOptions.fileRepresentation)
+				}
 			}
 	
 			throw new Error(`Unsupported schema type: ${schemaType}`)
@@ -420,6 +424,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.TIME:
 				case CodegenSchemaType.DATETIME:
 				case CodegenSchemaType.BINARY:
+				case CodegenSchemaType.FILE:
 				case CodegenSchemaType.OBJECT:
 				case CodegenSchemaType.STRING:
 				case CodegenSchemaType.ARRAY:

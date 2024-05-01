@@ -30,7 +30,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		generatorType: () => CodegenGeneratorType.CLIENT,
 		toNativeType: function(options) {
 			const { schemaType } = options
-			if (schemaType === CodegenSchemaType.BINARY) {
+			if (schemaType === CodegenSchemaType.BINARY || schemaType === CodegenSchemaType.FILE) {
 				return new context.NativeType('string | Buffer')
 			} else {
 				return base.toNativeType(options)
