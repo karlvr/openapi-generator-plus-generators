@@ -7,7 +7,7 @@ Add a multipart property to the body
 {{#ifeq contentType 'application/json'}}
 {{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, JSON.stringify({{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}));
 {{else ifeq contentType 'application/octet-stream'}}
-{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, {{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}{{#if filenameProperty}}, {{{propertyVar}}}.{{identifier filenameProperty.name}}{{/if}});
+{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, {{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}});
 {{else}}
 {{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, String({{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}} || ''));
 {{/ifeq}}
