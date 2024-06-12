@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-cxf-client#readme",
   "dependencies": {
-    "@openapi-generator-plus/generator-common": "1.4.0",
-    "@openapi-generator-plus/handlebars-templates": "1.4.0",
-    "@openapi-generator-plus/java-jaxrs-generator-common": "2.7.0",
-    "@openapi-generator-plus/java-jaxrs-client-generator": "2.3.0",
+    "@openapi-generator-plus/generator-common": "workspace:*",
+    "@openapi-generator-plus/handlebars-templates": "workspace:*",
+    "@openapi-generator-plus/java-jaxrs-generator-common": "workspace:*",
+    "@openapi-generator-plus/java-jaxrs-client-generator": "workspace:*",
     "@openapi-generator-plus/types": "^2.12.0"
   },
   "publishConfig": {

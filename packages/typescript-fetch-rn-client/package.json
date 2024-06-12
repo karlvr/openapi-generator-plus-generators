@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-rn-client#readme",
   "dependencies": {
-    "@openapi-generator-plus/handlebars-templates": "1.4.0",
+    "@openapi-generator-plus/handlebars-templates": "workspace:*",
     "@openapi-generator-plus/types": "^2.12.0",
-    "@openapi-generator-plus/typescript-fetch-client-generator": "1.6.1",
-    "@openapi-generator-plus/typescript-generator-common": "1.7.1"
+    "@openapi-generator-plus/typescript-fetch-client-generator": "workspace:*",
+    "@openapi-generator-plus/typescript-generator-common": "workspace:*"
   },
   "publishConfig": {
     "access": "public"
