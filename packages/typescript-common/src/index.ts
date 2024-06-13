@@ -554,10 +554,10 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				let disjunction: CodegenOneOfSchema
 				const scope = helper.scopeOf(schema)
 				if (!isPlural(schema.name) && !helper.findSchema(pluralize(schema.name), scope)) {
-					disjunction = helper.createOneOfSchema(pluralize(schema.name), scope, CodegenSchemaPurpose.GENERAL)
+					disjunction = helper.createOneOfSchema(pluralize(schema.name), scope, CodegenSchemaPurpose.ONE_OF)
 					helper.addToScope(disjunction, scope)
 				} else {
-					disjunction = helper.createOneOfSchema('children', schema, CodegenSchemaPurpose.GENERAL)
+					disjunction = helper.createOneOfSchema('children', schema, CodegenSchemaPurpose.ONE_OF)
 					helper.addToScope(disjunction, schema)
 				}
 				disjunction.composes.push(...members)

@@ -114,7 +114,7 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 		toSuggestedSchemaName: (name, options) => {
 			if (options.schemaType === CodegenSchemaType.ENUM) {
 				name = `${name}_enum`
-			} else if (options.purpose === CodegenSchemaPurpose.EXTRACTED_INTERFACE) {
+			} else if (options.purpose === CodegenSchemaPurpose.INTERFACE) {
 				name = `i_${name}`
 			} else if (options.purpose === CodegenSchemaPurpose.ABSTRACT_IMPLEMENTATION) {
 				name = `abstract_${name}`
