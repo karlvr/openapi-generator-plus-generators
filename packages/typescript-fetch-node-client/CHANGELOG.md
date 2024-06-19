@@ -1,5 +1,29 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.4.0
+
+### Minor Changes
+
+- 18ff6da: Support new FILE schema type
+
+### Patch Changes
+
+- 506c9be: Use pnpm 9 and workspace uris
+- a5c7d64: Update templates for changes to multipart file properties to no longer contain metadata generated in core. If we want to bring back metadata in a generator template we'll need to add a specific FILE type to store that.
+- 5790781: Add CodegenContent type checking Handlebars helpers
+- 2f86851: Update openapi-generator-plus upstream
+- Updated dependencies [506c9be]
+- Updated dependencies [18ff6da]
+- Updated dependencies [5c51b1d]
+- Updated dependencies [a5c7d64]
+- Updated dependencies [6d43eca]
+- Updated dependencies [5790781]
+- Updated dependencies [2f86851]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.7.0
+  - @openapi-generator-plus/handlebars-templates@1.5.0
+  - @openapi-generator-plus/typescript-generator-common@1.8.0
+  - @openapi-generator-plus/generator-common@1.4.1
+
 ## 1.3.1
 
 ### Patch Changes

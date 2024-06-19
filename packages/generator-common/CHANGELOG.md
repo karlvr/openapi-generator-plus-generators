@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.4.1
+
+### Patch Changes
+
+- 2f86851: Update openapi-generator-plus upstream
+
 ## 1.4.0
 
 ### Minor Changes

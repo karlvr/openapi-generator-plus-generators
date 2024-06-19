@@ -1,5 +1,21 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.5.0
+
+### Minor Changes
+
+- 18ff6da: Support new FILE schema type
+
+### Patch Changes
+
+- 506c9be: Use pnpm 9 and workspace uris
+- a5c7d64: Update templates for changes to multipart file properties to no longer contain metadata generated in core. If we want to bring back metadata in a generator template we'll need to add a specific FILE type to store that.
+- 6d43eca: Update to node 20 and upgrade dependencies
+- 5790781: Add CodegenContent type checking Handlebars helpers
+- 2f86851: Update openapi-generator-plus upstream
+- Updated dependencies [2f86851]
+  - @openapi-generator-plus/generator-common@1.4.1
+
 ## 1.4.0
 
 ### Minor Changes

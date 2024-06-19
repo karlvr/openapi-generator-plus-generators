@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.2.1
+
+### Patch Changes
+
+- 506c9be: Use pnpm 9 and workspace uris
+- 5c51b1d: Fixes for @openapi-generator-plus/types changes in CodegenSchemaPurpose
+- 2f86851: Update openapi-generator-plus upstream
+- Updated dependencies [2f86851]
+  - @openapi-generator-plus/generator-common@1.4.1
+
 ## 2.2.0
 
 ### Minor Changes

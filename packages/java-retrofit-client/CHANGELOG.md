@@ -1,5 +1,20 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.3.1
+
+### Patch Changes
+
+- 506c9be: Use pnpm 9 and workspace uris
+- 2f86851: Update openapi-generator-plus upstream
+- Updated dependencies [506c9be]
+- Updated dependencies [18ff6da]
+- Updated dependencies [a5c7d64]
+- Updated dependencies [6d43eca]
+- Updated dependencies [5790781]
+- Updated dependencies [2f86851]
+  - @openapi-generator-plus/handlebars-templates@1.5.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.3.1
+
 ## 2.3.0
 
 ### Minor Changes

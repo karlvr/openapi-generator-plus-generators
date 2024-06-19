@@ -1,5 +1,22 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 1.2.2
+
+### Patch Changes
+
+- 506c9be: Use pnpm 9 and workspace uris
+- 2f86851: Update openapi-generator-plus upstream
+- Updated dependencies [506c9be]
+- Updated dependencies [18ff6da]
+- Updated dependencies [5c51b1d]
+- Updated dependencies [a5c7d64]
+- Updated dependencies [6d43eca]
+- Updated dependencies [5790781]
+- Updated dependencies [2f86851]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.7.0
+  - @openapi-generator-plus/handlebars-templates@1.5.0
+  - @openapi-generator-plus/typescript-generator-common@1.8.0
+
 ## 1.2.1
 
 ### Patch Changes
