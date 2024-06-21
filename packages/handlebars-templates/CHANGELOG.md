@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.5.1
+
+### Patch Changes
+
+- df4a78f: set helper now supports setting a variable to another value passed as an additional argument, rather than just a body
+
 ## 1.5.0
 
 ### Minor Changes
