@@ -1,5 +1,12 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.8.2
+
+### Patch Changes
+
+- Updated dependencies [4b9c50f]
+  - @openapi-generator-plus/handlebars-templates@1.6.0
+
 ## 1.8.1
 
 ### Patch Changes

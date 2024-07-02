@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.6.0
+
+### Minor Changes
+
+- 4b9c50f: Add isNull and isNotNull helpers
+
 ## 1.5.1
 
 ### Patch Changes
