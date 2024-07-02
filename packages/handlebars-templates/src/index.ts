@@ -630,7 +630,6 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			return typeof options.inverse === 'function' ? options.inverse(this) : false
 		}
 	})
-	
 	hbs.registerHelper('ifndef', function(this: UnknownObject, value: unknown) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
@@ -1082,6 +1081,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	registerComparisonHelper('ge', (a, b) => a >= b, hbs)
 	registerComparisonHelper('lt', (a, b) => a < b, hbs)
 	registerComparisonHelper('le', (a, b) => a <= b, hbs)
+
+	hbs.registerHelper('isNull', function(value: unknown): boolean {
+		return value === null
+	})
+	hbs.registerHelper('isNotNull', function(value: unknown): boolean {
+		return value !== null
+	})
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
