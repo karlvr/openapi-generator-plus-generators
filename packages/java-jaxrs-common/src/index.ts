@@ -350,6 +350,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				case CodegenSchemaType.FILE: {
 					return new context.NativeType(generatorOptions.fileRepresentation)
 				}
+				case CodegenSchemaType.ANY: {
+					return new context.NativeType('java.lang.Object')
+				}
 			}
 	
 			throw new Error(`Unsupported schema type: ${schemaType}`)

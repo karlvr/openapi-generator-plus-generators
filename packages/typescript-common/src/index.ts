@@ -376,6 +376,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 					/* Subclasses override this with a type appropriate to their environment, such as blob */
 					return new context.NativeType('string')
 				}
+				case CodegenSchemaType.ANY: {
+					return new context.NativeType('unknown')
+				}
 			}
 
 			throw new Error(`Unsupported schema type: ${schemaType}`)
