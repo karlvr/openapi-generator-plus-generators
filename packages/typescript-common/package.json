@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-generator-common",
-  "version": "1.8.2",
+  "version": "1.9.0",
   "description": "A common OpenAPI Generator Plus module for TypeScript generators",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

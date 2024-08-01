@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.5.0
+
+### Minor Changes
+
+- 9e1dc23: Update upstream
+
 ## 1.4.1
 
 ### Patch Changes

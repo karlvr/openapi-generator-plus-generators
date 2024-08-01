@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 2.9.0
+
+### Minor Changes
+
+- 9e1dc23: Update upstream
+- 3363813: Add support for ANY schema type
+
+### Patch Changes
+
+- Updated dependencies [9e1dc23]
+  - @openapi-generator-plus/handlebars-templates@1.7.0
+  - @openapi-generator-plus/generator-common@1.5.0
+  - @openapi-generator-plus/java-like-generator-helper@2.3.0
+
 ## 2.8.2
 
 ### Patch Changes

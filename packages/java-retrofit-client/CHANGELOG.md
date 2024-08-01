@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.4.0
+
+### Minor Changes
+
+- 9e1dc23: Update upstream
+
+### Patch Changes
+
+- Updated dependencies [9e1dc23]
+  - @openapi-generator-plus/handlebars-templates@1.7.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@2.4.0
+
 ## 2.3.3
 
 ### Patch Changes
