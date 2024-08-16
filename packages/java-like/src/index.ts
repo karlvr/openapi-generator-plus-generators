@@ -50,6 +50,8 @@ export interface JavaLikeOptions {
 	modelClassSuffix?: string
 	enumClassPrefix?: string
 	enumClassSuffix?: string
+	nestedModelClassPrefix?: string
+	nestedEnumClassPrefix?: string
 	constantStyle: ConstantStyle
 }
 
@@ -60,6 +62,8 @@ export function options(config: CodegenConfig, context: JavaLikeContext): JavaLi
 		modelClassSuffix: configString(config, 'modelClassSuffix', undefined),
 		enumClassPrefix: configString(config, 'enumClassPrefix', undefined),
 		enumClassSuffix: configString(config, 'enumClassSuffix', undefined),
+		nestedModelClassPrefix: configString(config, 'nestedModelClassPrefix', undefined),
+		nestedEnumClassPrefix: configString(config, 'nestedEnumClassPrefix', undefined),
 		constantStyle: configString(config, 'constantStyle', context.defaultConstantStyle) as ConstantStyle,
 	}
 	return result
@@ -113,17 +117,24 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			let result = cg.toSchemaName(name, options)
 			result = context.generator().toClassName(result)
 
+			const isEnum = options.schemaType === CodegenSchemaType.ENUM
+			const isModel = options.schemaType === CodegenSchemaType.OBJECT || options.schemaType === CodegenSchemaType.INTERFACE || options.schemaType === CodegenSchemaType.WRAPPER || options.schemaType === CodegenSchemaType.ALLOF || options.schemaType === CodegenSchemaType.ANYOF || options.schemaType === CodegenSchemaType.ONEOF || options.schemaType === CodegenSchemaType.ENUM
+
 			/* Schema prefixes */
-			if (generatorOptions.enumClassPrefix && (options.schemaType === CodegenSchemaType.ENUM)) {
+			if (isEnum && options.scope && generatorOptions.nestedEnumClassPrefix !== undefined) {
+				result = generatorOptions.nestedEnumClassPrefix + result
+			} else if (isEnum && generatorOptions.enumClassPrefix !== undefined) {
 				result = generatorOptions.enumClassPrefix + result
-			} else if (generatorOptions.modelClassPrefix && (options.schemaType === CodegenSchemaType.OBJECT || options.schemaType === CodegenSchemaType.INTERFACE || options.schemaType === CodegenSchemaType.WRAPPER || options.schemaType === CodegenSchemaType.ALLOF || options.schemaType === CodegenSchemaType.ANYOF || options.schemaType === CodegenSchemaType.ONEOF || options.schemaType === CodegenSchemaType.ENUM)) {
+			} else if (isModel && options.scope && generatorOptions.nestedModelClassPrefix !== undefined) {
+				result = generatorOptions.nestedModelClassPrefix + result
+			} else if (isModel && generatorOptions.modelClassPrefix !== undefined) {
 				result = generatorOptions.modelClassPrefix + result
 			}
 
 			/* Schema suffixes */
-			if (generatorOptions.enumClassSuffix && (options.schemaType === CodegenSchemaType.ENUM)) {
+			if (isEnum && generatorOptions.enumClassSuffix !== undefined) {
 				result = result + generatorOptions.enumClassSuffix
-			} else if (generatorOptions.modelClassSuffix && (options.schemaType === CodegenSchemaType.OBJECT || options.schemaType === CodegenSchemaType.INTERFACE || options.schemaType === CodegenSchemaType.WRAPPER || options.schemaType === CodegenSchemaType.ALLOF || options.schemaType === CodegenSchemaType.ANYOF || options.schemaType === CodegenSchemaType.ONEOF || options.schemaType === CodegenSchemaType.ENUM)) {
+			} else if (isModel &&  generatorOptions.modelClassSuffix !== undefined) {
 				result = result + generatorOptions.modelClassSuffix
 			}
 			return result
