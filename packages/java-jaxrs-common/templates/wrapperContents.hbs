@@ -1,10 +1,7 @@
 {{#with property}}
 private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{{initialValue.literalValue}}}{{/if}};
 
-{{#set '__overridePojoPropertyAnnotations'}}
-@com.fasterxml.jackson.annotation.JsonValue
-{{/set}}
-{{>frag/pojoProperty class=..}}
+{{>frag/pojoProperty class=.. __overridePojoPropertyAnnotations='@com.fasterxml.jackson.annotation.JsonValue'}}
 
 @com.fasterxml.jackson.annotation.JsonCreator
 public static {{../nativeType}} create{{className ../name}}({{>frag/pojoPropertyType}} {{identifier name}}) {
