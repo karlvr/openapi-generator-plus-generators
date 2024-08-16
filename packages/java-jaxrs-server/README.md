@@ -27,7 +27,7 @@ The available config file properties are:
 |`apiPackage`|`string`|Package for API interfaces.|`"${package}"`|
 |`apiImplPackage`|`string`|Package for API implementation classes.|`"${apiPackage}.impl"`|
 |`apiServicePackage`|`string`|Package for API service interfaces.|`"${apiPackage}.service"`|
-|`apiServiceImplPackage`|`string`|Package for API service implementation classes.|`"${apiServicePackage}.impl"`|
+|`apiServiceImplPackage`|`string` \| `null`|Package for API service implementation classes.|`"${apiServicePackage}.impl"`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
 |`invokerPackage`|`string` \| `null`|Package for API invoker classes.|`"${package}.app"`|
 |`validationPackage`|`string`|Package for API validation classes.|`"${package}.validation"`|

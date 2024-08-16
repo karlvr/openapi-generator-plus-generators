@@ -15,7 +15,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 	const result: CodegenOptionsJavaServer = {
 		...options,
 		apiServicePackage,
-		apiServiceImplPackage: configString(config, 'apiServiceImplPackage', `${apiServicePackage}.impl`),
+		apiServiceImplPackage: nullableConfigString(config, 'apiServiceImplPackage', `${apiServicePackage}.impl`),
 		apiProviderPackage: configString(config, 'apiProviderPackage', `${packageName}.providers`),
 		invokerPackage: nullableConfigString(config, 'invokerPackage', `${packageName}.app`),
 		authenticationRequiredAnnotation: nullableConfigString(config, 'authenticationRequiredAnnotation', nullableConfigString(config, 'authenticatedOperationAnnotation', null)),
@@ -80,14 +80,16 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 
-		const apiServiceImplPackagePath = packageToPath(generatorOptions.apiServiceImplPackage)
-		for (const group of doc.groups) {
-			const operations = group.operations
-			if (!operations.length) {
-				continue
+		if (generatorOptions.apiServiceImplPackage) {
+			const apiServiceImplPackagePath = packageToPath(generatorOptions.apiServiceImplPackage)
+			for (const group of doc.groups) {
+				const operations = group.operations
+				if (!operations.length) {
+					continue
+				}
+				await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiServiceImplPackagePath, `${context.generator().toClassName(group.name)}ApiServiceImpl.java`),
+					{ ...rootContext, ...group }, false, hbs)
 			}
-			await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiServiceImplPackagePath, `${context.generator().toClassName(group.name)}ApiServiceImpl.java`),
-				{ ...rootContext, ...group }, false, hbs)
 		}
 
 		const invokerPackagePath = generatorOptions.invokerPackage ? packageToPath(generatorOptions.invokerPackage) : undefined
