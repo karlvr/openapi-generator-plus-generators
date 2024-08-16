@@ -111,7 +111,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		dateTimeImplementation: configString(config, 'dateTimeImplementation', 'java.time.OffsetDateTime'),
 		binaryRepresentation: configString(config, 'binaryRepresentation', 'byte[]'),
 		fileRepresentation: configString(config, 'fileRepresentation', configString(config, 'binaryRepresentation', 'byte[]')),
-		hideGenerationTimestamp: configBoolean(config, 'hideGenerationTimestamp', false),
+		hideGenerationTimestamp: configBoolean(config, 'hideGenerationTimestamp', true),
 		imports: configStringArray(config, 'imports', null),
 		maven: maven ? {
 			groupId: configString(maven, 'groupId', 'com.example', 'maven.'),

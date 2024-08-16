@@ -70,7 +70,7 @@ The available config file properties are:
 
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
-|`hideGenerationTimestamp`|`boolean`|Whether to hide the timestamp in the `@Generated` annotation.|`false`|
+|`hideGenerationTimestamp`|`boolean`|Whether to hide the timestamp in the `@Generated` annotation.|`true`|
 
 ### Testing
 
