@@ -30,19 +30,9 @@ public {{{nativeType}}} {{identifier name}}() {
 }
 
 {{/or}}
+{{#unless @root.useLombok}}
 {{>frag/propertyDocumentation}}
-{{>frag/propertyAnnotations}}
-{{#if (lookup schema.vendorExtensions 'x-extra-annotation')}}
-{{{schema.vendorExtensions.x-extra-annotation}}}
-{{/if}}
-{{#ifdef __overridePojoPropertyAnnotations}}
-{{{__overridePojoPropertyAnnotations}}}
-{{else}}
-{{>hooks/pojoPropertyAnnotations}}
-{{/ifdef}}
-{{#if @root.useBeanValidation}}
-{{>beanValidation}}
-{{/if}}
+{{>frag/pojoPropertyAnnotations}}
 public {{>frag/pojoPropertyType}} {{getter .}}() {
 	return this.{{identifier name}};
 }
@@ -51,8 +41,9 @@ public {{>frag/pojoPropertyType}} {{getter .}}() {
 public void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}}) {
 	this.{{identifier name}} = {{identifier name}};
 }
-{{#if (isArray)}}
 
+{{/unless}}
+{{#if (isArray)}}
 {{>frag/propertyAnnotations}}
 public {{className class.name}} add{{capitalize (singular (identifier name))}}({{{schema.component.nativeType}}} {{identifier (singular name)}}) {
 	{{#if nullable}}
@@ -68,13 +59,14 @@ public {{className class.name}} add{{capitalize (singular (identifier name))}}({
 	{{/if}}
 	return this;
 }
-{{#if (isObject schema.component)}}
 
+{{#if (isObject schema.component)}}
 {{>frag/propertyAnnotations}}
 public {{{schema.component.nativeType}}} add{{capitalize (singular (identifier name))}}() {
 	{{{schema.component.nativeType}}} {{identifier (singular name)}} = new {{{schema.component.nativeType.concreteType}}}();
 	add{{capitalize (singular (identifier name))}}({{identifier (singular name)}});
 	return {{identifier (singular name)}};
 }
+
 {{/if}}
 {{/if}}

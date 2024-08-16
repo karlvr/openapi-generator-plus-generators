@@ -27,6 +27,9 @@
 		<javax.validation.version>{{lookup maven.versions 'javax_validation' '2.0.0.Final'}}</javax.validation.version>
 		{{/if}}
 		{{/if}}
+		{{#if useLombok}}
+		<lombok.version>{{lookup maven.versions 'lombok' '1.18.34'}}</lombok.version>
+		{{/if}}
 		{{>hooks/pomProperties}}
 	</properties>
 
@@ -102,6 +105,15 @@
 			<artifactId>swagger-annotations</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+		{{#if useLombok}}
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		{{/if}}
 		{{>hooks/pomDependencies}}
 	</dependencies>
 

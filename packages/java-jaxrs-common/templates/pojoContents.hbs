@@ -3,9 +3,19 @@
 private {{{additionalProperties.nativeType}}} additionalProperties = new {{{additionalProperties.nativeType.concreteType}}}();
 {{/if}}
 {{#each properties}}
+{{#if @root.useLombok}}
+{{>frag/propertyDocumentation}}
+{{>frag/pojoPropertyAnnotations}}
+@lombok.Getter @lombok.Setter
+{{/if}}
 private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{#if nullable}}java.util.Optional.of({{/if}}{{{initialValue.literalValue}}}{{#if nullable}}){{/if}}{{/if}};
-{{/each}}
+{{#if @root.useLombok}}
 
+{{/if}}
+{{/each}}
+{{#unless @root.useLombok}}
+
+{{/unless}}
 {{#if additionalProperties}}
 @com.fasterxml.jackson.annotation.JsonAnyGetter
 public {{{additionalProperties.nativeType}}} getAdditionalProperties() {
@@ -54,6 +64,5 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{/each}}
 {{#each properties}}
 {{>frag/pojoProperty class=..}}
-
 {{/each}}
 {{>frag/pojoUtilities}}

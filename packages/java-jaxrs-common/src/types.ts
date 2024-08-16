@@ -33,6 +33,11 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	 * Use jakarta instead of javax for imports
 	 */
 	useJakarta: boolean
+
+	/**
+	 * Whether to use Lombok annotations or not
+	 */
+	useLombok: boolean
 }
 
 export interface MavenOptions {

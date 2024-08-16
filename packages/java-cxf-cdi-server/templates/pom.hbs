@@ -37,6 +37,10 @@
 		<junit-jupiter.version>{{lookup maven.version 'junit_jupiter' '5.7.2'}}</junit-jupiter.version>
 		<weld-junit5.version>2.0.1.Final</weld-junit5.version>
 		{{/if}}
+		{{#if useLombok}}
+		<lombok.version>{{lookup maven.versions 'lombok' '1.18.34'}}</lombok.version>
+		{{/if}}
+		{{>hooks/pomProperties}}
 	</properties>
 
 	<dependencies>
@@ -165,6 +169,15 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
+		</dependency>
+		{{/if}}
+		{{#if useLombok}}
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		{{/if}}
 	</dependencies>

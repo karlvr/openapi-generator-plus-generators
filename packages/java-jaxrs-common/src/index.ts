@@ -125,6 +125,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
 		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
 		useJakarta: configBoolean(config, 'useJakarta', false),
+		useLombok: configBoolean(config, 'useLombok', false),
 	}
 
 	return options

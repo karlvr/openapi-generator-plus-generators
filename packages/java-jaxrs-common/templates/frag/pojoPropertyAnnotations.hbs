@@ -1,0 +1,12 @@
+{{>frag/propertyAnnotations}}
+{{#if (lookup schema.vendorExtensions 'x-extra-annotation')}}
+{{{schema.vendorExtensions.x-extra-annotation}}}
+{{/if}}
+{{#ifdef __overridePojoPropertyAnnotations}}
+{{{__overridePojoPropertyAnnotations}}}
+{{else}}
+{{>hooks/pojoPropertyAnnotations}}
+{{/ifdef}}
+{{#if @root.useBeanValidation}}
+{{>beanValidation}}
+{{/if}}
