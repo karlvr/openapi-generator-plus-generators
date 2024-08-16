@@ -45,6 +45,9 @@ The available config file properties are:
 |`constantStyle`|`"allCapsSnake"` \| `"allCaps"` \| `"camelCase"` \| `"pascalCase"`|The style to use for constant naming.|`"allCapsSnake"`|
 |`apiClassPrefix`|`string`|Apply a prefix to all API interface and implementation class names.|`undefined`|
 |`modelClassPrefix`|`string`|Apply a prefix to all model class names.|`undefined`|
+|`modelClassSuffix`|`string`|Apply a suffix to all model class names.|`undefined`|
+|`enumClassPrefix`|`string`|Apply a prefix to all enum class names.|`modelClassPrefix`|
+|`enumClassSuffix`|`string`|Apply a suffix to all enum class names.|`modelClassSuffix`|
 |`authenticationRequiredAnnotation`|`string`|Annotation to add to API methods that require authentication.|`undefined`|
 |`useJakarta`|`boolean`|Whether to use `jakarta` packages instead of `javax` packages.|`false`|
 

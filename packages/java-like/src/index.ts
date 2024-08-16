@@ -47,6 +47,9 @@ export const enum ConstantStyle {
 export interface JavaLikeOptions {
 	apiClassPrefix?: string
 	modelClassPrefix?: string
+	modelClassSuffix?: string
+	enumClassPrefix?: string
+	enumClassSuffix?: string
 	constantStyle: ConstantStyle
 }
 
@@ -54,6 +57,9 @@ export function options(config: CodegenConfig, context: JavaLikeContext): JavaLi
 	const result: JavaLikeOptions = {
 		apiClassPrefix: configString(config, 'apiClassPrefix', undefined),
 		modelClassPrefix: configString(config, 'modelClassPrefix', undefined),
+		modelClassSuffix: configString(config, 'modelClassSuffix', undefined),
+		enumClassPrefix: configString(config, 'enumClassPrefix', undefined),
+		enumClassSuffix: configString(config, 'enumClassSuffix', undefined),
 		constantStyle: configString(config, 'constantStyle', context.defaultConstantStyle) as ConstantStyle,
 	}
 	return result
@@ -106,14 +112,27 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 		toSchemaName: (name, options) => {
 			let result = cg.toSchemaName(name, options)
 			result = context.generator().toClassName(result)
-			if ((options.schemaType === CodegenSchemaType.OBJECT || options.schemaType === CodegenSchemaType.INTERFACE || options.schemaType === CodegenSchemaType.WRAPPER || options.schemaType === CodegenSchemaType.ALLOF || options.schemaType === CodegenSchemaType.ANYOF || options.schemaType === CodegenSchemaType.ONEOF || options.schemaType === CodegenSchemaType.ENUM) && generatorOptions.modelClassPrefix) {
+
+			/* Schema prefixes */
+			if (generatorOptions.enumClassPrefix && (options.schemaType === CodegenSchemaType.ENUM)) {
+				result = generatorOptions.enumClassPrefix + result
+			} else if (generatorOptions.modelClassPrefix && (options.schemaType === CodegenSchemaType.OBJECT || options.schemaType === CodegenSchemaType.INTERFACE || options.schemaType === CodegenSchemaType.WRAPPER || options.schemaType === CodegenSchemaType.ALLOF || options.schemaType === CodegenSchemaType.ANYOF || options.schemaType === CodegenSchemaType.ONEOF || options.schemaType === CodegenSchemaType.ENUM)) {
 				result = generatorOptions.modelClassPrefix + result
+			}
+
+			/* Schema suffixes */
+			if (generatorOptions.enumClassSuffix && (options.schemaType === CodegenSchemaType.ENUM)) {
+				result = result + generatorOptions.enumClassSuffix
+			} else if (generatorOptions.modelClassSuffix && (options.schemaType === CodegenSchemaType.OBJECT || options.schemaType === CodegenSchemaType.INTERFACE || options.schemaType === CodegenSchemaType.WRAPPER || options.schemaType === CodegenSchemaType.ALLOF || options.schemaType === CodegenSchemaType.ANYOF || options.schemaType === CodegenSchemaType.ONEOF || options.schemaType === CodegenSchemaType.ENUM)) {
+				result = result + generatorOptions.modelClassSuffix
 			}
 			return result
 		},
 		toSuggestedSchemaName: (name, options) => {
 			if (options.schemaType === CodegenSchemaType.ENUM) {
-				name = `${name}_enum`
+				if (!generatorOptions.enumClassSuffix) {
+					name = `${name}_enum`
+				}
 			} else if (options.purpose === CodegenSchemaPurpose.INTERFACE) {
 				name = `i_${name}`
 			} else if (options.purpose === CodegenSchemaPurpose.ABSTRACT_IMPLEMENTATION) {
