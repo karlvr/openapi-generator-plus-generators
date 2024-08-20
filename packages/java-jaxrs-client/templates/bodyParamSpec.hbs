@@ -1,1 +1,0 @@
-{{#with requestBody}}{{#ifeq defaultContent.encoding.type 'MULTIPART'}}org.apache.cxf.jaxrs.ext.multipart.MultipartBody {{identifier name}}{{else}}{{{nativeType}}} {{identifier name}}{{/ifeq}}{{/with}}

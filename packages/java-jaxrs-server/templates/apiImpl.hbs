@@ -12,7 +12,14 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 
 	{{/if}}
 {{#each operations}}
-	public {{javax}}.ws.rs.core.Response {{name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}) {
+{{>frag/operationVars op=. jaxrs=false}}
+{{#join '_arguments' ', '}}
+{{{_arguments}}}
+{{#unless defaultResponse.defaultContent.nativeType}}
+__response
+{{/unless}}
+{{/join}}
+	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}) {
 		{{#with defaultResponse}}
 		final {{javax}}.ws.rs.core.Response.ResponseBuilder __response = {{javax}}.ws.rs.core.Response.status({{code}}).cacheControl({{javax}}.ws.rs.ext.RuntimeDelegate.getInstance().createHeaderDelegate({{javax}}.ws.rs.core.CacheControl.class).fromString("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
 		{{/with}}
@@ -21,7 +28,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#with defaultResponse}}
-			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{#each ../parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if ../requestBody.nativeType}}{{#if ../parameters}}, {{/if}}{{identifier ../requestBody.name}}{{/if}}{{#unless defaultContent.nativeType}}{{#or ../parameters ../requestBody.nativeType}}, {{/or}}__response{{/unless}});
+			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{{../_arguments}}});
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__entity'}}

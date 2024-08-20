@@ -26,6 +26,7 @@ The available config file properties are:
 |`package`|`string`|Base package name that other default package names will be based on.|`"com.example"`|
 |`apiPackage`|`string`|Package for API interfaces.|`"${package}"`|
 |`apiImplPackage`|`string`|Package for API implementation classes.|`"${apiPackage}.impl"`|
+|`apiParamsPackage`|`string` \| `null`|Package for API parameter classes.|`"${apiPackage}.params"`|
 |`apiServicePackage`|`string`|Package for API service interfaces.|`"${apiPackage}.service"`|
 |`apiServiceImplPackage`|`string` \| `null`|Package for API service implementation classes.|`"${apiServicePackage}.impl"`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|

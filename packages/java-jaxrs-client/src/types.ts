@@ -6,3 +6,9 @@ export interface CodegenOptionsJavaClient extends CommonCodegenOptions {
 	connectionTimeoutMillis: number
 	receiveTimeoutMillis: number
 }
+
+declare module '@openapi-generator-plus/types' {
+	interface CodegenOperation {
+		useParamsClasses: boolean
+	}
+}

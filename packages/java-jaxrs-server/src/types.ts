@@ -8,3 +8,9 @@ export interface CodegenOptionsJavaServer extends CommonCodegenOptions {
 	
 	authenticationRequiredAnnotation: string | null
 }
+
+declare module '@openapi-generator-plus/types' {
+	interface CodegenOperation {
+		useParamsClasses: boolean
+	}
+}

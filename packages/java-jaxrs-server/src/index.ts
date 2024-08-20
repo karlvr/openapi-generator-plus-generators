@@ -92,6 +92,18 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			}
 		}
 
+		if (generatorOptions.apiParamsPackage) {
+			const apiParamsPackagePath = packageToPath(generatorOptions.apiParamsPackage)
+			for (const group of doc.groups) {
+				for (const operation of group.operations) {
+					if (operation.useParamsClasses) {
+						await emit('apiParams', path.join(outputPath, relativeSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), 
+							{ ...rootContext, group, ...operation }, true, hbs)
+					}
+				}
+			}
+		}
+
 		const invokerPackagePath = generatorOptions.invokerPackage ? packageToPath(generatorOptions.invokerPackage) : undefined
 		if (invokerPackagePath) {
 			const basePath = apiBasePath(doc.servers)
@@ -122,6 +134,10 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
 			path.join(relativeSourceOutputPath, apiServicePackagePath, '*ApiService.java'),
 		]
+		if (generatorOptions.apiParamsPackage) {
+			const apiParamsPackagePath = packageToPath(generatorOptions.apiParamsPackage)
+			result.push(path.join(relativeSourceOutputPath, apiParamsPackagePath, '*Params.java'))
+		}
 		if (context.additionalCleanPathPatterns) {
 			result.push(...context.additionalCleanPathPatterns())
 		}

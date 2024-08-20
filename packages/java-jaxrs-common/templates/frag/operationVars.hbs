@@ -1,0 +1,38 @@
+{{!-- Parameters --}}
+{{#join 'op._parameters' ', '}}
+{{#if op.useParamsClasses}}
+{{#if jaxrs}}@{{javax}}.ws.rs.BeanParam {{/if}}{{@root.apiParamsPackage}}.{{{className op.uniqueName}}}Params params
+{{else}}
+{{#each op.parameters}}
+{{#join ' '}}
+{{#if ../jaxrs}}
+{{>frag/parameterAnnotations}}
+{{/if}}
+{{{nativeType}}} {{identifier name}}
+{{/join}}
+
+{{/each}}
+{{/if}}
+{{#if op.requestBody.nativeType}}
+{{#with op.requestBody}}
+{{>frag/bodyParam jaxrs=../jaxrs}}
+{{/with}}
+{{/if}}
+{{/join}}
+{{!-- Arguments --}}
+{{#join 'op._arguments' ', '}}
+{{#if op.useParamsClasses}}
+params
+{{else}}
+{{#each op.parameters}}
+{{identifier name}}
+{{/each}}
+{{/if}}
+{{#ifdef requestBodyVar}}
+{{{requestBodyVar}}}
+{{else}}
+{{#if op.requestBody.nativeType}}
+{{identifier op.requestBody.name}}
+{{/if}}
+{{/ifdef}}
+{{/join}}

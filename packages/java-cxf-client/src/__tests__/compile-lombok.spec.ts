@@ -3,7 +3,7 @@ import { compile, prepare, DEFAULT_CONFIG } from './common'
 import fs from 'fs'
 import path from 'path'
 
-describe('compile test cases', () => {
+describe('compile test cases with lombok', () => {
 	const basePath = path.join(__dirname, '..', '..', '..', '..', '__tests__', 'specs')
 	const files = fs.readdirSync(basePath)
 

@@ -9,11 +9,12 @@ package {{apiPackage}};
 public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 
 	{{#each operations}}
+	{{>frag/operationVars op=. jaxrs=false}}
 	{{>frag/operationDocumentation}}
 	{{#if deprecated}}
 	@java.lang.Deprecated
 	{{/if}}
-	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{#each parameters}}{{{nativeType}}} {{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{{requestBody.nativeType}}} {{identifier requestBody.name}}{{/if}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}};
+	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{{_parameters}}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}};
 	{{/each}}
 
 	{{#each operations}}

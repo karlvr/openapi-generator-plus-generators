@@ -1,0 +1,46 @@
+package {{{apiParamsPackage}}};
+
+{{#if @root.useLombok}}
+@lombok.Getter
+@lombok.Setter
+{{/if}}
+public class {{className uniqueName}}Params {
+
+{{#each parameters}}
+{{#if @root.useLombok}}
+	{{>frag/propertyDocumentation}}
+	{{>frag/pojoPropertyAnnotations}}
+{{/if}}
+	private {{{nativeType}}} {{{identifier name}}};
+{{#if @root.useLombok}}
+
+{{/if}}
+{{/each}}
+{{#unless @root.useLombok}}
+
+{{/unless}}
+	/**
+	 * Create a new params object.
+	 */
+	public {{{className uniqueName}}}Params() {
+
+	}
+
+{{#if requiredParams}}
+	/**
+	 * Create a new params object with all of the required parameters.
+	 */
+	public {{{className uniqueName}}}Params({{#each requiredParams}}{{{nativeType}}} {{{identifier name}}}{{#hasMore}}, {{/hasMore}}{{/each}}) {
+{{#each requiredParams}}
+		this.{{{identifier name}}} = {{{identifier name}}};
+{{/each}}
+	}
+
+{{/if}}
+{{#set '__chainClassName'}}
+{{{className uniqueName}}}Params
+{{/set}}
+{{#each parameters}}
+	{{>frag/pojoProperty chainClassName=../__chainClassName}}
+{{/each}}
+}

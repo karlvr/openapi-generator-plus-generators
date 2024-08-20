@@ -3,7 +3,7 @@ import { compile, prepare, DEFAULT_CONFIG } from './common'
 import fs from 'fs'
 import path from 'path'
 
-describe('compile test cases with lombok', () => {
+describe('compile test cases with no params classes', () => {
 	const basePath = path.join(__dirname, '..', '..', '..', '..', '__tests__', 'specs')
 	const files = fs.readdirSync(basePath)
 
@@ -12,9 +12,9 @@ describe('compile test cases with lombok', () => {
 			const result = await prepare(path.join(basePath, file), {
 				...DEFAULT_CONFIG,
 				includeTests: true,
-				useLombok: true,
+				apiParamsPackage: null,
 			})
-			await testGenerate(result, { postProcess: compile, testName: `javax-lombok/${file}` })
+			await testGenerate(result, { postProcess: compile, testName: `javax-no-params/${file}` })
 		})
 	}
 })

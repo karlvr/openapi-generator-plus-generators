@@ -7,18 +7,10 @@ public class {{className name}}ApiTest {
 	{{>util/inject interface=(concat apiPackage '.' (className name) 'Api') class=(concat apiImplPackage '.' (className name) 'ApiImpl') name='api'}}
 
 {{#each operations}}
+{{>frag/operationVars op=. jaxrs=false}}
 	@Test
 	public void {{identifier name}}Test() throws java.lang.Exception {
-		{{#each parameters}}
-		{{{nativeType}}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral schema}}}{{/ifeg}};
-		{{/each}}
-		{{#if requestBody.nativeType}}
-		{{#with requestBody}}
-		{{{nativeType}}} __request = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral schema}}}{{/ifeg}};
-		{{/with}}
-		{{/if}}
-
-		api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}__request{{/if}});
+		// api.{{identifier name}}({{{_arguments}}});
 	}
 
 {{/each}}

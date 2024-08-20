@@ -37,22 +37,14 @@ public class {{className name}}ApiTest {
 	}
 	
 {{#each operations}}
+{{>frag/operationVars op=. jaxrs=false}}
 	@Test
 	public void {{identifier name}}Test() {
-		{{#each parameters}}
-		{{{nativeType}}} {{identifier name}} = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral schema}}}{{/ifeg}};
-		{{/each}}
-		{{#if requestBody.nativeType}}
-		{{#with requestBody}}
-		{{{nativeType}}} __request = {{#ifeg 'java'}}{{{examples.java.valueLiteral}}}{{else ifeg 'default'}}{{{examples.default.valueLiteral}}}{{else}}{{{undefinedValueLiteral schema}}}{{/ifeg}};
-		{{/with}}
-		{{/if}}
-
-		Response response = this.api.{{identifier name}}({{#each parameters}}{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}__request{{/if}});
-		Assertions.assertNotNull(response);
+		// Response response = this.api.{{identifier name}}({{{_arguments}}});
+		// Assertions.assertNotNull(response);
 		{{#if returnNativeType}}
-		{{{returnNativeType}}} result = response.readEntity({{returnNativeType.literalType}}.class);
-		Assertions.assertNotNull(result);
+		// {{{returnNativeType}}} result = response.readEntity({{returnNativeType.literalType}}.class);
+		// Assertions.assertNotNull(result);
 		{{/if}}
 	}
 

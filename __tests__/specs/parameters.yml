@@ -1,0 +1,130 @@
+openapi: 3.0.3
+info:
+  title: Parameters
+  version: '1.0'
+paths:
+  /test/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: X-My-Cookie
+          in: cookie
+          schema:
+            type: string
+        - name: X-My-Header
+          in: header
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+  /defaults/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            default: 'quick'
+        - name: query
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+            default:
+              - brown
+              - fox
+        - name: X-My-Cookie
+          in: cookie
+          schema:
+            type: string
+            default: jumped
+        - name: X-My-Header
+          in: header
+          schema:
+            type: string
+            default: over
+      responses:
+        200:
+          description: OK
+  /test/{id}/and/{second}:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: second
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: X-My-Cookie
+          in: cookie
+          schema:
+            type: string
+        - name: X-My-Header
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                age:
+                  type: integer
+      responses:
+        200:
+          description: OK
+
+components:
+  schemas:
+    RequestObject:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: integer
+        c:
+          type: string
+          format: date-time
+    BaseRequestObject:
+      type: object
+      properties:
+        d:
+          type: string
+    ChildRequestObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequestObject'
+        - type: object
+          properties:
+            a:
+              type: string
+            b:
+              type: integer
+            c:
+              type: string
+              format: date-time

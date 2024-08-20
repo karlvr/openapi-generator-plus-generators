@@ -4,7 +4,8 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
-import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify } from '@openapi-generator-plus/generator-common'
+import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
+import { idx } from '@openapi-generator-plus/testing'
 
 export { CodegenOptionsJava } from './types'
 
@@ -101,6 +102,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		...javaLikeOptions(config, createJavaLikeContext(context)),
 		apiPackage,
 		apiImplPackage: configString(config, 'apiImplPackage', `${apiPackage}.impl`),
+		apiParamsPackage: nullableConfigString(config, 'apiParamsPackage', `${apiPackage}.params`),
 		modelPackage: configString(config, 'modelPackage', `${packageName}.model`),
 		useBeanValidation: configBoolean(config, 'useBeanValidation', true),
 		validationPackage: configString(config, 'validationPackage', `${packageName}.validation`),
@@ -603,6 +605,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
+
+			/* Augment operations */
+			for (const groups of doc.groups) {
+				for (const operation of groups.operations) {
+					/* We use a params object if an operation has multiple parameters */
+					operation.useParamsClasses = generatorOptions.apiParamsPackage && operation.parameters ? idx.size(operation.parameters) > 1 : false
+				}
+			}
 	
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
 			for (const schema of context.utils.values(doc.schemas)) {

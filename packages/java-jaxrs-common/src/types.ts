@@ -6,6 +6,7 @@ import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-hel
 export interface CodegenOptionsJava extends JavaLikeOptions {
 	apiPackage: string
 	apiImplPackage: string
+	apiParamsPackage: string | null
 	modelPackage: string
 	useBeanValidation: boolean
 	validationPackage: string
@@ -46,5 +47,11 @@ export interface MavenOptions {
 	version: string
 	versions: {
 		[name: string]: unknown
+	}
+}
+
+declare module '@openapi-generator-plus/types' {
+	interface CodegenOperation {
+		useParamsClasses: boolean
 	}
 }

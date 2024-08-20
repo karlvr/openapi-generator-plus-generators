@@ -1,6 +1,0 @@
-{{#join '_annotations' ' '}}
-{{#if required}}@{{javax}}.validation.constraints.NotNull{{/if}}
-{{>beanValidationCore schema}}
-{{/join}}
-{{#if _annotations}}
-{{{_annotations}}} {{/if}}

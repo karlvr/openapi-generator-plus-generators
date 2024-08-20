@@ -68,6 +68,18 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				{ ...rootContext, ...doc, ...group, operations }, true, hbs)
 		}
 
+		if (generatorOptions.apiParamsPackage) {
+			const apiParamsPackagePath = packageToPath(generatorOptions.apiParamsPackage)
+			for (const group of doc.groups) {
+				for (const operation of group.operations) {
+					if (operation.useParamsClasses) {
+						await emit('apiParams', path.join(outputPath, relativeSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), 
+							{ ...rootContext, group, ...operation }, true, hbs)
+					}
+				}
+			}
+		}
+
 		await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
 			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : null,
 		}, true, hbs)
@@ -122,6 +134,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
 			path.join(relativeSourceOutputPath, apiSpecPackagePath, '*ApiSpec.java'),
 		]
+		if (generatorOptions.apiParamsPackage) {
+			const apiParamsPackagePath = packageToPath(generatorOptions.apiParamsPackage)
+			result.push(path.join(relativeSourceOutputPath, apiParamsPackagePath, '*Params.java'))
+		}
 		if (context.additionalCleanPathPatterns) {
 			result.push(...context.additionalCleanPathPatterns())
 		}

@@ -63,6 +63,6 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 
 {{/each}}
 {{#each properties}}
-{{>frag/pojoProperty class=..}}
+{{>frag/pojoProperty chainClassName=(className ../name)}}
 {{/each}}
 {{>frag/pojoUtilities}}

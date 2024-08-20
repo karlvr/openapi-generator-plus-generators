@@ -1,0 +1,27 @@
+{{#join ', '}}
+@io.swagger.v3.oas.annotations.Parameter(name = {{{stringLiteral serializedName}}}
+{{#if description}}
+description = {{{stringLiteral description}}}
+{{/if}}
+{{#if required}}
+required = true
+{{/if}}
+{{#if deprecated}}
+deprecated = true
+{{/if}}
+{{!--{{#if allowableValues}}, {{> allowableValues }}{{/if}}--}}
+{{/join}})
+{{#if defaultValue}}
+{{!--@{{javax}}.ws.rs.DefaultValue({{{stringLiteral defaultValue.value}}})--}}
+{{/if}} 
+{{#if isQueryParam}}
+@{{javax}}.ws.rs.QueryParam({{{stringLiteral serializedName}}})
+{{else if isPathParam}}
+@{{javax}}.ws.rs.PathParam({{{stringLiteral serializedName}}})
+{{else if isHeaderParam}}
+@{{javax}}.ws.rs.HeaderParam({{{stringLiteral serializedName}}})
+{{else if isFormParam}}
+@{{javax}}.ws.rs.FormParam({{{stringLiteral serializedName}}})
+{{else if isCookieParam}}
+@{{javax}}.ws.rs.CookieParam({{{stringLiteral serializedName}}})
+{{/if}}

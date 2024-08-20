@@ -10,3 +10,6 @@
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}
 {{/if}}
+{{#if (isParam .)}}
+{{>frag/parameterAnnotations}}
+{{/if}}

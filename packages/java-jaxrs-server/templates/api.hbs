@@ -12,9 +12,10 @@ package {{apiPackage}};
 public interface {{className name}}Api {
 
 {{#each operations}}
+{{>frag/operationVars op=. jaxrs=true}}
 	{{>frag/operationDocumentation}}
 	{{>frag/operationAnnotations}}
-	{{javax}}.ws.rs.core.Response {{identifier name}}({{#each parameters}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>formParams}}{{>cookieParams}}{{#hasMore}}, {{/hasMore}}{{/each}}{{#if requestBody.nativeType}}{{#if parameters}}, {{/if}}{{>bodyParam}}{{/if}});
+	{{javax}}.ws.rs.core.Response {{identifier name}}({{{_parameters}}});
 
 {{/each}}
 }

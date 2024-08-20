@@ -1,6 +1,6 @@
 {{>frag/propertyDocumentation}}
 {{>frag/propertyAnnotations}}
-public {{className class.name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
+public {{{chainClassName}}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	{{#if nullable}}
 	set{{capitalize (identifier name)}}({{identifier name}} != null ? java.util.Optional.of({{identifier name}}) : java.util.Optional.empty());
 	{{else}}
@@ -45,7 +45,7 @@ public void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}}) {
 {{/unless}}
 {{#if (isArray)}}
 {{>frag/propertyAnnotations}}
-public {{className class.name}} add{{capitalize (singular (identifier name))}}({{{schema.component.nativeType}}} {{identifier (singular name)}}) {
+public {{{chainClassName}}} add{{capitalize (singular (identifier name))}}({{{schema.component.nativeType}}} {{identifier (singular name)}}) {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
 		this.{{identifier name}} = java.util.Optional.of(new {{{nativeType.concreteType}}}());
