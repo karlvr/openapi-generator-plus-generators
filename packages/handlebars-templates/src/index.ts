@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, debugStringify, uniquePropertiesIncludingInheritedForParents } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema, isCodegenParameter, isCodegenProperty } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import * as idx from '@openapi-generator-plus/indexed-type'
@@ -1122,6 +1122,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	})
 	hbs.registerHelper('isNotNull', function(value: unknown): boolean {
 		return value !== null
+	})
+
+	hbs.registerHelper('isProperty', function(value: unknown): boolean {
+		return isCodegenProperty(value)
+	})
+	hbs.registerHelper('isParam', function(value: unknown): boolean {
+		return isCodegenParameter(value)
 	})
 }
 
