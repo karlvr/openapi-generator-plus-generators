@@ -536,14 +536,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		cleanPathPatterns: () => {
 			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 			
-			const apiPackagePath = packageToPath(generatorOptions.apiPackage)
-			const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
 			const validationPackagePath = packageToPath(generatorOptions.validationPackage)
 	
 			const result = [
-				path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
-				path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
 				path.join(relativeSourceOutputPath, modelPackagePath, '*.java'),
 				path.join(relativeSourceOutputPath, validationPackagePath, 'Request.java'),
 				path.join(relativeSourceOutputPath, validationPackagePath, 'Response.java'),

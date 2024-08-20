@@ -113,9 +113,13 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 	myContext.additionalCleanPathPatterns = () => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 		
+		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
+		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
 		const apiServicePackagePath = packageToPath(generatorOptions.apiServicePackage)
 
 		const result = [
+			path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
+			path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
 			path.join(relativeSourceOutputPath, apiServicePackagePath, '*ApiService.java'),
 		]
 		if (context.additionalCleanPathPatterns) {
