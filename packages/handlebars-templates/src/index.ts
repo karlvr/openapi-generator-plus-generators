@@ -1006,11 +1006,18 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`set helper must be called with 1 or 2 arguments; missing or undefined first argument (varName) @ ${sourcePosition(options)}`)
 		}
 
+		const varNames = varName.split('.')
+		let context: any = this
+		for (let i = 0; i < varNames.length - 1; i++) {
+			context = context[varNames[i]]
+		}
+		varName = varNames[varNames.length - 1]
+
 		if (arguments.length === 3) {
-			this[varName] = value
+			context[varName] = value
 		} else {
 			const result = options.fn(this).trim()
-			this[varName] = result
+			context[varName] = result
 		}
 		return null
 	})
@@ -1032,8 +1039,15 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`join helper must be called with 2 arguments; missing or undefined second argument (separator) @ ${sourcePosition(options)}`)
 		}
 
+		const varNames = varName.split('.')
+		let context: any = this
+		for (let i = 0; i < varNames.length - 1; i++) {
+			context = context[varNames[i]]
+		}
+		varName = varNames[varNames.length - 1]
+
 		const result = options.fn(this).split(/\r?\n/).filter(s => s.trim().length > 0).join(separator)
-		this[varName] = result
+		context[varName] = result
 		return null
 	})
 
