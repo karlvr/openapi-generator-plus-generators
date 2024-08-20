@@ -1022,6 +1022,27 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		return null
 	})
 
+	hbs.registerHelper('unset', function(this: UnknownObject, varName: string, value?: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2) {
+			throw new Error(`unset helper must be called with 1 argument @ ${sourcePosition(options)}`)
+		}
+		if (!varName) {
+			throw new Error(`unset helper missing or undefined first argument (varName) @ ${sourcePosition(options)}`)
+		}
+
+		const varNames = varName.split('.')
+		let context: any = this
+		for (let i = 0; i < varNames.length - 1; i++) {
+			context = context[varNames[i]]
+		}
+		varName = varNames[varNames.length - 1]
+
+		delete context[varName]
+		return null
+	})
+
 	/**
 	 * Join the non-empty lines of the body of the block together with the given separator, and set into the named variable
 	 * in the current scope.
