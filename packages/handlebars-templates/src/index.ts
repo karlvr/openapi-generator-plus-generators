@@ -1044,32 +1044,43 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	})
 
 	/**
-	 * Join the non-empty lines of the body of the block together with the given separator, and set into the named variable
+	 * Join the non-empty lines of the body of the block together with the given separator, and set into the named variable (if provided)
 	 * in the current scope.
 	 */
-	hbs.registerHelper('join', function(this: UnknownObject, varName: string, separator: string) {
+	hbs.registerHelper('join', function(this: UnknownObject, varNameOrSeparator: string, separator?: string) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
-		if (arguments.length !== 3) {
-			throw new Error(`join helper must be called with 2 arguments @ ${sourcePosition(options)}`)
+		let varName: string | null
+		if (arguments.length === 2) {
+			varName = null
+			separator = varNameOrSeparator
+		} else if (arguments.length === 3) {
+			varName = varNameOrSeparator
+		} else {
+			throw new Error(`join helper must be called with 1 or 2 arguments @ ${sourcePosition(options)}`)
 		}
-		if (!varName) {
-			throw new Error(`join helper must be called with 2 arguments; missing or undefined first argument (varName) @ ${sourcePosition(options)}`)
+
+		if (varName && typeof varName !== 'string') {
+			throw new Error(`join helper called with non-string varName @ ${sourcePosition(options)}`)
 		}
 		if (typeof separator !== 'string') {
-			throw new Error(`join helper must be called with 2 arguments; missing or undefined second argument (separator) @ ${sourcePosition(options)}`)
+			throw new Error(`join helper called with non-string separator (${typeof separator}) @ ${sourcePosition(options)}`)
 		}
-
-		const varNames = varName.split('.')
-		let context: any = this
-		for (let i = 0; i < varNames.length - 1; i++) {
-			context = context[varNames[i]]
-		}
-		varName = varNames[varNames.length - 1]
 
 		const result = options.fn(this).split(/\r?\n/).filter(s => s.trim().length > 0).join(separator)
-		context[varName] = result
-		return null
+		if (varName) {
+			const varNames = varName.split('.')
+			let context: any = this
+			for (let i = 0; i < varNames.length - 1; i++) {
+				context = context[varNames[i]]
+			}
+			varName = varNames[varNames.length - 1]
+
+			context[varName] = result
+			return null
+		} else {
+			return result
+		}
 	})
 
 	/**
