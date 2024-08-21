@@ -12,7 +12,16 @@ deprecated = true
 {{!--{{#if allowableValues}}, {{> allowableValues }}{{/if}}--}}
 {{/join}})
 {{#if defaultValue}}
-{{!--@{{javax}}.ws.rs.DefaultValue({{{stringLiteral defaultValue.value}}})--}}
+{{#if @root.serverGenerator}}
+{{#if (isArrayValue defaultValue.value)}}
+{{#if (gt (count defaultValue.value) 1)}}
+{{warn 'Array default value cannot be represented in parameter "' name '": ' defaultValue.value}}
+{{/if}}
+@{{javax}}.ws.rs.DefaultValue({{{stringLiteral defaultValue.value.[0]}}})
+{{else}}
+@{{javax}}.ws.rs.DefaultValue({{{stringLiteral defaultValue.value}}})
+{{/if}}
+{{/if}}
 {{/if}} 
 {{#if isQueryParam}}
 @{{javax}}.ws.rs.QueryParam({{{stringLiteral serializedName}}})
