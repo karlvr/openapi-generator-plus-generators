@@ -829,11 +829,22 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		return result
 	})
 
-	hbs.registerHelper('warn', function(message: string) {
+	hbs.registerHelper('warn', function() {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
-		if (arguments.length !== 2) {
-			throw new Error(`warn helper must be called with one argument @ ${sourcePosition(options)}`)
+		if (arguments.length < 2) {
+			throw new Error(`warn helper must be called with one or more arguments @ ${sourcePosition(options)}`)
+		}
+
+		let message = ''
+		for (let i = 0; i < arguments.length - 1; i++) {
+			const nextPart = String(arguments[i])
+
+			/* Add a space if both the preceding and following part are text (not punctuation) */
+			if (i > 0 && message.match(/[a-zA-Z0-9]$/) && nextPart.match(/^[a-zA-Z0-9]/)) {
+				message += ' '
+			}
+			message += nextPart
 		}
 		log(CodegenLogLevel.WARN, `${message} @ ${sourcePosition(options)}`)
 	})
