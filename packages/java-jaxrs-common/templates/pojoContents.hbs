@@ -6,7 +6,8 @@ private {{{additionalProperties.nativeType}}} additionalProperties = new {{{addi
 {{#if @root.useLombok}}
 {{>frag/propertyDocumentation}}
 {{>frag/pojoPropertyAnnotations}}
-@lombok.Getter @lombok.Setter
+@lombok.Getter
+@lombok.Setter
 {{/if}}
 private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{#if nullable}}java.util.Optional.of({{/if}}{{{initialValue.literalValue}}}{{#if nullable}}){{/if}}{{/if}};
 {{#if @root.useLombok}}
