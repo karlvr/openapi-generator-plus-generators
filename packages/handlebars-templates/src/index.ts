@@ -1152,6 +1152,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	hbs.registerHelper('isParam', function(value: unknown): boolean {
 		return isCodegenParameter(value)
 	})
+
+	hbs.registerHelper('isArrayValue', function(value: unknown): boolean {
+		return Array.isArray(value)
+	})
+	hbs.registerHelper('isObjectValue', function(value: unknown): boolean {
+		return typeof value === 'object' && !Array.isArray(value) && !(value instanceof Function)
+	})
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
