@@ -3,8 +3,7 @@ package {{modelPackage}};
 {{#with enum}}
 {{>frag/pojoDocumentation}}
 {{>generatedAnnotation}}
-@{{javax}}.xml.bind.annotation.XmlType(name = "{{className name}}")
-@{{javax}}.xml.bind.annotation.XmlEnum({{enumValueNativeType}}.class)
+{{>frag/enumHeader}}
 public enum {{className name}} {
 	{{>enumContents}}
 }

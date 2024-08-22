@@ -1,0 +1,9 @@
+{{>hooks/enumHeaderAnnotations}}
+{{#if serializedName}}
+@{{javax}}.xml.bind.annotation.XmlRootElement(name = {{{stringLiteral serializedName}}})
+{{/if}}
+@{{javax}}.xml.bind.annotation.XmlType(name = "{{className name}}")
+@{{javax}}.xml.bind.annotation.XmlEnum({{enumValueNativeType}}.class)
+{{#if deprecated}}
+@java.lang.Deprecated
+{{/if}}
