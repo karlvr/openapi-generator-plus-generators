@@ -9,6 +9,9 @@ package {{apiPackage}};
 {{#if produces}}
 @{{javax}}.ws.rs.Produces({ {{#each produces}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}
+{{#each tags}}
+@io.swagger.v3.oas.annotations.tags.Tag(name = {{{stringLiteral .}}})
+{{/each}}
 public interface {{className name}}Api {
 
 {{#each operations}}
