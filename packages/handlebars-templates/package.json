@@ -23,7 +23,7 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "workspace:*",
     "@openapi-generator-plus/indexed-type": "^1.0.0",
-    "@openapi-generator-plus/types": "^2.16.0",
+    "@openapi-generator-plus/types": "^2.17.0",
     "change-case": "^4.1.2",
     "handlebars": "^4.7.8",
     "marked": "^12.0.1",
