@@ -1,3 +1,4 @@
+{{>hooks/pojoHeader}}
 {{>nestedModels}}
 {{#if additionalProperties}}
 private {{{additionalProperties.nativeType}}} additionalProperties = new {{{additionalProperties.nativeType.concreteType}}}();
@@ -67,3 +68,5 @@ public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier n
 {{>frag/pojoProperty chainClassName=(className ../name)}}
 {{/each}}
 {{>frag/pojoUtilities}}
+
+{{>hooks/pojoFooter}}

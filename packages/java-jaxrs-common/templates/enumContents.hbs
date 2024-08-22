@@ -1,3 +1,4 @@
+{{>hooks/enumHeader}}
 {{#each enumValues}}
 @{{javax}}.xml.bind.annotation.XmlEnumValue({{{stringLiteral value}}}) {{{name}}}({{{literalValue}}}){{#unless @last}}, {{else}};{{/unless}}
 {{/each}}
@@ -30,3 +31,5 @@ public static {{className name}} fromValue(java.lang.String v) {
 	}
 	throw new java.lang.IllegalArgumentException("Unsupported {{className name}} value: " + v);
 }
+
+{{>hooks/enumFooter}}
