@@ -4,7 +4,7 @@ package {{modelPackage}};
 {{>frag/pojoDocumentation}}
 {{>generatedAnnotation}}
 {{>frag/pojoHeader}}
-public {{#if abstract}}abstract {{/if}}class {{className name}}{{#if parents}} extends {{#each parents}}{{{nativeType.concreteType}}}{{/each}}{{/if}} {{>pojoImplements}}{
+public {{#if abstract}}abstract {{/if}}class {{className name}}{{#if parents}} extends {{#each parents}}{{{nativeType.concreteType}}}{{/each}}{{/if}} {{>frag/pojoImplements}}{
 
 	{{>pojoContents}}
 }
