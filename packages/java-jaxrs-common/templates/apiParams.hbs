@@ -4,7 +4,10 @@ package {{{apiParamsPackage}}};
 @lombok.Getter
 @lombok.Setter
 {{/if}}
-public class {{className uniqueName}}Params {
+{{#join '_implements' ', '}}
+{{>frag/customImplements class=(concat apiParamsPackage '.' (className uniqueName) 'Params')}}
+{{/join}}
+public class {{className uniqueName}}Params{{#if _implements}} implements {{{_implements}}}{{/if}} {
 
 {{#each parameters}}
 {{#if @root.useLombok}}

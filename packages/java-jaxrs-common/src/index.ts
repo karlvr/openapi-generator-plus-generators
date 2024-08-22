@@ -97,6 +97,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 	const packageName = configString(config, 'package', 'com.example')
 	const apiPackage = configString(config, 'apiPackage', packageName)
 	const maven = configObject(config, 'maven', undefined)
+	const customizations = configObject(config, 'customizations', undefined)
 	const customTemplates = configString(config, 'customTemplates', undefined)
 	const relativeSourceOutputPath = computeRelativeSourceOutputPath(config)
 
@@ -132,6 +133,9 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
 		useJakarta: configBoolean(config, 'useJakarta', false),
 		useLombok: configBoolean(config, 'useLombok', false),
+		customizations: {
+			classes: configObject(customizations || {}, 'classes', {}, 'customizations.') as CodegenOptionsJava['customizations'],
+		},
 	}
 
 	return options

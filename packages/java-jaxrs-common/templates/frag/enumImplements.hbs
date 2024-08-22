@@ -1,11 +1,7 @@
 {{#join '_implements' ', '}}
-{{#each implements}}
-{{{nativeType.parentType}}}
-{{/each}}
 {{#ifvex 'x-implements-interfaces'}}
 {{{vendorExtensions.x-implements-interfaces}}}
 {{/ifvex}}
-{{>hooks/pojoImplementsExtras}}
 {{>frag/customImplements class=class}}
 {{/join}}
 {{#if _implements}}

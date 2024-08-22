@@ -1,5 +1,5 @@
 {{>frag/pojoDocumentation}}
 {{>frag/enumHeader}}
-public enum {{className name}} {
+public enum {{className name}} {{>frag/enumImplements class=nativeType.nativeType}}{
 	{{>enumContents}}
 }

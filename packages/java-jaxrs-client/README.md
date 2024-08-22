@@ -91,6 +91,15 @@ constantStyle: camelCase
 |--------|----|-----------|-------|
 |`imports`|`string[]`|Additional imports to add to all generated classes.|`undefined`|
 |`customTemplates`|`string`|The path to a directory containing custom Handlebars templates, relative to the config file. See Customising below.|`undefined`|
+|`customizations`|`string: JavaClassCustomizations`|Customizations to apply to generated classes as a map from a fully-qualified class name to a customizations object.|`undefined`|
+
+#### `JavaClassCustomizations`
+
+Cutomizations to apply to the selected Java class.
+
+|Property|Type|Description|Default|
+|--------|----|-----------|-------|
+|`implements`|`string[]`|An array of fully-qualified class names to add to the `implements` of the generated class.|`undefined`|
 
 ## Customising
 

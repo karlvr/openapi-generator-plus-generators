@@ -42,6 +42,10 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	 * Whether to use Lombok annotations or not
 	 */
 	useLombok: boolean
+
+	customizations: {
+		classes: Record<string, JavaClassCustomizations>
+	}
 }
 
 export interface MavenOptions {
@@ -51,6 +55,11 @@ export interface MavenOptions {
 	versions: {
 		[name: string]: unknown
 	}
+}
+
+export interface JavaClassCustomizations {
+	/** Interfaces to add to the class */
+	implements?: string[]
 }
 
 declare module '@openapi-generator-plus/types' {

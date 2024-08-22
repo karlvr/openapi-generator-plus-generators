@@ -1,0 +1,3 @@
+{{set '_customizations' (lookup @root.customizations.classes class)}}{{#ifdef _customizations.implements}}
+{{#each _customizations.implements}}{{{.}}}{{#hasMore}}, {{/hasMore}}{{/each}}
+{{/ifdef}}
