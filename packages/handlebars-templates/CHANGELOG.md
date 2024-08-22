@@ -1,5 +1,12 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.8.1
+
+### Patch Changes
+
+- Updated dependencies [2685ee7]
+  - @openapi-generator-plus/generator-common@1.6.1
+
 ## 1.8.0
 
 ### Minor Changes

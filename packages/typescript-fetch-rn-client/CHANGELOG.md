@@ -1,5 +1,13 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 1.4.1
+
+### Patch Changes
+
+- @openapi-generator-plus/handlebars-templates@1.8.1
+- @openapi-generator-plus/typescript-generator-common@1.10.1
+- @openapi-generator-plus/typescript-fetch-client-generator@1.9.1
+
 ## 1.4.0
 
 ### Minor Changes

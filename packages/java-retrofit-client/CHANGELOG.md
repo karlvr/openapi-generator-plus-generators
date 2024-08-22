@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.5.1
+
+### Patch Changes
+
+- @openapi-generator-plus/java-jaxrs-client-generator@3.0.1
+- @openapi-generator-plus/handlebars-templates@1.8.1
+
 ## 2.5.0
 
 ### Minor Changes

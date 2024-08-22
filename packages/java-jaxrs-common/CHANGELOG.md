@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.0.1
+
+### Patch Changes
+
+- 2685ee7: Fix import of `idx` so `@openapi-generator-plus/testing` is not required at runtime
+- Updated dependencies [2685ee7]
+  - @openapi-generator-plus/generator-common@1.6.1
+  - @openapi-generator-plus/handlebars-templates@1.8.1
+  - @openapi-generator-plus/java-like-generator-helper@2.4.1
+
 ## 3.0.0
 
 ### Major Changes

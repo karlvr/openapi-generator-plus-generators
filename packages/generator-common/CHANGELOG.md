@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.6.1
+
+### Patch Changes
+
+- 2685ee7: Fix import of `idx` so `@openapi-generator-plus/testing` is not required at runtime
+
 ## 1.6.0
 
 ### Minor Changes
