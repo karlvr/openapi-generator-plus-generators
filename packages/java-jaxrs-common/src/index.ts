@@ -380,9 +380,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			const { componentNativeType, uniqueItems } = options
 			if (uniqueItems) {
 				return new context.TransformingNativeType(componentNativeType, {
-					default: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
-					literalType: () => 'java.util.List',
-					concreteType: (nativeType) => `java.util.ArrayList<${(nativeType.componentType || nativeType).nativeType}>`,
+					/* We use LinkedHashSet everywhere to make it clear to all users of the API that it's ordered and unique.
+					   This also means we don't need to tell Jackson to use LinkedHashSet when deserializing.
+					 */
+					default: (nativeType) => `java.util.LinkedHashSet<${(nativeType.componentType || nativeType).nativeType}>`,
+					literalType: () => 'java.util.LinkedHashSet',
+					concreteType: (nativeType) => `java.util.LinkedHashSet<${(nativeType.componentType || nativeType).nativeType}>`,
 				})
 			} else {
 				return new context.TransformingNativeType(componentNativeType, {
