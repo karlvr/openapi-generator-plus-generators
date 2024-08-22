@@ -49,6 +49,8 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		const relativeApiSourceOutputPath = generatorOptions.relativeApiSourceOutputPath
+		const relativeApiImplSourceOutputPath = generatorOptions.relativeApiImplSourceOutputPath
 	
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 		for (const group of doc.groups) {
@@ -56,7 +58,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			if (!operations.length) {
 				continue
 			}
-			await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
+			await emit('api', path.join(outputPath, relativeApiSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
 				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 		
@@ -66,7 +68,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			if (!operations.length) {
 				continue
 			}
-			await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
+			await emit('apiImpl', path.join(outputPath, relativeApiImplSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
 				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 
@@ -76,7 +78,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			if (!operations.length) {
 				continue
 			}
-			await emit('apiService', path.join(outputPath, relativeSourceOutputPath, apiServicePackagePath, `${context.generator().toClassName(group.name)}ApiService.java`), 
+			await emit('apiService', path.join(outputPath, relativeApiImplSourceOutputPath, apiServicePackagePath, `${context.generator().toClassName(group.name)}ApiService.java`), 
 				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 
@@ -87,7 +89,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 				if (!operations.length) {
 					continue
 				}
-				await emit('apiServiceImpl', path.join(outputPath, relativeSourceOutputPath, apiServiceImplPackagePath, `${context.generator().toClassName(group.name)}ApiServiceImpl.java`),
+				await emit('apiServiceImpl', path.join(outputPath, relativeApiImplSourceOutputPath, apiServiceImplPackagePath, `${context.generator().toClassName(group.name)}ApiServiceImpl.java`),
 					{ ...rootContext, ...group }, false, hbs)
 			}
 		}
@@ -97,7 +99,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			for (const group of doc.groups) {
 				for (const operation of group.operations) {
 					if (operation.useParamsClasses) {
-						await emit('apiParams', path.join(outputPath, relativeSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), 
+						await emit('apiParams', path.join(outputPath, relativeApiSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), 
 							{ ...rootContext, group, ...operation }, true, hbs)
 					}
 				}
@@ -107,13 +109,13 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 		const invokerPackagePath = generatorOptions.invokerPackage ? packageToPath(generatorOptions.invokerPackage) : undefined
 		if (invokerPackagePath) {
 			const basePath = apiBasePath(doc.servers)
-			await emit('invoker', path.join(outputPath, relativeSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
+			await emit('invoker', path.join(outputPath, relativeApiImplSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
 				{ ...rootContext, ...doc.info, basePath }, false, hbs)
 		}
 
 		const providerPackagePath = generatorOptions.apiProviderPackage ? packageToPath(generatorOptions.apiProviderPackage) : undefined
 		if (providerPackagePath) {
-			await emit('ApiJaxbJsonProvider', path.join(outputPath, relativeSourceOutputPath, providerPackagePath, 'ApiJaxbJsonProvider.java'),
+			await emit('ApiJaxbJsonProvider', path.join(outputPath, relativeApiImplSourceOutputPath, providerPackagePath, 'ApiJaxbJsonProvider.java'),
 				{ ...rootContext }, true, hbs)
 		}
 
@@ -124,19 +126,21 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 	
 	myContext.additionalCleanPathPatterns = () => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		const relativeApiSourceOutputPath = generatorOptions.relativeApiSourceOutputPath
+		const relativeApiImplSourceOutputPath = generatorOptions.relativeApiImplSourceOutputPath
 		
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
 		const apiServicePackagePath = packageToPath(generatorOptions.apiServicePackage)
 
 		const result = [
-			path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
-			path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
-			path.join(relativeSourceOutputPath, apiServicePackagePath, '*ApiService.java'),
+			path.join(relativeApiSourceOutputPath, apiPackagePath, '*Api.java'),
+			path.join(relativeApiImplSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
+			path.join(relativeApiImplSourceOutputPath, apiServicePackagePath, '*ApiService.java'),
 		]
 		if (generatorOptions.apiParamsPackage) {
 			const apiParamsPackagePath = packageToPath(generatorOptions.apiParamsPackage)
-			result.push(path.join(relativeSourceOutputPath, apiParamsPackagePath, '*Params.java'))
+			result.push(path.join(relativeApiSourceOutputPath, apiParamsPackagePath, '*Params.java'))
 		}
 		if (context.additionalCleanPathPatterns) {
 			result.push(...context.additionalCleanPathPatterns())

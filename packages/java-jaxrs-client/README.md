@@ -42,6 +42,8 @@ constantStyle: camelCase
 |`apiSpiPackage`|`string`|Package for SPI interfaces for extra functionality.|`"${package}.spi`|
 |`modelPackage`|`string`|Package for API model classes.|`"${package}.model"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|
+|`relativeApiSourceOutputPath`|`string`|The path to output generated API interface source code, relative to the output path.|`${relativeSourceOutputPath}`|
+|`relativeApiImplSourceOutputPath`|`string`|The path to output generated API implementation source code, relative to the output path.|`${relativeSourceOutputPath}`|
 
 ### Code style
 

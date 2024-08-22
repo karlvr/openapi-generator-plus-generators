@@ -25,6 +25,9 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 
 	maven: MavenOptions | null
 	relativeSourceOutputPath: string
+	relativeApiSourceOutputPath: string
+	relativeApiImplSourceOutputPath: string
+
 	relativeResourcesOutputPath?: string
 	relativeTestOutputPath: string
 	relativeTestResourcesOutputPath?: string

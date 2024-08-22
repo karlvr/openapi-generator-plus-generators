@@ -33,6 +33,8 @@ The available config file properties are:
 |`invokerPackage`|`string` \| `null`|Package for API invoker classes.|`"${package}.app"`|
 |`validationPackage`|`string`|Package for API validation classes.|`"${package}.validation"`|
 |`relativeSourceOutputPath`|`string`|The path to output generated source code, relative to the output path.|`./` or `./src/main/java` if `maven` is specified.|
+|`relativeApiSourceOutputPath`|`string`|The path to output generated API interface source code, relative to the output path.|`${relativeSourceOutputPath}`|
+|`relativeApiImplSourceOutputPath`|`string`|The path to output generated API implementation source code, relative to the output path.|`${relativeSourceOutputPath}`|
 
 ### Code style
 

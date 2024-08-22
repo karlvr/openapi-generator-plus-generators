@@ -45,6 +45,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		const relativeApiSourceOutputPath = generatorOptions.relativeApiSourceOutputPath
+		const relativeApiImplSourceOutputPath = generatorOptions.relativeApiImplSourceOutputPath
 
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 	
@@ -54,7 +56,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				continue
 			}
 
-			await emit('api', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
+			await emit('api', path.join(outputPath, relativeApiSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
 				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 		
@@ -64,7 +66,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			if (!operations.length) {
 				continue
 			}
-			await emit('apiImpl', path.join(outputPath, relativeSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
+			await emit('apiImpl', path.join(outputPath, relativeApiImplSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
 				{ ...rootContext, ...doc, ...group, operations }, true, hbs)
 		}
 
@@ -73,7 +75,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			for (const group of doc.groups) {
 				for (const operation of group.operations) {
 					if (operation.useParamsClasses) {
-						await emit('apiParams', path.join(outputPath, relativeSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), 
+						await emit('apiParams', path.join(outputPath, relativeApiSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), 
 							{ ...rootContext, group, ...operation }, true, hbs)
 					}
 				}
@@ -83,10 +85,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
 			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : null,
 		}, true, hbs)
-		await emit('ApiInvoker', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), 
+		await emit('ApiInvoker', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), 
 			{ ...rootContext, ...doc }, true, hbs)
 
-		await emit('ApiProviders', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
+		await emit('ApiProviders', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
 			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
 		}, true, hbs)
 
@@ -96,25 +98,25 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			if (!operations.length) {
 				continue
 			}
-			await emit('apiSpec', path.join(outputPath, relativeSourceOutputPath, apiSpecPackagePath, `${context.generator().toClassName(group.name)}ApiSpec.java`), 
+			await emit('apiSpec', path.join(outputPath, relativeApiImplSourceOutputPath, apiSpecPackagePath, `${context.generator().toClassName(group.name)}ApiSpec.java`), 
 				{ ...rootContext, ...group, operations }, true, hbs)
 		}
 
-		await emit('UnexpectedApiException', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'UnexpectedApiException.java'), {
+		await emit('UnexpectedApiException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiException.java'), {
 			...rootContext,
 		}, true, hbs)
-		await emit('UnexpectedResponseException', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'UnexpectedResponseException.java'), {
+		await emit('UnexpectedResponseException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedResponseException.java'), {
 			...rootContext,
 		}, true, hbs)
-		await emit('UnprocessableResponseException', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'UnprocessableResponseException.java'), {
+		await emit('UnprocessableResponseException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnprocessableResponseException.java'), {
 			...rootContext,
 		}, true, hbs)
-		await emit('UnexpectedTimeoutException', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'UnexpectedTimeoutException.java'), {
+		await emit('UnexpectedTimeoutException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedTimeoutException.java'), {
 			...rootContext,
 		}, true, hbs)
 
 		const apiSpiPackagePath = packageToPath(generatorOptions.apiSpiPackage)
-		await emit('spi/ApiAuthorizationProvider', path.join(outputPath, relativeSourceOutputPath, apiSpiPackagePath, 'ApiAuthorizationProvider.java'), {
+		await emit('spi/ApiAuthorizationProvider', path.join(outputPath, relativeApiImplSourceOutputPath, apiSpiPackagePath, 'ApiAuthorizationProvider.java'), {
 			...rootContext,
 		}, true, hbs)
 
@@ -125,18 +127,20 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 	myContext.additionalCleanPathPatterns = () => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		const relativeApiSourceOutputPath = generatorOptions.relativeApiSourceOutputPath
+		const relativeApiImplSourceOutputPath = generatorOptions.relativeApiImplSourceOutputPath
 
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
 		const apiSpecPackagePath = packageToPath(generatorOptions.apiSpecPackage)
 		const result = [
-			path.join(relativeSourceOutputPath, apiPackagePath, '*Api.java'),
-			path.join(relativeSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
-			path.join(relativeSourceOutputPath, apiSpecPackagePath, '*ApiSpec.java'),
+			path.join(relativeApiSourceOutputPath, apiPackagePath, '*Api.java'),
+			path.join(relativeApiImplSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
+			path.join(relativeApiImplSourceOutputPath, apiSpecPackagePath, '*ApiSpec.java'),
 		]
 		if (generatorOptions.apiParamsPackage) {
 			const apiParamsPackagePath = packageToPath(generatorOptions.apiParamsPackage)
-			result.push(path.join(relativeSourceOutputPath, apiParamsPackagePath, '*Params.java'))
+			result.push(path.join(relativeApiSourceOutputPath, apiParamsPackagePath, '*Params.java'))
 		}
 		if (context.additionalCleanPathPatterns) {
 			result.push(...context.additionalCleanPathPatterns())

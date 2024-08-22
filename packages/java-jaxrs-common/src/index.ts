@@ -98,6 +98,8 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 	const apiPackage = configString(config, 'apiPackage', packageName)
 	const maven = configObject(config, 'maven', undefined)
 	const customTemplates = configString(config, 'customTemplates', undefined)
+	const relativeSourceOutputPath = computeRelativeSourceOutputPath(config)
+
 	const options: CodegenOptionsJava = {
 		...javaLikeOptions(config, createJavaLikeContext(context)),
 		apiPackage,
@@ -121,7 +123,9 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 			version: configString(maven, 'version', '0.0.1', 'maven.'),
 			versions: configObject(maven, 'versions', {}, 'maven.'),
 		} : null,
-		relativeSourceOutputPath: computeRelativeSourceOutputPath(config),
+		relativeSourceOutputPath,
+		relativeApiSourceOutputPath: configString(config, 'relativeApiSourceOutputPath', relativeSourceOutputPath),
+		relativeApiImplSourceOutputPath: configString(config, 'relativeApiImplSourceOutputPath', relativeSourceOutputPath),
 		relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
 		relativeTestOutputPath: computeRelativeTestOutputPath(config),
 		relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
