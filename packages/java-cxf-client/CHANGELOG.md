@@ -1,5 +1,43 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 3.0.0
+
+### Major Changes
+
+- d9caaab: Add parameter classes for operations with multiple parameters instead of having lots of method arguments
+
+### Minor Changes
+
+- 5b78af2: Upgrade core
+
+### Patch Changes
+
+- Updated dependencies [3436fa2]
+- Updated dependencies [54a632c]
+- Updated dependencies [bb413b5]
+- Updated dependencies [2515300]
+- Updated dependencies [e52907f]
+- Updated dependencies [f5080b5]
+- Updated dependencies [dfae89b]
+- Updated dependencies [50f5d88]
+- Updated dependencies [f9ba44d]
+- Updated dependencies [024d2a5]
+- Updated dependencies [73b6c02]
+- Updated dependencies [2bc3447]
+- Updated dependencies [a0d6034]
+- Updated dependencies [820892f]
+- Updated dependencies [5b78af2]
+- Updated dependencies [d9caaab]
+- Updated dependencies [e1d7fa3]
+- Updated dependencies [f092462]
+- Updated dependencies [976d656]
+- Updated dependencies [bfdfdfa]
+- Updated dependencies [1e8f5da]
+  - @openapi-generator-plus/java-jaxrs-client-generator@3.0.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.0.0
+  - @openapi-generator-plus/handlebars-templates@1.8.0
+  - @openapi-generator-plus/generator-common@1.6.0
+
 ## 2.4.0
 
 ### Minor Changes

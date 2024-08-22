@@ -1,5 +1,23 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.8.0
+
+### Minor Changes
+
+- e52907f: Add isArrayValue and isObjectValue helpers
+- f5080b5: Add isProperty and isParam helpers
+- dfae89b: Allow join helper without varName to output joined string in place
+- 50f5d88: Add isAny helper for the ANY type
+- 820892f: Add nested property support to `set` and `join` helpers
+- 5b78af2: Upgrade core
+- e1d7fa3: Add unset helper
+- 976d656: Improve warn helper to support concatenating arguments
+
+### Patch Changes
+
+- Updated dependencies [5b78af2]
+  - @openapi-generator-plus/generator-common@1.6.0
+
 ## 1.7.0
 
 ### Minor Changes

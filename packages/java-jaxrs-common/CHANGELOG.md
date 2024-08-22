@@ -1,5 +1,43 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.0.0
+
+### Major Changes
+
+- d9caaab: Add parameter classes for operations with multiple parameters instead of having lots of method arguments
+
+### Minor Changes
+
+- 3436fa2: Add config options to control the output path for API interfaces vs implementation
+- 54a632c: Use `LinkedHashSet` for arrays with `uniqueItems`
+- 2515300: Add @DefaultValue annotation on parameters
+- f9ba44d: Add useLombok option for models
+- 024d2a5: Move `pojoImplements` partial into `frag/`
+- 73b6c02: Changed default value of `hideGenerationTimestamp` to `true`
+- 2bc3447: Add more metadata annotations to enums and improve `@Schema` annotations on models
+- a0d6034: Add customizations to config and enable customizing `implements` on generated classes
+- 5b78af2: Upgrade core
+- f092462: Add enum and pojo header and footer hooks
+- 1e8f5da: Move cleaning of *Api.java and *ApiImpl.java to the package that creates those files
+
+### Patch Changes
+
+- bb413b5: Tidy wrapper template's extra property annotations
+- bfdfdfa: Put Lombok `@Getter` and `@Setter` annotations on separate lines
+- Updated dependencies [e52907f]
+- Updated dependencies [f5080b5]
+- Updated dependencies [dfae89b]
+- Updated dependencies [50f5d88]
+- Updated dependencies [054c84f]
+- Updated dependencies [820892f]
+- Updated dependencies [5b78af2]
+- Updated dependencies [e1d7fa3]
+- Updated dependencies [976d656]
+- Updated dependencies [1fb923c]
+  - @openapi-generator-plus/handlebars-templates@1.8.0
+  - @openapi-generator-plus/java-like-generator-helper@2.4.0
+  - @openapi-generator-plus/generator-common@1.6.0
+
 ## 2.9.0
 
 ### Minor Changes

@@ -1,5 +1,25 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.5.0
+
+### Minor Changes
+
+- 5b78af2: Upgrade core
+
+### Patch Changes
+
+- Updated dependencies [e52907f]
+- Updated dependencies [f5080b5]
+- Updated dependencies [dfae89b]
+- Updated dependencies [50f5d88]
+- Updated dependencies [820892f]
+- Updated dependencies [5b78af2]
+- Updated dependencies [e1d7fa3]
+- Updated dependencies [976d656]
+  - @openapi-generator-plus/handlebars-templates@1.8.0
+  - @openapi-generator-plus/typescript-generator-common@1.10.0
+  - @openapi-generator-plus/generator-common@1.6.0
+
 ## 1.4.0
 
 ### Minor Changes

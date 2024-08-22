@@ -1,5 +1,18 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.4.0
+
+### Minor Changes
+
+- 054c84f: Add enumClassPrefix, enumClassSuffix, modelClassSuffix
+- 5b78af2: Upgrade core
+- 1fb923c: Add nestedModelClassPrefix and nestedEnumClassPrefix config options
+
+### Patch Changes
+
+- Updated dependencies [5b78af2]
+  - @openapi-generator-plus/generator-common@1.6.0
+
 ## 2.3.0
 
 ### Minor Changes
