@@ -1,0 +1,199 @@
+openapi: '3.0.3'
+info:
+  title: Formats
+  description: Test all of the formats available
+  version: '1.0'
+paths:
+  /test:
+    get:
+      parameters:
+        - name: plain
+          in: query
+          schema:
+            type: string
+        - name: bytes
+          in: query
+          schema:
+            type: string
+            format: byte
+        - name: uuid
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: url
+          in: query
+          schema:
+            type: string
+            format: url
+        - name: int32
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: int64
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: float
+          in: query
+          schema:
+            type: number
+            format: float
+        - name: double
+          in: query
+          schema:
+            type: number
+            format: double
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+components:
+  schemas:
+    Result:
+      type: object
+      properties:
+        plain:
+          type: string
+        bytes:
+          type: string
+          format: byte
+        uuid:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: url
+        int32:
+          type: integer
+          format: int32
+        int64:
+          type: integer
+          format: int64
+        float:
+          type: number
+          format: float
+        double:
+          type: number
+          format: double
+        arrays:
+          $ref: '#/components/schemas/Arrays'
+        maps:
+          $ref: '#/components/schemas/Maps'
+        nullables:
+          $ref: '#/components/schemas/Nullables'
+    Arrays:
+      type: object
+      properties:
+        plain:
+          type: array
+          items:
+            type: string
+        bytes:
+          type: array
+          items:
+            type: string
+            format: byte
+        uuid:
+          type: array
+          items:
+            type: string
+            format: uuid
+        url:
+          type: array
+          items:
+            type: string
+            format: url
+        int32:
+          type: array
+          items:
+            type: integer
+            format: int32
+        int64:
+          type: array
+          items:
+            type: integer
+            format: int64
+        float:
+          type: array
+          items:
+            type: number
+            format: float
+        double:
+          type: array
+          items:
+            type: number
+            format: double
+    Maps:
+      type: object
+      properties:
+        plain:
+          additionalProperties:
+            type: string
+        bytes:
+          additionalProperties:
+            type: string
+            format: byte
+        uuid:
+          additionalProperties:
+            type: string
+            format: uuid
+        url:
+          additionalProperties:
+            type: string
+            format: url
+        int32:
+          additionalProperties:
+            type: integer
+            format: int32
+        int64:
+          additionalProperties:
+            type: integer
+            format: int64
+        float:
+          additionalProperties:
+            type: number
+            format: float
+        double:
+          additionalProperties:
+            type: number
+            format: double
+    Nullables:
+      type: object
+      properties:
+        plain:
+          type: string
+          nullable: true
+        bytes:
+          type: string
+          format: byte
+          nullable: true
+        uuid:
+          type: string
+          format: uuid
+          nullable: true
+        url:
+          type: string
+          format: url
+          nullable: true
+        int32:
+          type: integer
+          format: int32
+          nullable: true
+        int64:
+          type: integer
+          format: int64
+          nullable: true
+        float:
+          type: number
+          format: float
+          nullable: true
+        double:
+          type: number
+          format: double
+          nullable: true
