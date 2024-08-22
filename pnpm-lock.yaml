@@ -189,6 +189,9 @@ importers:
       '@openapi-generator-plus/handlebars-templates':
         specifier: workspace:*
         version: link:../handlebars-templates
+      '@openapi-generator-plus/indexed-type':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like

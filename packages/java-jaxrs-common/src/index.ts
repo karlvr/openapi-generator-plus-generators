@@ -5,7 +5,7 @@ import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
-import { idx } from '@openapi-generator-plus/testing'
+import * as idx from '@openapi-generator-plus/indexed-type'
 
 export { CodegenOptionsJava } from './types'
 
