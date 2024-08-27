@@ -1,1 +1,12 @@
-{{{nativeType}}} {{identifier name}}
+{{#if jaxrs}}
+@io.swagger.v3.oas.annotations.Parameter({{#join ', '}}
+{{#if description}}
+description = {{{stringLiteral description}}}
+{{/if}}
+{{#if required}}
+required = true
+{{/if}}
+{{#if deprecated}}
+deprecated = true
+{{/if}}
+{{/join}}){{/if}} {{{nativeType}}} {{identifier name}}
