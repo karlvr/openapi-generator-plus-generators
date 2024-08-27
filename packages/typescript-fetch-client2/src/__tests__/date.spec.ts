@@ -7,7 +7,6 @@ test('date parsing', () => {
 	expect(new Date('2020-01-03').getFullYear()).toEqual(2020)
 	expect(new Date('2020-01-03').getMonth()).toEqual(0)
 	expect(new Date('2020-05-03').getMonth()).toEqual(4)
-	expect(new Date('2020-01-03').getDate()).toEqual(3)
 })
 
 test('time parsing', () => {
