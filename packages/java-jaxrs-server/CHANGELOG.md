@@ -1,5 +1,23 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.1.0
+
+### Minor Changes
+
+- 11ddeec: Change RestApplication / invoker to explicitly initialize the JAX-RS application
+
+  This is to improve security and sureity of your JAX-RS application so you know exactly which
+  endpoints and providers are in play, rather than using automatic discovery.
+
+- 4012bea: Give the invoker template access to the API groups
+
+### Patch Changes
+
+- 00bd0e7: Move invoker.hbs template from common to server
+- Updated dependencies [1db8278]
+- Updated dependencies [c9a6f07]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.1.0
+
 ## 3.0.1
 
 ### Patch Changes

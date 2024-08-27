@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.1.0
+
+### Minor Changes
+
+- 1db8278: Add a required properties constructor for model objects
+- c9a6f07: Add @Parameter annotation to request body parameters
+
 ## 3.0.1
 
 ### Patch Changes
