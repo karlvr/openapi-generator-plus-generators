@@ -1,5 +1,6 @@
 {{>hooks/pojoHeader}}
 {{>nestedModels}}
+{{!-- Properties --}}
 {{#if additionalProperties}}
 private {{{additionalProperties.nativeType}}} additionalProperties = new {{{additionalProperties.nativeType.concreteType}}}();
 {{/if}}
@@ -18,6 +19,32 @@ private {{>frag/pojoPropertyType}} {{identifier name}}{{#if initialValue}} = {{#
 {{#unless @root.useLombok}}
 
 {{/unless}}
+{{!-- Constructors --}}
+public {{{className name}}}() {
+
+}
+
+{{#join '_requiredParams' ', '}}
+{{#each properties}}
+{{#if required}}
+{{>frag/pojoPropertyType}} {{{identifier name}}}
+{{/if}}
+{{/each}}
+{{/join}}
+{{#if _requiredParams}}
+/**
+ * Construct a new {@code {{{className name}}}{{safe '}'}} with all of the required properties.
+ */
+public {{{className name}}}({{{_requiredParams}}}) {
+{{#each properties}}
+{{#if required}}
+	this.{{{identifier name}}} = {{{identifier name}}};
+{{/if}}
+{{/each}}
+}
+
+{{/if}}
+{{!-- Methods --}}
 {{#if additionalProperties}}
 @com.fasterxml.jackson.annotation.JsonAnyGetter
 public {{{additionalProperties.nativeType}}} getAdditionalProperties() {
