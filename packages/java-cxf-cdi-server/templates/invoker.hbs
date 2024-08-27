@@ -1,0 +1,47 @@
+package {{invokerPackage}};
+
+/**
+ * This is the JAX-RS application that initializes the API, including adding providers and API endpoints.
+ * The API endpoints are created using CDI. If new API endpoints are added they must be added in this class,
+ * as this explicit initialization disables CXF's automatic discovery.
+ * <p>
+ * We use explicit initialization of the JAX-RS application, rather than CXF's automatic provider and
+ * API endpoint discovery, to avoid unexpectedly discovering other CDI-annotated JAX-RS classes that might
+ * be present and to enable multiple JAX-RS applications to coexist.
+ */
+{{>hooks/invokerClassAnnotations}}
+@{{javax}}.ws.rs.ApplicationPath("{{basePath}}")
+public class RestApplication extends {{javax}}.ws.rs.core.Application {
+
+	private java.util.Set<Class<?>> classes;
+	private java.util.Set<Object> singletons;
+
+{{#each groups}}
+	@{{javax}}.inject.Inject private {{{@root.apiPackage}}}.{{{className name}}}Api {{{identifier name}}}Api;
+{{/each}}
+
+	@{{javax}}.annotation.PostConstruct
+	public void setup() {
+		classes = new java.util.HashSet<>();
+		singletons = new java.util.HashSet<>();
+		
+		/* Providers */
+		classes.add({{{apiProviderPackage}}}.ApiJaxbJsonProvider.class);
+
+		/* Endpoints */
+		{{#each groups}}
+		singletons.add({{{identifier name}}}Api);
+		{{/each}}
+	}
+
+	@Override
+	public java.util.Set<Class<?>> getClasses() {
+		return classes;
+	}
+
+	@Override
+	public java.util.Set<Object> getSingletons() {
+		return singletons;
+	}
+
+}
