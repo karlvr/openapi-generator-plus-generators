@@ -1,0 +1,16 @@
+package {{apiProviderPackage}};
+
+{{>generatedAnnotation}}
+public abstract class AbstractApiJaxbJsonProvider extends com.fasterxml.jackson.{{#if @root.useJakarta}}jakarta.rs{{else}}jaxrs{{/if}}.json.{{#if @root.useJakarta}}JacksonXmlBindJsonProvider{{else}}JacksonJaxbJsonProvider{{/if}} {
+
+	public AbstractApiJaxbJsonProvider() {
+		super();
+
+		this.setMapper(createMapper());
+	}
+
+	protected com.fasterxml.jackson.databind.ObjectMapper createMapper() {
+		{{>frag/jaxbJsonProviderBody}}
+	}
+
+}

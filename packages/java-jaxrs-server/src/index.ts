@@ -118,8 +118,10 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 
 		const providerPackagePath = generatorOptions.apiProviderPackage ? packageToPath(generatorOptions.apiProviderPackage) : undefined
 		if (providerPackagePath) {
-			await emit('ApiJaxbJsonProvider', path.join(outputPath, relativeApiImplSourceOutputPath, providerPackagePath, 'ApiJaxbJsonProvider.java'),
+			await emit('AbstractApiJaxbJsonProvider', path.join(outputPath, relativeApiImplSourceOutputPath, providerPackagePath, 'AbstractApiJaxbJsonProvider.java'),
 				{ ...rootContext }, true, hbs)
+			await emit('ApiJaxbJsonProvider', path.join(outputPath, relativeApiImplSourceOutputPath, providerPackagePath, 'ApiJaxbJsonProvider.java'),
+				{ ...rootContext }, false, hbs)
 		}
 
 		if (context.additionalExportTemplates) {

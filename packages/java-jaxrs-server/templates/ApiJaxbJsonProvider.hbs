@@ -8,15 +8,10 @@ package {{apiProviderPackage}};
 @{{javax}}.ws.rs.Consumes({"application/json; charset=UTF-8", "application/*+json; charset=UTF-8" })
 @{{javax}}.ws.rs.ext.Provider
 {{>hooks/jaxbJsonProviderAnnotations}}
-{{>generatedAnnotation}}
-public class ApiJaxbJsonProvider extends com.fasterxml.jackson.{{#if @root.useJakarta}}jakarta.rs{{else}}jaxrs{{/if}}.json.{{#if @root.useJakarta}}JacksonXmlBindJsonProvider{{else}}JacksonJaxbJsonProvider{{/if}} {
+public class ApiJaxbJsonProvider extends {{apiProviderPackage}}.AbstractApiJaxbJsonProvider {
 
 	public ApiJaxbJsonProvider() {
 		super();
-
-		{{>frag/jaxbJsonProviderBody}}
-
-		this.setMapper(mapper);
 	}
 
 }

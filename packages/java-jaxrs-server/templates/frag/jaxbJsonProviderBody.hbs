@@ -9,3 +9,5 @@ mapper.registerModule(new com.fasterxml.jackson.datatype.jdk8.Jdk8Module());
 /* Support Java time object types */
 mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 mapper.configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+return mapper;
