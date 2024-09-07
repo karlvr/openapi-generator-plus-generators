@@ -1,7 +1,50 @@
 package {{invokerPackage}};
 
+/**
+ * This is the JAX-RS application that initializes the API, including adding providers and API endpoints.
+ * <p>
+ * We use explicit initialization of the JAX-RS application, rather than any automatic discovery of API endpoints
+ * and providers, to avoid unexpectedly discovering other JAX-RS classes that might be present and to enable
+ * multiple JAX-RS applications to coexist.
+ */
 {{>hooks/invokerClassAnnotations}}
 @{{javax}}.ws.rs.ApplicationPath("{{basePath}}")
 public class {{invokerName}} extends {{javax}}.ws.rs.core.Application {
+
+	private java.util.Set<Class<?>> classes;
+	private java.util.Set<Object> singletons;
+
+{{#each groups}}
+	{{>util/inject interface=(concat @root.apiPackage '.' (className name) 'Api') class=(concat @root.apiPackage '.' (className name) 'ApiImpl') name=(concat (identifier name) 'Api')}}
+
+{{/each}}
+	protected void setup() {
+		classes = new java.util.HashSet<>();
+		singletons = new java.util.HashSet<>();
+		
+		/* Providers */
+		classes.add({{{apiProviderPackage}}}.ApiJaxbJsonProvider.class);
+
+		/* Endpoints */
+		{{#each groups}}
+		singletons.add({{{identifier name}}}Api);
+		{{/each}}
+	}
+
+	@Override
+	public java.util.Set<Class<?>> getClasses() {
+		if (classes == null) {
+			setup();
+		}
+		return classes;
+	}
+
+	@Override
+	public java.util.Set<Object> getSingletons() {
+		if (singletons == null) {
+			setup();
+		}
+		return singletons;
+	}
 
 }
