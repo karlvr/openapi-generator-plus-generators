@@ -18,6 +18,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		apiServiceImplPackage: nullableConfigString(config, 'apiServiceImplPackage', `${apiServicePackage}.impl`),
 		apiProviderPackage: configString(config, 'apiProviderPackage', `${packageName}.providers`),
 		invokerPackage: nullableConfigString(config, 'invokerPackage', `${packageName}.app`),
+		invokerName: nullableConfigString(config, 'invokerName', 'RestApplication'),
 		authenticationRequiredAnnotation: nullableConfigString(config, 'authenticationRequiredAnnotation', nullableConfigString(config, 'authenticatedOperationAnnotation', null)),
 	}
 	
@@ -107,9 +108,9 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 		}
 
 		const invokerPackagePath = generatorOptions.invokerPackage ? packageToPath(generatorOptions.invokerPackage) : undefined
-		if (invokerPackagePath) {
+		if (invokerPackagePath && generatorOptions.invokerName) {
 			const basePath = apiBasePath(doc.servers)
-			await emit('invoker', path.join(outputPath, relativeApiImplSourceOutputPath, invokerPackagePath, 'RestApplication.java'), 
+			await emit('invoker', path.join(outputPath, relativeApiImplSourceOutputPath, invokerPackagePath, `${generatorOptions.invokerName}.java`), 
 				{ ...rootContext, ...doc.info, basePath, groups: doc.groups }, false, hbs)
 		}
 

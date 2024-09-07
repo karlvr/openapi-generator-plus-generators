@@ -23,7 +23,7 @@ public class {{className name}}ApiTest {
 	@WeldSetup
 	private WeldInitiator weld = WeldInitiator.from(WeldInitiator.createWeld()
 			.addPackages({{apiImplPackage}}.{{className name}}ApiImpl.class, {{apiServiceImplPackage}}.{{className name}}ApiServiceImpl.class)
-			.addBeanClasses({{invokerPackage}}.RestApplication.class)
+			.addBeanClasses({{invokerPackage}}.{{invokerName}}.class)
 			.addBeanClasses(TestConfiguration.class)
 			.addExtension(new org.apache.cxf.cdi.JAXRSCdiResourceExtension()))
 	.build();

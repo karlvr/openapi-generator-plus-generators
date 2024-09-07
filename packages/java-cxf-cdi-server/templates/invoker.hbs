@@ -11,7 +11,7 @@ package {{invokerPackage}};
  */
 {{>hooks/invokerClassAnnotations}}
 @{{javax}}.ws.rs.ApplicationPath("{{basePath}}")
-public class RestApplication extends {{javax}}.ws.rs.core.Application {
+public class {{invokerName}} extends {{javax}}.ws.rs.core.Application {
 
 	private java.util.Set<Class<?>> classes;
 	private java.util.Set<Object> singletons;
