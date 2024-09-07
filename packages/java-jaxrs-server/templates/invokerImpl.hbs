@@ -1,0 +1,10 @@
+package {{invokerPackage}};
+
+/**
+ * This is the JAX-RS application that initializes the API, including adding providers and API endpoints.
+ */
+{{>hooks/invokerClassAnnotations}}
+@{{javax}}.ws.rs.ApplicationPath("{{basePath}}")
+public class {{invokerName}} extends {{invokerPackage}}.Abstract{{invokerName}} {
+
+}

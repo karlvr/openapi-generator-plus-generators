@@ -110,7 +110,9 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 		const invokerPackagePath = generatorOptions.invokerPackage ? packageToPath(generatorOptions.invokerPackage) : undefined
 		if (invokerPackagePath && generatorOptions.invokerName) {
 			const basePath = apiBasePath(doc.servers)
-			await emit('invoker', path.join(outputPath, relativeApiImplSourceOutputPath, invokerPackagePath, `${generatorOptions.invokerName}.java`), 
+			await emit('invoker', path.join(outputPath, relativeApiImplSourceOutputPath, invokerPackagePath, `Abstract${generatorOptions.invokerName}.java`), 
+				{ ...rootContext, ...doc.info, basePath, groups: doc.groups }, true, hbs)
+			await emit('invokerImpl', path.join(outputPath, relativeApiImplSourceOutputPath, invokerPackagePath, `${generatorOptions.invokerName}.java`), 
 				{ ...rootContext, ...doc.info, basePath, groups: doc.groups }, false, hbs)
 		}
 
