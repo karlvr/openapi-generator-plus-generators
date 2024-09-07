@@ -9,12 +9,4 @@ in the `impl` package.
 
 ## Config file
 
-See [java-jaxrs-client-generator](https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-jaxrs-client) for config file
-documentation. Below are additional config file options supported by this generator.
-
-### Project layout
-
-|Property|Type|Description|Default|
-|--------|----|-----------|-------|
-|`invokerPackage`|`string`|Package for API invoker classes.|`"${package}.invoker"`|
-|`invokerImplPackage`|`string`|Package for API invoker implementation classes.|`"${invokerPackage}.impl"`|
+See [java-jaxrs-client-generator](https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-jaxrs-client) for config file documentation.
