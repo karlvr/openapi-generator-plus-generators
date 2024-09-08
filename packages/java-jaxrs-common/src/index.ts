@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -378,10 +378,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		},
 		toNativeArrayType: (options) => {
 			const { componentNativeType, uniqueItems } = options
-			if (uniqueItems) {
+			if (uniqueItems && options.purpose !== CodegenSchemaPurpose.PARAMETER) {
 				return new context.TransformingNativeType(componentNativeType, {
 					/* We use LinkedHashSet everywhere to make it clear to all users of the API that it's ordered and unique.
 					   This also means we don't need to tell Jackson to use LinkedHashSet when deserializing.
+					   NOTE: CXF doesn't support LinkedHashSet for parameters (see InjectionUtils.getCollectionType()) so we exclude parameters.
 					 */
 					default: (nativeType) => `java.util.LinkedHashSet<${(nativeType.componentType || nativeType).nativeType}>`,
 					literalType: () => 'java.util.LinkedHashSet',
