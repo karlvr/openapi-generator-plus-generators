@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.3.0
+
+### Minor Changes
+
+- 4d13640: Make AbstractApiJaxbJsonProvider more customisable in code.
+
+  Rather than relying on replacing a Handlebars frag.
+
 ## 3.2.0
 
 ### Minor Changes
