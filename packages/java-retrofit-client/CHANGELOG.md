@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.6.0
+
+### Minor Changes
+
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/java-jaxrs-client-generator@3.1.0
+
 ## 2.5.2
 
 ### Patch Changes

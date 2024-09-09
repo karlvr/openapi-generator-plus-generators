@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.6.0
+
+### Minor Changes
+
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/typescript-generator-common@1.11.0
+  - @openapi-generator-plus/generator-common@1.7.0
+
 ## 1.5.1
 
 ### Patch Changes

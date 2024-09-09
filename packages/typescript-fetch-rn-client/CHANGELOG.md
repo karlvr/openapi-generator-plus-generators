@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 1.5.0
+
+### Minor Changes
+
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.10.0
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/typescript-generator-common@1.11.0
+
 ## 1.4.1
 
 ### Patch Changes

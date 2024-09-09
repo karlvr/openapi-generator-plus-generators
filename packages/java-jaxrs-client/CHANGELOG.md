@@ -1,5 +1,21 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 3.1.0
+
+### Minor Changes
+
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [28ef5ff]
+- Updated dependencies [0cddbff]
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.2.0
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/generator-common@1.7.0
+  - @openapi-generator-plus/java-like-generator-helper@2.5.0
+
 ## 3.0.2
 
 ### Patch Changes

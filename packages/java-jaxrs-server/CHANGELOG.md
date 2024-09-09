@@ -1,5 +1,25 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.2.0
+
+### Minor Changes
+
+- 1906f7d: Generate ApiJaxbJsonProvider as an abstract class so users can modify the implementation without it being overwritten
+- 6a86174: Allow setting the invoker application name
+- 25a6066: Move explicit configuration of JAX-RS application into java-jaxrs-server package
+- 0cddbff: Generate JAX-RS application as an abstract class so we can always overwrite the code and include all API endpoints.
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [28ef5ff]
+- Updated dependencies [0cddbff]
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.2.0
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/generator-common@1.7.0
+  - @openapi-generator-plus/java-like-generator-helper@2.5.0
+
 ## 3.1.0
 
 ### Minor Changes

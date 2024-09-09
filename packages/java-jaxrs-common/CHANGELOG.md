@@ -1,5 +1,20 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.2.0
+
+### Minor Changes
+
+- 28ef5ff: Don't use LinkedHashSet for parameters as CXF doesn't support LinkedHashSet
+- 0cddbff: Generate JAX-RS application as an abstract class so we can always overwrite the code and include all API endpoints.
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/generator-common@1.7.0
+  - @openapi-generator-plus/java-like-generator-helper@2.5.0
+
 ## 3.1.0
 
 ### Minor Changes

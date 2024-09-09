@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.7.0
+
+### Minor Changes
+
+- 382b02c: Bump core version and now explicitly depend upon core
+
 ## 1.6.1
 
 ### Patch Changes

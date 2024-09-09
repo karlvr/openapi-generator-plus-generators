@@ -1,5 +1,18 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.9.0
+
+### Minor Changes
+
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/generator-common@1.7.0
+  - @openapi-generator-plus/java-like-generator-helper@2.5.0
+
 ## 1.8.1
 
 ### Patch Changes

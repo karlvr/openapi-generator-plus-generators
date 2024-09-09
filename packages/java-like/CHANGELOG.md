@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.5.0
+
+### Minor Changes
+
+- 382b02c: Bump core version and now explicitly depend upon core
+
+### Patch Changes
+
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/generator-common@1.7.0
+
 ## 2.4.1
 
 ### Patch Changes

@@ -1,5 +1,28 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 3.1.0
+
+### Minor Changes
+
+- 6a86174: Allow setting the invoker application name
+- 25a6066: Move explicit configuration of JAX-RS application into java-jaxrs-server package
+- 0cddbff: Generate JAX-RS application as an abstract class so we can always overwrite the code and include all API endpoints.
+- 382b02c: Bump core version and now explicitly depend upon core
+- 8de8026: Remove @Dependent annotation from ApiJaxbJsonProvider as we prefer explicit configuration now
+
+### Patch Changes
+
+- Updated dependencies [1906f7d]
+- Updated dependencies [28ef5ff]
+- Updated dependencies [6a86174]
+- Updated dependencies [25a6066]
+- Updated dependencies [0cddbff]
+- Updated dependencies [382b02c]
+  - @openapi-generator-plus/java-jaxrs-server-generator@3.2.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.2.0
+  - @openapi-generator-plus/handlebars-templates@1.9.0
+  - @openapi-generator-plus/generator-common@1.7.0
+
 ## 3.0.2
 
 ### Patch Changes
