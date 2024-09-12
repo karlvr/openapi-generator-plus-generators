@@ -1,5 +1,5 @@
-{{#join ', '}}
-@io.swagger.v3.oas.annotations.Parameter(name = {{{stringLiteral serializedName}}}
+@io.swagger.v3.oas.annotations.Parameter({{#join ', '}}
+name = {{{stringLiteral serializedName}}}
 {{#if description}}
 description = {{{stringLiteral description}}}
 {{/if}}
@@ -9,6 +9,11 @@ required = true
 {{#if deprecated}}
 deprecated = true
 {{/if}}
+{{#ifeg 'java'}}
+example = {{{examples.java.valueString}}}
+{{else ifeg 'default'}}
+example = {{{examples.default.valueString}}}
+{{/ifeg}}
 {{!--{{#if allowableValues}}, {{> allowableValues }}{{/if}}--}}
 {{/join}})
 {{#if defaultValue}}

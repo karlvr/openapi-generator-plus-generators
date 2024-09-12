@@ -1,5 +1,5 @@
 {{>frag/propertyDocumentation}}
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 public {{{chainClassName}}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	{{#if nullable}}
 	set{{capitalize (identifier name)}}({{identifier name}} != null ? java.util.Optional.of({{identifier name}}) : java.util.Optional.empty());
@@ -14,7 +14,7 @@ public {{{chainClassName}}} {{identifier name}}({{{nativeType}}} {{identifier na
  * Returns the {{identifier name}}, or if it's {@code null} it first creates a new object,
  * sets the property to the new object, and then returns it.
  */
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 public {{{nativeType}}} {{identifier name}}() {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
@@ -37,14 +37,14 @@ public {{>frag/pojoPropertyType}} {{getter .}}() {
 	return this.{{identifier name}};
 }
 
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 public void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}}) {
 	this.{{identifier name}} = {{identifier name}};
 }
 
 {{/unless}}
 {{#if (isArray)}}
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 public {{{chainClassName}}} add{{capitalize (singular (identifier name))}}({{{schema.component.nativeType}}} {{identifier (singular name)}}) {
 	{{#if nullable}}
 	if (this.{{identifier name}} == null || !this.{{identifier name}}.isPresent()) {
@@ -61,7 +61,7 @@ public {{{chainClassName}}} add{{capitalize (singular (identifier name))}}({{{sc
 }
 
 {{#if (isObject schema.component)}}
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 public {{{schema.component.nativeType}}} add{{capitalize (singular (identifier name))}}() {
 	{{{schema.component.nativeType}}} {{identifier (singular name)}} = new {{{schema.component.nativeType.concreteType}}}();
 	add{{capitalize (singular (identifier name))}}({{identifier (singular name)}});

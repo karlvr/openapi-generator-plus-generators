@@ -29,13 +29,21 @@
 @{{javax}}.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 {{/if}}
 @io.swagger.v3.oas.annotations.Operation(
+	operationId = {{{stringLiteral name}}},
 	summary = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}},
 	description = {{{stringLiteral description}}}{{/if}},
 	responses = {
 	{{#each responses}}
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "{{{code}}}", description = {{{stringLiteral description}}}){{#hasMore}},{{/hasMore}}
-{{/each}}	}{{!--{{#if returnContainer}},
-	responseContainer = "{{{returnContainer}}}"{{/if}}--}}{{#if securityRequirements}},
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "{{{code}}}",
+			description = {{{stringLiteral description}}}{{#if contents}},
+			content = {
+{{#each contents}}
+				@io.swagger.v3.oas.annotations.media.Content(mediaType = {{{stringLiteral mediaType.mediaType}}}{{#if schema}}, schema = @io.swagger.v3.oas.annotations.media.Schema({{#if (isObject schema)}}implementation = {{{nativeType}}}.class{{/if}}){{/if}})
+{{/each}}
+			}{{/if}}
+		){{#hasMore}},{{/hasMore}}
+{{/each}}	}{{#if securityRequirements}},
 	security = {
 	{{#each securityRequirements.requirements}}
 	{{#each schemes}}

@@ -83,7 +83,7 @@ public {{{className name}}} additionalProperties({{{additionalProperties.nativeT
 {{/if}}
 {{#each (inheritedProperties)}}
 {{>frag/propertyDocumentation}}
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 @java.lang.Override
 public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	super.{{identifier name}}({{identifier name}});

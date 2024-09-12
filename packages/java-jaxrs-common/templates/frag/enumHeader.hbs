@@ -1,4 +1,16 @@
 {{>hooks/enumHeaderAnnotations}}
+@io.swagger.v3.oas.annotations.media.Schema({{#join ', '}}
+{{#if serializedName}}
+name = {{{stringLiteral serializedName}}}
+enumAsRef = true
+{{/if}}
+{{#if description}}
+description = {{{stringLiteral description}}}
+{{/if}}
+{{#if deprecated}}
+deprecated = true
+{{/if}}
+{{/join}})
 {{#if serializedName}}
 @{{javax}}.xml.bind.annotation.XmlRootElement(name = {{{stringLiteral serializedName}}})
 {{/if}}

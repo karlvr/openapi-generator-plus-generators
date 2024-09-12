@@ -1,3 +1,17 @@
-{{#if deprecated}}
-@java.lang.Deprecated
+@io.swagger.v3.oas.annotations.media.Schema({{#join ', '}}
+name = {{{stringLiteral serializedName}}}
+{{#if description}}
+description = {{{stringLiteral description}}}
 {{/if}}
+{{#if required}}
+required = {{required}}
+{{/if}}
+{{#if deprecated}}
+deprecated = true
+{{/if}}
+{{#ifeg 'java'}}
+example = {{{examples.java.valueString}}}
+{{else ifeg 'default'}}
+example = {{{examples.default.valueString}}}
+{{/ifeg}}
+{{/join}})

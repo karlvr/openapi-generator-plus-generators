@@ -1,4 +1,9 @@
+{{>frag/propertyStatusAnnotations}}
+{{#if (isParam .)}}
+{{>frag/parameterAnnotations}}
+{{else}}
 {{>frag/propertyAnnotations}}
+{{/if}}
 {{#if (lookup schema.vendorExtensions 'x-extra-annotation')}}
 {{{schema.vendorExtensions.x-extra-annotation}}}
 {{/if}}
@@ -9,7 +14,4 @@
 {{/ifdef}}
 {{#if @root.useBeanValidation}}
 {{>beanValidation}}
-{{/if}}
-{{#if (isParam .)}}
-{{>frag/parameterAnnotations}}
 {{/if}}

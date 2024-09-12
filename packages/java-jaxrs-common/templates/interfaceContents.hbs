@@ -15,7 +15,7 @@ void setAdditionalProperties({{{additionalProperties.nativeType}}} additionalPro
 {{#if properties}}
 {{#each properties}}
 {{>frag/propertyDocumentation}}
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}});
 
 {{#or (isObject) (isMap) (isArray)}}
@@ -23,22 +23,22 @@ void setAdditionalProperties({{{additionalProperties.nativeType}}} additionalPro
  * Returns the {{identifier name}}, or if it's {@code null} it first creates a new object,
  * sets the property to the new object, and then returns it.
  */
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 {{{nativeType}}} {{identifier name}}();
 
 {{/or}}
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 {{>frag/pojoPropertyType}} {{getter .}}();
 
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 void {{setter .}}({{>frag/pojoPropertyType}} {{identifier name}});
 {{#if (isArray)}}
 
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 {{className ../name}} add{{capitalize (singular (identifier name))}}({{{schema.component.nativeType}}} {{identifier (singular name)}});
 {{#if (isObject schema.component)}}
 
-{{>frag/propertyAnnotations}}
+{{>frag/propertyStatusAnnotations}}
 {{{schema.component.nativeType}}} add{{capitalize (singular (identifier name))}}();
 {{/if}}
 {{/if}}
