@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.11.0
+
+### Minor Changes
+
+- 8c59015: Add support for template hooks specific to the generated class
+
 ## 1.10.0
 
 ### Minor Changes

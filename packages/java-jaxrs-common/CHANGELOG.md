@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.4.0
+
+### Minor Changes
+
+- 1b09e3f: Add support for template hooks specific to generated pojos and enums so custom templates can be used to inject custom logic into those generated classes
+
+### Patch Changes
+
+- Updated dependencies [8c59015]
+  - @openapi-generator-plus/handlebars-templates@1.11.0
+
 ## 3.3.0
 
 ### Minor Changes
