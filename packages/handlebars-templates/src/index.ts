@@ -716,6 +716,30 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 	})
 
+	hbs.registerHelper('optionalPartial', function(this: unknown, name: string, context: unknown) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 2 && arguments.length !== 3) {
+			throw new Error(`optionalPartial helper must be called with 1 argument @ ${sourcePosition(options)}`)
+		}
+		if (name === undefined) {
+			throw new Error(`optionalPartial helper missing name argument @ ${sourcePosition(options)}`)
+		}
+		if (arguments.length === 2) {
+			context = this
+		}
+
+		const template = hbs.partials[name]
+		if (!template) {
+			return options.fn(context)
+		}
+
+		return template(context, {
+			/* We use property methods in CodegeNativeType subclasses */
+			allowProtoPropertiesByDefault: true,
+		})
+	})
+
 	/** Output the undefined value literal for the given typed object. */
 	hbs.registerHelper('undefinedValueLiteral', function(typeInfo: CodegenSchema) {
 		// eslint-disable-next-line prefer-rest-params
