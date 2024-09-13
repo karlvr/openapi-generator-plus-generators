@@ -946,6 +946,26 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		return uniquePropertiesIncludingInherited(schema)
 	})
 
+	/** Return an array of required properties from an object schema. */
+	hbs.registerHelper('requiredProperties', function(this: CodegenObjectSchema, schema?: CodegenObjectSchema) {
+		// eslint-disable-next-line prefer-rest-params
+		const options = arguments[arguments.length - 1] as ActualHelperOptions
+		if (arguments.length !== 1 && arguments.length !== 2) {
+			throw new Error(`requiredProperties helper must be called with 0 or 1 arguments @ ${sourcePosition(options)}`)
+		}
+		if (arguments.length === 1) {
+			schema = this
+		} else if (!schema) {
+			throw new Error(`requiredProperties helper called with undefined schema argument @ ${sourcePosition(options)}`)
+		}
+
+		if (schema.properties) {
+			return idx.filter(schema.properties, p => p.required)
+		} else {
+			return null
+		}
+	})
+
 	hbs.registerHelper('nonDefaultResponses', function(this: CodegenOperation) {
 		// eslint-disable-next-line prefer-rest-params
 		const options = arguments[arguments.length - 1] as ActualHelperOptions
