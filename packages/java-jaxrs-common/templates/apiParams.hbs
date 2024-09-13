@@ -29,12 +29,12 @@ public class {{className uniqueName}}Params{{#if _implements}} implements {{{_im
 
 	}
 
-{{#if requiredParams}}
+{{#if pathParams}}
 	/**
-	 * Create a new params object with all of the required parameters.
+	 * Create a new params object with its path parameters.
 	 */
-	public {{{className uniqueName}}}Params({{#each requiredParams}}{{{nativeType}}} {{{identifier name}}}{{#hasMore}}, {{/hasMore}}{{/each}}) {
-{{#each requiredParams}}
+	public {{{className uniqueName}}}Params({{#each pathParams}}{{{nativeType}}} {{{identifier name}}}{{#hasMore}}, {{/hasMore}}{{/each}}) {
+{{#each pathParams}}
 		this.{{{identifier name}}} = {{{identifier name}}};
 {{/each}}
 	}
