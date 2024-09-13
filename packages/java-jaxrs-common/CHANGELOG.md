@@ -1,5 +1,35 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.3.0
+
+### Minor Changes
+
+- 004a933: Add more API metadata annotations
+- 8b4824a: Don't generate POJO required properties constructor
+
+  This was a mistake. I am worried about the order of parameters in the constructor changing if the API spec changes, which
+  could result in existing code that calls these constructors passing the wrong values to the wrong parameters
+  as Java doesn't have named parameters. There's no guarantee about the order of properties in an object or that the
+  required properties will stay consistent.
+
+- 9479c07: Use `Set` for uniqueItems in parameters so we maintain the uniqueItems metadata
+
+  Without it, we cannot indicate the `uniqueItems` metadata as it isn't available in the metadata annotations.
+  This impacts the output of the automatic OpenAPI schema output endpoint.
+
+- 5fa5e01: For API params objects only generate a required parameters constructor for path parameters
+
+  This is because those are the only (required) parameters that are (reasonably) guaranteed to remain in the
+  same order (unless the path structure is changed, which I hope is unlikely). I'm concerned that with constructors,
+  as Java doesn't have named parameters, that a change in the order that parameters are declared would result in
+  the generated constructors changing the order of parameters and if the types match, then the compiler wouldn't
+  notice and values would go into the wrong properties.
+
+### Patch Changes
+
+- Updated dependencies [8b4824a]
+  - @openapi-generator-plus/handlebars-templates@1.10.0
+
 ## 3.2.0
 
 ### Minor Changes
