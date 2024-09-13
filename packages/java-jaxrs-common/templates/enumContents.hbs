@@ -33,3 +33,5 @@ public static {{className name}} fromValue(java.lang.String v) {
 }
 
 {{>hooks/enumFooter}}
+{{#optionalPartial (concat 'hooks/enum/' (className name)) }}
+{{/optionalPartial}}
