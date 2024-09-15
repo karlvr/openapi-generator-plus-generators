@@ -3,7 +3,7 @@ import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
-import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext } from '@openapi-generator-plus/java-like-generator-helper'
+import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import * as idx from '@openapi-generator-plus/indexed-type'
 
@@ -146,6 +146,7 @@ function createJavaLikeContext(context: JavaGeneratorContext): JavaLikeContext {
 		...context,
 		reservedWords: () => RESERVED_WORDS,
 		defaultConstantStyle: ConstantStyle.allCapsSnake,
+		defaultEnumMemberStyle: EnumMemberStyle.constant,
 	}
 	return javaLikeContext
 }

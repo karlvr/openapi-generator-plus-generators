@@ -44,6 +44,17 @@ export const enum ConstantStyle {
 	pascalCase = 'pascalCase',
 }
 
+/**
+ * The style to use to name enum members. The name of enum members is important in Java languages as the enum member
+ * name is used, e.g. `enum.name()` and `EnumType.valueOf(String)`.
+ */
+export const enum EnumMemberStyle {
+	/** Try to preserve the enum value from the specification in the enum entry name */
+	preserve = 'preserve',
+	/** Match the constant style */
+	constant = 'contant',
+}
+
 export interface JavaLikeOptions {
 	apiClassPrefix?: string
 	modelClassPrefix?: string
@@ -53,6 +64,7 @@ export interface JavaLikeOptions {
 	nestedModelClassPrefix?: string
 	nestedEnumClassPrefix?: string
 	constantStyle: ConstantStyle
+	enumMemberStyle: EnumMemberStyle
 }
 
 export function options(config: CodegenConfig, context: JavaLikeContext): JavaLikeOptions {
@@ -65,6 +77,7 @@ export function options(config: CodegenConfig, context: JavaLikeContext): JavaLi
 		nestedModelClassPrefix: configString(config, 'nestedModelClassPrefix', undefined),
 		nestedEnumClassPrefix: configString(config, 'nestedEnumClassPrefix', undefined),
 		constantStyle: configString(config, 'constantStyle', context.defaultConstantStyle) as ConstantStyle,
+		enumMemberStyle: configString(config, 'enumMemberStyle', context.defaultEnumMemberStyle) as EnumMemberStyle,
 	}
 	return result
 }
@@ -72,9 +85,10 @@ export function options(config: CodegenConfig, context: JavaLikeContext): JavaLi
 export interface JavaLikeContext extends CodegenGeneratorContext {
 	reservedWords?: () => string[]
 	defaultConstantStyle: ConstantStyle
+	defaultEnumMemberStyle: EnumMemberStyle
 }
 
-export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContext): Pick<CodegenGenerator, 'toClassName' | 'toIdentifier' | 'toConstantName' | 'toSchemaName' | 'toSuggestedSchemaName' | 'toOperationGroupName'> {
+export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContext): Pick<CodegenGenerator, 'toClassName' | 'toIdentifier' | 'toEnumMemberName' | 'toConstantName' | 'toSchemaName' | 'toSuggestedSchemaName' | 'toOperationGroupName'> {
 	const generatorOptions = options(config, context)
 
 	function applyReservedWords(input: string, transform: (value: string) => string) {
@@ -93,6 +107,16 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 		},
 		toIdentifier: (name) => {
 			return applyReservedWords(name, identifierCamelCase)
+		},
+		toEnumMemberName: (name) => {
+			const enumMemberStyle = generatorOptions.enumMemberStyle
+			switch (enumMemberStyle) {
+				case EnumMemberStyle.preserve:
+					return identifierSafe(name)
+				case EnumMemberStyle.constant:
+					return context.generator().toConstantName(name)
+			}
+			throw new Error(`Unsupported enumMemberStyle: ${enumMemberStyle}`)
 		},
 		toConstantName: (name) => {
 			if (!name) {

@@ -3,7 +3,7 @@ import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
-import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
+import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeOptions, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator, compareHttpMethods, configObject, configString } from '@openapi-generator-plus/generator-common'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
@@ -29,6 +29,7 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 	const javaLikeContext: JavaLikeContext = {
 		...context,
 		defaultConstantStyle: ConstantStyle.allCapsSnake,
+		defaultEnumMemberStyle: EnumMemberStyle.preserve,
 	}
 	
 	const customTemplates = configString(config, 'customTemplates', undefined)

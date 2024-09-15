@@ -55,6 +55,7 @@ constantStyle: camelCase
 |`dateTimeImplementation`|`string`|Date time type class.|`"java.time.OffsetDateTime"`|
 |`binaryRepresentation`|`string`|Binary data representation.|`"byte[]"`|
 |`constantStyle`|`"allCapsSnake"\|"allCaps"\|"camelCase"`|The style to use for constant naming.|`"allCapsSnake"`|
+|`enumMemberStyle`|`"preserve"` \| `"constant"`|The style to use for enum member names: `preserve` _attempts_ to match the enum member name to the literal enum value from the spec; `constant` uses the `constantStyle` rules.|`"constant"`|
 |`useJakarta`|`boolean`|Whether to use `jakarta` packages instead of `javax` packages.|`false`|
 
 ### Behaviour
