@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-express-example-server-generator",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "An OpenAPI Generator Plus template for a TypeScript API server using Express to output example responses",
   "keywords": [
     "openapi-generator-plus",

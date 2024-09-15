@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.6.3
+
+### Patch Changes
+
+- 601553e: Update core
+- Updated dependencies [366ada5]
+- Updated dependencies [601553e]
+  - @openapi-generator-plus/typescript-generator-common@1.12.0
+  - @openapi-generator-plus/handlebars-templates@1.11.1
+  - @openapi-generator-plus/generator-common@1.7.1
+
 ## 1.6.2
 
 ### Patch Changes

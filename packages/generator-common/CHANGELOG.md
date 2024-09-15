@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.7.1
+
+### Patch Changes
+
+- 601553e: Update core
+
 ## 1.7.0
 
 ### Minor Changes
