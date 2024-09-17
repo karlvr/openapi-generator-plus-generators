@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.5.1
+
+### Patch Changes
+
+- a4160fc: Fix whitespace in API service body parameter
+- 4504739: Add missing @Generated annotation to API params classes
+
 ## 3.5.0
 
 ### Minor Changes
