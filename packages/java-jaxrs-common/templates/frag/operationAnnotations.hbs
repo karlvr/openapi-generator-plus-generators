@@ -47,7 +47,7 @@
 	security = {
 	{{#each securityRequirements.requirements}}
 	{{#each schemes}}
-		@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "{{scheme.name}}"{{#if scopes}}, scopes = { {{#each scopes}}{{{stringLiteral name}}}{{#hasMore}},{{/hasMore}}{{/each}} }{{/if}}),
+		@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "{{scheme.name}}"{{#if scopes}}, scopes = { {{#each scopes}}{{{stringLiteral name}}}{{#hasMore}}, {{/hasMore}}{{/each}} }{{/if}}),
 	{{/each}}
 	{{/each}}
 	{{#if securityRequirements.optional}}
