@@ -1,7 +1,10 @@
 {{>hooks/enumHeader}}
 {{#each enumValues}}
-@{{javax}}.xml.bind.annotation.XmlEnumValue({{{stringLiteral value}}}) {{{name}}}({{{literalValue}}}){{#unless @last}}, {{else}};{{/unless}}
+@{{javax}}.xml.bind.annotation.XmlEnumValue({{{stringLiteral value}}}) {{{name}}}({{{literalValue}}}),
 {{/each}}
+{{#if enumValues}}
+;
+{{/if}}
 
 private {{enumValueNativeType}} value;
 
