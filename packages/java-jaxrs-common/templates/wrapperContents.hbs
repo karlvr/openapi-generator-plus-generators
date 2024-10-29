@@ -1,7 +1,7 @@
 {{#with property}}
-{{#if @root.useLombok}}
 {{>frag/propertyDocumentation}}
 {{>frag/pojoPropertyAnnotations}}
+{{#if @root.useLombok}}
 @lombok.Getter
 @lombok.Setter
 {{/if}}

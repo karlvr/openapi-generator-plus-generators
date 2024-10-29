@@ -11,18 +11,11 @@ package {{{apiParamsPackage}}};
 public class {{className uniqueName}}Params{{#if _implements}} implements {{{_implements}}}{{/if}} {
 
 {{#each parameters}}
-{{#if @root.useLombok}}
 	{{>frag/propertyDocumentation}}
 	{{>frag/pojoPropertyAnnotations}}
-{{/if}}
 	private {{{nativeType}}} {{{identifier name}}};
-{{#if @root.useLombok}}
 
-{{/if}}
 {{/each}}
-{{#unless @root.useLombok}}
-
-{{/unless}}
 	/**
 	 * Create a new params object.
 	 */

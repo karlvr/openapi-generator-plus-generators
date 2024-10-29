@@ -31,8 +31,6 @@ public {{{nativeType}}} {{identifier name}}() {
 
 {{/or}}
 {{#unless @root.useLombok}}
-{{>frag/propertyDocumentation}}
-{{>frag/pojoPropertyAnnotations}}
 public {{>frag/pojoPropertyType}} {{getter .}}() {
 	return this.{{identifier name}};
 }
