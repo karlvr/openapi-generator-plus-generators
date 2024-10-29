@@ -1,5 +1,22 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.6.0
+
+### Minor Changes
+
+- d39391e: Move property annotations to fields as `@BeanParam` doesn't support property getters
+
+  At least in CXF, the implementation that populates `@BeanParam` only considers fields and methods that start with the word `set` (see `BeanResourceInfo.setParamMethods`).
+  This only impacts JAX-RS param annotations, but I've decided to move all of the annotations to the fields. This also makes our annotations consistent between the Lombok
+  and non-Lombok versions of the generated code.
+
+- 14579f3: Tidy property documentation generation to not output unnecessary JavaDoc for numeric properties
+- cb8a924: Java enums can have trailing commas so we can minimise the git diff when new enum members are added
+
+### Patch Changes
+
+- 1b74cc4: Fix whitespace in OAuth scopes
+
 ## 3.5.1
 
 ### Patch Changes
