@@ -28,6 +28,7 @@ paths:
             format: url
         - name: int32
           in: query
+          description: Test description for int32
           schema:
             type: integer
             format: int32
@@ -36,11 +37,15 @@ paths:
           schema:
             type: integer
             format: int64
+            # Testing minimum
+            minimum: 40
         - name: float
           in: query
           schema:
             type: number
             format: float
+            # Testing maximum
+            maximum: 40
         - name: double
           in: query
           schema:

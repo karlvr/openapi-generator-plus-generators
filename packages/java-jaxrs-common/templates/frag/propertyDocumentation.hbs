@@ -1,15 +1,18 @@
-{{#or description (isNumeric schema)}}
+{{#set '_documentation'}}
+{{#if description}}
+* {{#indent ' * '}}{{{md description}}}{{/indent}}
+{{/if}}
+{{#if (isNumeric schema)}}
+{{#if schema.minimum}}
+* minimum: {{schema.minimum}}
+{{/if}}
+{{#if schema.maximum}}
+* maximum: {{schema.maximum}}
+{{/if}}
+{{/if}}
+{{/set}}
+{{#if _documentation}}
 /**
- {{#if description}}
- * {{#indent ' * '}}{{{md description}}}{{/indent}}
- {{/if}}
- {{#if (isNumeric schema)}}
- {{#if schema.minimum}}
- * minimum: {{schema.minimum}}
- {{/if}}
- {{#if schema.maximum}}
- * maximum: {{schema.maximum}}
- {{/if}}
- {{/if}}
+ {{{_documentation}}}
  */
-{{/or}}
+{{/if}}
