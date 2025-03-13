@@ -1,7 +1,7 @@
 {{>header}}
 
 import { Configuration } from "./configuration";
-import { BASE_PATH, COLLECTION_FORMATS, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch } from "./runtime";
+import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch } from "./runtime";
 import { Api } from "./models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
@@ -27,7 +27,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 	{{>frag/validateParameter operation=..}}
 	{{/with}}
 			let localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
-				.replace('{{safe '{'}}{{{serializedName}}}{{safe '}'}}', encodeURIComponent(String({{identifier name}}))){{/each}};
+				.replace('{{safe '{'}}{{{serializedName}}}{{safe '}'}}', encodeURIPathSegment(String({{identifier name}}))){{/each}};
 			const localVarPathQueryStart = localVarPath.indexOf("?");
 			const localVarRequestOptions: RequestInit = Object.assign({ method: '{{httpMethod}}' }, options);
 			const localVarHeaderParameter: Headers = options.headers ? new Headers(options.headers) : new Headers();

@@ -69,3 +69,51 @@ export class RequiredError extends Error {
 		this.name = "RequiredError";
 	}
 }
+
+/* The following characters are legal in URL path segments, but are encoded by `encodeURIComponent`
+
+	From RFC 3986: https://datatracker.ietf.org/doc/html/rfc3986
+	segment       = *pchar
+	pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+	pct-encoded   = "%" HEXDIG HEXDIG
+	unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+	sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+
+*/
+const URL_PATH_SEGMENT_CHARS = [
+/* -- sub-delims -- */
+/*	'!',  - Not needed, as this is not encoded by `encodeURIComponent` */
+	'$',
+	'&',
+/*	'\'', - Not needed, as this is not encoded by `encodeURIComponent` */
+/*	'(',  - Not needed, as this is not encoded by `encodeURIComponent` */
+/*	')',  - Not needed, as this is not encoded by `encodeURIComponent` */
+/*	'*',  - Not needed, as this is not encoded by `encodeURIComponent` */
+	'+',
+	',',
+	';',
+	'=',
+/* -- specific pchars -- */
+	':',
+	'@',
+]
+const URL_PATH_SEGMENT_CHAR_MAP = URL_PATH_SEGMENT_CHARS.reduce((acc: Record<string, string>, char) => {
+	acc[encodeURIComponent(char)] = char
+	return acc
+}, {})
+
+/**
+ * Similar to `encodeURIComponent`, but does not encode certain characters that are specifically legal
+ * in URL path segments, according to RFC 3986: https://datatracker.ietf.org/doc/html/rfc3986
+ * 
+ * See {@link URL_PATH_SEGMENT_CHARS} for the list of characters that are not encoded.
+ * 
+ * @export
+ */
+export function encodeURIPathSegment(segment: string) {
+	let result = encodeURIComponent(segment)
+	Object.entries(URL_PATH_SEGMENT_CHAR_MAP).forEach(([encoded, char]) => {
+		result = result.replaceAll(encoded, char)
+	})
+	return result
+}
