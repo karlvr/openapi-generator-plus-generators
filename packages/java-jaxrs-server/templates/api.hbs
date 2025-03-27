@@ -2,7 +2,6 @@ package {{apiPackage}};
 
 {{>frag/imports}}
 {{>generatedAnnotation}}
-@{{javax}}.ws.rs.Path("{{{path}}}")
 {{#if consumes}}
 @{{javax}}.ws.rs.Consumes({ {{#each consumes}}"{{{.}}}"{{#unless @last}}, {{/unless}}{{/each}} })
 {{/if}}

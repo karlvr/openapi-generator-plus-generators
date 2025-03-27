@@ -20,7 +20,7 @@
 @java.lang.Deprecated
 {{/if}}
 {{#if path}}
-@{{javax}}.ws.rs.Path("{{{path}}}")
+@{{javax}}.ws.rs.Path("{{{../path}}}{{{path}}}")
 {{/if}}
 {{#if consumes}}
 @{{javax}}.ws.rs.Consumes({ {{#each consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
