@@ -19,9 +19,9 @@
 {{#if deprecated}}
 @java.lang.Deprecated
 {{/if}}
-{{#if path}}
-@{{javax}}.ws.rs.Path("{{{../path}}}{{{path}}}")
-{{/if}}
+{{#or groupPath path}}
+@{{javax}}.ws.rs.Path("{{{groupPath}}}{{{path}}}")
+{{/or}}
 {{#if consumes}}
 @{{javax}}.ws.rs.Consumes({ {{#each consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 {{/if}}
