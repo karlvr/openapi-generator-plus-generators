@@ -21,7 +21,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		}),
 		defaultTypeScriptOptions: () => ({
 			target: 'ES5',
-			libs: ['$target', 'DOM'],
+			libs: ['$target', 'DOM', 'ES2021.String'],
 		}),
 	})
 
