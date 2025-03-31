@@ -21,7 +21,7 @@ public interface {{className name}}ApiService {
 		{{#if isCatchAll}}
 		private int responseCode;
 {{#set '_parameters'}}
-{{_parameters}}
+{{{_parameters}}}
 int responseCode
 {{/set}}
 
@@ -29,13 +29,13 @@ int responseCode
 		{{#if defaultContent.nativeType}}
 		private {{{defaultContent.nativeType}}} entity;
 {{#set '_parameters'}}
-{{_parameters}}
+{{{_parameters}}}
 {{{defaultContent.nativeType}}} entity
 {{/set}}
 
 		{{/if}}
 {{#join '_parameters' ', '}}
-{{_parameters}}
+{{{_parameters}}}
 {{/join}}
 		public {{{className (concat ../name '_' code)}}}Exception({{{_parameters}}}) {
 			{{#if isCatchAll}}
