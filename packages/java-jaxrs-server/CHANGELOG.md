@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.6.0
+
+### Minor Changes
+
+- 58ccf51: Overlapping paths on operation groups don't work in Java
+
+### Patch Changes
+
+- 4b1a63c: Fix HTML encoding in generated response exception parameters
+- Updated dependencies [58ccf51]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.7.0
+
 ## 3.5.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 3.3.0
+
+### Minor Changes
+
+- 58ccf51: Overlapping paths on operation groups don't work in Java
+
+### Patch Changes
+
+- Updated dependencies [58ccf51]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.7.0
+
 ## 3.2.2
 
 ### Patch Changes
