@@ -1,8 +1,18 @@
 {{>header}}
 
-import { Configuration } from "./configuration";
-import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch, dateToString } from "./runtime";
-import { Api } from "./models";
+{{#if divideApiByGroup}}
+	{{#set 'importBasePath'}}
+	..
+	{{/set}}
+{{else}}
+	{{#set 'importBasePath'}}
+	.
+	{{/set}}
+{{/if}}
+
+import { Configuration } from "{{{importBasePath}}}/configuration";
+import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch, dateToString } from "{{importBasePath}}/runtime";
+import { Api } from "{{{importBasePath}}}/models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
 {{/ifeq}}
