@@ -8,4 +8,9 @@ export interface CodegenOptionsTypeScriptFetchClient extends CodegenOptionsTypeS
 	 * Whether polyfills should be included for features that browsers might not have, or might not do well.
 	 */
 	includePolyfills: boolean
+
+	/**
+	 * Whether to divide the generated API client into multiple files, with one file per operation group. 
+	 */
+	divideApiByGroup: boolean
 }
