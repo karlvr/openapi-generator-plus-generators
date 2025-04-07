@@ -1,7 +1,7 @@
 {{>header}}
 
 import { Configuration } from "./configuration";
-import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch } from "./runtime";
+import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch, dateToString } from "./runtime";
 import { Api } from "./models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
@@ -258,17 +258,3 @@ export class {{className name}}Api extends BaseAPI implements {{className name}}
 	{{/each}}
 }
 {{/each}}
-
-/**
- * We sometimes represent dates as strings (in models) and as Dates (in parameters) so this
- * function converts them both to a string.
- */
-function dateToString(value: Date | string | undefined): string | undefined {
-	if (value instanceof Date) {
-		return value.toISOString();
-	} else if (typeof value === 'string') {
-		return value;
-	} else {
-		return undefined;
-	}
-}

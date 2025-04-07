@@ -117,3 +117,17 @@ export function encodeURIPathSegment(segment: string) {
 	})
 	return result
 }
+
+/**
+ * We sometimes represent dates as strings (in models) and as Dates (in parameters) so this
+ * function converts them both to a string.
+ */
+export function dateToString(value: Date | string | undefined): string | undefined {
+	if (value instanceof Date) {
+		return value.toISOString();
+	} else if (typeof value === 'string') {
+		return value;
+	} else {
+		return undefined;
+	}
+}
