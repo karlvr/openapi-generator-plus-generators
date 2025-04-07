@@ -30,7 +30,7 @@ return {
 {{#if response.headers}}
 	headers: {
 {{#each response.headers}}
-		{{identifier name}}: response.headers.get({{{stringLiteral serializedName}}}),
+		{{identifier name}}: response.headers.get({{{stringLiteral serializedName}}}) ?? undefined,
 {{/each}}
 	},
 {{/if}}

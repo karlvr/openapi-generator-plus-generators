@@ -40,7 +40,7 @@ export interface {{className (concat ../../name '_' ../code)}}{{#if (gt (count .
 {{#if ../headers}}
 	headers: {
 		{{#each ../headers}}
-		{{{stringLiteral name}}}: {{{nativeType}}}
+		{{{stringLiteral name}}}?: {{{nativeType}}}
 		{{/each}}
 	}
 {{else}}
