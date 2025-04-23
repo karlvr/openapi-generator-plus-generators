@@ -24,10 +24,10 @@ export namespace {{className name}}Api {
 }
 
 /**
- * {{className name}}Api - fetch parameter creator
+ * {{className name}}Api - parameter creator
  * @export
  */
-export const {{className name}}ApiFetchParamCreator = function (configuration?: Configuration) {
+export const ParamCreator = function (configuration?: Configuration) {
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
@@ -163,10 +163,10 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
 		{{>frag/operationDocumentation}}
 		{{#if (gt (count parameters) 1)}}
 		{{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+			const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 		{{else}}
 		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-			const localVarFetchArgs = {{className ../name}}ApiFetchParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+			const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 		{{/if}}
 			return async (fetch: FetchAPI = defaultFetch, basePath: string = BASE_PATH) => {
 				const response = await fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
