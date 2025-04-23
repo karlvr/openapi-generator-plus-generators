@@ -35,22 +35,17 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 	const generatorOptions: CodegenOptionsTypeScriptFetchClient = {
 		...typescriptCommonOptions(config, myContext),
 		includePolyfills: config.includePolyfills !== undefined ? !!config.includePolyfills : true,
-		divideApiByGroup: config.divideApiByGroup !== undefined ? !!config.divideApiByGroup : false,
 	}
 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
-		if (generatorOptions.divideApiByGroup) {
-			for (const group of doc.groups) {
-				if (group.operations.length === 0) {
-					continue
-				}
-
-				await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api', `${context.generator().toIdentifier(group.name)}Api.ts`),
-					{ ...rootContext, ...doc, groups: [group] }, true, hbs)
+		for (const group of doc.groups) {
+			if (group.operations.length === 0) {
+				continue
 			}
-		} else {
-			await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api.ts'), { ...rootContext, ...doc }, true, hbs)
+
+			await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api', `${context.generator().toIdentifier(group.name)}.ts`),
+				{ ...rootContext, ...doc, groups: [group] }, true, hbs)
 		}
 
 		await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), {
