@@ -10,8 +10,7 @@ import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeSt
 
 export type FactoryFunction<T> = (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) => T;
 
-{{#each groups}}
-export namespace {{className name}}Api {
+namespace {{className name}}Api {
 {{#each operations}}
 {{#if (gt (count parameters) 1)}}
 	{{>frag/apiParametersInterface}}
@@ -243,7 +242,7 @@ export interface {{className name}}ApiInterface {
  * @class {{className name}}Api
  * @extends {BaseAPI}
  */
-export default class {{className name}}Api extends BaseAPI implements {{className name}}ApiInterface {
+class {{className name}}Api extends BaseAPI implements {{className name}}ApiInterface {
 	{{#each operations}}
 	{{>frag/operationDocumentation}}
 	{{#if (gt (count parameters) 1)}}
@@ -257,4 +256,5 @@ export default class {{className name}}Api extends BaseAPI implements {{classNam
 
 	{{/each}}
 }
-{{/each}}
+
+export default {{className name}}Api;

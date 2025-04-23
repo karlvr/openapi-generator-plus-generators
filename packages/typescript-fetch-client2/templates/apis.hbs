@@ -1,0 +1,5 @@
+{{>index}}
+
+{{#each groups}}
+export { default as {{className name}}Api, ParamCreator as {{className name}}ApiParamCreator, {{className name}}ApiFactory, {{className name}}ApiFp, {{className name}}ApiInterface } from "./api/{{identifier name}}";
+{{/each}}
