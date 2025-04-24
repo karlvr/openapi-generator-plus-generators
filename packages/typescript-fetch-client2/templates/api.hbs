@@ -161,7 +161,7 @@ export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}
 	configuration ??= getGlobalConfiguration(); 
 	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 {{/if}}
-	const response = await fetch(configuration.basePath + localVarFetchArgs.url, localVarFetchArgs.options)
+	const response = await configuration.fetch(configuration.basePath + localVarFetchArgs.url, localVarFetchArgs.options)
 	const contentType = response.headers.get('Content-Type');
 	const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
 	

@@ -1,11 +1,14 @@
 {{>header}}
 
+import { BASE_PATH, FetchAPI, defaultFetch } from "./runtime";
+
 export interface ConfigurationParameters {
 	apiKey?: string | ((name: string) => string | null);
 	username?: string;
 	password?: string;
 	authorization?: string | ((name: string, scopes?: string[]) => string | null);
 	basePath?: string;
+	fetch?: FetchAPI;
 }
 
 export class Configuration {
@@ -42,14 +45,22 @@ export class Configuration {
 	 * @type {string}
 	 * @memberof Configuration
 	 */
-	basePath?: string;
+	basePath: string;
+	/**
+	 * The fetch function to use when making requests from the API.
+	 * 
+	 * @type {FetchAPI}
+	 * @memberof Configuration
+	 */
+	fetch: FetchAPI;
 
 	constructor(param: ConfigurationParameters = {}) {
 		this.apiKey = param.apiKey;
 		this.username = param.username;
 		this.password = param.password;
 		this.authorization = param.authorization;
-		this.basePath = param.basePath;
+		this.basePath = param.basePath ?? BASE_PATH;
+		this.fetch = param.fetch ?? defaultFetch;
 	}
 }
 
