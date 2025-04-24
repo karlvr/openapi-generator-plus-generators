@@ -8,7 +8,7 @@ import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeSt
 {{/ifeq}}
 {{>hooks/apiImports}}
 
-export namespace {{className name}}Api {
+namespace {{className name}}Api {
 {{#each operations}}
 {{#if (gt (count parameters) 1)}}
 	{{>frag/apiParametersInterface}}
@@ -155,11 +155,11 @@ export const paramCreator = function (configuration?: Configuration) {
 {{#if (gt (count parameters) 1)}}
 export async function {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
 	configuration ??= getGlobalConfiguration(); 
-	const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 {{else}}
 export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
 	configuration ??= getGlobalConfiguration(); 
-	const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 {{/if}}
 	const response = await fetch(configuration.basePath + localVarFetchArgs.url, localVarFetchArgs.options)
 	const contentType = response.headers.get('Content-Type');
@@ -217,3 +217,9 @@ export function withConfiguration(configuration: Configuration) {
 	{{/each}}
 	}
 };
+
+const {{className name}}Api = { 
+	{{#each operations}}{{identifier name}}, {{/each}}
+};
+
+export default {{className name}}Api;
