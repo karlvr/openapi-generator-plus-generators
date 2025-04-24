@@ -1,14 +1,14 @@
 {{>header}}
 
-import { Configuration } from "../configuration";
-import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch, dateToString } from "../runtime";
+import { Configuration, getGlobalConfiguration } from "../configuration";
+import { COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch, dateToString } from "../runtime";
 import { Api } from "../models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
 {{/ifeq}}
 {{>hooks/apiImports}}
 
-namespace {{className name}}Api {
+export namespace {{className name}}Api {
 {{#each operations}}
 {{#if (gt (count parameters) 1)}}
 	{{>frag/apiParametersInterface}}
@@ -154,13 +154,14 @@ export const paramCreator = function (configuration?: Configuration) {
 {{>frag/operationDocumentation}}
 {{#if (gt (count parameters) 1)}}
 export async function {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
+	configuration ??= getGlobalConfiguration(); 
 	const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 {{else}}
 export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
+	configuration ??= getGlobalConfiguration(); 
 	const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 {{/if}}
-	const basePath = configuration?.basePath ?? BASE_PATH;
-	const response = await fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
+	const response = await fetch(configuration.basePath + localVarFetchArgs.url, localVarFetchArgs.options)
 	const contentType = response.headers.get('Content-Type');
 	const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
 	

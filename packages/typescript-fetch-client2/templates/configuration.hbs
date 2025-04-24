@@ -52,3 +52,13 @@ export class Configuration {
 		this.basePath = param.basePath;
 	}
 }
+
+let globalConfiguration = new Configuration();
+
+export function setGlobalConfiguration(configuration: Configuration) {
+	globalConfiguration = configuration;
+}
+
+export function getGlobalConfiguration(): Configuration {
+	return globalConfiguration;
+}
