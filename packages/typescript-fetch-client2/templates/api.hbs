@@ -1,7 +1,7 @@
 {{>header}}
 
 import { Configuration, getGlobalConfiguration } from "../configuration";
-import { COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch, dateToString } from "../runtime";
+import { COLLECTION_FORMATS, encodeURIPathSegment, FetchArgs, RequiredError, dateToString } from "../runtime";
 import { Api } from "../models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
@@ -202,7 +202,7 @@ export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}
 {{/each}}
 
 /**
- * Applies the configuration as the default configuration for all the API operations.
+ * Creates a version of the API where the specified configuration is the default for all operations.
  * @export
  */
 export function withConfiguration(configuration: Configuration) {
