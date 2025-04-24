@@ -26,7 +26,7 @@ namespace {{className name}}Api {
  * {{className name}}Api - parameter creator
  * @export
  */
-export const ParamCreator = function (configuration?: Configuration) {
+export const paramCreator = function (configuration?: Configuration) {
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
@@ -156,16 +156,16 @@ export const ParamCreator = function (configuration?: Configuration) {
  * {{className name}}Api - functional programming interface
  * @export
  */
-export const {{className name}}ApiFp = function(configuration?: Configuration) {
+export const apiFunctions = function(configuration?: Configuration) {
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
 		{{#if (gt (count parameters) 1)}}
 		{{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-			const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+			const localVarFetchArgs = paramCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 		{{else}}
 		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-			const localVarFetchArgs = ParamCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+			const localVarFetchArgs = paramCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 		{{/if}}
 			return async (fetch: FetchAPI = defaultFetch, basePath: string = BASE_PATH) => {
 				const response = await fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
@@ -215,7 +215,7 @@ export const {{className name}}ApiFp = function(configuration?: Configuration) {
  * {{className name}}Api - factory interface
  * @export
  */
-export const {{className name}}ApiFactory: FactoryFunction<{{className name}}ApiInterface> = function (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) {
+export const apiFactory: FactoryFunction<{{className name}}ApiInterface> = function (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) {
 	return new {{className name}}Api(configuration, basePath, fetch);
 };
 
@@ -247,10 +247,10 @@ class {{className name}}Api extends BaseAPI implements {{className name}}ApiInte
 	{{>frag/operationDocumentation}}
 	{{#if (gt (count parameters) 1)}}
 	public {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit) {
-		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
+		return apiFunctions(this.configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
 	{{else}}
 	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit) {
-		return {{className ../name}}ApiFp(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
+		return apiFunctions(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
 	{{/if}}
 	}
 
