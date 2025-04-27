@@ -1,6 +1,6 @@
 {{>header}}
 
-import { Configuration, getGlobalConfiguration } from "../configuration";
+import { Configuration, getDefaultConfiguration } from "../configuration";
 import { COLLECTION_FORMATS, encodeURIPathSegment, FetchArgs, RequiredError, dateToString } from "../runtime";
 import { Api } from "../models";
 {{#ifeq dateApproach 'blind-date'}}
@@ -154,11 +154,11 @@ export const paramCreator = function (configuration?: Configuration) {
 {{>frag/operationDocumentation}}
 {{#if (gt (count parameters) 1)}}
 export async function {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-	configuration ??= getGlobalConfiguration(); 
+	configuration ??= getDefaultConfiguration(); 
 	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 {{else}}
 export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-	configuration ??= getGlobalConfiguration(); 
+	configuration ??= getDefaultConfiguration(); 
 	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
 {{/if}}
 	const response = await configuration.fetch(configuration.basePath + localVarFetchArgs.url, localVarFetchArgs.options)

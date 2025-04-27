@@ -64,12 +64,12 @@ export class Configuration {
 	}
 }
 
-let globalConfiguration = new Configuration();
+let defaultConfiguration = new Configuration();
 
-export function setGlobalConfiguration(configuration: Configuration) {
-	globalConfiguration = configuration;
+export function setDefaultConfiguration(configuration: Configuration) {
+	defaultConfiguration = configuration;
 }
 
-export function getGlobalConfiguration(): Configuration {
-	return globalConfiguration;
+export function getDefaultConfiguration(): Configuration {
+	return defaultConfiguration;
 }
