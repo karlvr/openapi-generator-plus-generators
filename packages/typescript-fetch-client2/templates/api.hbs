@@ -1,14 +1,12 @@
 {{>header}}
 
-import { Configuration } from "../configuration";
-import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch, dateToString } from "../runtime";
+import { Configuration, getGlobalConfiguration } from "../configuration";
+import { COLLECTION_FORMATS, encodeURIPathSegment, FetchArgs, RequiredError, dateToString } from "../runtime";
 import { Api } from "../models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
 {{/ifeq}}
 {{>hooks/apiImports}}
-
-export type FactoryFunction<T> = (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) => T;
 
 namespace {{className name}}Api {
 {{#each operations}}
@@ -152,109 +150,76 @@ export const paramCreator = function (configuration?: Configuration) {
 	}
 };
 
+{{#each operations}}
+{{>frag/operationDocumentation}}
+{{#if (gt (count parameters) 1)}}
+export async function {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
+	configuration ??= getGlobalConfiguration(); 
+	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+{{else}}
+export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
+	configuration ??= getGlobalConfiguration(); 
+	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+{{/if}}
+	const response = await configuration.fetch(configuration.basePath + localVarFetchArgs.url, localVarFetchArgs.options)
+	const contentType = response.headers.get('Content-Type');
+	const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
+	
+	{{#each responses}}
+	{{#unless isCatchAll}}
+	if (response.status === {{code}}) {
+		{{#if contents}}
+		{{#each contents}} 
+		if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+			{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
+		}
+		{{/each}}
+		throw response;
+		{{else}}
+		{{>frag/apiResponseContent group=../.. operation=.. response=.}}
+		{{/if}}
+	}
+	{{/unless}}
+	{{/each}}
+	{{#if catchAllResponse}}
+	/* Catch-all response */
+	{{#with catchAllResponse}}
+	{{#if contents}}
+	{{#each contents}} 
+	if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+		{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
+	}
+	{{/each}}
+	throw response;
+	{{else}}
+	{{>frag/apiResponseContent group=../.. operation=.. response=.}}
+	{{/if}}
+	{{/with}}
+	{{else}}
+	throw response;
+	{{/if}}
+}
+{{/each}}
+
 /**
- * {{className name}}Api - functional programming interface
+ * Creates a version of the API where the specified configuration is the default for all operations.
  * @export
  */
-export const apiFunctions = function(configuration?: Configuration) {
+export function withConfiguration(configuration: Configuration) {
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
 		{{#if (gt (count parameters) 1)}}
-		{{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-			const localVarFetchArgs = paramCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+		{{identifier name}}: (__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, overrideConfiguration?: Configuration) => {{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, overrideConfiguration ?? configuration),
 		{{else}}
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): (fetch?: FetchAPI, basePath?: string) => Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-			const localVarFetchArgs = paramCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+		{{identifier name}}: ({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, overrideConfiguration?: Configuration) => {{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, overrideConfiguration ?? configuration),
 		{{/if}}
-			return async (fetch: FetchAPI = defaultFetch, basePath: string = BASE_PATH) => {
-				const response = await fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
-				const contentType = response.headers.get('Content-Type');
-				const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
-				
-				{{#each responses}}
-				{{#unless isCatchAll}}
-				if (response.status === {{code}}) {
-					{{#if contents}}
-					{{#each contents}} 
-					if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
-						{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
-					}
-					{{/each}}
-					throw response;
-					{{else}}
-					{{>frag/apiResponseContent group=../.. operation=.. response=.}}
-					{{/if}}
-				}
-				{{/unless}}
-				{{/each}}
-				{{#if catchAllResponse}}
-				/* Catch-all response */
-				{{#with catchAllResponse}}
-				{{#if contents}}
-				{{#each contents}} 
-				if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
-					{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
-				}
-				{{/each}}
-				throw response;
-				{{else}}
-				{{>frag/apiResponseContent group=../.. operation=.. response=.}}
-				{{/if}}
-				{{/with}}
-				{{else}}
-				throw response;
-				{{/if}}
-			};
-		},
 	{{/each}}
 	}
 };
 
-/**
- * {{className name}}Api - factory interface
- * @export
- */
-export const apiFactory: FactoryFunction<{{className name}}ApiInterface> = function (configuration?: Configuration, basePath?: string, fetch?: FetchAPI) {
-	return new {{className name}}Api(configuration, basePath, fetch);
+const {{className name}}Api = { 
+	{{#each operations}}{{identifier name}}, {{/each}}
 };
-
-/**
- * {{className name}}Api - interface
- * @export
- * @interface {{className name}}Api
- */
-export interface {{className name}}ApiInterface {
-{{#each operations}}
-	{{>frag/operationDocumentation}}
-	{{#if (gt (count parameters) 1)}}
-	{{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): Promise<{{className ../name}}Api.{{className name}}Response>
-	{{else}}
-	{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit): Promise<{{{className ../name}}}Api.{{{className name}}}Response>
-	{{/if}}
-
-{{/each}}
-}
-
-/**
- * {{className name}}Api - object-oriented interface
- * @export
- * @class {{className name}}Api
- * @extends {BaseAPI}
- */
-class {{className name}}Api extends BaseAPI implements {{className name}}ApiInterface {
-	{{#each operations}}
-	{{>frag/operationDocumentation}}
-	{{#if (gt (count parameters) 1)}}
-	public {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit) {
-		return apiFunctions(this.configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
-	{{else}}
-	public {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit) {
-		return apiFunctions(this.configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options)(this.fetch, this.basePath);
-	{{/if}}
-	}
-
-	{{/each}}
-}
 
 export default {{className name}}Api;
