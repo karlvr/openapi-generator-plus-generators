@@ -56,7 +56,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		await emit('runtime', path.join(outputPath, relativeSourceOutputPath, 'runtime.ts'), { ...rootContext, ...doc }, true, hbs)
 		await emit('configuration', path.join(outputPath, relativeSourceOutputPath, 'configuration.ts'), { ...rootContext, ...doc }, true, hbs)
 		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...rootContext, ...doc }, true, hbs)
-		await emit('README', path.join(outputPath, 'README.md'), { ...rootContext, ...doc }, true, hbs)
+		await emit('README', path.join(outputPath, 'README.md'), { ...rootContext, ...doc }, false, hbs)
 	}
 
 	const base = typescriptGenerator(config, myContext)
