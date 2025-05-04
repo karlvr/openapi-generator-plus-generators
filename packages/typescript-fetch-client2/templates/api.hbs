@@ -91,6 +91,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 
 	{{/if}}
 	{{#with requestBody}}
+		{{#ifeq (isContentMultipart defaultContent) false}}
 			{{#unless consumes}}
 			localVarHeaderParameter.set('Content-Type', 'application/json');
 			{{/unless}}
@@ -100,6 +101,7 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{/if}}
 			{{/each}}
 
+		{{/ifeq}}
 	{{/with}}
 			localVarRequestOptions.headers = localVarHeaderParameter;
 	{{#if formParams}}
