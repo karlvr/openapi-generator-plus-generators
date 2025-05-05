@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import Handlebars, { HelperOptions } from 'handlebars'
 import { camelCase, capitalize, pascalCase, uniquePropertiesIncludingInherited, debugStringify, uniquePropertiesIncludingInheritedForParents } from '@openapi-generator-plus/generator-common'
-import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema, isCodegenParameter, isCodegenProperty } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenSchemaType, CodegenResponse, CodegenRequestBody, CodegenObjectSchema, CodegenOperation, CodegenVendorExtensions, CodegenExamples, CodegenContent, CodegenLogLevel, CodegenSchemaUsage, CodegenSchema, isCodegenParameter, isCodegenProperty, CodegenContentEncodingType } from '@openapi-generator-plus/types'
 import { snakeCase, constantCase, sentenceCase, capitalCase } from 'change-case'
 import pluralize from 'pluralize'
 import * as idx from '@openapi-generator-plus/indexed-type'
@@ -910,10 +910,10 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		return !!value.mediaType.mimeType.match('\\bjson$')
 	})
 	hbs.registerHelper('isContentMultipart', function(value: CodegenContent): boolean {
-		return !!value.mediaType.mimeType.match('^multipart/.*')
+		return value.encoding?.type === CodegenContentEncodingType.MULTIPART
 	})
 	hbs.registerHelper('isContentFormUrlEncoded', function(value: CodegenContent): boolean {
-		return value.mediaType.mimeType === 'application/x-www-form-urlencoded'
+		return value.encoding?.type === CodegenContentEncodingType.WWW_FORM_URLENCODED
 	})
 
 	function isEmpty(ob: UnknownObject) {
