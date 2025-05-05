@@ -29,7 +29,7 @@ public abstract class Abstract{{invokerName}} extends {{javax}}.ws.rs.core.Appli
 
 	protected void addProviders() {
 		classes.add({{{apiProviderPackage}}}.ApiJaxbJsonProvider.class);
-		{{#if (hasMultipartEndpoints)}}
+		{{#if (hasMultipartOperations)}}
 		classes.add(org.apache.cxf.jaxrs.provider.MultipartProvider.class);
 		{{/if}}
 	}
