@@ -616,7 +616,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			hbs.registerHelper('hasMultipartEndpoints', function() {
 				for (const group of doc.groups) {
 					for (const operation of group.operations) {
-						if (operation.requestBody && operation.consumes && operation.consumes[0].mimeType === 'multipart/form-data') {
+						if (operation.requestBody && operation.consumes && !!operation.consumes[0].mimeType.match('^multipart/.*')) {
 							return true
 						}
 					}
