@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose, CodegenContentEncodingType } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -616,8 +616,15 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			hbs.registerHelper('hasMultipartOperations', function() {
 				for (const group of doc.groups) {
 					for (const operation of group.operations) {
-						if (operation.requestBody && operation.consumes && !!operation.consumes[0].mimeType.match('^multipart/.*')) {
-							return true
+						if (operation.requestBody?.contents) {
+							if (operation.requestBody.contents.find(content => content.encoding?.type === CodegenContentEncodingType.MULTIPART)) {
+								return true
+							}
+						}
+						if (operation.responses) {
+							if (idx.find(operation.responses, resp => !!resp.contents?.find(content => content.encoding?.type === CodegenContentEncodingType.MULTIPART))) {
+								return true
+							}
 						}
 					}
 				}
