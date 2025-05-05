@@ -6,6 +6,8 @@ import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeSt
 {{>hooks/modelsImports}}
 
 export namespace Api {
+	type ValuesOf<T> = T[keyof T];
+
 {{>nestedModels}}
 }
 
