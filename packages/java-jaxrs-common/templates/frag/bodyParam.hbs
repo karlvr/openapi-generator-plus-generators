@@ -9,4 +9,4 @@ required = true
 {{#if deprecated}}
 deprecated = true
 {{/if}}
-{{/join}}) {{/if}}{{{nativeType}}} {{identifier name}}
+{{/join}}) {{#ifeq defaultContent.encoding.type 'MULTIPART'}}@org.apache.cxf.jaxrs.ext.multipart.Multipart {{/ifeq}}{{/if}}{{{nativeType}}} {{identifier name}}
