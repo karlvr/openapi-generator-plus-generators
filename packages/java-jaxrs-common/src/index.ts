@@ -612,6 +612,17 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					return 'javax'
 				}
 			})
+
+			hbs.registerHelper('hasMultipartEndpoints', function() {
+				for (const group of doc.groups) {
+					for (const operation of group.operations) {
+						if (operation.requestBody && operation.consumes && operation.consumes[0].mimeType === 'multipart/form-data') {
+							return true
+						}
+					}
+				}
+				return false
+			})
 	
 			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
 			if (context.loadAdditionalTemplates) {
