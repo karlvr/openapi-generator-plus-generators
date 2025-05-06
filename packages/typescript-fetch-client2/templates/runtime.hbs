@@ -4,11 +4,11 @@
 
 {{#each servers}}
 {{#if @first}}
-export const BASE_PATH = "{{{url}}}".replace(/\/+$/, "");
+export const BASE_URI = "{{{url}}}".replace(/\/+$/, "");
 {{/if}}
 {{/each}}
 {{#unless servers}}
-export const BASE_PATH = "";
+export const BASE_URI = "";
 {{/unless}}
 
 /**

@@ -1,6 +1,6 @@
 {{>header}}
 
-import { BASE_PATH, FetchAPI, defaultFetch } from "./runtime";
+import { BASE_URI, FetchAPI, defaultFetch } from "./runtime";
 
 export interface ConfigurationParameters {
 	apiKey?: string | ((name: string) => string | null);
@@ -59,7 +59,7 @@ export class Configuration {
 		this.username = param.username;
 		this.password = param.password;
 		this.authorization = param.authorization;
-		this.basePath = param.basePath ?? BASE_PATH;
+		this.basePath = param.basePath ?? BASE_URI;
 		this.fetch = param.fetch ?? defaultFetch;
 	}
 }
