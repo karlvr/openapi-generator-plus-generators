@@ -25,6 +25,8 @@ namespace {{className name}}Api {
  * @export
  */
 export const paramCreator = function (configuration?: Configuration) {
+	configuration ??= getDefaultConfiguration();
+
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
