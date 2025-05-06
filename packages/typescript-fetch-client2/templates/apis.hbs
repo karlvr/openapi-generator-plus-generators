@@ -1,0 +1,20 @@
+import { Configuration, getDefaultConfiguration } from './configuration'
+{{#each groups}}
+import { withConfiguration as {{identifier name}}ApiWithConfiguration } from './api/{{identifier name}}'
+{{/each}}
+
+export * from './index'
+
+{{#each groups}}
+export { default as {{className name}}Api } from './api/{{identifier name}}'
+{{/each}}
+
+export function withConfiguration(configuration?: Configuration) {
+	configuration ??= getDefaultConfiguration()
+
+	return {
+		{{#each groups}}
+		{{className name}}Api: {{identifier name}}ApiWithConfiguration(configuration),
+		{{/each}}
+	}
+}
