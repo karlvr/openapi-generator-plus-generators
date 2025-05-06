@@ -66,10 +66,23 @@ export class Configuration {
 
 let defaultConfiguration = new Configuration();
 
+/**
+ * Update the default global configuration used for all API calls if no other configuration is 
+ * provided. Use the corresponding `getDefaultConfiguration` function to get the current default
+ * configuration.
+ * 
+ * @param {Configuration} configuration The new default API configuration to set.
+ */
 export function setDefaultConfiguration(configuration: Configuration) {
 	defaultConfiguration = configuration;
 }
 
+/**
+ * Get the current default global configuration used for all API calls if no other configuration is 
+ * provided. Use the corresponding `setDefaultConfiguration` function to update this configuration.
+ *
+ * @returns {Configuration} The current default API configuration.
+ */
 export function getDefaultConfiguration(): Configuration {
 	return defaultConfiguration;
 }
