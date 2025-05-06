@@ -224,6 +224,11 @@ export function withConfiguration(configuration: Configuration) {
 	}
 };
 
+/** 
+ * Access all the endpoints in this group. Note that this will cause every endpoint to be included 
+ * in the resulting JavaScript bundle. To allow tree-shaking to remove unused endpoints, import the
+ * specific endpoints from this file directly.
+ */
 const {{className name}}Api = { 
 	{{#each operations}}{{identifier name}}, {{/each}}
 };
