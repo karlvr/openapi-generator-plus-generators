@@ -48,7 +48,6 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 				{ ...rootContext, ...doc, ...group }, true, hbs)
 		}
 
-		await emit('apis', path.join(outputPath, relativeSourceOutputPath, 'apis.ts'), { ...rootContext, ...doc }, true, hbs)
 		await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), {
 			...rootContext,
 			...doc,

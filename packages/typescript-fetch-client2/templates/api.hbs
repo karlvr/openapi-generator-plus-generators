@@ -20,6 +20,130 @@ namespace {{className name}}Api {
 {{/each}}
 }
 
+{{#each operations}}
+{{>frag/operationDocumentation}}
+{{#if (gt (count parameters) 1)}}
+{{#set '_parameterPrefix'}}
+__params.
+{{/set}}
+export function {{identifier name}}ParamCreator(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}, configuration?: Configuration): FetchArgs {
+{{else}}
+{{#set '_parameterPrefix'}}
+{{/set}}
+export function {{identifier name}}ParamCreator({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}, configuration?: Configuration): FetchArgs {
+{{/if}}
+	configuration ??= getDefaultConfiguration();
+
+	{{#each parameters}}
+	{{>frag/validateParameter operation=.. parameterPrefix=../_parameterPrefix}}
+	{{/each}}
+	{{#with requestBody}}
+	{{>frag/validateParameter operation=.. parameterPrefix=''}}
+	{{/with}}
+
+	let localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
+		.replace('{{safe '{'}}{{{serializedName}}}{{safe '}'}}', encodeURIPathSegment(String({{../_parameterPrefix}}{{identifier name}}))){{/each}};
+	const localVarPathQueryStart = localVarPath.indexOf("?");
+	const localVarRequestOptions: RequestInit = Object.assign({ method: '{{httpMethod}}' }, options);
+	const localVarHeaderParameter: Headers = options.headers ? new Headers(options.headers) : new Headers();
+	const localVarQueryParameter = new URLSearchParams(localVarPathQueryStart !== -1 ? localVarPath.substring(localVarPathQueryStart + 1) : "");
+	if (localVarPathQueryStart !== -1) {
+		localVarPath = localVarPath.substring(0, localVarPathQueryStart);
+	}
+{{#if formParams}}
+	const localVarFormParams = new URLSearchParams();
+{{/if}}
+{{#if cookieParams}}
+	const localVarCookieParams = new URLSearchParams();
+{{/if}}
+
+	{{>frag/apiSecurityRequirements}}
+{{#each queryParams}}
+	{{>frag/requestParameter dest='localVarQueryParameter' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+{{/each}}
+{{#each headerParams}}
+	{{>frag/requestParameter dest='localVarHeaderParameter' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+{{/each}}
+{{#if formParams}}
+{{#each formParams}}
+	{{>frag/requestParameter dest='localVarFormParams' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+{{/each}}
+	localVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');
+
+{{/if}}
+{{#if cookieParams}}
+{{#each cookieParams}}
+	{{>frag/requestParameter dest='localVarCookieParams' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
+
+{{/each}}
+	/* NB: setting Cookies does not work in a browser, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
+	localVarHeaderParameter.set("Cookie", localVarCookieParams.toString().replace(/&/g, "; "));
+
+{{/if}}
+{{#with requestBody}}
+	{{#unless consumes}}
+	localVarHeaderParameter.set('Content-Type', 'application/json');
+	{{/unless}}
+	{{#each consumes}}
+	{{#if @first}}
+	localVarHeaderParameter.set('Content-Type', '{{{mediaType}}}');
+	{{/if}}
+	{{/each}}
+
+{{/with}}
+	localVarRequestOptions.headers = localVarHeaderParameter;
+{{#if formParams}}
+	localVarRequestOptions.body = localVarFormParams.toString();
+{{/if}}
+{{#if requestBody.nativeType}}
+{{#with requestBody}}
+
+	if ({{identifier name}} !== undefined) {
+{{#with defaultContent}}
+	{{#if (isContentFormUrlEncoded .)}}
+		const localVarFormParams = new URLSearchParams();
+		{{#each (allProperties schema)}}
+		{{>frag/requestParameter dest='localVarFormParams' var=(concat (identifier ../../name) '["' serializedName '"]') encoding=(lookup ../encoding.properties name)}}
+		{{/each}}
+		localVarRequestOptions.body = localVarFormParams;
+	{{else if (isContentJson .)}}
+		localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
+	{{else if (isContentMultipart .)}}
+		const localVarFormData = new FormData();
+	{{#each encoding.properties}}
+		if ({{identifier ../../name}}.{{identifier property.name}} !== undefined) {
+{{#if (isArray property)}}
+			for (const __anObject of {{identifier ../../name}}.{{identifier property.name}}{{#if property.nullable}} || []{{/if}}) {
+				{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='localVarFormData'}}
+			}
+{{else}}
+				{{>frag/multipartProperty . propertyVar=(concat (identifier ../../name) '.' (identifier property.name)) bodyPartsVar='localVarFormData'}}
+{{/if}}
+			}
+		{{/each}}
+			localVarRequestOptions.body = localVarFormData;
+		{{else}}
+			localVarRequestOptions.body = {{identifier ../name}};
+{{/if}}
+		}
+	{{/with}}
+{{/with}}
+{{/if}}
+
+	const localVarQueryParameterString = localVarQueryParameter.toString();
+	if (localVarQueryParameterString) {
+		localVarPath += "?" + localVarQueryParameterString;
+	}
+	return {
+		url: localVarPath,
+		options: localVarRequestOptions,
+	};
+}
+{{/each}}
+
 /**
  * {{className name}}Api - parameter creator
  * @export
@@ -28,127 +152,7 @@ export function paramCreator(configuration?: Configuration) {
 	configuration ??= getDefaultConfiguration();
 
 	return {
-	{{#each operations}}
-		{{>frag/operationDocumentation}}
-		{{#if (gt (count parameters) 1)}}
-		{{#set '_parameterPrefix'}}
-		__params.
-		{{/set}}
-		{{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}): FetchArgs {
-		{{else}}
-		{{#set '_parameterPrefix'}}
-		{{/set}}
-		{{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options: RequestInit = {}): FetchArgs {
-		{{/if}}
-			{{#each parameters}}
-			{{>frag/validateParameter operation=.. parameterPrefix=../_parameterPrefix}}
-			{{/each}}
-			{{#with requestBody}}
-			{{>frag/validateParameter operation=.. parameterPrefix=''}}
-			{{/with}}
-
-			let localVarPath = `{{{../path}}}{{{path}}}`{{#each pathParams}}
-				.replace('{{safe '{'}}{{{serializedName}}}{{safe '}'}}', encodeURIPathSegment(String({{../_parameterPrefix}}{{identifier name}}))){{/each}};
-			const localVarPathQueryStart = localVarPath.indexOf("?");
-			const localVarRequestOptions: RequestInit = Object.assign({ method: '{{httpMethod}}' }, options);
-			const localVarHeaderParameter: Headers = options.headers ? new Headers(options.headers) : new Headers();
-			const localVarQueryParameter = new URLSearchParams(localVarPathQueryStart !== -1 ? localVarPath.substring(localVarPathQueryStart + 1) : "");
-			if (localVarPathQueryStart !== -1) {
-				localVarPath = localVarPath.substring(0, localVarPathQueryStart);
-			}
-	{{#if formParams}}
-			const localVarFormParams = new URLSearchParams();
-	{{/if}}
-	{{#if cookieParams}}
-			const localVarCookieParams = new URLSearchParams();
-	{{/if}}
-
-			{{>frag/apiSecurityRequirements}}
-	{{#each queryParams}}
-			{{>frag/requestParameter dest='localVarQueryParameter' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
-
-	{{/each}}
-	{{#each headerParams}}
-			{{>frag/requestParameter dest='localVarHeaderParameter' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
-
-	{{/each}}
-	{{#if formParams}}
-	{{#each formParams}}
-			{{>frag/requestParameter dest='localVarFormParams' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
-
-	{{/each}}
-			localVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');
-
-	{{/if}}
-	{{#if cookieParams}}
-	{{#each cookieParams}}
-			{{>frag/requestParameter dest='localVarCookieParams' var=(concat ../_parameterPrefix (identifier name)) encoding=encoding}}
-
-	{{/each}}
-			/* NB: setting Cookies does not work in a browser, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
-			localVarHeaderParameter.set("Cookie", localVarCookieParams.toString().replace(/&/g, "; "));
-
-	{{/if}}
-	{{#with requestBody}}
-			{{#unless consumes}}
-			localVarHeaderParameter.set('Content-Type', 'application/json');
-			{{/unless}}
-			{{#each consumes}}
-			{{#if @first}}
-			localVarHeaderParameter.set('Content-Type', '{{{mediaType}}}');
-			{{/if}}
-			{{/each}}
-
-	{{/with}}
-			localVarRequestOptions.headers = localVarHeaderParameter;
-	{{#if formParams}}
-			localVarRequestOptions.body = localVarFormParams.toString();
-	{{/if}}
-	{{#if requestBody.nativeType}}
-	{{#with requestBody}}
 	
-			if ({{identifier name}} !== undefined) {
-		{{#with defaultContent}}
-			{{#if (isContentFormUrlEncoded .)}}
-				const localVarFormParams = new URLSearchParams();
-				{{#each (allProperties schema)}}
-				{{>frag/requestParameter dest='localVarFormParams' var=(concat (identifier ../../name) '["' serializedName '"]') encoding=(lookup ../encoding.properties name)}}
-				{{/each}}
-				localVarRequestOptions.body = localVarFormParams;
-			{{else if (isContentJson .)}}
-				localVarRequestOptions.body = JSON.stringify({{identifier ../name}} || {});
-			{{else if (isContentMultipart .)}}
-				const localVarFormData = new FormData();
-			{{#each encoding.properties}}
-				if ({{identifier ../../name}}.{{identifier property.name}} !== undefined) {
-{{#if (isArray property)}}
-					for (const __anObject of {{identifier ../../name}}.{{identifier property.name}}{{#if property.nullable}} || []{{/if}}) {
-						{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='localVarFormData'}}
-					}
-{{else}}
-					{{>frag/multipartProperty . propertyVar=(concat (identifier ../../name) '.' (identifier property.name)) bodyPartsVar='localVarFormData'}}
-{{/if}}
-				}
-			{{/each}}
-				localVarRequestOptions.body = localVarFormData;
-			{{else}}
-				localVarRequestOptions.body = {{identifier ../name}};
-{{/if}}
-			}
-		{{/with}}
-	{{/with}}
-	{{/if}}
-
-			const localVarQueryParameterString = localVarQueryParameter.toString();
-			if (localVarQueryParameterString) {
-				localVarPath += "?" + localVarQueryParameterString;
-			}
-			return {
-				url: localVarPath,
-				options: localVarRequestOptions,
-			};
-		},
-	{{/each}}
 	}
 };
 
@@ -157,11 +161,11 @@ export function paramCreator(configuration?: Configuration) {
 {{#if (gt (count parameters) 1)}}
 export async function {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
 	configuration ??= getDefaultConfiguration(); 
-	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+	const localVarFetchArgs = {{identifier name}}ParamCreator(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration);
 {{else}}
 export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
 	configuration ??= getDefaultConfiguration(); 
-	const localVarFetchArgs = paramCreator(configuration).{{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options);
+	const localVarFetchArgs = {{identifier name}}ParamCreator({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration);
 {{/if}}
 	const response = await configuration.fetch(configuration.basePath + localVarFetchArgs.url, localVarFetchArgs.options)
 	const contentType = response.headers.get('Content-Type');
