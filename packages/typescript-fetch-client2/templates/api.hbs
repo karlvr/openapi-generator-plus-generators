@@ -24,7 +24,7 @@ namespace {{className name}}Api {
  * {{className name}}Api - parameter creator
  * @export
  */
-export const paramCreator = function (configuration?: Configuration) {
+export function paramCreator(configuration?: Configuration) {
 	configuration ??= getDefaultConfiguration();
 
 	return {
