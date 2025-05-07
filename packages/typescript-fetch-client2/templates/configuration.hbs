@@ -1,11 +1,14 @@
 {{>header}}
 
+import { BASE_URI, FetchAPI, defaultFetch } from "./runtime";
+
 export interface ConfigurationParameters {
 	apiKey?: string | ((name: string) => string | null);
 	username?: string;
 	password?: string;
 	authorization?: string | ((name: string, scopes?: string[]) => string | null);
-	basePath?: string;
+	baseUri?: string;
+	fetch?: FetchAPI;
 }
 
 export class Configuration {
@@ -37,18 +40,49 @@ export class Configuration {
 	 */
 	authorization?: string | ((name: string, scopes?: string[]) => string | null);
 	/**
-	 * override base path
+	 * override base URI
 	 * 
 	 * @type {string}
 	 * @memberof Configuration
 	 */
-	basePath?: string;
+	baseUri: string;
+	/**
+	 * The fetch function to use when making requests from the API.
+	 * 
+	 * @type {FetchAPI}
+	 * @memberof Configuration
+	 */
+	fetch: FetchAPI;
 
 	constructor(param: ConfigurationParameters = {}) {
 		this.apiKey = param.apiKey;
 		this.username = param.username;
 		this.password = param.password;
 		this.authorization = param.authorization;
-		this.basePath = param.basePath;
+		this.baseUri = param.baseUri ?? BASE_URI;
+		this.fetch = param.fetch ?? defaultFetch;
 	}
+}
+
+let defaultConfiguration = new Configuration();
+
+/**
+ * Update the default global configuration used for all API calls if no other configuration is 
+ * provided. Use the corresponding `getDefaultConfiguration` function to get the current default
+ * configuration.
+ * 
+ * @param {Configuration} configuration The new default API configuration to set.
+ */
+export function setDefaultConfiguration(configuration: Configuration) {
+	defaultConfiguration = configuration;
+}
+
+/**
+ * Get the current default global configuration used for all API calls if no other configuration is 
+ * provided. Use the corresponding `setDefaultConfiguration` function to update this configuration.
+ *
+ * @returns {Configuration} The current default API configuration.
+ */
+export function getDefaultConfiguration(): Configuration {
+	return defaultConfiguration;
 }

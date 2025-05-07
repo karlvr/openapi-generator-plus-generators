@@ -1,13 +1,8 @@
 {{>frag/schemaDocumentation}}
-export type {{className name}} =
-{{#each enumValues}}
-	{{{literalValue}}}{{#hasMore}} |{{/hasMore}}
-{{/each}}
+export type {{className name}} = ValuesOf<typeof {{className name}}>;
 
-export namespace {{className name}} {
-	export enum Enum {
-	{{#each enumValues}}
-		{{{name}}} = {{{literalValue}}}{{#hasMore}},{{/hasMore}}
-	{{/each}}
-	}
-}
+export const {{className name}} = {
+{{#each enumValues}}
+	{{{name}}}: {{{literalValue}}},
+{{/each}}
+} as const;

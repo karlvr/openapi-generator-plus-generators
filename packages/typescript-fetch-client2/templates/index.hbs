@@ -1,7 +1,23 @@
 {{>header}}
 
-export * from "./api";
+import { Configuration } from './configuration'
+{{#each groups}}
+import { withConfiguration as {{identifier name}}ApiWithConfiguration } from './api/{{identifier name}}'
+{{/each}}
+
 export * from "./models";
 export * from "./configuration";
 export { RequiredError } from "./runtime";
 export type { FetchAPI, FetchArgs } from "./runtime";
+
+{{#each groups}}
+export { default as {{className name}}Api } from './api/{{identifier name}}'
+{{/each}}
+
+export function withConfiguration(configuration: Configuration) {
+	return {
+		{{#each groups}}
+		{{className name}}Api: {{identifier name}}ApiWithConfiguration(configuration),
+		{{/each}}
+	}
+}

@@ -1,15 +1,14 @@
 {{>header}}
 
 {{>hooks/runtimeImports}}
-import { Configuration } from "./configuration";
 
 {{#each servers}}
 {{#if @first}}
-export const BASE_PATH = "{{{url}}}".replace(/\/+$/, "");
+export const BASE_URI = "{{{url}}}".replace(/\/+$/, "");
 {{/if}}
 {{/each}}
 {{#unless servers}}
-export const BASE_PATH = "";
+export const BASE_URI = "";
 {{/unless}}
 
 /**
@@ -39,22 +38,6 @@ export interface FetchArgs {
 	url: string;
 	options: RequestInit;
 }
-
-/**
- * 
- * @export
- * @class BaseAPI
- */
-export class BaseAPI {
-	protected configuration?: Configuration;
-
-	constructor(configuration?: Configuration, protected basePath: string = BASE_PATH, protected fetch: FetchAPI = defaultFetch) {
-		if (configuration) {
-			this.configuration = configuration;
-			this.basePath = configuration.basePath || this.basePath;
-		}
-	}
-};
 
 /**
  * 
@@ -116,4 +99,18 @@ export function encodeURIPathSegment(segment: string) {
 		result = result.replaceAll(encoded, char)
 	})
 	return result
+}
+
+/**
+ * We sometimes represent dates as strings (in models) and as Dates (in parameters) so this
+ * function converts them both to a string.
+ */
+export function dateToString(value: Date | string | undefined): string | undefined {
+	if (value instanceof Date) {
+		return value.toISOString();
+	} else if (typeof value === 'string') {
+		return value;
+	} else {
+		return undefined;
+	}
 }

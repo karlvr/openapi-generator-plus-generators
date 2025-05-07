@@ -39,7 +39,15 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 
 	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
-		await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api.ts'), { ...rootContext, ...doc }, true, hbs)
+		for (const group of doc.groups) {
+			if (group.operations.length === 0) {
+				continue
+			}
+
+			await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api', `${context.generator().toIdentifier(group.name)}.ts`),
+				{ ...rootContext, ...doc, ...group }, true, hbs)
+		}
+
 		await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), {
 			...rootContext,
 			...doc,
@@ -48,7 +56,7 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		await emit('runtime', path.join(outputPath, relativeSourceOutputPath, 'runtime.ts'), { ...rootContext, ...doc }, true, hbs)
 		await emit('configuration', path.join(outputPath, relativeSourceOutputPath, 'configuration.ts'), { ...rootContext, ...doc }, true, hbs)
 		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...rootContext, ...doc }, true, hbs)
-		await emit('README', path.join(outputPath, 'README.md'), { ...rootContext, ...doc }, true, hbs)
+		await emit('README', path.join(outputPath, 'README.md'), { ...rootContext, ...doc }, false, hbs)
 	}
 
 	const base = typescriptGenerator(config, myContext)
