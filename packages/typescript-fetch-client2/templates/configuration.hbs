@@ -7,7 +7,7 @@ export interface ConfigurationParameters {
 	username?: string;
 	password?: string;
 	authorization?: string | ((name: string, scopes?: string[]) => string | null);
-	basePath?: string;
+	baseUri?: string;
 	fetch?: FetchAPI;
 }
 
@@ -40,12 +40,12 @@ export class Configuration {
 	 */
 	authorization?: string | ((name: string, scopes?: string[]) => string | null);
 	/**
-	 * override base path
+	 * override base URI
 	 * 
 	 * @type {string}
 	 * @memberof Configuration
 	 */
-	basePath: string;
+	baseUri: string;
 	/**
 	 * The fetch function to use when making requests from the API.
 	 * 
@@ -59,7 +59,7 @@ export class Configuration {
 		this.username = param.username;
 		this.password = param.password;
 		this.authorization = param.authorization;
-		this.basePath = param.basePath ?? BASE_URI;
+		this.baseUri = param.baseUri ?? BASE_URI;
 		this.fetch = param.fetch ?? defaultFetch;
 	}
 }
