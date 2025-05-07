@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.12.0
+
+### Minor Changes
+
+- f97a924: Don't overwrite the README if it already exists
+
 ## 1.11.0
 
 ### Minor Changes
