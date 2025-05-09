@@ -17,7 +17,7 @@
     "watch": "pnpm --parallel watch"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.5",
+    "@changesets/cli": "^2.29.3",
     "@types/jest": "^29.5.12",
     "@types/less": "^3.0.6",
     "@types/lodash": "^4.17.5",
