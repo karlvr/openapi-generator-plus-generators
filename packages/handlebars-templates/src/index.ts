@@ -907,13 +907,13 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 
 	/* Content type helpers */
 	hbs.registerHelper('isContentJson', function(value: CodegenContent): boolean {
-		return !!value.mediaType.mimeType.match('\\bjson$')
+		return value && !!value.mediaType.mimeType.match('\\bjson$')
 	})
 	hbs.registerHelper('isContentMultipart', function(value: CodegenContent): boolean {
-		return !!value.mediaType.mimeType.match('^multipart/.*')
+		return value && !!value.mediaType.mimeType.match('^multipart/.*')
 	})
 	hbs.registerHelper('isContentFormUrlEncoded', function(value: CodegenContent): boolean {
-		return value.mediaType.mimeType === 'application/x-www-form-urlencoded'
+		return value && value.mediaType.mimeType === 'application/x-www-form-urlencoded'
 	})
 
 	function isEmpty(ob: UnknownObject) {
