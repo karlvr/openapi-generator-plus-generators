@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-fetch-rn-client-generator",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "An OpenAPI Generator Plus template for a TypeScript API client using Fetch in React Native",
   "keywords": [
     "openapi-generator-plus",

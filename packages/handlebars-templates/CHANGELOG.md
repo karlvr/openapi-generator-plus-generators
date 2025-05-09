@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.11.2
+
+### Patch Changes
+
+- c8cea0e: Fix content type helpers for missing content
+
 ## 1.11.1
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-cxf-spring-server-generator
 
+## 3.2.0
+
+### Minor Changes
+
+- 34f9531: Add multipart support for server
+
+### Patch Changes
+
+- Updated dependencies [c8cea0e]
+- Updated dependencies [34f9531]
+  - @openapi-generator-plus/handlebars-templates@1.11.2
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.8.0
+  - @openapi-generator-plus/java-jaxrs-server-generator@3.7.0
+
 ## 3.1.7
 
 ### Patch Changes

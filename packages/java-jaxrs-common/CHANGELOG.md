@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.8.0
+
+### Minor Changes
+
+- 34f9531: Add multipart support for server
+
+### Patch Changes
+
+- Updated dependencies [c8cea0e]
+  - @openapi-generator-plus/handlebars-templates@1.11.2
+
 ## 3.7.0
 
 ### Minor Changes

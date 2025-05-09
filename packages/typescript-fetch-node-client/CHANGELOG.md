@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.8.2
+
+### Patch Changes
+
+- Updated dependencies [c8cea0e]
+  - @openapi-generator-plus/handlebars-templates@1.11.2
+  - @openapi-generator-plus/typescript-generator-common@1.12.1
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.12.1
+
 ## 1.8.1
 
 ### Patch Changes

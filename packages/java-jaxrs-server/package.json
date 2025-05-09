@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-jaxrs-server-generator",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "description": "An OpenAPI Generator Plus template for a Java API server using JAX-RS",
   "keywords": [
     "openapi-generator-plus",

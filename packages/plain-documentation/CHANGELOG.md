@@ -1,5 +1,12 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.10.1
+
+### Patch Changes
+
+- Updated dependencies [c8cea0e]
+  - @openapi-generator-plus/handlebars-templates@1.11.2
+
 ## 1.10.0
 
 ### Minor Changes
