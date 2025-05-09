@@ -14,7 +14,7 @@ package {{apiPackage}};
 public interface {{className name}}Api {
 
 {{#each operations}}
-{{>frag/operationVars op=. jaxrs=true}}
+{{>frag/operationVars op=. jaxrs=true service=false}}
 	{{>frag/operationDocumentation}}
 	{{>frag/operationAnnotations groupPath=../path}}
 	{{javax}}.ws.rs.core.Response {{identifier name}}({{{_parameters}}});

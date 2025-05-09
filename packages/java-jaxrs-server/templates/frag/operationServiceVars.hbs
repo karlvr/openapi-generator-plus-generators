@@ -1,4 +1,4 @@
-{{>frag/operationVars op=op jaxrs=false}}
+{{>frag/operationVars op=op jaxrs=false service=true}}
 {{#join 'op._parameters' ', '}}
 {{{op._parameters}}}
 {{#unless op.returnNativeType}}

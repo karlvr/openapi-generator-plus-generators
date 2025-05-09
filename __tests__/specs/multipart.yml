@@ -18,6 +18,8 @@ paths:
                       type: string
                     size:
                       type: number
+                title:
+                  type: string
                 file:
                   type: string
                   format: binary
@@ -135,6 +137,31 @@ paths:
                   Content-Disposition:
                     schema:
                       type: string
+                  testBoolean:
+                    schema:
+                      type: boolean
+                  testNumber:
+                    schema:
+                      type: number
+                  testFloat:
+                    schema:
+                      type: number
+                      format: float
+                  testDouble:
+                    schema:
+                      type: number
+                      format: double
+                  testInt:
+                    schema:
+                      type: integer
+                  testInt32:
+                    schema:
+                      type: integer
+                      format: int32
+                  testInt64:
+                    schema:
+                      type: integer
+                      format: int64
       responses:
         200:
           description: OK

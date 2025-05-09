@@ -15,7 +15,7 @@
 {{/if}}
 {{#if op.requestBody.nativeType}}
 {{#with op.requestBody}}
-{{>frag/bodyParam jaxrs=../jaxrs}}
+{{>frag/bodyParam jaxrs=../jaxrs service=../service}}
 {{/with}}
 {{/if}}
 {{/join}}

@@ -1,0 +1,12 @@
+{{!--
+Emit an expression that transforms a given value expression to be the correct type for the given property.
+@param property the CodegenProperty
+@param value the code to obtain the string value
+--}}
+{{#if (isString property)}}
+{{{value}}}
+{{~else ifeq property.nativeType "java.math.BigDecimal"}}
+new java.math.BigDecimal({{{value}}})
+{{~else}}
+{{{property.nativeType.concreteType}}}.valueOf({{{value}}})
+{{~/if}}

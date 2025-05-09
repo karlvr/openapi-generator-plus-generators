@@ -12,7 +12,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 
 	{{/if}}
 {{#each operations}}
-{{>frag/operationVars op=. jaxrs=false}}
+{{>frag/operationVars op=. jaxrs=false service=false}}
 {{#join '_arguments' ', '}}
 {{{_arguments}}}
 {{#unless defaultResponse.defaultContent.nativeType}}
@@ -20,6 +20,51 @@ __response
 {{/unless}}
 {{/join}}
 	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}) {
+		{{#if (isContentMultipart requestBody.defaultContent)}}
+		{{{requestBody.nativeType}}} {{identifier requestBody.name}} = new {{{requestBody.nativeType.concreteType}}}();
+		{{#each requestBody.defaultContent.encoding.properties}}
+		/* Multipart: {{property.name}} */
+		{{#if (isArray property)}}
+		for (org.apache.cxf.jaxrs.ext.multipart.Attachment __attachment : __multipartBody.getAllAttachments()) {
+			if ({{{stringLiteral property.serializedName}}}.equals(__attachment.getContentId()) || (__attachment.getContentDisposition() != null && {{{stringLiteral property.serializedName}}}.equals(__attachment.getContentDisposition().getParameter("name")))) {
+				{{#if valueProperty}}
+				{{{property.schema.component.nativeType.concreteType}}} __part = new {{{property.schema.component.nativeType.concreteType}}}();
+				{{#each headerProperties}}
+				{{#set '__headerValue'}}
+				__attachment.getHeader({{{stringLiteral @key}}})
+				{{/set}}
+				__part.{{{setter .}}}({{>util/fromString property=. value=__headerValue}});
+				{{/each}}
+				__part.{{{setter valueProperty}}}(__multipartBody.getAttachmentObject({{{stringLiteral property.name}}}, {{{valueProperty.nativeType.concreteType}}}.class));
+				{{identifier ../requestBody.name}}.add{{capitalize (singular (identifier property.name))}}(__part);
+				{{else}}
+				{{identifier ../requestBody.name}}.add{{capitalize (singular (identifier property.name))}}(__multipartBody.getAttachmentObject({{{stringLiteral property.serializedName}}}, {{{property.schema.component.nativeType.concreteType}}}.class));
+				{{/if}}
+			}
+		}
+		{{else}}
+		{
+			org.apache.cxf.jaxrs.ext.multipart.Attachment __attachment = __multipartBody.getAttachment({{{stringLiteral property.serializedName}}});
+			if (__attachment != null) {
+				{{#if valueProperty}}
+				{{{property.nativeType.concreteType}}} __part = new {{{property.nativeType.concreteType}}}();
+				__part.{{{setter valueProperty}}}(__attachment.getObject({{{valueProperty.nativeType.concreteType}}}.class));
+				{{#each headerProperties}}
+				{{#set '__headerValue'}}
+				__attachment.getHeader({{{stringLiteral @key}}})
+				{{/set}}
+				__part.{{{setter .}}}({{>util/fromString property=. value=__headerValue}});
+				{{/each}}
+				{{identifier ../requestBody.name}}.{{setter property}}({{#if property.nullable}}java.util.Optional.of({{/if}}__part{{#if property.nullable}}){{/if}});
+				{{else}}
+				{{identifier ../requestBody.name}}.{{setter property}}({{#if property.nullable}}java.util.Optional.of({{/if}}__attachment.getObject({{{property.nativeType.concreteType}}}.class){{#if property.nullable}}){{/if}});
+				{{/if}}
+			}
+		}
+		{{/if}}
+		{{/each}}
+
+		{{/if}}
 		{{#with defaultResponse}}
 		final {{javax}}.ws.rs.core.Response.ResponseBuilder __response = {{javax}}.ws.rs.core.Response.status({{code}}).cacheControl({{javax}}.ws.rs.ext.RuntimeDelegate.getInstance().createHeaderDelegate({{javax}}.ws.rs.core.CacheControl.class).fromString("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
 		{{/with}}

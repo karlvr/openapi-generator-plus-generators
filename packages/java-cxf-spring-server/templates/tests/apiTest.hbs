@@ -74,7 +74,7 @@ public class {{className name}}ApiTest {
 	}
 	
 {{#each operations}}
-{{>frag/operationVars op=. jaxrs=false}}
+{{>frag/operationVars op=. jaxrs=false service=false}}
 	@Test
 	public void {{identifier name}}Test() {
 		// Response response = this.api.{{identifier name}}({{{_arguments}}});

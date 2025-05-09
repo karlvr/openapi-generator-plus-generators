@@ -7,7 +7,7 @@ public class {{className name}}ApiTest {
 	{{>util/inject interface=(concat apiPackage '.' (className name) 'Api') class=(concat apiImplPackage '.' (className name) 'ApiImpl') name='api'}}
 
 {{#each operations}}
-{{>frag/operationVars op=. jaxrs=false}}
+{{>frag/operationVars op=. jaxrs=false service=false}}
 	@Test
 	public void {{identifier name}}Test() throws java.lang.Exception {
 		// api.{{identifier name}}({{{_arguments}}});

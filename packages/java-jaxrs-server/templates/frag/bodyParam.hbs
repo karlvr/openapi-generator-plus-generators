@@ -9,4 +9,9 @@ required = true
 {{#if deprecated}}
 deprecated = true
 {{/if}}
-{{/join}}) {{/if}}{{{nativeType}}} {{identifier name}}
+{{/join}}) {{/if~}}
+{{#and (isContentMultipart defaultContent) @root.serverGenerator (not service)}}
+org.apache.cxf.jaxrs.ext.multipart.MultipartBody __multipartBody
+{{else}}
+{{{nativeType}}} {{identifier name}}
+{{/and}}
