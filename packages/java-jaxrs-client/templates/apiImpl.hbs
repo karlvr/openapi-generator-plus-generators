@@ -10,7 +10,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 
 	{{>hooks/apiImplClassBody}}
 {{#each operations}}
-	{{>frag/operationVars op=. jaxrs=false}}
+	{{>frag/operationVars op=. jaxrs=false service=false}}
 	@Override
 	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{{_parameters}}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}} {
 		{{#if securityRequirements}}
@@ -19,8 +19,8 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 		}
 
 		{{/if}}
-		{{#ifeq requestBody.defaultContent.encoding.type 'MULTIPART'}}
-		{{>frag/operationVars op=. jaxrs=false requestBodyVar='__multipartBody'}}
+		{{#if (isContentMultipart requestBody.defaultContent)}}
+		{{>frag/operationVars op=. jaxrs=false requestBodyVar='__multipartBody' service=false}}
 		java.util.ArrayList<org.apache.cxf.jaxrs.ext.multipart.Attachment> __multipartBodyParts = new java.util.ArrayList<>();
 		{{#each requestBody.defaultContent.encoding.properties}}
 		{{#set '__propertyVar'}}
@@ -52,7 +52,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 			true
 		);
 
-		{{/ifeq}}
+		{{/if}}
 		try {
 			{{#if securityRequirements}}
 			try {

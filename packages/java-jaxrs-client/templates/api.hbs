@@ -9,7 +9,7 @@ package {{apiPackage}};
 public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 
 	{{#each operations}}
-	{{>frag/operationVars op=. jaxrs=false}}
+	{{>frag/operationVars op=. jaxrs=false service=false}}
 	{{>frag/operationDocumentation}}
 	{{#if deprecated}}
 	@java.lang.Deprecated
