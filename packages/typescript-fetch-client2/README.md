@@ -12,6 +12,62 @@ For an API client to use in Node applications, see [typescript-fetch-node-client
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
 generator templates.
 
+### Configuring the Generated API Client
+
+The generated API client has several options you can configure including the base URI, fetch 
+function, and authentication information.
+
+There are several different ways to change this configuration:
+1. Using `setDefaultConfiguration(...)` allows you to change the default configuration used when no 
+overriding configuration is provided.
+2. `withConfiguration(...)` for either a specific endpoint group, or the entire API. The resulting API
+client uses the provided configuration over the default, and can be useful when you need to override
+the default configuration for specific groups of endpoints:
+	```ts
+	import { withConfiguration } from './generated-client/api/admin'
+
+	const adminConfiguration = new Configuration({ apiKey: 'MY_ADMIN_API_KEY' })
+	const adminApi = withConfiguration(adminConfiguration)
+
+ 	/* Uses adminConfiguration */
+	const response = await adminApi.getDetails()
+	```
+	> [!NOTE]
+	> This prevents the configured API/group from being tree shaken, which can result in unused 
+	> endpoints being included in your built JS. Read more about this in the 
+	> [Tree Shaking](#tree-shaking) section below.
+3. Overriding configuration on a per-endpoint basis can be done by passing a configuration object as
+the final parameter to an endpoint functions. This configuration is used instead of the default 
+configuration.
+
+### Tree Shaking
+
+If you're not using every endpoint in your API, 
+[tree shaking](https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking) is a useful tool that
+bundlers employ to remove unused code from the resulting JavaScript. For the best tree shaking when
+using the generated API client, it is recommended to import the endpoints directly from their
+respective files:
+
+```ts
+// All other endpoints in this file wont be included in the resulting bundle.
+import { getDetails } from './generated-client/api/admin'
+```
+
+If you import the API group from the default import, from the index file, or `withConfiguration`
+for a specific API group, then every endpoint in the group will be bundled into your JavaScript. 
+Using the API-wide `withConfiguration` in the index file causes every endpoint to be bundled. 
+
+```ts
+// All of these will cause the entire admin group to be included in your bundle, even if you
+// only use one endpoint. 
+import { AdminApi } from './generated-client'
+import AdminApi from './generated-client/api/admin'
+import { withConfiguration } from './generated-client/api/admin'
+
+// Configuring the entire api will cause every endpoint to be bundled into your JavaScript.
+import { withConfiguration } from './generated-client'
+```
+
 ## Config file
 
 The available config file properties are:
