@@ -211,14 +211,14 @@ export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}
  * Creates a version of the API where the specified configuration is the default for all operations.
  * @export
  */
-export function withConfiguration(configuration: Configuration) {
+export function withConfiguration(defaultConfiguration: Configuration) {
 	return {
 	{{#each operations}}
 		{{>frag/operationDocumentation}}
 		{{#if (gt (count parameters) 1)}}
-		{{identifier name}}: (__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, overrideConfiguration?: Configuration) => {{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, overrideConfiguration ?? configuration),
+		{{identifier name}}: (__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration) => {{identifier name}}(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration ?? defaultConfiguration),
 		{{else}}
-		{{identifier name}}: ({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, overrideConfiguration?: Configuration) => {{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, overrideConfiguration ?? configuration),
+		{{identifier name}}: ({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration) => {{identifier name}}({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration ?? defaultConfiguration),
 		{{/if}}
 	{{/each}}
 	}
