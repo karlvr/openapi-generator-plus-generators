@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.0.2
+
+### Patch Changes
+
+- e4a7a96: Add missing configuration parameter JSDoc
+
 ## 1.0.1
 
 ### Patch Changes
