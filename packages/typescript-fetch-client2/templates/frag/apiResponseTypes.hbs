@@ -8,6 +8,8 @@ export type {{className name}}Response =
 	| {{className (concat ../name '_' code)}}Response
 {{/if}}
 {{/each}}
+	| UndocumentedReponse
+	| FetchErrorResponse
 
 {{#each responses}}
 {{#if contents}}

@@ -7,6 +7,24 @@ import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeSt
 
 type ValuesOf<T> = T[keyof T]
 
+/**
+ * An undocumented response from the API. This could be due to an unexpected status code or content
+ * type.
+ */
+export interface UndocumentedReponse {
+	status: number
+	response: Response
+	contentType?: string
+}
+
+/**
+ * An error that occured while trying to call the API, such as due to network errors.
+ */ 
+export interface FetchErrorResponse {
+	status: 'error'
+	error: unknown
+}
+
 export namespace Api {
 {{>nestedModels}}
 }
