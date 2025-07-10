@@ -180,7 +180,6 @@ export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}
 			{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
 		}
 		{{/each}}
-		throw response;
 		{{else}}
 		{{>frag/apiResponseContent group=../.. operation=.. response=.}}
 		{{/if}}
@@ -196,13 +195,18 @@ export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}
 		{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
 	}
 	{{/each}}
-	throw response;
 	{{else}}
 	{{>frag/apiResponseContent group=../.. operation=.. response=.}}
 	{{/if}}
 	{{/with}}
 	{{else}}
-	throw response;
+
+	/* Undocumented response */
+	return {
+		status: response.status,
+		contentType: mimeType,
+		response,
+	}
 	{{/if}}
 }
 {{/each}}
