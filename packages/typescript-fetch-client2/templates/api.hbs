@@ -203,9 +203,8 @@ export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}
 		{{/with}}
 		{{else}}
 
-		/* Undocumented response */
 		return {
-			status: response.status,
+			status: 'undocumented',
 			contentType: mimeType,
 			response,
 		}
