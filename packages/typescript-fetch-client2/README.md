@@ -40,6 +40,28 @@ the default configuration for specific groups of endpoints:
 the final parameter to an endpoint functions. This configuration is used instead of the default 
 configuration.
 
+### Error Handling
+
+The generated endpoints enforce that your application can handle all errors returned by your 
+API through 
+[discriminated response types](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions) 
+on the `status` field. In addition to the responses defined in your OpenAPI specification, there are
+two other response types:
+
+| `status`       | Meaning |
+|----------------|---------|
+| `'undocumented'` | The response contained an HTTP status code, or `Content-Type` not defined in your OpenAPI specification. |
+| `'error'`        | An error was thrown in the generated endpoint. This could be due to a network error, a malformed response, a missing required parameter, etc. |
+
+> [!TIP]
+> If necessary, you can differentiate between these special responses and ones in your OpenAPI 
+> specification using `typeof`:
+> ```ts
+> if (typeof response.status === 'number') {
+> 	// This response is defined in your OpenAPI specification!	
+> }
+> ```
+
 ### Tree Shaking
 
 If you're not using every endpoint in your API, 
