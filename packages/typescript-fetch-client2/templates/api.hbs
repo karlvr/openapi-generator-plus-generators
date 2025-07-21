@@ -1,8 +1,8 @@
 {{>header}}
 
 import { Configuration, getDefaultConfiguration } from "../configuration";
-import { COLLECTION_FORMATS, encodeURIPathSegment, FetchArgs, RequiredError, dateToString } from "../runtime";
-import { Api, UndocumentedReponse, FetchErrorResponse } from "../models";
+import { COLLECTION_FORMATS, encodeURIPathSegment, FetchArgs, UndocumentedResponse, FetchErrorResponse, RequiredError, dateToString } from "../runtime";
+import { Api } from "../models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
 {{/ifeq}}
