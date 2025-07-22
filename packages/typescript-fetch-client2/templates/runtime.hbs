@@ -57,6 +57,16 @@ export interface FetchErrorResponse {
 	error: unknown
 }
 
+export type UnexpectedResponse = UndocumentedResponse | FetchErrorResponse
+
+export function isUnexpectedResponse<T extends object>(response: T | UnexpectedResponse): response is UnexpectedResponse {
+	return "status" in response && (response.status === 'undocumented' || response.status === 'error')
+}
+
+export function isDocumentedResponse<T extends object>(response: T | UnexpectedResponse): response is T {
+	return !isUnexpectedResponse(response)
+}
+
 /**
  * 
  * @export

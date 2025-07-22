@@ -54,11 +54,14 @@ two other response types:
 | `'error'`        | An error was thrown in the generated endpoint. This could be due to a network error, a malformed response, a missing required parameter, etc. |
 
 > [!TIP]
-> If necessary, you can differentiate between these special responses and ones in your OpenAPI 
-> specification using `typeof`:
+> We provide [type guards](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
+> that can be used to differentiate between documented and unexpected responses:
 > ```ts
-> if (typeof response.status === 'number') {
+> if (isDocumentedResponse(response)) {
 > 	// This response is defined in your OpenAPI specification!	
+> }
+> if (isUnexpectedResponse(response)) {
+>   // This response is either a `UndocumentedResponse` or `FetchErrorResponse`.	
 > }
 > ```
 
