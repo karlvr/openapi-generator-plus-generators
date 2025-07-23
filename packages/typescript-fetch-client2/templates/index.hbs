@@ -7,8 +7,8 @@ import { withConfiguration as {{identifier name}}ApiWithConfiguration } from './
 
 export * from "./models";
 export * from "./configuration";
-export { RequiredError, UndocumentedResponse, FetchErrorResponse, UnexpectedResponse, isUnexpectedResponse, isDocumentedResponse } from "./runtime";
-export type { FetchAPI, FetchArgs } from "./runtime";
+export { RequiredError, isUnexpectedResponse, isDocumentedResponse } from "./runtime";
+export type { FetchAPI, FetchArgs, UndocumentedResponse, FetchErrorResponse, UnexpectedResponse } from "./runtime";
 
 {{#each groups}}
 export { default as {{className name}}Api } from './api/{{identifier name}}'
