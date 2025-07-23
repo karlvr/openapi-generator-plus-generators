@@ -1,5 +1,12 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.1.0
+
+### Minor Changes
+
+- aa2a087: Never throw errors from the generated API endpoints. Instead, these are handled using two new
+  response status types: `'error'` and `'undocumented'`.
+
 ## 1.0.2
 
 ### Patch Changes
