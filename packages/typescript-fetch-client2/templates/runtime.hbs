@@ -40,6 +40,34 @@ export interface FetchArgs {
 }
 
 /**
+* An undocumented response from the API. This could be due to an unexpected status code or content
+* type.
+*/
+export interface UndocumentedResponse {
+	status: 'undocumented'
+	response: Response
+	contentType?: string
+}
+
+/**
+* An error that occured while trying to call the API, such as due to network errors.
+*/
+export interface FetchErrorResponse {
+	status: 'error'
+	error: unknown
+}
+
+export type UnexpectedResponse = UndocumentedResponse | FetchErrorResponse
+
+export function isUnexpectedResponse<T extends object>(response: T | UnexpectedResponse): response is UnexpectedResponse {
+	return "status" in response && (response.status === 'undocumented' || response.status === 'error')
+}
+
+export function isDocumentedResponse<T extends object>(response: T | UnexpectedResponse): response is T {
+	return !isUnexpectedResponse(response)
+}
+
+/**
  * 
  * @export
  * @class RequiredError

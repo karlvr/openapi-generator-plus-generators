@@ -1,7 +1,7 @@
 {{>header}}
 
 import { Configuration, getDefaultConfiguration } from "../configuration";
-import { COLLECTION_FORMATS, encodeURIPathSegment, FetchArgs, RequiredError, dateToString } from "../runtime";
+import { COLLECTION_FORMATS, encodeURIPathSegment, FetchArgs, UndocumentedResponse, FetchErrorResponse, RequiredError, dateToString } from "../runtime";
 import { Api } from "../models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
@@ -160,50 +160,61 @@ export function paramCreator(configuration?: Configuration) {
 {{>frag/operationDocumentation}}
 {{#if (gt (count parameters) 1)}}
 export async function {{identifier name}}(__params: {{className ../name}}Api.{{{parametersInterfaceName}}}, {{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-	configuration ??= getDefaultConfiguration(); 
-	const localVarFetchArgs = {{identifier name}}ParamCreator(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration);
+	try {
+		configuration ??= getDefaultConfiguration(); 
+		const localVarFetchArgs = {{identifier name}}ParamCreator(__params, {{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration);
 {{else}}
 export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{>frag/parameter}}, {{/with}}{{/if}}options?: RequestInit, configuration?: Configuration): Promise<{{{className ../name}}}Api.{{{className name}}}Response> {
-	configuration ??= getDefaultConfiguration(); 
-	const localVarFetchArgs = {{identifier name}}ParamCreator({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration);
+	try {
+		configuration ??= getDefaultConfiguration(); 
+		const localVarFetchArgs = {{identifier name}}ParamCreator({{#each parameters}}{{identifier name}}, {{/each}}{{#if requestBody.nativeType}}{{#with requestBody}}{{identifier name}}, {{/with}}{{/if}}options, configuration);
 {{/if}}
-	const response = await configuration.fetch(configuration.baseUri + localVarFetchArgs.url, localVarFetchArgs.options)
-	const contentType = response.headers.get('Content-Type');
-	const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
-	
-	{{#each responses}}
-	{{#unless isCatchAll}}
-	if (response.status === {{code}}) {
+		const response = await configuration.fetch(configuration.baseUri + localVarFetchArgs.url, localVarFetchArgs.options)
+		const contentType = response.headers.get('Content-Type');
+		const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
+		
+		{{#each responses}}
+		{{#unless isCatchAll}}
+		if (response.status === {{code}}) {
+			{{#if contents}}
+			{{#each contents}} 
+			if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
+				{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
+			}
+			{{/each}}
+			{{else}}
+			{{>frag/apiResponseContent group=../.. operation=.. response=.}}
+			{{/if}}
+		}
+		{{/unless}}
+		{{/each}}
+		{{#if catchAllResponse}}
+		/* Catch-all response */
+		{{#with catchAllResponse}}
 		{{#if contents}}
 		{{#each contents}} 
 		if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
 			{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
 		}
 		{{/each}}
-		throw response;
 		{{else}}
 		{{>frag/apiResponseContent group=../.. operation=.. response=.}}
 		{{/if}}
+		{{/with}}
+		{{else}}
+
+		return {
+			status: 'undocumented',
+			contentType: mimeType,
+			response,
+		}
+		{{/if}}
+	} catch (error) {
+		return {
+			status: 'error',
+			error,
+		}
 	}
-	{{/unless}}
-	{{/each}}
-	{{#if catchAllResponse}}
-	/* Catch-all response */
-	{{#with catchAllResponse}}
-	{{#if contents}}
-	{{#each contents}} 
-	if (mimeType === {{{stringLiteral mediaType.mimeType}}}) {
-		{{>frag/apiResponseContent group=../../.. operation=../.. response=..}}
-	}
-	{{/each}}
-	throw response;
-	{{else}}
-	{{>frag/apiResponseContent group=../.. operation=.. response=.}}
-	{{/if}}
-	{{/with}}
-	{{else}}
-	throw response;
-	{{/if}}
 }
 {{/each}}
 
