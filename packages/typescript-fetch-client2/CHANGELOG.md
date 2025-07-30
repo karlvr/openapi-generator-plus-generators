@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.1.1
+
+### Patch Changes
+
+- baa60c0: Re-export named types using type keyword.
+
 ## 1.1.0
 
 ### Minor Changes
