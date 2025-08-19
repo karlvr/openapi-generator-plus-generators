@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.13.0
+
+### Minor Changes
+
+- cc32952: Try to autodetect default `fetch` rather than assuming a browser environment
+
+### Patch Changes
+
+- 3a2572c: Fix Failed to execute 'fetch' on 'Window': Illegal invocation
+
 ## 1.12.1
 
 ### Patch Changes
