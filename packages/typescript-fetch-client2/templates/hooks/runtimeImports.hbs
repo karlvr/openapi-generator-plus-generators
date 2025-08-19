@@ -1,4 +1,4 @@
 {{#if @root.includePolyfills}}
 import "whatwg-fetch";
 {{/if}}
-export const defaultFetch = (typeof fetch !== "undefined" ? fetch : typeof window !== "undefined" && typeof window.fetch !== "undefined" ? window.fetch : undefined);
+export const defaultFetch = (typeof window !== "undefined" && typeof window.fetch !== "undefined" ? window.fetch.bind(window) : typeof fetch !== "undefined" ? fetch : undefined);
