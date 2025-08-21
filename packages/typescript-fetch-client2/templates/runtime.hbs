@@ -27,7 +27,7 @@ export const COLLECTION_FORMATS = {
  * @export
  * @type FetchAPI
  */
-export type FetchAPI = typeof defaultFetch;
+export type FetchAPI = (url: string, init?: RequestInit) => Promise<Response>;
 
 /**
  *  

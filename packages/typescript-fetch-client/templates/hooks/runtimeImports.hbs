@@ -1,4 +1,10 @@
 {{#if @root.includePolyfills}}
 import "whatwg-fetch";
 {{/if}}
-export const defaultFetch = (typeof window !== "undefined" && typeof window.fetch !== "undefined" ? window.fetch.bind(window) as typeof window.fetch : typeof fetch !== "undefined" ? fetch : undefined);
+const MISSING_FETCH: FetchAPI = () => { throw new Error('fetch is undefined'); };
+export const defaultFetch: FetchAPI = typeof window !== "undefined" && typeof window.fetch !== "undefined"
+	? window.fetch.bind(window) as typeof window.fetch
+	: typeof fetch !== "undefined"
+		? fetch
+		: MISSING_FETCH
+		;
