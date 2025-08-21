@@ -58,7 +58,7 @@ export interface {{className ../name}}{{code}}Response {
 	{{#if headers}}
 	headers: {
 		{{#each headers}}
-		{{{stringLiteral name}}}: {{{nativeType}}}
+		{{{stringLiteral name}}}?: {{{nativeType}}}
 		{{/each}}
 	}
 	{{else}}
