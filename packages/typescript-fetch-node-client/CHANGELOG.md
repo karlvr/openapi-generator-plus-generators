@@ -1,5 +1,17 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.9.0
+
+### Minor Changes
+
+- 04bbc2c: Fix typing on `defaultFetch` to remove undefined
+
+### Patch Changes
+
+- Updated dependencies [f2c671a]
+- Updated dependencies [04bbc2c]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.14.0
+
 ## 1.8.3
 
 ### Patch Changes

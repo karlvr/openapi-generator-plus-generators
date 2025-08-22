@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.3.0
+
+### Minor Changes
+
+- e8773a6: Fix headers on response types without bodies to always be optional
+- 04bbc2c: Fix typing on `defaultFetch` to remove undefined
+
+### Patch Changes
+
+- f2c671a: Fix not using property serialized names in multipart requests
+
 ## 1.2.0
 
 ### Minor Changes

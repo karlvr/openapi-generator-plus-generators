@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.14.0
+
+### Minor Changes
+
+- 04bbc2c: Fix typing on `defaultFetch` to remove undefined
+
+### Patch Changes
+
+- f2c671a: Fix not using property serialized names in multipart requests
+
 ## 1.13.0
 
 ### Minor Changes
