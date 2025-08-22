@@ -5,9 +5,9 @@ Add a multipart property to the body
 @param bodyPartsVar the variable name containing the list of body parts
 --}}
 {{#ifeq contentType 'application/json'}}
-{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, JSON.stringify({{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}}));
+{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, JSON.stringify({{{propertyVar}}}{{#if valueProperty}}[{{{stringLiteral valueProperty.serializedName}}}]{{/if}}));
 {{else ifeq contentType 'application/octet-stream'}}
-{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, {{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}});
+{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, {{{propertyVar}}}{{#if valueProperty}}[{{{stringLiteral valueProperty.serializedName}}}]{{/if}});
 {{else}}
-{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, String({{{propertyVar}}}{{#if valueProperty}}.{{identifier valueProperty.name}}{{/if}} || ''));
+{{{bodyPartsVar}}}.append({{{stringLiteral property.serializedName}}}, String({{{propertyVar}}}{{#if valueProperty}}[{{{stringLiteral valueProperty.serializedName}}}]{{/if}} || ''));
 {{/ifeq}}

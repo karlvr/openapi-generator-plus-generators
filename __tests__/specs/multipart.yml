@@ -23,6 +23,8 @@ paths:
                 file:
                   type: string
                   format: binary
+                __csrf:
+                  type: string
       responses:
         200:
           description: OK

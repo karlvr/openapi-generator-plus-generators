@@ -155,13 +155,13 @@ export const {{className name}}ApiFetchParamCreator = function (configuration?: 
 			{{else if (isContentMultipart .)}}
 				const localVarFormData = new FormData();
 			{{#each encoding.properties}}
-				if ({{identifier ../../name}}.{{identifier property.name}} !== undefined) {
+				if ({{identifier ../../name}}[{{{stringLiteral property.serializedName}}}] !== undefined) {
 {{#if (isArray property)}}
 					for (const __anObject of {{identifier ../../name}}.{{identifier property.name}}{{#if property.nullable}} || []{{/if}}) {
 						{{>frag/multipartProperty . propertyVar='__anObject' bodyPartsVar='localVarFormData'}}
 					}
 {{else}}
-					{{>frag/multipartProperty . propertyVar=(concat (identifier ../../name) '.' (identifier property.name)) bodyPartsVar='localVarFormData'}}
+					{{>frag/multipartProperty . propertyVar=(concat (identifier ../../name) '[' (stringLiteral property.serializedName) ']') bodyPartsVar='localVarFormData'}}
 {{/if}}
 				}
 			{{/each}}

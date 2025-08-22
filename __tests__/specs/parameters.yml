@@ -32,6 +32,18 @@ paths:
             uniqueItems: true
             items:
               type: string
+        - name: __csrf
+          in: query
+          schema:
+            type: string
+        - name: __csrf2
+          in: header
+          schema:
+            type: string
+        - name: __csrf3
+          in: cookie
+          schema:
+            type: string
       responses:
         200:
           description: OK
