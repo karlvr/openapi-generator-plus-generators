@@ -306,6 +306,12 @@ export class {{className name}}Api extends BaseAPI {
  * We sometimes represent dates as strings (in models) and as Dates (in parameters) so this
  * function converts them both to a string.
  */
+function dateToString(value: Date | string): string
+
+/**
+ * We sometimes represent dates as strings (in models) and as Dates (in parameters) so this
+ * function converts them both to a string.
+ */
 function dateToString(value: Date | string | undefined): string | undefined {
 	if (value instanceof Date) {
 		return value.toISOString();
