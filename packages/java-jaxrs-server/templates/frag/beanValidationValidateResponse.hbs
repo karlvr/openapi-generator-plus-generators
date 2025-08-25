@@ -2,11 +2,18 @@
 Validate the response object
 @param responseVar the variable name containing the response object
 --}}
+{{#if schema.nullable}}
 if ({{{responseVar}}} != null) {
-	java.util.Set<{{javax}}.validation.ConstraintViolation<{{{defaultContent.nativeType}}}>> __validations = this.validatorFactory.getValidator().validate({{{responseVar}}}, {{{@root.validationPackage}}}.Response.class);
+	java.util.Set<{{javax}}.validation.ConstraintViolation<{{{defaultContent.nativeType.componentType}}}>> __validations = this.validatorFactory.getValidator().validate({{{responseVar}}}, {{{@root.validationPackage}}}.Response.class);
 	if (!__validations.isEmpty()) {
 		{{>hooks/beanValidationResponseViolation responseBuilderVar='__response' violationsVar='__validations' operation=.}}
 	}
 } else {
 	{{>hooks/beanValidationResponseMissing responseBuilderVar='__response' operation=.}}
 }
+{{else}}
+java.util.Set<{{javax}}.validation.ConstraintViolation<{{{defaultContent.nativeType.componentType}}}>> __validations = this.validatorFactory.getValidator().validate({{{responseVar}}}, {{{@root.validationPackage}}}.Response.class);
+if (!__validations.isEmpty()) {
+	{{>hooks/beanValidationResponseViolation responseBuilderVar='__response' violationsVar='__validations' operation=.}}
+}
+{{/if}}

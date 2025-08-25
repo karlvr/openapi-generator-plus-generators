@@ -76,7 +76,7 @@ __response
 			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{{../_arguments}}});
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
-			{{>frag/beanValidationValidateResponse responseVar='__entity'}}
+			{{>frag/beanValidationValidateResponse responseVar='__entity' schema=defaultContent.schema}}
 			{{/if}}
 			__response.entity(__entity);
 			{{/if}}
@@ -92,7 +92,7 @@ __response
 			{{/unless}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
-			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()'}}
+			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()' schema=defaultContent.schema}}
 			{{/if}}
 			__response.entity(__e.getEntity());
 			{{/if}}

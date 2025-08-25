@@ -15,8 +15,10 @@ public class {{className name}}ApiServiceImpl implements {{@root/apiServicePacka
 		return {{{examples.java.valueLiteral}}};
 {{else ifeg 'default'}}
 		return {{{examples.default.valueLiteral}}};
-{{else}}
+{{else if schema.nullable}}
 		return null;
+{{else}}
+		throw new UnsupportedOperationException();
 {{/ifeg}}
 {{/with}}
 {{/if}}
