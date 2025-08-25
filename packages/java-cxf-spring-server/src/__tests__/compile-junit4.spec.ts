@@ -1,11 +1,11 @@
 import { testGenerate } from '@openapi-generator-plus/generator-common/dist/testing'
 import { compile, prepare, DEFAULT_CONFIG } from './common'
-import fs from 'fs'
 import path from 'path'
+import { globSync } from 'glob'
 
 describe('compile test cases with JUnit4', () => {
 	const basePath = path.join(__dirname, '..', '..', '..', '..', '__tests__', 'specs')
-	const files = fs.readdirSync(basePath)
+	const files = globSync('**/*.{yml,yaml}', { cwd: basePath })
 
 	for (const file of files) {
 		test(file, async() => {
