@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.11.3
+
+### Patch Changes
+
+- 09db6b3: Upgrade dependencies including eslint 9 and updated linting rules
+
 ## 1.11.2
 
 ### Patch Changes

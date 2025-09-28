@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.6.5
+
+### Patch Changes
+
+- 8fb539c: Upgrade TypeScript (5.9.2) and Node types (20.14.8)
+- Updated dependencies [09db6b3]
+  - @openapi-generator-plus/handlebars-templates@1.11.3
+  - @openapi-generator-plus/typescript-generator-common@1.12.2
+
 ## 1.6.4
 
 ### Patch Changes

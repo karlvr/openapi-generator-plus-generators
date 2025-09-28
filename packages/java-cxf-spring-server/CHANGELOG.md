@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-cxf-spring-server-generator
 
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [09db6b3]
+- Updated dependencies [95fbe0c]
+  - @openapi-generator-plus/handlebars-templates@1.11.3
+  - @openapi-generator-plus/java-jaxrs-server-generator@3.7.1
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.8.1
+
 ## 3.2.0
 
 ### Minor Changes

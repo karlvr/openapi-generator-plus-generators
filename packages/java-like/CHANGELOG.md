@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.6.1
+
+### Patch Changes
+
+- 09db6b3: Upgrade dependencies including eslint 9 and updated linting rules
+
 ## 2.6.0
 
 ### Minor Changes

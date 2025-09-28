@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/typescript-fetch-node-client-generator",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "An OpenAPI Generator Plus template for a TypeScript API client using Fetch in Node",
   "keywords": [
     "openapi-generator-plus",

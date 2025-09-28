@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.7.1
+
+### Patch Changes
+
+- 95fbe0c: Fixes for operations with primitive return types
+- Updated dependencies [09db6b3]
+  - @openapi-generator-plus/handlebars-templates@1.11.3
+  - @openapi-generator-plus/java-like-generator-helper@2.6.1
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.8.1
+
 ## 3.7.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.3.1
+
+### Patch Changes
+
+- 8fb539c: Upgrade TypeScript (5.9.2) and Node types (20.14.8)
+- 9ecaf05: Fix dateToString declaration always returning undefined
+- Updated dependencies [09db6b3]
+  - @openapi-generator-plus/handlebars-templates@1.11.3
+  - @openapi-generator-plus/typescript-generator-common@1.12.2
+
 ## 1.3.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.10.2
+
+### Patch Changes
+
+- 09db6b3: Upgrade dependencies including eslint 9 and updated linting rules
+- Updated dependencies [09db6b3]
+  - @openapi-generator-plus/handlebars-templates@1.11.3
+  - @openapi-generator-plus/java-like-generator-helper@2.6.1
+
 ## 1.10.1
 
 ### Patch Changes

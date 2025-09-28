@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 3.3.2
+
+### Patch Changes
+
+- 09db6b3: Upgrade dependencies including eslint 9 and updated linting rules
+- Updated dependencies [09db6b3]
+  - @openapi-generator-plus/handlebars-templates@1.11.3
+  - @openapi-generator-plus/java-like-generator-helper@2.6.1
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.8.1
+
 ## 3.3.1
 
 ### Patch Changes

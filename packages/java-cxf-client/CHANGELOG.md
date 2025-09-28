@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 3.1.8
+
+### Patch Changes
+
+- 09db6b3: Upgrade dependencies including eslint 9 and updated linting rules
+- Updated dependencies [09db6b3]
+  - @openapi-generator-plus/handlebars-templates@1.11.3
+  - @openapi-generator-plus/java-jaxrs-client-generator@3.3.2
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.8.1
+
 ## 3.1.7
 
 ### Patch Changes
