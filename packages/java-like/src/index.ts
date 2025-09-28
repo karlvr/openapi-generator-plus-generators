@@ -158,7 +158,7 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 			/* Schema suffixes */
 			if (isEnum && generatorOptions.enumClassSuffix !== undefined) {
 				result = result + generatorOptions.enumClassSuffix
-			} else if (isModel &&  generatorOptions.modelClassSuffix !== undefined) {
+			} else if (isModel && generatorOptions.modelClassSuffix !== undefined) {
 				result = result + generatorOptions.modelClassSuffix
 			}
 			return result

@@ -191,7 +191,6 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 			const hbs = Handlebars.create()
 
 			registerStandardHelpers(hbs, context)
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			hbs.registerHelper('eachSorted', function(this: unknown, context: unknown, options: Handlebars.HelperOptions) {
 				if (!context) {
 					return options.inverse(this)

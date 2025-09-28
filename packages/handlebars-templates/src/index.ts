@@ -380,8 +380,6 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`if helper must be called with one argument @ ${sourcePosition(options)}`)
 		}
 		if (condition === undefined) {
-			// eslint-disable-next-line prefer-rest-params
-			// console.log(this, arguments)
 			throw new Error(`if helper called with undefined argument @ ${sourcePosition(options)}`)
 		}
 
@@ -399,8 +397,6 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 			throw new Error(`unless helper must be called with one argument @ ${sourcePosition(options)}`)
 		}
 		if (condition === undefined) {
-			// eslint-disable-next-line prefer-rest-params
-			// console.log(this, arguments)
 			throw new Error(`unless helper called with undefined argument @ ${sourcePosition(options)}`)
 		}
 
@@ -862,6 +858,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 
 		let message = ''
 		for (let i = 0; i < arguments.length - 1; i++) {
+			// eslint-disable-next-line prefer-rest-params
 			const nextPart = String(arguments[i])
 
 			/* Add a space if both the preceding and following part are text (not punctuation) */
@@ -1063,6 +1060,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 
 		const varNames = varName.split('.')
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let context: any = this
 		for (let i = 0; i < varNames.length - 1; i++) {
 			context = context[varNames[i]]
@@ -1089,6 +1087,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		}
 
 		const varNames = varName.split('.')
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let context: any = this
 		for (let i = 0; i < varNames.length - 1; i++) {
 			context = context[varNames[i]]
@@ -1126,6 +1125,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		const result = options.fn(this).split(/\r?\n/).filter(s => s.trim().length > 0).join(separator)
 		if (varName) {
 			const varNames = varName.split('.')
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			let context: any = this
 			for (let i = 0; i < varNames.length - 1; i++) {
 				context = context[varNames[i]]

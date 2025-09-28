@@ -38,6 +38,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 			return result
 		},
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		formUrlEncodedImplementation: () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`),
 	}
 
