@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.8.0
+
+### Minor Changes
+
+- e136ae3: Explicitly set the content type of responses.
+
 ## 3.7.1
 
 ### Patch Changes
