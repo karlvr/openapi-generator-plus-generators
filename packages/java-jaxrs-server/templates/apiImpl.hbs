@@ -79,6 +79,9 @@ __response
 			{{>frag/beanValidationValidateResponse responseVar='__entity' schema=defaultContent.schema}}
 			{{/if}}
 			__response.entity(__entity);
+			{{#if defaultContent}}
+			__response.type({{{stringLiteral defaultContent.mediaType.mediaType}}});
+			{{/if}}
 			{{/if}}
 			return __response.build();
 			{{/with}}
@@ -95,6 +98,9 @@ __response
 			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()' schema=defaultContent.schema}}
 			{{/if}}
 			__response.entity(__e.getEntity());
+			{{#if defaultContent}}
+			__response.type({{{stringLiteral defaultContent.mediaType.mediaType}}});
+			{{/if}}
 			{{/if}}
 			return __response.build();
 		{{/unless}}
