@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.8.1
+
+### Patch Changes
+
+- 135dbe9: Restore empty @Path annotation on JAX-RS api interface as CXF uses that annotation to detect resource / service classes
+- 6cb35e4: Allow apiProviderPackage to be explicitly set to null to skip generation
+
 ## 3.8.0
 
 ### Minor Changes
