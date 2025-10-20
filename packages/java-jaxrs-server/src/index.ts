@@ -16,7 +16,7 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		...options,
 		apiServicePackage,
 		apiServiceImplPackage: nullableConfigString(config, 'apiServiceImplPackage', `${apiServicePackage}.impl`),
-		apiProviderPackage: configString(config, 'apiProviderPackage', `${packageName}.providers`),
+		apiProviderPackage: nullableConfigString(config, 'apiProviderPackage', `${packageName}.providers`),
 		invokerPackage: nullableConfigString(config, 'invokerPackage', `${packageName}.app`),
 		invokerName: nullableConfigString(config, 'invokerName', 'RestApplication'),
 		authenticationRequiredAnnotation: nullableConfigString(config, 'authenticationRequiredAnnotation', nullableConfigString(config, 'authenticatedOperationAnnotation', null)),

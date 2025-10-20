@@ -3,7 +3,7 @@ import { CodegenOptionsJava as CommonCodegenOptions } from '@openapi-generator-p
 export interface CodegenOptionsJavaServer extends CommonCodegenOptions {
 	apiServicePackage: string
 	apiServiceImplPackage: string | null
-	apiProviderPackage: string
+	apiProviderPackage: string | null
 	invokerPackage: string | null
 	invokerName: string | null
 	
