@@ -39,10 +39,10 @@
 			description = {{{stringLiteral description}}}{{#if contents}},
 			content = {
 {{#each contents}}
-				@io.swagger.v3.oas.annotations.media.Content(mediaType = {{{stringLiteral mediaType.mediaType}}}{{#if schema}}, schema = @io.swagger.v3.oas.annotations.media.Schema({{#if (isObject schema)}}implementation = {{{nativeType}}}.class{{/if}}){{/if}})
+				@io.swagger.v3.oas.annotations.media.Content(mediaType = {{{stringLiteral mediaType.mediaType}}}{{#if schema}}, schema = @io.swagger.v3.oas.annotations.media.Schema({{#if (isObject schema)}}implementation = {{{nativeType}}}.class{{/if}}){{/if}}),
 {{/each}}
 			}{{/if}}
-		){{#hasMore}},{{/hasMore}}
+		),
 {{/each}}	}{{#if securityRequirements}},
 	security = {
 	{{#each securityRequirements.requirements}}
