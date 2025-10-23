@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.8.2
+
+### Patch Changes
+
+- 0ff9129: Fix annotations in apis with multiple response content types
+
 ## 3.8.1
 
 ### Patch Changes
