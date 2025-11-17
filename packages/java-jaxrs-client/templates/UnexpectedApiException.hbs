@@ -7,7 +7,7 @@ package {{apiPackage}};
  * exceptions as the server's response.
  */
 {{>generatedAnnotation}}
-public class UnexpectedApiException extends java.lang.RuntimeException {
+public class UnexpectedApiException extends java.lang.{{#if @root.useRuntimeUnexpectedExceptions}}Runtime{{/if}}Exception {
 
 	private static final long serialVersionUID = 1L;
 

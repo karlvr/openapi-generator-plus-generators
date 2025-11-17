@@ -5,6 +5,7 @@ export interface CodegenOptionsJavaClient extends CommonCodegenOptions {
 	apiSpiPackage: string
 	connectionTimeoutMillis: number
 	receiveTimeoutMillis: number
+	useRuntimeUnexpectedExceptions: boolean
 }
 
 declare module '@openapi-generator-plus/types' {
