@@ -107,6 +107,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		await emit('UnexpectedApiException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiException.java'), {
 			...rootContext,
 		}, true, hbs)
+		await emit('UnexpectedApiProcessingException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiProcessingException.java'), {
+			...rootContext,
+		}, true, hbs)
 		await emit('UnexpectedResponseException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedResponseException.java'), {
 			...rootContext,
 		}, true, hbs)

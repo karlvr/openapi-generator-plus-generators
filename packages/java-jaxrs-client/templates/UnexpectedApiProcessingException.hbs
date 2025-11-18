@@ -1,0 +1,21 @@
+package {{apiPackage}};
+
+/**
+ * An unexpected exception occurred during API processing.
+ */
+{{>generatedAnnotation}}
+public class UnexpectedApiProcessingException extends {{apiPackage}}.UnexpectedApiException {
+
+	private static final long serialVersionUID = 1L;
+
+	public UnexpectedApiProcessingException({{javax}}.ws.rs.ProcessingException exception) {
+		super(
+			exception.getMessage() != null
+				? exception.getMessage()
+				: exception.getCause() != null && exception.getCause().getMessage() != null
+					? exception.getCause().getMessage()
+					: exception.toString()
+		);
+	}
+
+}
