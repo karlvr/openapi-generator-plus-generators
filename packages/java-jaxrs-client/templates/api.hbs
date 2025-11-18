@@ -14,7 +14,7 @@ public interface {{className name}}Api extends {{apiPackage}}.ApiInvoker {
 	{{#if deprecated}}
 	@java.lang.Deprecated
 	{{/if}}
-	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{{_parameters}}}){{#unless @root.useRuntimeUnexpectedExceptions}} throws {{@root/apiPackage}}.UnexpectedApiException{{/unless}}{{#each (nonDefaultResponses)}}{{#if (and @first @root.useRuntimeUnexpectedExceptions)}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}};
+	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{{_parameters}}}) throws {{@root/apiPackage}}.UnexpectedApiException{{#each (nonDefaultResponses)}}, {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}};
 	{{/each}}
 
 	{{#each operations}}
