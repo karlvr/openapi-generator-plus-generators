@@ -3,9 +3,7 @@ name = {{{stringLiteral serializedName}}}
 {{#if description}}
 description = {{{stringLiteral description}}}
 {{/if}}
-{{#if required}}
-required = {{required}}
-{{/if}}
+requiredMode = io.swagger.v3.oas.annotations.media.Schema.RequiredMode.{{#if required}}REQUIRED{{else}}NOT_REQUIRED{{/if}}
 {{#if deprecated}}
 deprecated = true
 {{/if}}
