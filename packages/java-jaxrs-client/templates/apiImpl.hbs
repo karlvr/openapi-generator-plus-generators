@@ -12,7 +12,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 {{#each operations}}
 	{{>frag/operationVars op=. jaxrs=false service=false}}
 	@Override
-	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{{_parameters}}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}} {
+	public {{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{{_parameters}}}) throws {{@root/apiPackage}}.UnexpectedApiException{{#each (nonDefaultResponses)}}, {{#each (responseContentAndNone)}}{{#unless @first}}, {{/unless}}{{{className (concat ../../name '_' ../code)}}}{{#unless @first}}{{className content.mediaType.mediaType}}{{/unless}}Exception{{/each}}{{/each}} {
 		{{#if securityRequirements}}
 		if (authorizationProvider != null) {
 			authorizationProvider.authorize(this);
@@ -108,13 +108,7 @@ public class {{className name}}ApiImpl implements {{@root/apiPackage}}.{{classNa
 			if (__e.getCause() instanceof java.net.SocketTimeoutException) {
 				throw new {{@root/apiPackage}}.UnexpectedTimeoutException((java.net.SocketTimeoutException) __e.getCause());
 			}
-			throw new {{@root/apiPackage}}.UnexpectedApiException(
-				__e.getMessage() != null
-					? __e.getMessage()
-					: __e.getCause() != null && __e.getCause().getMessage() != null
-						? __e.getCause().getMessage()
-						: __e.toString()
-			);
+			throw new {{@root/apiPackage}}.UnexpectedApiProcessingException(__e);
 		}
 	}
 	
