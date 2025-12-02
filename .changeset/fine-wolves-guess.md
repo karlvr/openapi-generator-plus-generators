@@ -1,5 +1,5 @@
 ---
-"@openapi-generator-plus/java-jaxrs-client-generator": minor
+"@openapi-generator-plus/java-jaxrs-client-generator": major
 ---
 
 Make `UnexpectedApiException` into a checked `Exception` by default.
