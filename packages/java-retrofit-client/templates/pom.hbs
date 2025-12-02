@@ -101,10 +101,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>{{lookup maven.versions 'maven-compiler-plugin' '3.8.1'}}</version>
-				<configuration>
+				<version>{{lookup maven.versions 'maven-compiler-plugin' '3.14.1'}}</version>
+				<>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					{{#if useLombok}}
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
+					{{/if}}
 				</configuration>
 			</plugin>
 		</plugins>
