@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 3.1.10
+
+### Patch Changes
+
+- 0be9479: Upgrade Lombok and Maven configuration to support compiling with JDK >= 23
+- Updated dependencies [60d79d5]
+- Updated dependencies [6576047]
+- Updated dependencies [0be9479]
+  - @openapi-generator-plus/java-jaxrs-client-generator@4.0.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.9.0
+
 ## 3.1.9
 
 ### Patch Changes

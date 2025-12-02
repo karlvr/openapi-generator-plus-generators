@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.9.0
+
+### Minor Changes
+
+- 6576047: Migrate deprecated `required` to `requiredMode` on `Schema` annotation.
+
+  Note that this will require a Swagger version of at least 2.2.5
+
 ## 3.8.2
 
 ### Patch Changes

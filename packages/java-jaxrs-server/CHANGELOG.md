@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.8.3
+
+### Patch Changes
+
+- 0be9479: Upgrade Lombok and Maven configuration to support compiling with JDK >= 23
+- Updated dependencies [6576047]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.9.0
+
 ## 3.8.2
 
 ### Patch Changes

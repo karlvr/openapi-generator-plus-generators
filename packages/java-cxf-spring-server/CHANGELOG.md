@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-cxf-spring-server-generator
 
+## 3.3.3
+
+### Patch Changes
+
+- 0be9479: Upgrade Lombok and Maven configuration to support compiling with JDK >= 23
+- Updated dependencies [6576047]
+- Updated dependencies [0be9479]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.9.0
+  - @openapi-generator-plus/java-jaxrs-server-generator@3.8.3
+
 ## 3.3.2
 
 ### Patch Changes

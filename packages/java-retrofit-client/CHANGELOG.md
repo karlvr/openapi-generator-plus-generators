@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.6.10
+
+### Patch Changes
+
+- 0be9479: Upgrade Lombok and Maven configuration to support compiling with JDK >= 23
+- Updated dependencies [60d79d5]
+- Updated dependencies [0be9479]
+  - @openapi-generator-plus/java-jaxrs-client-generator@4.0.0
+
 ## 2.6.9
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 4.0.0
+
+### Major Changes
+
+- 60d79d5: Make `UnexpectedApiException` into a checked `Exception` by default.
+  For those who want to use it as a `RuntimeException`, this can be enabled with the `useRuntimeUnexpectedExceptions` config option.
+
+  Additionally, we have reworked `UnexpectedApiException` to be `abstract`.
+  Previously `UnexpectedApiException` was acting as both a superclass and a concrete implementation.
+  Now it is only a superclass and `UnexpectedApiProcessingException` has taken the role of the concrete implementation.
+
+### Patch Changes
+
+- 0be9479: Upgrade Lombok and Maven configuration to support compiling with JDK >= 23
+- Updated dependencies [6576047]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.9.0
+
 ## 3.3.3
 
 ### Patch Changes
