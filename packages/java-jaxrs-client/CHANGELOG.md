@@ -1,5 +1,13 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 4.0.1
+
+### Patch Changes
+
+- Updated dependencies [48928f9]
+- Updated dependencies [ef18d4f]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.9.1
+
 ## 4.0.0
 
 ### Major Changes

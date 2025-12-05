@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.9.1
+
+### Patch Changes
+
+- 48928f9: Add L suffix to Min/Max constraint value literals to support large values
+- ef18d4f: Fix indentation of property documentation with multiple constraints.
+
 ## 3.9.0
 
 ### Minor Changes
