@@ -31,7 +31,7 @@ regexp = {{{stringLiteral pattern}}}
 {{#if (isInteger)}}
 {{#if minimum}}
 {{#join '_validationAnnotationProperties' ', '}}
-value = {{{minimum}}}
+value = {{{minimum}}}L
 {{#ifvex 'x-minimum-message'}}message = {{{stringLiteral vendorExtensions.x-minimum-message}}}{{/ifvex}}
 {{>frag/beanValidationAnnotationProperties}}
 {{/join}}
@@ -39,7 +39,7 @@ value = {{{minimum}}}
 {{/if}}
 {{#if maximum}}
 {{#join '_validationAnnotationProperties' ', '}}
-value = {{{maximum}}}
+value = {{{maximum}}}L
 {{#ifvex 'x-maximum-message'}}message = {{{stringLiteral vendorExtensions.x-maximum-message}}}{{/ifvex}}
 {{>frag/beanValidationAnnotationProperties}}
 {{/join}}
