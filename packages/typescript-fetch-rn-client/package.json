@@ -32,7 +32,7 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-rn-client#readme",
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "workspace:*",
-    "@openapi-generator-plus/types": "^2.19.0",
+    "@openapi-generator-plus/types": "^2.20.0",
     "@openapi-generator-plus/typescript-fetch-client-generator": "workspace:*",
     "@openapi-generator-plus/typescript-generator-common": "workspace:*"
   },

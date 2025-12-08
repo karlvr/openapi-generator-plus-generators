@@ -34,7 +34,7 @@
     "@openapi-generator-plus/handlebars-templates": "workspace:*",
     "@openapi-generator-plus/indexed-type": "^1.0.0",
     "@openapi-generator-plus/java-like-generator-helper": "workspace:*",
-    "@openapi-generator-plus/types": "^2.19.0",
+    "@openapi-generator-plus/types": "^2.20.0",
     "change-case": "^4.1.2",
     "handlebars": "^4.7.8"
   },
