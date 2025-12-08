@@ -29,7 +29,9 @@
 @{{javax}}.ws.rs.Produces({ {{#each produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/each}} })
 {{/if}}
 @io.swagger.v3.oas.annotations.Operation(
-	operationId = {{{stringLiteral name}}},
+	{{#if operationId}}
+	operationId = {{{stringLiteral operationId}}},
+	{{/if}}
 	summary = {{#if summary}}{{{stringLiteral summary}}}{{else}}""{{/if}}{{#if description}},
 	description = {{{stringLiteral description}}}{{/if}},
 	responses = {
