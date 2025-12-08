@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-cxf-spring-server-generator
 
+## 3.4.0
+
+### Minor Changes
+
+- 50c2c8b: Bump pom.xml dependency versions and fix Jakarta builds
+
 ## 3.3.4
 
 ### Patch Changes

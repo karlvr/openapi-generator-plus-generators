@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 3.2.0
+
+### Minor Changes
+
+- 50c2c8b: Bump pom.xml dependency versions and fix Jakarta builds
+
 ## 3.1.11
 
 ### Patch Changes
