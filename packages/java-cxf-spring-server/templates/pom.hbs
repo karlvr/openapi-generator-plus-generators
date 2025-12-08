@@ -12,9 +12,11 @@
 		<java.version>{{lookup maven.versions 'java' '1.8'}}</java.version>
 		<spring.version>{{lookup maven.versions 'spring' '5.2.5.RELEASE'}}</spring.version>
 		<swagger.version>{{lookup maven.versions 'swagger' '2.2.5'}}</swagger.version>
-		<cxf.version>{{lookup maven.versions 'cxf' '3.4.7'}}</cxf.version>
 		{{#if useJakarta}}
+		<cxf.version>{{lookup maven.versions 'cxf' '4.1.4'}}</cxf.version>
 		<jakarta.ws.version>{{lookup maven.versions 'jakarta_ws' '3.1.0'}}</jakarta.ws.version>
+		{{else}}
+		<cxf.version>{{lookup maven.versions 'cxf' '3.6.9'}}</cxf.version>
 		{{/if}}
 		<jaxrs.version>{{lookup maven.versions 'jaxrs' '2.1.1'}}</jaxrs.version>
 		<jackson.version>{{lookup maven.versions 'jackson' '2.14.2'}}</jackson.version>

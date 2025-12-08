@@ -11,9 +11,11 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>{{lookup maven.versions 'java' '1.8'}}</java.version>
 		<swagger.version>{{lookup maven.versions 'swagger' '2.2.5'}}</swagger.version>
-		<cxf.version>{{lookup maven.versions 'cxf' '3.4.7'}}</cxf.version>
 		{{#if useJakarta}}
+		<cxf.version>{{lookup maven.versions 'cxf' '4.1.4'}}</cxf.version>
 		<jakarta.ws.version>{{lookup maven.versions 'jakarta_ws' '3.1.0'}}</jakarta.ws.version>
+		{{else}}
+		<cxf.version>{{lookup maven.versions 'cxf' '3.6.9'}}</cxf.version>
 		{{/if}}
 		<jaxrs.version>{{lookup maven.versions 'jaxrs' '2.1.1'}}</jaxrs.version>
 		<jackson.version>{{lookup maven.versions 'jackson' '2.14.2'}}</jackson.version>
@@ -35,7 +37,11 @@
 		{{/if}}
 		{{#if includeTests}}
 		<junit-jupiter.version>{{lookup maven.version 'junit_jupiter' '5.7.2'}}</junit-jupiter.version>
-		<weld-junit5.version>2.0.1.Final</weld-junit5.version>
+		{{#if useJakarta}}
+		<weld-junit5.version>5.0.3.Final</weld-junit5.version>
+		{{else}}
+		<weld-junit5.version>2.0.2.Final</weld-junit5.version>
+		{{/if}}
 		{{/if}}
 		{{#if useLombok}}
 		<lombok.version>{{lookup maven.versions 'lombok' '1.18.42'}}</lombok.version>
