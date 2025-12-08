@@ -1,5 +1,19 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.10.0
+
+### Minor Changes
+
+- 564a1d4: Change @Operation(operationId) to be the actual operationId from the spec or omit
+
+### Patch Changes
+
+- 2ac8a50: Update dependencies including core
+- Updated dependencies [2ac8a50]
+  - @openapi-generator-plus/handlebars-templates@1.11.4
+  - @openapi-generator-plus/generator-common@1.7.2
+  - @openapi-generator-plus/java-like-generator-helper@2.6.2
+
 ## 3.9.1
 
 ### Patch Changes

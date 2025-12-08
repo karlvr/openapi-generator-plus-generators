@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.7.2
+
+### Patch Changes
+
+- 2ac8a50: Update dependencies including core
+
 ## 1.7.1
 
 ### Patch Changes
