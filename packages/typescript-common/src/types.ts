@@ -10,6 +10,7 @@ export interface CodegenOptionsTypeScript extends JavaLikeOptions {
 	customTemplatesPath: string | null
 	dateApproach: DateApproach
 	blindDate: BlindDateOptions
+	esm: boolean | null
 }
 
 export enum DateApproach {

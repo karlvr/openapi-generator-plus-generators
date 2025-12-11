@@ -1,17 +1,17 @@
 {{>header}}
 
-import { Configuration } from './configuration'
+import { Configuration } from './configuration{{#if @root.esm}}.js{{/if}}'
 {{#each groups}}
-import { withConfiguration as {{identifier name}}ApiWithConfiguration } from './api/{{identifier name}}'
+import { withConfiguration as {{identifier name}}ApiWithConfiguration } from './api/{{identifier name}}{{#if @root.esm}}.js{{/if}}'
 {{/each}}
 
-export * from "./models";
-export * from "./configuration";
-export { RequiredError, isUnexpectedResponse, isDocumentedResponse } from "./runtime";
-export type { FetchAPI, FetchArgs, UndocumentedResponse, FetchErrorResponse, UnexpectedResponse } from "./runtime";
+export * from "./models{{#if @root.esm}}.js{{/if}}";
+export * from "./configuration{{#if @root.esm}}.js{{/if}}";
+export { RequiredError, isUnexpectedResponse, isDocumentedResponse } from "./runtime{{#if @root.esm}}.js{{/if}}";
+export type { FetchAPI, FetchArgs, UndocumentedResponse, FetchErrorResponse, UnexpectedResponse } from "./runtime{{#if @root.esm}}.js{{/if}}";
 
 {{#each groups}}
-export { default as {{className name}}Api } from './api/{{identifier name}}'
+export { default as {{className name}}Api } from './api/{{identifier name}}{{#if @root.esm}}.js{{/if}}'
 {{/each}}
 
 export function withConfiguration(configuration: Configuration) {

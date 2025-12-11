@@ -4,7 +4,7 @@ import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, configObject, configString, configStringArray, debugStringify, nullableConfigBoolean, nullableConfigString } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, configBoolean, configObject, configString, configStringArray, debugStringify, nullableConfigBoolean, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import pluralize, { isPlural } from 'pluralize'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions, DateApproach } from './types'
@@ -189,6 +189,7 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 		customTemplatesPath: customTemplates ? computeCustomTemplatesPath(config.configPath, customTemplates) : null,
 		dateApproach,
 		blindDate: blindDateOptions,
+		esm: configBoolean(config, 'esm', false),
 	}
 
 	return options

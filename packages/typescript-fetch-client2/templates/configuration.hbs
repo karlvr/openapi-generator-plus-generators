@@ -1,6 +1,7 @@
 {{>header}}
 
-import { BASE_URI, FetchAPI, defaultFetch } from "./runtime";
+import { BASE_URI, defaultFetch } from "./runtime{{#if @root.esm}}.js{{/if}}";
+import type { FetchAPI } from "./runtime{{#if @root.esm}}.js{{/if}}";
 
 export interface ConfigurationParameters {
 	apiKey?: string | ((name: string) => string | null);
