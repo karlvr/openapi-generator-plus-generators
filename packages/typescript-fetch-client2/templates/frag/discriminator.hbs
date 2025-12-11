@@ -9,8 +9,8 @@
 {{/if}}
 {{#each discriminatorValues}}
 	/**
-	 * Value for discriminator in {{schema.nativeType.parentType}}
+	 * Value for discriminator in {{#each schemas}}{{nativeType.parentType}}{{#hasMore}}, {{/hasMore}}{{/each}}
 	 */
-	{{schema.discriminator.serializedName}}: {{{literalValue}}};
+	{{discriminator.serializedName}}: {{{literalValue}}};
 
 {{/each}}
