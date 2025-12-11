@@ -17,28 +17,28 @@ export class Configuration {
 	 * @param name security name
 	 * @memberof Configuration
 	 */
-	apiKey?: string | ((name: string) => string | null);
+	apiKey?: string | ((name: string) => string | null) | undefined;
 	/**
 	 * parameter for basic security
 	 * 
 	 * @type {string}
 	 * @memberof Configuration
 	 */
-	username?: string;
+	username?: string | undefined;
 	/**
 	 * parameter for basic security
 	 * 
 	 * @type {string}
 	 * @memberof Configuration
 	 */
-	password?: string;
+	password?: string | undefined;
 	/**
 	 * parameter for oauth2, openIdConnect or http security
 	 * @param name security name
 	 * @param scopes oauth2 scopes
 	 * @memberof Configuration
 	 */
-	authorization?: string | ((name: string, scopes?: string[]) => string | null);
+	authorization?: string | ((name: string, scopes?: string[]) => string | null) | undefined;
 	/**
 	 * override base URI
 	 * 
