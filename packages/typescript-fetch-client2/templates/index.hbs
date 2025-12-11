@@ -1,5 +1,6 @@
 {{>header}}
 
+{{>hooks/indexImports}}
 import { Configuration } from './configuration{{#if @root.esm}}.js{{/if}}'
 {{#each groups}}
 import { withConfiguration as {{identifier name}}ApiWithConfiguration } from './api/{{identifier name}}{{#if @root.esm}}.js{{/if}}'

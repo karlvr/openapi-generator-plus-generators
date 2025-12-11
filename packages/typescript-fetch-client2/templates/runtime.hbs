@@ -1,7 +1,6 @@
 {{>header}}
 
 {{>hooks/runtimeImports}}
-
 {{#each servers}}
 {{#if @first}}
 export const BASE_URI = "{{{url}}}".replace(/\/+$/, "");
