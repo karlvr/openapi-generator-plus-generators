@@ -32,7 +32,7 @@
     "@openapi-generator-plus/generator-common": "workspace:*",
     "@openapi-generator-plus/handlebars-templates": "workspace:*",
     "@openapi-generator-plus/java-like-generator-helper": "workspace:*",
-    "@openapi-generator-plus/types": "^2.20.0",
+    "@openapi-generator-plus/types": "^2.21.0",
     "handlebars": "^4.7.8",
     "less": "^4.4.2"
   },

@@ -34,7 +34,7 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "workspace:*",
     "@openapi-generator-plus/handlebars-templates": "workspace:*",
-    "@openapi-generator-plus/types": "^2.20.0",
+    "@openapi-generator-plus/types": "^2.21.0",
     "@openapi-generator-plus/typescript-fetch-client-generator2": "workspace:*",
     "@openapi-generator-plus/typescript-generator-common": "workspace:*"
   },
