@@ -7,7 +7,7 @@
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
-    "link": "pnpm link --global @openapi-generator-plus/types @openapi-generator-plus/utils && pnpm link --global",
+    "link": "pnpm link @openapi-generator-plus/types @openapi-generator-plus/utils && pnpm link",
     "test": "../../node_modules/.bin/jest",
     "watch": "../../node_modules/.bin/tsc --watch"
   },

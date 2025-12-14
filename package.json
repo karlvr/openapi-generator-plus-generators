@@ -10,7 +10,7 @@
     "check-updates": "pnpm dlx npm-check-updates -u && pnpm --recursive exec pnpm dlx npm-check-updates -u",
     "clean": "pnpm --recursive clean",
     "clean:node": "pnpm --recursive exec rm -rf node_modules && rm -rf node_modules",
-    "link": "pnpm link -D --global @openapi-generator-plus/testing && pnpm --recursive --workspace-concurrency=1 exec pnpm run link",
+    "link": "pnpm link -D @openapi-generator-plus/testing && pnpm --recursive --workspace-concurrency=1 exec pnpm run link",
     "lint": "eslint packages/*/src/**",
     "release": "pnpm clean && pnpm build && pnpm test && pnpm publish --recursive && pnpm exec changeset tag && pnpm install",
     "release:version": "pnpm changeset version && pnpm install",
