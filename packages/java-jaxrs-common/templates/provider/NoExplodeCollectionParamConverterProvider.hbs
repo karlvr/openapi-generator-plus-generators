@@ -1,0 +1,106 @@
+package {{apiProviderPackage}};
+
+/**
+ * A {@link {{javax}}.ws.rs.ext.ParamConverterProvider} that converts {@link {{supportPackage}}.NoExplodeList}s
+ * and {@link {{supportPackage}}.NoExplodeSet}s to and from string representations.
+ */ 
+{{>generatedAnnotation}}
+@{{javax}}.ws.rs.ext.Provider
+public class NoExplodeCollectionParamConverterProvider implements {{javax}}.ws.rs.ext.ParamConverterProvider {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> {{javax}}.ws.rs.ext.ParamConverter<T> getConverter(java.lang.Class<T> rawType, java.lang.reflect.Type genericType, java.lang.annotation.Annotation[] annotations) {
+		if (rawType == {{supportPackage}}.NoExplodeList.class || rawType == {{supportPackage}}.NoExplodeSet.class) {
+			return ({{javax}}.ws.rs.ext.ParamConverter<T>) new {{javax}}.ws.rs.ext.ParamConverter<{{supportPackage}}.NoExplodeCollection<?>>() {
+
+				@Override
+				public {{supportPackage}}.NoExplodeCollection<?> fromString(java.lang.String value) {
+					java.lang.String[] values = value.split(",");
+					{{supportPackage}}.NoExplodeCollection<T> result;
+					try {
+						result = ({{supportPackage}}.NoExplodeCollection<T>) rawType.newInstance();
+					} catch (java.lang.InstantiationException | java.lang.IllegalAccessException e) {
+						throw new java.lang.IllegalStateException(e);
+					}
+					result.addAll(java.util.stream.Stream.of(values).map(string -> {
+						return convertFromString(string, rawType);
+					}).collect(java.util.stream.Collectors.toList()));
+					return result;
+				}
+
+				@Override
+				public java.lang.String toString({{supportPackage}}.NoExplodeCollection<?> collection) {
+					return collection.stream()
+						.map(java.lang.Object::toString)
+						.collect(java.util.stream.Collectors.joining(","))
+						;
+				}
+
+			};
+		} else {
+			return null;
+		}
+	}
+
+	private <T> T convertFromString(java.lang.String value, java.lang.Class<T> rawType) {
+		if (value == null) {
+			return null;
+		}
+
+		java.lang.Exception latestException = null;
+
+		/* Look for a static valueOf(String) method. */
+		try {
+			java.lang.reflect.Constructor<? extends T> constructor = rawType.getConstructor(new Class<?>[] { java.lang.String.class });
+			return constructor.newInstance(new java.lang.Object[] { value });
+		} catch (NoSuchMethodException e) {
+
+		} catch (java.lang.SecurityException e) {
+			latestException = e;
+		} catch (java.lang.InstantiationException e) {
+			latestException = e;
+		} catch (java.lang.IllegalAccessException e) {
+			latestException = e;
+		} catch (java.lang.IllegalArgumentException e) {
+			latestException = e;
+		} catch (java.lang.reflect.InvocationTargetException e) {
+			throw new java.lang.RuntimeException("Cannot convert to string: " + rawType.getName(), e.getTargetException());
+		}
+
+		/* Look for a static valueOf(String) method. */
+		try {
+			java.lang.reflect.Method valueOf = rawType.getMethod("valueOf", new java.lang.Class<?>[] { java.lang.String.class });
+			return (T) valueOf.invoke(null, new java.lang.Object[] { value });
+		} catch (java.lang.NoSuchMethodException e) {
+			
+		} catch (java.lang.SecurityException e) {
+			latestException = e;
+		} catch (java.lang.IllegalAccessException e) {
+			latestException = e;
+		} catch (java.lang.reflect.InvocationTargetException e) {
+			throw new java.lang.RuntimeException("Cannot convert to string: " + rawType.getName(), e.getTargetException());
+		}
+
+		/* Look for a static parse(CharSequence) method, e.g. the Java 8 LocalDate, etc classes. */
+		try {
+			java.lang.reflect.Method valueOf = rawType.getMethod("parse", new java.lang.Class<?>[] { java.lang.CharSequence.class });
+			return (T) valueOf.invoke(null, new java.lang.Object[] { value });
+		} catch (NoSuchMethodException e) {
+
+		} catch (java.lang.SecurityException e) {
+			latestException = e;
+		} catch (java.lang.IllegalAccessException e) {
+			latestException = e;
+		} catch (java.lang.reflect.InvocationTargetException e) {
+			throw new java.lang.RuntimeException("Cannot convert to string: " + rawType.getName(), e.getTargetException());
+		}
+		
+		if (latestException != null) {
+			throw new java.lang.RuntimeException("Cannot convert to string: " + rawType.getName(), latestException);
+		} else {
+			throw new java.lang.RuntimeException("Cannot convert to string: " + rawType.getName());
+		}
+	}
+	
+}

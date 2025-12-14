@@ -20,6 +20,7 @@ paths:
           type: array
           items:
             type: string
+        collectionFormat: multi
       responses:
         200:
           description: OK

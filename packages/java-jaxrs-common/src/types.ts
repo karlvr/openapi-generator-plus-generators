@@ -7,7 +7,9 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	apiPackage: string
 	apiImplPackage: string
 	apiParamsPackage: string | null
+	apiProviderPackage: string | null
 	modelPackage: string
+	supportPackage: string
 	useBeanValidation: boolean
 	validationPackage: string
 	includeTests: boolean

@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose, CodegenEncodingStyle } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -106,7 +106,9 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		apiPackage,
 		apiImplPackage: configString(config, 'apiImplPackage', `${apiPackage}.impl`),
 		apiParamsPackage: nullableConfigString(config, 'apiParamsPackage', `${apiPackage}.params`),
+		apiProviderPackage: nullableConfigString(config, 'apiProviderPackage', `${packageName}.providers`),
 		modelPackage: configString(config, 'modelPackage', `${packageName}.model`),
+		supportPackage: configString(config, 'supportPackage', `${packageName}.support`),
 		useBeanValidation: configBoolean(config, 'useBeanValidation', true),
 		validationPackage: configString(config, 'validationPackage', `${packageName}.validation`),
 		includeTests: configBoolean(config, 'includeTests', false),
@@ -390,6 +392,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						literalType: () => 'java.util.LinkedHashSet',
 						concreteType: (nativeType) => `java.util.LinkedHashSet<${(nativeType.componentType || nativeType).nativeType}>`,
 					})
+				} else if (options.encoding && options.encoding.style === CodegenEncodingStyle.FORM && !options.encoding.explode) {
+					return new context.TransformingNativeType(componentNativeType, {
+						default: (nativeType) => `${generatorOptions.supportPackage}.NoExplodeSet<${(nativeType.componentType || nativeType).nativeType}>`,
+						literalType: () => '${generatorOptions.supportPackage}.NoExplodeSet',
+						concreteType: (nativeType) => `${generatorOptions.supportPackage}.NoExplodeSet<${(nativeType.componentType || nativeType).nativeType}>`,
+					})
 				} else {
 					return new context.TransformingNativeType(componentNativeType, {
 						default: (nativeType) => `java.util.Set<${(nativeType.componentType || nativeType).nativeType}>`,
@@ -397,6 +405,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						concreteType: (nativeType) => `java.util.HashSet<${(nativeType.componentType || nativeType).nativeType}>`,
 					})
 				}
+			} else if (options.encoding && options.encoding.style === CodegenEncodingStyle.FORM && !options.encoding.explode) {
+				return new context.TransformingNativeType(componentNativeType, {
+					default: (nativeType) => `${generatorOptions.supportPackage}.NoExplodeList<${(nativeType.componentType || nativeType).nativeType}>`,
+					literalType: () => '${generatorOptions.supportPackage}.NoExplodeList',
+					concreteType: (nativeType) => `${generatorOptions.supportPackage}.NoExplodeList<${(nativeType.componentType || nativeType).nativeType}>`,
+				})
 			} else {
 				return new context.TransformingNativeType(componentNativeType, {
 					default: (nativeType) => `java.util.List<${(nativeType.componentType || nativeType).nativeType}>`,
@@ -656,6 +670,16 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				const validationPackagePath = packageToPath(generatorOptions.validationPackage)
 				await emit('validation/Request', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Request.java'), rootContext, true, hbs)
 				await emit('validation/Response', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Response.java'), rootContext, true, hbs)
+			}
+
+			const supportPackagePath = packageToPath(generatorOptions.supportPackage)
+			await emit('support/NoExplodeCollection', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeCollection.java'), rootContext, true, hbs)
+			await emit('support/NoExplodeList', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeList.java'), rootContext, true, hbs)
+			await emit('support/NoExplodeSet', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeSet.java'), rootContext, true, hbs)
+
+			const providerPackagePath = generatorOptions.apiProviderPackage ? packageToPath(generatorOptions.apiProviderPackage) : undefined
+			if (providerPackagePath) {
+				await emit('provider/NoExplodeCollectionParamConverterProvider', path.join(outputPath, relativeSourceOutputPath, providerPackagePath, 'NoExplodeCollectionParamConverterProvider.java'), rootContext, true, hbs)
 			}
 	
 			const maven = generatorOptions.maven

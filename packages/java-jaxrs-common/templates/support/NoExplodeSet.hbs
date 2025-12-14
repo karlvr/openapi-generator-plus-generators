@@ -1,0 +1,46 @@
+package {{supportPackage}};
+
+/**
+ * A container for a set of parameters that uses {@code explode: false} encoding.
+ */
+{{>generatedAnnotation}}
+public class NoExplodeSet<T> extends {{supportPackage}}.NoExplodeCollection<T> {
+
+	private java.util.Set<T> contents;
+
+	public NoExplodeSet() {
+		this.contents = new java.util.HashSet<>();
+	}
+
+	public NoExplodeSet(java.util.Collection<T> source) {
+		this();
+		this.addAll(source);
+	}
+
+	@java.lang.Override
+	public java.util.stream.Stream stream() {
+		return this.contents.stream();
+	}
+
+	public java.util.Set<?> getContents() {
+		return this.contents;
+	}
+
+	public void setContents(java.util.Set<T> contents) {
+		this.contents = contents;
+	}
+
+	@java.lang.Override
+	public void add(T ob) {
+		if (this.contents == null) {
+			
+		}
+		this.contents.add(ob);
+	}
+
+	@java.lang.Override
+	public void addAll(java.util.Collection<T> collection) {
+		this.contents.addAll(collection);
+	}
+
+}

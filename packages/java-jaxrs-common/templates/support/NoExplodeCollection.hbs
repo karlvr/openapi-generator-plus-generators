@@ -1,0 +1,15 @@
+package {{supportPackage}};
+
+/**
+ * A container for a list of parameters that uses {@code explode: false} encoding.
+ */
+{{>generatedAnnotation}}
+public abstract class NoExplodeCollection<T> {
+
+	public abstract java.util.stream.Stream<T> stream();
+
+	public abstract void add(T ob);
+
+	public abstract void addAll(java.util.Collection<T> collection);
+
+}

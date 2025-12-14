@@ -18,6 +18,7 @@ paths:
         type: array
         items:
           type: integer
+        collectionFormat: multi
       responses:
         200:
           description: OK

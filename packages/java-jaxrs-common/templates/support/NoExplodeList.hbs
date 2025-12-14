@@ -1,0 +1,46 @@
+package {{supportPackage}};
+
+/**
+ * A container for a list of parameters that uses {@code explode: false} encoding.
+ */
+{{>generatedAnnotation}}
+public class NoExplodeList<T> extends {{supportPackage}}.NoExplodeCollection<T> {
+
+	private java.util.List<T> contents;
+
+	public NoExplodeList() {
+		this.contents = new java.util.ArrayList<>();
+	}
+
+	public NoExplodeList(java.util.Collection<T> source) {
+		this();
+		this.addAll(source);
+	}
+
+	@java.lang.Override
+	public java.util.stream.Stream stream() {
+		return this.contents.stream();
+	}
+
+	public java.util.List<?> getContents() {
+		return this.contents;
+	}
+
+	public void setContents(java.util.List<T> contents) {
+		this.contents = contents;
+	}
+
+	@java.lang.Override
+	public void add(T ob) {
+		if (this.contents == null) {
+			
+		}
+		this.contents.add(ob);
+	}
+
+	@java.lang.Override
+	public void addAll(java.util.Collection<T> collection) {
+		this.contents.addAll(collection);
+	}
+
+}

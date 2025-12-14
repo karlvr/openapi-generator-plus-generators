@@ -29,6 +29,7 @@ public abstract class Abstract{{invokerName}} extends {{javax}}.ws.rs.core.Appli
 
 	protected void addProviders() {
 		classes.add({{{apiProviderPackage}}}.ApiJaxbJsonProvider.class);
+		classes.add({{{apiProviderPackage}}}.NoExplodeCollectionParamConverterProvider.class);
 	}
 
 	protected void addEndpoints() {
