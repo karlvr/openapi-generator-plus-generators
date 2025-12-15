@@ -1,5 +1,17 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.6.13
+
+### Patch Changes
+
+- c46a686: Update core for inclusion of parameter encoding in native type functions
+- d59c6fd: Update core
+- Updated dependencies [c46a686]
+- Updated dependencies [cc6d41d]
+- Updated dependencies [d59c6fd]
+  - @openapi-generator-plus/handlebars-templates@1.11.5
+  - @openapi-generator-plus/java-jaxrs-client-generator@4.1.0
+
 ## 2.6.12
 
 ### Patch Changes

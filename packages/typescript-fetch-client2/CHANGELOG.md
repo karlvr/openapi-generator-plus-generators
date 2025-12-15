@@ -1,5 +1,26 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.4.0
+
+### Minor Changes
+
+- ca74da4: Add support for ESM-style code generation and fix imports of types when TypeScript option `verbatimModuleSyntax` is on
+- 7417c3a: Add support for unique discriminators upstream change
+
+### Patch Changes
+
+- 324111c: Add missing newline on the end of index.hbs
+- c46a686: Update core for inclusion of parameter encoding in native type functions
+- 9bfe758: Fix types to support TypeScript `exactOptionalPropertyTypes` option
+- 81f6c9b: Add support for adding imports to index.ts
+- d59c6fd: Update core
+- Updated dependencies [ca74da4]
+- Updated dependencies [c46a686]
+- Updated dependencies [d59c6fd]
+  - @openapi-generator-plus/typescript-generator-common@1.13.0
+  - @openapi-generator-plus/handlebars-templates@1.11.5
+  - @openapi-generator-plus/generator-common@1.7.3
+
 ## 1.3.2
 
 ### Patch Changes

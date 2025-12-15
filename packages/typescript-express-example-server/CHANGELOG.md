@@ -1,5 +1,18 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 1.6.7
+
+### Patch Changes
+
+- c46a686: Update core for inclusion of parameter encoding in native type functions
+- d59c6fd: Update core
+- Updated dependencies [ca74da4]
+- Updated dependencies [c46a686]
+- Updated dependencies [d59c6fd]
+  - @openapi-generator-plus/typescript-generator-common@1.13.0
+  - @openapi-generator-plus/handlebars-templates@1.11.5
+  - @openapi-generator-plus/generator-common@1.7.3
+
 ## 1.6.6
 
 ### Patch Changes

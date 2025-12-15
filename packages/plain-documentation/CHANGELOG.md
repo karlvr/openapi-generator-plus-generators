@@ -1,5 +1,17 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.10.4
+
+### Patch Changes
+
+- c46a686: Update core for inclusion of parameter encoding in native type functions
+- d59c6fd: Update core
+- Updated dependencies [c46a686]
+- Updated dependencies [d59c6fd]
+  - @openapi-generator-plus/handlebars-templates@1.11.5
+  - @openapi-generator-plus/generator-common@1.7.3
+  - @openapi-generator-plus/java-like-generator-helper@2.6.3
+
 ## 1.10.3
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.13.0
+
+### Minor Changes
+
+- ca74da4: Add support for ESM-style code generation and fix imports of types when TypeScript option `verbatimModuleSyntax` is on
+
+### Patch Changes
+
+- c46a686: Update core for inclusion of parameter encoding in native type functions
+- d59c6fd: Update core
+- Updated dependencies [c46a686]
+- Updated dependencies [d59c6fd]
+  - @openapi-generator-plus/handlebars-templates@1.11.5
+  - @openapi-generator-plus/generator-common@1.7.3
+  - @openapi-generator-plus/java-like-generator-helper@2.6.3
+
 ## 1.12.3
 
 ### Patch Changes

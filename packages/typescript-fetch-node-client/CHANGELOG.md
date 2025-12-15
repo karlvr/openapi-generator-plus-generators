@@ -1,5 +1,21 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.9.3
+
+### Patch Changes
+
+- c46a686: Update core for inclusion of parameter encoding in native type functions
+- d59c6fd: Update core
+- Updated dependencies [ca74da4]
+- Updated dependencies [c46a686]
+- Updated dependencies [9bfe758]
+- Updated dependencies [7417c3a]
+- Updated dependencies [d59c6fd]
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.15.0
+  - @openapi-generator-plus/typescript-generator-common@1.13.0
+  - @openapi-generator-plus/handlebars-templates@1.11.5
+  - @openapi-generator-plus/generator-common@1.7.3
+
 ## 1.9.2
 
 ### Patch Changes

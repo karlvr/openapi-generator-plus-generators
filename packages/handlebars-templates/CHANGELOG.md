@@ -1,5 +1,15 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.11.5
+
+### Patch Changes
+
+- c46a686: Update core for inclusion of parameter encoding in native type functions
+- d59c6fd: Update core
+- Updated dependencies [c46a686]
+- Updated dependencies [d59c6fd]
+  - @openapi-generator-plus/generator-common@1.7.3
+
 ## 1.11.4
 
 ### Patch Changes
