@@ -22,9 +22,9 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/generator-common#readme",
   "dependencies": {
-    "@openapi-generator-plus/core": "^2.25.0",
-    "@openapi-generator-plus/types": "^2.21.0",
-    "@openapi-generator-plus/utils": "^1.1.7",
+    "@openapi-generator-plus/core": "^2.26.0",
+    "@openapi-generator-plus/types": "^2.22.0",
+    "@openapi-generator-plus/utils": "^1.1.8",
     "pluralize": "^8.0.0",
     "url-parse": "^1.5.10"
   },
