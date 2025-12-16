@@ -34,6 +34,16 @@ int responseCode
 {{/set}}
 
 		{{/if}}
+		{{#if headers}}
+		{{#each headers}}
+		private {{{nativeType}}} {{identifier name}};
+{{#set '_parameters'}}
+{{{_parameters}}}
+{{{nativeType}}} {{identifier name}}
+{{/set}}
+
+		{{/each}}
+		{{/if}}
 {{#join '_parameters' ', '}}
 {{{_parameters}}}
 {{/join}}
@@ -43,6 +53,11 @@ int responseCode
 			{{/if}}
 			{{#if defaultContent.nativeType}}
 			this.entity = entity;
+			{{/if}}
+			{{#if headers}}
+			{{#each headers}}
+			this.{{identifier name}} = {{identifier name}};
+			{{/each}}
 			{{/if}}
 		}
 
@@ -57,6 +72,14 @@ int responseCode
 			return this.entity;
 		}
 
+		{{/if}}
+		{{#if headers}}
+		{{#each headers}}
+		public {{{nativeType}}} get{{capitalize (identifier name)}}() {
+			return this.{{identifier name}};
+		}
+
+		{{/each}}
 		{{/if}}
 
 		{{>hooks/apiServiceException operation=..}}
