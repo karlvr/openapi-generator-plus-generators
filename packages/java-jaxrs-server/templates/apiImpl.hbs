@@ -27,7 +27,7 @@ __response
 __response
 {{/if}}
 {{/join}}
-	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}) {
+	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}, @{{javax}}.ws.rs.core.Context {{javax}}.ws.rs.core.HttpHeaders __headers) {
 		{{#ifdef requestBody}}
 		{{#if (isContentMultipart requestBody.defaultContent)}}
 		{{{requestBody.nativeType}}} {{identifier requestBody.name}} = new {{{requestBody.nativeType.concreteType}}}();

@@ -18,7 +18,7 @@ public interface {{className name}}Api {
 {{>frag/operationVars op=. jaxrs=true service=false}}
 	{{>frag/operationDocumentation}}
 	{{>frag/operationAnnotations groupPath=../path}}
-	{{javax}}.ws.rs.core.Response {{identifier name}}({{{_parameters}}});
+	{{javax}}.ws.rs.core.Response {{identifier name}}({{{_parameters}}}, @{{javax}}.ws.rs.core.Context {{javax}}.ws.rs.core.HttpHeaders __headers);
 
 {{/each}}
 }
