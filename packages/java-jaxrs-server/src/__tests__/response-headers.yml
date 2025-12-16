@@ -1,0 +1,81 @@
+openapi: '3.0.3'
+info:
+  title: Response Headers Test
+  version: '1.0'
+paths:
+  /users/{id}:
+    get:
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          headers:
+            X-RateLimit-Limit:
+              description: The number of allowed requests in the current period
+              schema:
+                type: integer
+            X-RateLimit-Remaining:
+              description: The number of remaining requests in the current period
+              schema:
+                type: integer
+            X-Request-Id:
+              description: Request ID for tracking
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+        404:
+          description: Not Found
+          headers:
+            X-Error-Code:
+              description: Error code
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /items:
+    get:
+      operationId: listItems
+      responses:
+        200:
+          description: OK
+          headers:
+            X-Total-Count:
+              description: Total number of items
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+
+
+
+
+
+
