@@ -1,0 +1,45 @@
+package {{modelPackage}};
+
+{{>generatedAnnotation}}
+public class {{className wrapperName}} {
+
+{{#if hasBody}}
+	private {{{bodyNativeType}}} body;
+{{/if}}
+{{#each headers}}
+	private {{{nativeType}}} {{identifier name}};
+{{/each}}
+
+	public {{className wrapperName}}() {
+	}
+
+{{#if hasBody}}
+	public {{{bodyNativeType}}} getBody() {
+		return this.body;
+	}
+
+	public void setBody({{{bodyNativeType}}} body) {
+		this.body = body;
+	}
+
+	public {{className wrapperName}} body({{{bodyNativeType}}} body) {
+		setBody(body);
+		return this;
+	}
+{{/if}}
+{{#each headers}}
+	public {{{nativeType}}} get{{capitalize (identifier name)}}() {
+		return this.{{identifier name}};
+	}
+
+	public void set{{capitalize (identifier name)}}({{{nativeType}}} {{identifier name}}) {
+		this.{{identifier name}} = {{identifier name}};
+	}
+
+	public {{className ../wrapperName}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
+		set{{capitalize (identifier name)}}({{identifier name}});
+		return this;
+	}
+{{/each}}
+}
+

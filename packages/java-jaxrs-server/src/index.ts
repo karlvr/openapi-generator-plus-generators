@@ -123,6 +123,13 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 				{ ...rootContext }, false, hbs)
 		}
 
+		const modelPackagePath = packageToPath(generatorOptions.modelPackage)
+		const wrapperClasses = (doc as any).__wrapperClasses || new Map()
+		for (const [wrapperName, wrapperInfo] of wrapperClasses) {
+			await emit('responseWrapper', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(wrapperName)}.java`),
+				{ ...rootContext, ...wrapperInfo }, true, hbs)
+		}
+
 		if (context.additionalExportTemplates) {
 			context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
 		}
@@ -163,6 +170,42 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			}
 		},
 		generatorType: () => CodegenGeneratorType.SERVER,
+		postProcessDocument: (doc, helper) => {
+			if (base.postProcessDocument) {
+				base.postProcessDocument(doc, helper)
+			}
+
+			const wrapperClasses = new Map<string, any>()
+			for (const group of doc.groups) {
+				for (const operation of group.operations) {
+					if (!operation.responses) {
+						continue
+					}
+					
+					for (const response of context.utils.values(operation.responses)) {
+						if (response.headers && response.isDefault && response.defaultContent?.nativeType) {
+							const headersArray = Array.from(context.utils.values(response.headers))
+							if (headersArray.length > 0) {
+								const wrapperName = `${context.generator().toClassName(operation.uniqueName)}${response.code}ResponseWrapper`
+								const bodyNativeType = response.defaultContent.nativeType
+								
+								;(response.defaultContent as any).wrapperName = wrapperName
+								;(response.defaultContent as any).wrapperHeaders = headersArray
+								;(response.defaultContent as any).wrapperBodyType = bodyNativeType
+								response.defaultContent.nativeType = new context.NativeType(`${generatorOptions.modelPackage}.${wrapperName}`)
+								;(operation as any).returnNativeType = response.defaultContent.nativeType
+								
+								if (!wrapperClasses.has(wrapperName)) {
+									wrapperClasses.set(wrapperName, { wrapperName, hasBody: !!bodyNativeType, bodyNativeType, headers: headersArray })
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			;(doc as any).__wrapperClasses = wrapperClasses
+		},
 	}
 }
 

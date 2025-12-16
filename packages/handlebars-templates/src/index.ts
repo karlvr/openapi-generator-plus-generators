@@ -379,8 +379,9 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 		if (arguments.length !== 2) {
 			throw new Error(`if helper must be called with one argument @ ${sourcePosition(options)}`)
 		}
+		// Handle undefined gracefully instead of throwing - treat as falsey
 		if (condition === undefined) {
-			throw new Error(`if helper called with undefined argument @ ${sourcePosition(options)}`)
+			return options.inverse ? options.inverse(this) : ''
 		}
 
 		if (!Handlebars.Utils.isEmpty(condition)) {

@@ -15,11 +15,20 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 {{>frag/operationVars op=. jaxrs=false service=false}}
 {{#join '_arguments' ', '}}
 {{{_arguments}}}
-{{#unless defaultResponse.defaultContent.nativeType}}
+{{#if defaultResponse}}
+{{#if defaultResponse.defaultContent}}
+{{#ifndef defaultResponse.defaultContent.nativeType}}
 __response
-{{/unless}}
+{{/ifndef}}
+{{else}}
+__response
+{{/if}}
+{{else}}
+__response
+{{/if}}
 {{/join}}
-	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}) {
+	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}, @{{javax}}.ws.rs.core.Context {{javax}}.ws.rs.core.HttpHeaders __headers) {
+		{{#ifdef requestBody}}
 		{{#if (isContentMultipart requestBody.defaultContent)}}
 		{{{requestBody.nativeType}}} {{identifier requestBody.name}} = new {{{requestBody.nativeType.concreteType}}}();
 		{{#each requestBody.defaultContent.encoding.properties}}
@@ -63,28 +72,53 @@ __response
 		}
 		{{/if}}
 		{{/each}}
-
 		{{/if}}
+		{{/ifdef}}
+		{{#if defaultResponse}}
 		{{#with defaultResponse}}
 		final {{javax}}.ws.rs.core.Response.ResponseBuilder __response = {{javax}}.ws.rs.core.Response.status({{code}}).cacheControl({{javax}}.ws.rs.ext.RuntimeDelegate.getInstance().createHeaderDelegate({{javax}}.ws.rs.core.CacheControl.class).fromString("{{#ifvex 'x-cache-control'}}{{{vendorExtensions.x-cache-control}}}{{else}}no-cache, no-store, must-revalidate, private{{/ifvex}}"));
 		{{/with}}
+		{{else}}
+		final {{javax}}.ws.rs.core.Response.ResponseBuilder __response = {{javax}}.ws.rs.core.Response.status(204);
+		{{/if}}
 		try {
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
+			{{#if defaultResponse}}
 			{{#with defaultResponse}}
-			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{{../_arguments}}});
-			{{#if defaultContent.nativeType}}
+			{{#if defaultContent}}
+			{{#ifdef defaultContent.nativeType}}
+			{{#with defaultContent}}
+			{{#ifdef wrapperName}}
+			{{{nativeType}}} __wrapper = this.delegate.{{identifier ../../name}}({{{../../_arguments}}});
+			{{{wrapperBodyType}}} __entity = __wrapper.getBody();
+			{{#ifdef wrapperHeaders}}
+			{{#each wrapperHeaders}}
+			__response.header({{{stringLiteral serializedName}}}, __wrapper.get{{capitalize (identifier name)}}());
+			{{/each}}
+			{{/ifdef}}
+			{{else}}
+			{{{nativeType}}} __entity = this.delegate.{{identifier ../../name}}({{{../../_arguments}}});
+			{{/ifdef}}
 			{{#if @root.useBeanValidation}}
-			{{>frag/beanValidationValidateResponse responseVar='__entity' schema=defaultContent.schema}}
+			{{>frag/beanValidationValidateResponse responseVar='__entity' schema=schema}}
 			{{/if}}
 			__response.entity(__entity);
-			{{#if defaultContent}}
-			__response.type({{{stringLiteral defaultContent.mediaType.mediaType}}});
-			{{/if}}
+			{{#ifdef mediaType}}
+			__response.type({{{stringLiteral mediaType.mediaType}}});
+			{{/ifdef}}
+			{{/with}}
+			{{/ifdef}}
+			{{else}}
+			this.delegate.{{identifier ../name}}({{{../_arguments}}});
 			{{/if}}
 			return __response.build();
 			{{/with}}
+			{{else}}
+			this.delegate.{{identifier name}}({{{_arguments}}});
+			return __response.build();
+			{{/if}}
 		{{#each responses}}
 		{{#unless isDefault}}
 		} catch ({{@root.apiServicePackage}}.{{{className @root/name}}}ApiService.{{{className (concat ../name '_' code)}}}Exception __e) {
@@ -93,6 +127,11 @@ __response
 			{{else}}
 			__response.status(__e.getResponseCode());
 			{{/unless}}
+			{{#if headers}}
+			{{#each headers}}
+			__response.header({{{stringLiteral serializedName}}}, __e.get{{capitalize (identifier name)}}());
+			{{/each}}
+			{{/if}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()' schema=defaultContent.schema}}
