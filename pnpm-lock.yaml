@@ -4,13 +4,32 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@openapi-generator-plus/indexed-type': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
+  '@openapi-generator-plus/testing': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/testing
+  '@openapi-generator-plus/types': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+  '@openapi-generator-plus/utils': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils
+  types: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+
 importers:
 
   .:
     dependencies:
+      '@openapi-generator-plus/indexed-type':
+        specifier: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
+        version: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
       '@openapi-generator-plus/testing':
-        specifier: ^2.26.0
-        version: 2.26.0(openapi-types@12.1.3)
+        specifier: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/testing
+        version: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/testing
+      '@openapi-generator-plus/types':
+        specifier: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+      '@openapi-generator-plus/utils':
+        specifier: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils
+        version: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils
+      types:
+        specifier: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
     devDependencies:
       '@changesets/cli':
         specifier: ^2.29.8
@@ -79,11 +98,11 @@ importers:
         specifier: ^2.26.0
         version: 2.26.0(openapi-types@12.1.3)
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       '@openapi-generator-plus/utils':
-        specifier: ^1.1.8
-        version: 1.1.8
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
@@ -97,11 +116,11 @@ importers:
         specifier: workspace:*
         version: link:../generator-common
       '@openapi-generator-plus/indexed-type':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -130,8 +149,8 @@ importers:
         specifier: workspace:*
         version: link:../java-jaxrs-server
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
 
   packages/java-cxf-client:
     dependencies:
@@ -148,8 +167,8 @@ importers:
         specifier: workspace:*
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
 
   packages/java-cxf-spring-server:
     dependencies:
@@ -166,8 +185,8 @@ importers:
         specifier: workspace:*
         version: link:../java-jaxrs-server
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
 
   packages/java-jaxrs-client:
     dependencies:
@@ -184,8 +203,8 @@ importers:
         specifier: workspace:*
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -199,14 +218,14 @@ importers:
         specifier: workspace:*
         version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -229,8 +248,8 @@ importers:
         specifier: workspace:*
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -241,8 +260,8 @@ importers:
         specifier: workspace:*
         version: link:../generator-common
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
@@ -256,8 +275,8 @@ importers:
         specifier: workspace:*
         version: link:../java-jaxrs-client
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
 
   packages/plain-documentation:
     dependencies:
@@ -271,8 +290,8 @@ importers:
         specifier: workspace:*
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
@@ -292,8 +311,8 @@ importers:
         specifier: workspace:*
         version: link:../java-like
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
@@ -310,8 +329,8 @@ importers:
         specifier: workspace:*
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       '@openapi-generator-plus/typescript-generator-common':
         specifier: workspace:*
         version: link:../typescript-common
@@ -325,11 +344,11 @@ importers:
         specifier: workspace:*
         version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       '@openapi-generator-plus/typescript-generator-common':
         specifier: workspace:*
         version: link:../typescript-common
@@ -346,11 +365,11 @@ importers:
         specifier: workspace:*
         version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       '@openapi-generator-plus/typescript-generator-common':
         specifier: workspace:*
         version: link:../typescript-common
@@ -367,8 +386,8 @@ importers:
         specifier: workspace:*
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       '@openapi-generator-plus/typescript-fetch-client-generator':
         specifier: workspace:*
         version: link:../typescript-fetch-client
@@ -389,8 +408,8 @@ importers:
         specifier: workspace:*
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       '@openapi-generator-plus/typescript-fetch-client-generator2':
         specifier: workspace:*
         version: link:../typescript-fetch-client2
@@ -408,8 +427,8 @@ importers:
         specifier: workspace:*
         version: link:../handlebars-templates
       '@openapi-generator-plus/types':
-        specifier: ^2.22.0
-        version: 2.22.0
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+        version: link:../../../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
       '@openapi-generator-plus/typescript-fetch-client-generator':
         specifier: workspace:*
         version: link:../typescript-fetch-client
@@ -867,9 +886,6 @@ packages:
   '@openapi-generator-plus/core@2.26.0':
     resolution: {integrity: sha512-UIrQUEucr3cQB1WxodZB2kGs6Yw/qf7/yuGH24OHSomISxYLIGwgRpY5FQ1VdZGqXsPfWOKOX/dgaRSaRw2sxA==}
 
-  '@openapi-generator-plus/indexed-type@1.0.0':
-    resolution: {integrity: sha512-RGUrlulyLoH7+V6wDalDGD9bfwTyDgIMZnfPo5GmaQs3CGOZ2aSHYAsB78gVTz2KWTyc5Ov4doi2lPENeUarZQ==}
-
   '@openapi-generator-plus/json-schema-ref-parser@9.0.11':
     resolution: {integrity: sha512-SJbsXJgQozq86V2ImkLuthI9d7esDIPjG/MUw2BEVa3HLIi/lHMmAVpUvBGNIpK4+yvUGmZSpgLOLmW3R9XoTA==}
 
@@ -877,15 +893,6 @@ packages:
     resolution: {integrity: sha512-Nxa6cAcJR6f2qieIa/pXTg0B9LqwzwYj6/AHBS39jE/eizJrhHQm74kqzABPjrFhvp9EcZD9E8IBuRunFfQULg==}
     peerDependencies:
       openapi-types: '>=7'
-
-  '@openapi-generator-plus/testing@2.26.0':
-    resolution: {integrity: sha512-QpG42FkHRUzvY1YUfp5tevzPoa3+q+5fLFbwDD1f2/XtkNu44kD2lWEUCAXW6aFehCHwzRzRznu+Ikh6wS8zPA==}
-
-  '@openapi-generator-plus/types@2.22.0':
-    resolution: {integrity: sha512-YsgEhvDs/EWRufWk75dlWO7Nh/Fk4AFZBX6JMcyrC+4NPHHVITs4OzxcFE21Ip36ZY44HymMhv1AqDaTpNTdlg==}
-
-  '@openapi-generator-plus/utils@1.1.8':
-    resolution: {integrity: sha512-/jfXBx0JAXPREL8OEeBz8fZ57wqLzlWiwcmO5Cx2qIdDmimH8UpY2KwKYlKDBYpLTHpKoVAN8j2CwNRlngFu8A==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -3247,16 +3254,14 @@ snapshots:
 
   '@openapi-generator-plus/core@2.26.0(openapi-types@12.1.3)':
     dependencies:
-      '@openapi-generator-plus/indexed-type': 1.0.0
+      '@openapi-generator-plus/indexed-type': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
       '@openapi-generator-plus/swagger-parser': 10.1.0(openapi-types@12.1.3)
-      '@openapi-generator-plus/types': 2.22.0
-      '@openapi-generator-plus/utils': 1.1.8
+      '@openapi-generator-plus/types': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+      '@openapi-generator-plus/utils': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils
       lodash: 4.17.21
       pluralize: 8.0.0
     transitivePeerDependencies:
       - openapi-types
-
-  '@openapi-generator-plus/indexed-type@1.0.0': {}
 
   '@openapi-generator-plus/json-schema-ref-parser@9.0.11':
     dependencies:
@@ -3275,21 +3280,6 @@ snapshots:
       ajv-draft-04: 1.0.0(ajv@8.17.1)
       call-me-maybe: 1.0.2
       openapi-types: 12.1.3
-
-  '@openapi-generator-plus/testing@2.26.0(openapi-types@12.1.3)':
-    dependencies:
-      '@openapi-generator-plus/core': 2.26.0(openapi-types@12.1.3)
-      '@openapi-generator-plus/indexed-type': 1.0.0
-      '@openapi-generator-plus/types': 2.22.0
-    transitivePeerDependencies:
-      - openapi-types
-
-  '@openapi-generator-plus/types@2.22.0': {}
-
-  '@openapi-generator-plus/utils@1.1.8':
-    dependencies:
-      '@openapi-generator-plus/indexed-type': 1.0.0
-      '@openapi-generator-plus/types': 2.22.0
 
   '@pkgjs/parseargs@0.11.0':
     optional: true

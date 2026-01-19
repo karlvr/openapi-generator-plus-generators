@@ -40,6 +40,10 @@
     "typescript-eslint": "^8.49.0"
   },
   "dependencies": {
-    "@openapi-generator-plus/testing": "^2.26.0"
+    "@openapi-generator-plus/indexed-type": "link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type",
+    "@openapi-generator-plus/testing": "^2.26.0",
+    "@openapi-generator-plus/types": "link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types",
+    "@openapi-generator-plus/utils": "link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils",
+    "types": "link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types"
   }
 }

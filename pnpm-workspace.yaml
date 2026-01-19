@@ -1,2 +1,9 @@
 packages:
-  - 'packages/**'
+  - packages/**
+
+overrides:
+  '@openapi-generator-plus/indexed-type': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/indexed-type
+  '@openapi-generator-plus/testing': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/testing
+  '@openapi-generator-plus/types': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types
+  '@openapi-generator-plus/utils': link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/utils
+  types: link:../../Library/pnpm/global/5/node_modules/@openapi-generator-plus/types

@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 4.1.1
+
+### Patch Changes
+
+- 1b10743: Suppress deprecation warnings on apiImpl methods that call deprecated methods
+- b9df74f: Fully qualify @Override annotations
+- Updated dependencies [3c820a5]
+- Updated dependencies [b9df74f]
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.11.1
+
 ## 4.1.0
 
 ### Minor Changes

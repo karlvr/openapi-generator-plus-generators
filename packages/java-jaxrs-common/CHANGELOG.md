@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.11.1
+
+### Patch Changes
+
+- 3c820a5: Fix Java compilation warnings
+- b9df74f: Fully qualify @Override annotations
+
 ## 3.11.0
 
 ### Minor Changes
