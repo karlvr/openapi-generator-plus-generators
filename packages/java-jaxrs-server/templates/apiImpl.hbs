@@ -19,6 +19,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 __response
 {{/unless}}
 {{/join}}
+	@java.lang.Override
 	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}) {
 		{{#if (isContentMultipart requestBody.defaultContent)}}
 		{{{requestBody.nativeType}}} {{identifier requestBody.name}} = new {{{requestBody.nativeType.concreteType}}}();
