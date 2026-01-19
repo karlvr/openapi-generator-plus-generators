@@ -9,6 +9,9 @@ export type {{className name}}Response =
 {{/if}}
 {{/each}}
 {{#unless catchAllResponse}}
+{{#if addUnauthorizedResponseHandling}}
+	| UnauthorizedResponse
+{{/if}}
 	| UndocumentedResponse
 {{/unless}}
 	| FetchErrorResponse

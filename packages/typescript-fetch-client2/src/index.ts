@@ -44,6 +44,14 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 				continue
 			}
 
+			/* Check whether we should add UnauthorizedResponse handling */
+			for (const op of group.operations) {
+				/* Operation must have securityRequirements, no catch-all response and no explicit 401 response declared */
+				const addUnauthorizedResponseHandling: boolean = !!op.securityRequirements && !op.catchAllResponse && (!op.responses || !idx.allValues(op.responses).find(r => r.code === 401))
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				;(op as any).addUnauthorizedResponseHandling = addUnauthorizedResponseHandling
+			}
+
 			await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api', `${context.generator().toIdentifier(group.name)}.ts`),
 				{ ...rootContext, ...doc, ...group }, true, hbs)
 		}

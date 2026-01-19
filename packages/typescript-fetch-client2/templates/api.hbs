@@ -2,7 +2,7 @@
 
 import { Configuration, getDefaultConfiguration } from "../configuration{{#if @root.esm}}.js{{/if}}";
 import { COLLECTION_FORMATS, encodeURIPathSegment, RequiredError, dateToString } from "../runtime{{#if @root.esm}}.js{{/if}}";
-import type { FetchArgs, UndocumentedResponse, FetchErrorResponse } from "../runtime{{#if @root.esm}}.js{{/if}}";
+import type { FetchArgs, UnauthorizedResponse, UndocumentedResponse, FetchErrorResponse } from "../runtime{{#if @root.esm}}.js{{/if}}";
 import { Api } from "../models{{#if @root.esm}}.js{{/if}}";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
@@ -204,6 +204,15 @@ export async function {{identifier name}}({{#each parameters}}{{>frag/parameter}
 		{{/with}}
 		{{else}}
 
+		{{#if addUnauthorizedResponseHandling}}
+		if (response.status === 401) {
+			return {
+				status: 'unauthorized',
+				response,
+			}
+		}
+
+		{{/if}}
 		return {
 			status: 'undocumented',
 			contentType: mimeType,
