@@ -113,7 +113,8 @@ const URL_PATH_SEGMENT_CHAR_MAP = URL_PATH_SEGMENT_CHARS.reduce((acc: Record<str
 export function encodeURIPathSegment(segment: string) {
 	let result = encodeURIComponent(segment)
 	Object.entries(URL_PATH_SEGMENT_CHAR_MAP).forEach(([encoded, char]) => {
-		result = result.replaceAll(encoded, char)
+		/* This is an alternative to using String.replaceAll, which isn't available in older environments */
+		result = result.split(encoded).join(char)
 	})
 	return result
 }
