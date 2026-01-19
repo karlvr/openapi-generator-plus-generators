@@ -19,9 +19,11 @@ public class NoExplodeCollectionParamConverterProvider implements {{javax}}.ws.r
 					java.lang.String[] values = value.split(",");
 					{{supportPackage}}.NoExplodeCollection<T> result;
 					try {
-						result = ({{supportPackage}}.NoExplodeCollection<T>) rawType.newInstance();
-					} catch (java.lang.InstantiationException | java.lang.IllegalAccessException e) {
+						result = ({{supportPackage}}.NoExplodeCollection<T>) rawType.getDeclaredConstructor().newInstance();
+					} catch (java.lang.InstantiationException | java.lang.IllegalAccessException | java.lang.IllegalArgumentException | java.lang.NoSuchMethodException | java.lang.SecurityException e) {
 						throw new java.lang.IllegalStateException(e);
+					} catch (java.lang.reflect.InvocationTargetException e) {
+						throw new java.lang.IllegalStateException(e.getCause());
 					}
 					result.addAll(java.util.stream.Stream.of(values).map(string -> {
 						return convertFromString(string, rawType);
@@ -43,6 +45,7 @@ public class NoExplodeCollectionParamConverterProvider implements {{javax}}.ws.r
 		}
 	}
 
+	@java.lang.SuppressWarnings("unchecked")
 	private <T> T convertFromString(java.lang.String value, java.lang.Class<T> rawType) {
 		if (value == null) {
 			return null;
