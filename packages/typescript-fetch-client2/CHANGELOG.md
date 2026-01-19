@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.5.0
+
+### Minor Changes
+
+- bd10b69: Add UnauthorizedResponse for methods that declare security
+- 3d8aa21: Don't add UndocumentedResponse to API response types if there is a catch-all response
+
+### Patch Changes
+
+- e911237: Replace String.replaceAll usage with String.split.join to avoid issue with JavaScript versions
+
 ## 1.4.0
 
 ### Minor Changes

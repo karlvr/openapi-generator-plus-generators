@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.15.1
+
+### Patch Changes
+
+- e911237: Replace String.replaceAll usage with String.split.join to avoid issue with JavaScript versions
+
 ## 1.15.0
 
 ### Minor Changes
