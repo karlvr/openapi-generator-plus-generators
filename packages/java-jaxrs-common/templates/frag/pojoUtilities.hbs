@@ -1,4 +1,4 @@
-@Override
+@java.lang.Override
 public boolean equals(java.lang.Object o) {
 	if (this == o) {
 		return true;
@@ -23,12 +23,12 @@ public boolean equals(java.lang.Object o) {
 {{/if}}
 }
 
-@Override
+@java.lang.Override
 public int hashCode() {
 	return {{#if parents}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#if (isWrapper)}}this.{{identifier property.name}}{{else}}{{#each properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{/if}});
 }
 
-@Override
+@java.lang.Override
 public java.lang.String toString() {
 	java.lang.StringBuilder sb = new java.lang.StringBuilder();
 	sb.append("class {{className name}} {\n");

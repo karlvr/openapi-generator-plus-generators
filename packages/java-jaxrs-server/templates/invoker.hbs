@@ -38,7 +38,7 @@ public abstract class Abstract{{invokerName}} extends {{javax}}.ws.rs.core.Appli
 		{{/each}}
 	}
 
-	@Override
+	@java.lang.Override
 	public java.util.Set<Class<?>> getClasses() {
 		if (classes == null) {
 			setup();
@@ -46,7 +46,7 @@ public abstract class Abstract{{invokerName}} extends {{javax}}.ws.rs.core.Appli
 		return classes;
 	}
 
-	@Override
+	@java.lang.Override
 	public java.util.Set<Object> getSingletons() {
 		if (singletons == null) {
 			setup();

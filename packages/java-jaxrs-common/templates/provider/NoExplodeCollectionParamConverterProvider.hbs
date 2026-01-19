@@ -9,12 +9,12 @@ package {{apiProviderPackage}};
 public class NoExplodeCollectionParamConverterProvider implements {{javax}}.ws.rs.ext.ParamConverterProvider {
 
 	@SuppressWarnings("unchecked")
-	@Override
+	@java.lang.Override
 	public <T> {{javax}}.ws.rs.ext.ParamConverter<T> getConverter(java.lang.Class<T> rawType, java.lang.reflect.Type genericType, java.lang.annotation.Annotation[] annotations) {
 		if (rawType == {{supportPackage}}.NoExplodeList.class || rawType == {{supportPackage}}.NoExplodeSet.class) {
 			return ({{javax}}.ws.rs.ext.ParamConverter<T>) new {{javax}}.ws.rs.ext.ParamConverter<{{supportPackage}}.NoExplodeCollection<?>>() {
 
-				@Override
+				@java.lang.Override
 				public {{supportPackage}}.NoExplodeCollection<?> fromString(java.lang.String value) {
 					java.lang.String[] values = value.split(",");
 					{{supportPackage}}.NoExplodeCollection<T> result;
@@ -31,7 +31,7 @@ public class NoExplodeCollectionParamConverterProvider implements {{javax}}.ws.r
 					return result;
 				}
 
-				@Override
+				@java.lang.Override
 				public java.lang.String toString({{supportPackage}}.NoExplodeCollection<?> collection) {
 					return collection.stream()
 						.map(java.lang.Object::toString)
