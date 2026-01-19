@@ -20,6 +20,9 @@ __response
 {{/unless}}
 {{/join}}
 	@java.lang.Override
+	{{#if deprecated}}
+	@java.lang.SuppressWarnings("deprecation")
+	{{/if}}
 	public {{javax}}.ws.rs.core.Response {{name}}({{{_parameters}}}) {
 		{{#if (isContentMultipart requestBody.defaultContent)}}
 		{{{requestBody.nativeType}}} {{identifier requestBody.name}} = new {{{requestBody.nativeType.concreteType}}}();
