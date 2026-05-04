@@ -597,18 +597,29 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	
 		exportTemplates: async(outputPath, doc) => {
 			const hbs = Handlebars.create()
-			
+
 			registerStandardHelpers(hbs, context)
 
 			hbs.registerHelper('getter', function(property: CodegenProperty) {
-				if (property.schema.schemaType === CodegenSchemaType.BOOLEAN && property.required && !property.nullable) {
-					return `is${capitalize(context.generator().toIdentifier(property.name))}`
+				let propertyName = context.generator().toIdentifier(property.name)
+				if (generatorOptions.useLombok) {
+					propertyName = lombokPropertyName(property, propertyName)
+				}
+				if (isPrimitiveBool(property)) {
+					return `is${capitalize(propertyName)}`
 				} else {
-					return `get${capitalize(context.generator().toIdentifier(property.name))}`
+					return `get${capitalize(propertyName)}`
 				}
 			})
 			hbs.registerHelper('setter', function(property: CodegenProperty) {
-				return `set${capitalize(context.generator().toIdentifier(property.name))}`
+				let propertyName = context.generator().toIdentifier(property.name)
+				if (generatorOptions.useLombok) {
+					propertyName = lombokPropertyName(property, propertyName)
+				}
+				return `set${capitalize(propertyName)}`
+			})
+			hbs.registerHelper('isNativeArray', function(property: CodegenProperty) {
+				return isNativeArrayType(property.nativeType)
 			})
 			hbs.registerHelper('escapeString', function(value: string) {
 				// eslint-disable-next-line prefer-rest-params
@@ -760,5 +771,27 @@ function checkCannotUseDeduction(schema: CodegenSchema) {
 				break
 			}
 		}
+	}
+}
+
+function isNativeArrayType(nativeType: CodegenNativeType): boolean {
+	return nativeType.nativeType.endsWith('[]')
+}
+
+function isPrimitiveBool(property: CodegenProperty): boolean {
+	return property.schema.schemaType === CodegenSchemaType.BOOLEAN && property.required && !property.nullable
+}
+
+/**
+ * Lombok has special treatment for boolean properties that have a prefix of "is".
+ * e.g. isAdmin would have `@Getter isAdmin()`, `@Setter setAdmin()`
+ * instead of `@Getter isIsAdmin()`, `@Setter setIsAdmin()`
+ * See https://projectlombok.org/features/GetterSetter
+ */
+function lombokPropertyName(property: CodegenProperty, propertyName: string) {
+	if (isPrimitiveBool(property)) {
+		return propertyName.replace(/^is(?=[A-Z])/, '')
+	} else {
+		return propertyName
 	}
 }

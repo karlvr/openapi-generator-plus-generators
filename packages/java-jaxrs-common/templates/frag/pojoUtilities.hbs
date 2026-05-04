@@ -1,3 +1,4 @@
+{{#unless @root.useLombok}}
 @java.lang.Override
 public boolean equals(java.lang.Object o) {
 	if (this == o) {
@@ -13,10 +14,10 @@ public boolean equals(java.lang.Object o) {
 	{{/if}}
 {{#if (isWrapper)}}
 	{{className name}} {{identifier name}} = ({{className name}}) o;
-	return java.util.Objects.equals(this.{{identifier property.name}}, {{identifier name}}.{{identifier property.name}});
-	{{else if properties}}
+	return {{#if (isNativeArray property)}}java.util.Arrays.equals{{else}}java.util.Objects.equals{{/if}}(this.{{identifier property.name}}{{#if property.nullable}}.orElse(null){{/if}}, {{identifier name}}.{{identifier property.name}}{{#if property.nullable}}.orElse(null){{/if}});
+{{else if properties}}
 	{{className name}} {{identifier name}} = ({{className name}}) o;
-	return {{#each properties}}java.util.Objects.equals(this.{{identifier name}}, {{identifier ../name}}.{{identifier name}}){{#hasMore}}
+	return {{#each properties}}{{#if (isNativeArray .)}}java.util.Arrays.equals{{else}}java.util.Objects.equals{{/if}}(this.{{identifier name}}{{#if nullable}}.orElse(null){{/if}}, {{identifier ../name}}.{{identifier name}}{{#if nullable}}.orElse(null){{/if}}){{#hasMore}}
 			&& {{/hasMore}}{{/each}};
 {{else}}
 	return true;
@@ -27,6 +28,7 @@ public boolean equals(java.lang.Object o) {
 public int hashCode() {
 	return {{#if parents}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#if (isWrapper)}}this.{{identifier property.name}}{{else}}{{#each properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{/if}});
 }
+{{/unless}}
 
 @java.lang.Override
 public java.lang.String toString() {

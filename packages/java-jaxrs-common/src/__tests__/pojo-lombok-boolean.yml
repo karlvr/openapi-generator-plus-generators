@@ -1,0 +1,33 @@
+openapi: '3.0.3'
+info:
+  title: POJO lombok boolean test
+  version: '1.0'
+paths:
+  /files:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileData'
+      responses:
+        200:
+          description: OK
+components:
+  schemas:
+    FileData:
+      type: object
+      required:
+        - name
+        - isImage
+        - passwordProtect
+      properties:
+        name:
+          type: string
+        isImage:
+          type: boolean
+        isomorphic:
+          type: boolean
+        passwordProtect:
+          type: boolean

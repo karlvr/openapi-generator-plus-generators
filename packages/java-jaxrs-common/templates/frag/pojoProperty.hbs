@@ -2,9 +2,9 @@
 {{>frag/propertyStatusAnnotations}}
 public {{{chainClassName}}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
 	{{#if nullable}}
-	set{{capitalize (identifier name)}}({{identifier name}} != null ? java.util.Optional.of({{identifier name}}) : java.util.Optional.empty());
+	{{setter .}}({{identifier name}} != null ? java.util.Optional.of({{identifier name}}) : java.util.Optional.empty());
 	{{else}}
-	set{{capitalize (identifier name)}}({{identifier name}});
+	{{setter .}}({{identifier name}});
 	{{/if}}
 	return this;
 }
