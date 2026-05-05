@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 2.7.0
+
+### Patch Changes
+
+- @openapi-generator-plus/java-jaxrs-client-generator@4.2.0
+
 ## 2.6.14
 
 ### Patch Changes

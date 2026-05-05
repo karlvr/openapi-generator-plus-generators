@@ -1,5 +1,15 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.12.0
+
+### Minor Changes
+
+- a614773: Fix byte array comparison and improve use of Lombok code generation in POJOs.
+
+### Patch Changes
+
+- 4899c47: Remove defunct code in NoExplodeList and NoExplodeSet
+
 ## 3.11.1
 
 ### Patch Changes
