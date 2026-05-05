@@ -2,6 +2,7 @@
 {{>frag/pojoHeader}}
 {{#if @root.useLombok}}
 @lombok.EqualsAndHashCode{{#if parents}}(callSuper = true){{/if}}
+@lombok.ToString{{#if parents}}(callSuper = true){{/if}}
 {{/if}}
 public static {{#if abstract}}abstract {{/if}}class {{className name}}{{#if parents}} extends {{#each parents}}{{{nativeType.concreteType}}}{{/each}}{{/if}} {{>frag/pojoImplements class=nativeType.nativeType}}{
 

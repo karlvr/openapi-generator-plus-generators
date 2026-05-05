@@ -28,7 +28,6 @@ public boolean equals(java.lang.Object o) {
 public int hashCode() {
 	return {{#if parents}}31 * super.hashCode() + {{/if}}java.util.Objects.hash({{#if (isWrapper)}}this.{{identifier property.name}}{{else}}{{#each properties}}this.{{identifier name}}{{#hasMore}}, {{/hasMore}}{{/each}}{{/if}});
 }
-{{/unless}}
 
 @java.lang.Override
 public java.lang.String toString() {
@@ -52,3 +51,5 @@ public java.lang.String toString() {
 	sb.append("}");
 	return sb.toString();
 }
+
+{{/unless}}
