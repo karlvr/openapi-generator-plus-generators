@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 3.12.1
+
+### Patch Changes
+
+- d18497f: Use @lombok.ToString
+
 ## 3.12.0
 
 ### Minor Changes
