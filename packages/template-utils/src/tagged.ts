@@ -1,41 +1,51 @@
 /**
- * Sentinel value that, when interpolated, drops the surrounding line if the
- * interpolation is alone on its line, or renders as empty otherwise.
+ * Sentinel value indicating "render nothing here, and if you're alone on a
+ * line, drop the line entirely". `SKIP` is the only way to drop a line.
  *
- * In most cases you don't need to import this — interpolating `null`,
- * `undefined`, or `false` alone on a line drops the line, and the
- * `condition && value` idiom (see below) is the typical way to make a line
- * conditional. `SKIP` is exported for callers that want an explicit sentinel.
+ * Helpers that may produce no output (`when`, `each`, `join`, `maybe`) return
+ * `string | Skip` so the caller's type system sees the SKIP case
+ * explicitly.
+ *
+ * SKIP is a frozen sentinel object (rather than a `unique symbol`) so that
+ * TypeScript doesn't flag every interpolation with a possibly-SKIP value as
+ * an "implicit symbol-to-string conversion". If SKIP ever leaks into a plain
+ * JS template literal, its `toString` returns the empty string — defensive.
  */
-export const SKIP = Symbol('SKIP')
+export type Skip = { readonly __isSkip: true; toString(): string }
+const SKIP_INTERNAL = Object.freeze({
+	__isSkip: true as const,
+	toString: () => '',
+})
+export const SKIP: Skip = SKIP_INTERNAL
 
-/**
- * Anything with a `toString` we can call. Used so that `CodegenNativeType` (and
- * similar generator types that override `toString`) can be interpolated directly
- * without wrapping in `String(...)`.
- */
-export interface Stringable {
-	toString: () => string
+/** Identity-check predicate; works as a TS narrowing guard. */
+function isSkip(value: unknown): value is Skip {
+	return value === SKIP
 }
 
 /**
- * The set of values the {@link ts} tagged template will accept as interpolations.
- *
- * - Strings and numbers render directly.
- * - `null`, `undefined`, `false` and {@link SKIP} are line-skip sentinels — see
- *   the rules under {@link ts}.
- * - Arrays render their elements (skip sentinels are filtered).
- * - `Stringable` objects (e.g. CodegenNativeType) are coerced via `toString()`.
+ * An object that knows how to convert itself to a string. CodegenNativeType
+ * and similar generator types satisfy this. Plain objects technically match
+ * structurally; in practice you only interpolate types you've intended to
+ * stringify.
  */
-export type TsValue =
-	| string
-	| number
-	| boolean
-	| null
-	| undefined
-	| typeof SKIP
-	| Stringable
-	| TsValue[]
+export type Stringable = object & { toString(): string }
+
+/**
+ * The set of values the {@link ts} tagged template will accept as
+ * interpolations. Anything else (`null`, `undefined`, `false`, `true`,
+ * numbers, arrays) is a compile-time and run-time error — the developer is
+ * forced to convert at the call site:
+ *
+ * - `string | null` → `value ?? ''` (render as empty) or `value ?? SKIP` (drop the line)
+ * - `boolean` → `cond ? 'yes' : 'no'`
+ * - `number` → `String(n)`
+ * - array → `each(items, …)` or `arr.join('')`
+ *
+ * This makes intent explicit at every interpolation site and surfaces forgotten
+ * conversions as type errors rather than silent stringification.
+ */
+export type TsValue = string | Skip | Stringable
 
 /**
  * Tagged template for emitting source code.
@@ -43,26 +53,20 @@ export type TsValue =
  * Whitespace handling rules:
  *
  * - **Alone on a line:** if an interpolation sits on its own line (only
- *   whitespace before it on that line, and the next character in the literal
- *   is a newline or end-of-template) and the value is `null`, `undefined`,
- *   `false`, {@link SKIP}, or an array that evaluates to nothing, the entire
- *   line is removed. This matches Handlebars' newline-eating block helpers
- *   and lets you write `${cond && value}` to gate a whole line.
- * - **Mid-line:** `null`, `undefined` and `false` render as their literal
- *   string forms (`"null"`, `"undefined"`, `"false"`), so a forgotten
- *   interpolation is visible in the output rather than silently dropped. For
- *   conditional inline content use the empty-string fallback —
- *   `${cond ? value : ''}` or precompute into a variable that's `''` when
- *   absent. {@link SKIP} renders as the empty string mid-line.
- * - **Multi-line values:** when an interpolation appears alone on its line and
- *   the value contains newlines, every line after the first is indented to
- *   match the column at which the interpolation appears. Nested `ts` literals
- *   "just work" — they're strings, and the indent of the outer literal is
- *   propagated through the inner one's lines.
+ *   whitespace before it, and only whitespace + newline or end-of-template
+ *   after it) and the value is `SKIP`, the entire line is removed. This is
+ *   the only way to drop a line and matches Handlebars' standalone-block rule.
+ * - **Empty string** is just empty content — alone-on-line, it leaves a blank
+ *   line (no special drop). To drop, use `SKIP`.
+ * - **Mid-line:** `SKIP` renders as the empty string; strings and stringables
+ *   render as their content.
+ * - **Multi-line values** alone on their line are indented to match the column
+ *   at which the interpolation appears, so nested `ts` literals compose
+ *   naturally.
  * - **Trailing whitespace** on each line is trimmed.
- * - A single **leading newline** at the very start of the rendered template
- *   is dropped, so a template can start on a fresh line for readability
- *   without introducing a blank first line in the output.
+ * - A single **leading newline** at the very start of the rendered template is
+ *   dropped, so a template can begin on a fresh line for readability without
+ *   producing a blank first line in the output.
  */
 export function ts(strings: TemplateStringsArray, ...values: TsValue[]): string {
 	let result = ''
@@ -72,10 +76,10 @@ export function ts(strings: TemplateStringsArray, ...values: TsValue[]): string 
 			const nextString = strings[i + 1] ?? ''
 			const aloneOnLine = isAloneOnLine(result, nextString)
 			const rendered = renderValue(values[i], aloneOnLine)
-			if (rendered === SKIP) {
+			if (isSkip(rendered)) {
 				result = markLineForRemoval(result)
-				/* The trailing newline (and any whitespace before it) on the next
-				 * literal segment is part of the line we're removing too. */
+				/* The trailing whitespace + newline of the literal that follows
+				 * is part of the line we're removing. */
 				result += SKIP_MARKER
 			} else {
 				result += alignIndentation(result, rendered)
@@ -88,53 +92,48 @@ export function ts(strings: TemplateStringsArray, ...values: TsValue[]): string 
 const SKIP_MARKER = '\x00SKIP\x00'
 
 /**
- * Render a {@link TsValue} into a string. Returns {@link SKIP} only when the
- * caller has set `aloneOnLine` and the value is null/undefined/false/SKIP, or
- * an array that produced no rendered elements.
+ * Render a {@link TsValue} into a string, or return {@link SKIP} when the
+ * value is SKIP and we're alone on a line. Throws on other types — `null`,
+ * `undefined`, `false`, `true`, numbers, arrays — to surface forgotten
+ * conversions at the call site.
  */
-export function renderValue(value: TsValue, aloneOnLine: boolean): string | typeof SKIP {
-	if (value === SKIP) {
+export function renderValue(value: TsValue, aloneOnLine: boolean): string | Skip {
+	if (isSkip(value)) {
 		return aloneOnLine ? SKIP : ''
-	}
-	if (value === null || value === undefined || value === false) {
-		return aloneOnLine ? SKIP : String(value)
 	}
 	if (typeof value === 'string') {
 		return value
 	}
-	if (typeof value === 'number' || typeof value === 'boolean') {
-		return String(value)
-	}
-	if (Array.isArray(value)) {
-		const parts: string[] = []
-		for (const item of value) {
-			/* React-style: null/undefined/false/SKIP elements are filtered out
-			 * of arrays rather than rendered as their literal string forms. */
-			if (item === null || item === undefined || item === false || item === SKIP) {
-				continue
-			}
-			const rendered = renderValue(item, false)
-			if (rendered === SKIP || rendered.length === 0) {
-				continue
-			}
-			parts.push(rendered)
-		}
-		if (parts.length === 0) {
-			return aloneOnLine ? SKIP : ''
-		}
-		return parts.join('')
-	}
+	rejectInvalidValue(value)
 	if (typeof (value as Stringable).toString === 'function') {
 		return (value as Stringable).toString()
 	}
-	throw new Error(`Unsupported value type in ts template: ${typeof value}`)
+	throw new TypeError(`ts: unsupported interpolation value of type ${typeof value}`)
+}
+
+function rejectInvalidValue(value: unknown): void {
+	if (value === null) {
+		throw new TypeError("ts: `null` is not a valid interpolation; use `''` to render empty or `SKIP` to drop the line")
+	}
+	if (value === undefined) {
+		throw new TypeError("ts: `undefined` is not a valid interpolation; use `value ?? ''` or `value ?? SKIP`")
+	}
+	if (typeof value === 'boolean') {
+		throw new TypeError(`ts: boolean (${value}) is not a valid interpolation; use a ternary or \`when()\``)
+	}
+	if (typeof value === 'number') {
+		throw new TypeError(`ts: number (${value}) is not a valid interpolation; use \`String(${value})\``)
+	}
+	if (Array.isArray(value)) {
+		throw new TypeError("ts: array is not a valid interpolation; use `each(items, …)` or `arr.join('')`")
+	}
 }
 
 /**
  * Whether the interpolation site (between `precedingResult` and `nextString`)
  * is the only non-whitespace content on its line: only whitespace precedes it
- * since the last newline, and the next literal segment begins with a newline
- * (or is the end of the template).
+ * since the last newline, and the next literal segment begins with optional
+ * whitespace then a newline (or is the end of the template).
  */
 function isAloneOnLine(precedingResult: string, nextString: string): boolean {
 	const lastNewline = precedingResult.lastIndexOf('\n')
@@ -148,10 +147,6 @@ function isAloneOnLine(precedingResult: string, nextString: string): boolean {
 	return /^[\t ]*(\r?\n|$)/.test(nextString)
 }
 
-/**
- * Mark the current (incomplete) line of `result` as needing removal in
- * {@link finalise}.
- */
 function markLineForRemoval(result: string): string {
 	const lastNewline = result.lastIndexOf('\n')
 	if (lastNewline === -1) {
@@ -188,12 +183,6 @@ function alignIndentation(precedingResult: string, value: string): string {
 	return lines.join('\n')
 }
 
-/**
- * Apply post-processing rules: drop lines that contain a SKIP marker, trim
- * trailing whitespace from every other line, and drop a single leading
- * newline so that templates can start at the left margin without producing a
- * blank first line.
- */
 function finalise(result: string): string {
 	const lines = result.split('\n')
 	const out: string[] = []
@@ -211,11 +200,12 @@ function finalise(result: string): string {
 }
 
 /**
- * Render `value` if `condition` is truthy, else drop the line. Mostly
- * superseded by the React-style `${cond && value}` idiom, but useful when
- * `value` is expensive to compute and you want a thunk.
+ * Render `value` if `condition` is truthy, else return SKIP (so the line drops
+ * when used alone-on-line). `value` may be a string or a thunk; using a thunk
+ * is useful when the value is itself a `ts` template you don't want to
+ * evaluate when the condition is false.
  */
-export function when(condition: unknown, value: string | (() => string)): string | typeof SKIP {
+export function when(condition: unknown, value: string | (() => string)): string | Skip {
 	if (!condition) {
 		return SKIP
 	}
@@ -223,9 +213,9 @@ export function when(condition: unknown, value: string | (() => string)): string
 }
 
 /**
- * Render `value` if it's truthy, otherwise drop the line.
+ * Return `value` if it's a non-empty string, else SKIP.
  */
-export function maybe(value: string | null | undefined): string | typeof SKIP {
+export function maybe(value: string | null | undefined): string | Skip {
 	if (value === null || value === undefined || value === '') {
 		return SKIP
 	}
@@ -233,51 +223,46 @@ export function maybe(value: string | null | undefined): string | typeof SKIP {
 }
 
 /**
- * Render `value` if `condition` is truthy, else `otherwise`.
+ * Render `value` if `condition` is truthy, else `otherwise`. Just a clearer
+ * spelling of the ternary expression.
  */
 export function ifElse(condition: unknown, value: string, otherwise: string): string {
 	return condition ? value : otherwise
 }
 
 /**
- * Filter falsy values from `items` and join the rest with `separator`. Returns
- * `null` when the result is empty so that `${join(items, sep)}` alone on a
- * line drops the line. Useful when you want an inline list with conditional
- * entries: `join([a, cond && b, c], ',\n')`.
+ * Filter SKIPs from `items` and join the rest with `separator`. Returns SKIP
+ * when every item was SKIP (or the list was empty), so `${join(items, sep)}`
+ * alone on a line drops the line.
  */
-export function join(items: TsValue[], separator: string): string | null {
+export function join(items: (string | Skip)[], separator: string): string | Skip {
 	const parts: string[] = []
 	for (const item of items) {
-		if (item === null || item === undefined || item === false || item === SKIP) {
+		if (isSkip(item) || item === '') {
 			continue
 		}
-		const rendered = renderValue(item, false)
-		if (rendered === SKIP || rendered === '') {
-			continue
-		}
-		parts.push(rendered)
+		parts.push(item)
 	}
 	if (parts.length === 0) {
-		return null
+		return SKIP
 	}
 	return parts.join(separator)
 }
 
 /**
- * Render the items in `collection` by calling `render` for each, joining with `separator`.
+ * Render the items in `collection` by calling `render` for each, joining with
+ * `separator`. Items that return SKIP are dropped before the join.
  *
- * Accepts arrays, any iterable, or a string-keyed object (treated as values).
- * Items that render to SKIP, null, undefined or false are dropped before the
- * join. Returns `null` when the collection is empty (or every element was
- * skipped) so that `${each(items, ...)}` alone on a line drops the line.
+ * Returns SKIP when the collection is empty (or every item rendered to SKIP)
+ * so that `${each(items, …)}` alone on a line drops the line.
  */
 export function each<T>(
 	collection: Iterable<T> | Record<string, T> | null | undefined,
-	render: (item: T, index: number, isFirst: boolean, isLast: boolean) => TsValue,
+	render: (item: T, index: number, isFirst: boolean, isLast: boolean) => string | Skip,
 	separator = '',
-): string | null {
+): string | Skip {
 	if (!collection) {
-		return null
+		return SKIP
 	}
 	let items: T[]
 	if (Array.isArray(collection)) {
@@ -289,18 +274,14 @@ export function each<T>(
 	}
 	const parts: string[] = []
 	for (let i = 0; i < items.length; i++) {
-		const raw = render(items[i], i, i === 0, i === items.length - 1)
-		if (raw === null || raw === undefined || raw === false || raw === SKIP) {
-			continue
-		}
-		const rendered = renderValue(raw, false)
-		if (rendered === SKIP || rendered === '') {
+		const rendered = render(items[i], i, i === 0, i === items.length - 1)
+		if (isSkip(rendered) || rendered === '') {
 			continue
 		}
 		parts.push(rendered)
 	}
 	if (parts.length === 0) {
-		return null
+		return SKIP
 	}
 	return parts.join(separator)
 }

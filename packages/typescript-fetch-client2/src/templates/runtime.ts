@@ -1,4 +1,4 @@
-import { ts } from '@openapi-generator-plus/template-utils'
+import { ts, SKIP } from '@openapi-generator-plus/template-utils'
 import { header } from './header'
 import { DocumentContext, FetchClient2Hooks, RootContext } from './types'
 
@@ -35,7 +35,7 @@ export function runtime(ctx: DocumentContext, hooks: FetchClient2Hooks): string 
 
 	return ts`${header(ctx)}
 
-${runtimeImports || null}
+${runtimeImports || SKIP}
 ${defaultFetchImpl}
 ${baseUriLine}
 

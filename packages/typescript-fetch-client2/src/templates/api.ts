@@ -1,5 +1,5 @@
 import { CodegenGeneratorContext, CodegenOperation, CodegenOperationGroup, CodegenResponse, CodegenContent } from '@openapi-generator-plus/types'
-import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties } from '@openapi-generator-plus/template-utils'
+import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip } from '@openapi-generator-plus/template-utils'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { header } from './header'
 import { parameter as renderParameter } from './frag/parameter'
@@ -41,7 +41,7 @@ export function api(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateC
 	const apiImports = hooks.apiImports?.(ctx as unknown as RootContext)
 	const dateImport = ctx.dateApproach === 'blind-date'
 		? "import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';"
-		: null
+		: SKIP
 
 	const namespaceBody = each(ctx.group.operations, (op: AnnotatedOperation) => {
 		const parts: string[] = []
@@ -65,7 +65,7 @@ import { COLLECTION_FORMATS, encodeURIPathSegment, RequiredError, dateToString }
 import type { FetchArgs, UnauthorizedResponse, UndocumentedResponse, FetchErrorResponse } from "../runtime${ext}";
 import { Api } from "../models${ext}";
 ${dateImport}
-${apiImports || null}
+${apiImports || SKIP}
 
 namespace ${groupName}Api {
 ${namespaceBody}
@@ -117,18 +117,18 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 
 	const paramDecls = useInterface
 		? `__params: ${groupName}Api.${parametersInterfaceName}, `
-		: each(op.parameters, (p) => `${renderParameter(generatorContext, p)}, `) ?? ''
+		: each(op.parameters, (p) => `${renderParameter(generatorContext, p)}, `)
 	const reqBodyParam = op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''
 
 	const validateParams = each(op.parameters , (p) => validateParameter({ parameter: p, operation: op, parameterPrefix, generatorContext }), '\n')
-	const validateBody = op.requestBody ? validateParameter({ parameter: op.requestBody, operation: op, parameterPrefix: '', generatorContext }) : null
+	const validateBody = op.requestBody ? validateParameter({ parameter: op.requestBody, operation: op, parameterPrefix: '', generatorContext }) : SKIP
 
-	const pathReplacements = each(op.pathParams , (p) => `\t\t.replace('{${p.serializedName}}', encodeURIPathSegment(String(${parameterPrefix}${identifier(gen, p.name)})))`, '\n')
+	const pathReplacements = each(op.pathParams, (p) => `\t\t.replace('{${p.serializedName}}', encodeURIPathSegment(String(${parameterPrefix}${identifier(gen, p.name)})))`, '\n')
 
-	const formParamsDecl = parameterCount(op.formParams) > 0 ? '\tconst localVarFormParams = new URLSearchParams();' : null
-	const cookieParamsDecl = parameterCount(op.cookieParams) > 0 ? '\tconst localVarCookieParams = new URLSearchParams();' : null
+	const formParamsDecl = parameterCount(op.formParams) > 0 ? '\tconst localVarFormParams = new URLSearchParams();' : SKIP
+	const cookieParamsDecl = parameterCount(op.cookieParams) > 0 ? '\tconst localVarCookieParams = new URLSearchParams();' : SKIP
 
-	const securityBlock = apiSecurityRequirements(generatorContext, op) || null
+	const securityBlock = apiSecurityRequirements(generatorContext, op)
 
 	const queryAppends = each(op.queryParams , (p) => requestParameter({
 		parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
@@ -146,7 +146,7 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 		generatorContext,
 	}), '\n\n')
 
-	let formBlock: string | null = null
+	let formBlock: string | Skip = SKIP
 	if (parameterCount(op.formParams) > 0) {
 		const appends = each(op.formParams , (p) => requestParameter({
 			parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
@@ -158,7 +158,7 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 		formBlock = `${appends}\n\tlocalVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');`
 	}
 
-	let cookieBlock: string | null = null
+	let cookieBlock: string | Skip = SKIP
 	if (parameterCount(op.cookieParams) > 0) {
 		const appends = each(op.cookieParams , (p) => requestParameter({
 			parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
@@ -179,7 +179,7 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 export function ${identifier(gen, op.name)}ParamCreator(${paramDecls}${reqBodyParam}options: RequestInit = {}, configuration?: Configuration): FetchArgs {
 	configuration ??= getDefaultConfiguration();
 
-${validateParams || null}
+${validateParams || SKIP}
 ${validateBody}
 
 	let localVarPath = \`${ctx.path ?? ''}${op.path}\`${pathReplacements ? '\n' + pathReplacements : ''};
@@ -194,13 +194,13 @@ ${formParamsDecl}
 ${cookieParamsDecl}
 
 	${securityBlock}
-${queryAppends || null}
-${headerAppends || null}
+${queryAppends || SKIP}
+${headerAppends || SKIP}
 ${formBlock}
 ${cookieBlock}
 ${requestBodyContentTypeBlock}
 	localVarRequestOptions.headers = localVarHeaderParameter;
-${parameterCount(op.formParams) > 0 ? '\tlocalVarRequestOptions.body = localVarFormParams.toString();' : null}
+${parameterCount(op.formParams) > 0 ? '\tlocalVarRequestOptions.body = localVarFormParams.toString();' : SKIP}
 ${requestBodyEncodingBlock}
 
 	const localVarQueryParameterString = localVarQueryParameter.toString();
@@ -217,7 +217,7 @@ ${operationDocumentation(generatorContext, op)}
 export async function ${identifier(gen, op.name)}(${paramDecls}${reqBodyParam}options?: RequestInit, configuration?: Configuration): Promise<${groupName}Api.${className(gen, op.name)}Response> {
 	try {
 		configuration ??= getDefaultConfiguration();
-		const localVarFetchArgs = ${identifier(gen, op.name)}ParamCreator(${useInterface ? '__params, ' : each(op.parameters, (p) => `${identifier(gen, p.name)}, `) ?? ''}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration);
+		const localVarFetchArgs = ${identifier(gen, op.name)}ParamCreator(${useInterface ? '__params, ' : each(op.parameters, (p) => `${identifier(gen, p.name)}, `)}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration);
 		const response = await configuration.fetch(configuration.baseUri + localVarFetchArgs.url, localVarFetchArgs.options)
 		const contentType = response.headers.get('Content-Type');
 		const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
@@ -237,16 +237,16 @@ function renderResponses(generatorContext: CodegenGeneratorContext, op: Annotate
 		? (content: CodegenContent | null, response: CodegenResponse) => hooks.apiResponseContent!({ content, response, operation: op, group, rootContext: {} as RootContext, generatorContext })
 		: (content: CodegenContent | null, response: CodegenResponse) => defaultApiResponseContent({ content, response, generatorContext })
 
-	const documentedBranches = each(op.responses , (response: CodegenResponse) => {
+	const documentedBranches = each(op.responses, (response: CodegenResponse) => {
 		if (response.isCatchAll) {
-			return null
+			return SKIP
 		}
 		const inner = response.contents
 			? each(response.contents, (content) => ts`if (mimeType === ${stringLiteral(generatorContext, content.mediaType.mimeType)}) {
 	${responseFn(content, response)}
 }`, '\n')
 			: responseFn(null, response)
-		return ts`if (response.status === ${response.code}) {
+		return ts`if (response.status === ${String(response.code)}) {
 	${inner}
 }`
 	}, '\n')
@@ -267,7 +267,7 @@ ${cr.contents
 		response,
 	}
 }
-` : null}
+` : SKIP}
 return {
 	status: 'undocumented',
 	contentType: mimeType,
@@ -275,13 +275,13 @@ return {
 }`
 	}
 
-	return ts`${documentedBranches || null}
+	return ts`${documentedBranches || SKIP}
 ${trailing}`
 }
 
-function renderRequestBodyContentTypeBlock(rb: RequestBodyShape | null): string | null {
+function renderRequestBodyContentTypeBlock(rb: RequestBodyShape | null): string | Skip {
 	if (!rb) {
-		return null
+		return SKIP
 	}
 	const consumes = rb.consumes
 	if (consumes && consumes.length > 0) {
@@ -290,10 +290,10 @@ function renderRequestBodyContentTypeBlock(rb: RequestBodyShape | null): string 
 	return "\tlocalVarHeaderParameter.set('Content-Type', 'application/json');"
 }
 
-function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, op: AnnotatedOperation, _parameterPrefix: string): string | null {
+function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, op: AnnotatedOperation, _parameterPrefix: string): string | Skip {
 	const rb = op.requestBody as RequestBodyShape | null
 	if (!rb || !rb.nativeType) {
-		return null
+		return SKIP
 	}
 	const gen = generatorContext.generator()
 	const name = rb.name ?? 'body'
@@ -351,9 +351,9 @@ function renderWithConfigurationEntry(generatorContext: CodegenGeneratorContext,
 	const useInterface = parameterCount(op.parameters) > 1
 	const params = useInterface
 		? `__params: ${groupName}Api.${className(gen, op.name + '_parameters')}, ${op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''}options?: RequestInit, configuration?: Configuration`
-		: `${each(op.parameters, (p) => `${renderParameter(generatorContext, p)}, `) ?? ''}${op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''}options?: RequestInit, configuration?: Configuration`
+		: `${each(op.parameters, (p) => `${renderParameter(generatorContext, p)}, `)}${op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''}options?: RequestInit, configuration?: Configuration`
 	const args = useInterface
 		? `__params, ${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration ?? defaultConfiguration`
-		: `${each(op.parameters, (p) => `${identifier(gen, p.name)}, `) ?? ''}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration ?? defaultConfiguration`
+		: `${each(op.parameters, (p) => `${identifier(gen, p.name)}, `)}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration ?? defaultConfiguration`
 	return `\t\t${identifier(gen, op.name)}: (${params}) => ${identifier(gen, op.name)}(${args}),`
 }

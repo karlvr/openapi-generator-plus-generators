@@ -1,5 +1,5 @@
 import { CodegenOperation, CodegenGeneratorContext } from '@openapi-generator-plus/types'
-import { ts, each, className } from '@openapi-generator-plus/template-utils'
+import { ts, each, className, SKIP } from '@openapi-generator-plus/template-utils'
 import { propertyDocumentation } from './propertyDocumentation'
 import { CodegenProperty } from '@openapi-generator-plus/types'
 
@@ -14,7 +14,7 @@ ${each(op.parameters, (p) => {
 		generatorContext,
 	})
 	const optional = p.required ? '' : '?'
-	return ts`	${doc || null}
+	return ts`	${doc || SKIP}
 	${p.name}${optional}: ${p.nativeType}`
 }, '\n')}
 }`
