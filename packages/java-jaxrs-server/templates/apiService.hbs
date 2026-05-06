@@ -11,8 +11,8 @@ public interface {{className name}}ApiService {
 {{/each}}
 
 	{{#each operations}}
-	{{#if defaultResponse.wrapper}}
-	{{>frag/responseWrapper defaultResponse.wrapper}}
+	{{#if defaultResponse.__wrapper}}
+	{{>frag/responseWrapper defaultResponse.__wrapper}}
 	{{/if}}
 	{{#each (nonDefaultResponses)}}
 	/**

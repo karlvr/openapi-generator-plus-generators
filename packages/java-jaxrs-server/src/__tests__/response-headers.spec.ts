@@ -13,7 +13,7 @@ test('response with headers generates wrapper class info', async() => {
 	
 	const getUserOp = group1.operations.find(op => {
 		const defaultResponse = op.defaultResponse
-		return defaultResponse && (defaultResponse as MyResponse).wrapper
+		return defaultResponse && (defaultResponse as MyResponse).__wrapper
 	})
 	expect(getUserOp).toBeDefined()
 	
@@ -26,7 +26,7 @@ test('response with headers generates wrapper class info', async() => {
 	expect(defaultResponse.defaultContent).toBeDefined()
 	if (!defaultResponse.defaultContent) return
 
-	const wrapperName = (defaultResponse as MyResponse).wrapper?.name
+	const wrapperName = (defaultResponse as MyResponse).__wrapper?.name
 	expect(wrapperName).toBeDefined()
 	expect(typeof wrapperName).toBe('string')
 	expect(wrapperName).toContain('ListItemsDefaultResponse')
@@ -34,12 +34,12 @@ test('response with headers generates wrapper class info', async() => {
 	expect(defaultResponse.defaultContent.nativeType?.nativeType).toBeDefined()
 	expect(defaultResponse.defaultContent.nativeType?.nativeType).toContain('ListItemsDefaultResponse')
 	
-	const wrapperHeaders = (defaultResponse as MyResponse).wrapper?.headers
+	const wrapperHeaders = (defaultResponse as MyResponse).__wrapper?.headers
 	expect(wrapperHeaders).toBeDefined()
 	expect(Array.isArray(wrapperHeaders)).toBe(true)
 	expect(wrapperHeaders!.length).toBeGreaterThan(0)
 	
-	const wrapperBodyType = (defaultResponse as MyResponse).wrapper?.bodyNativeType
+	const wrapperBodyType = (defaultResponse as MyResponse).__wrapper?.bodyNativeType
 	expect(wrapperBodyType).toBeDefined()
 })
 
@@ -71,7 +71,7 @@ test('response wrapper class info is set for generation', async() => {
 	const group1 = doc.groups[0]
 	const opWithWrapper = group1.operations.find(op => {
 		const defaultResponse = op.defaultResponse
-		return defaultResponse && (defaultResponse as MyResponse).wrapper?.name
+		return defaultResponse && (defaultResponse as MyResponse).__wrapper?.name
 	})
 	expect(opWithWrapper).toBeDefined()
 	
@@ -81,11 +81,11 @@ test('response wrapper class info is set for generation', async() => {
 	expect(defaultResponse).toBeDefined()
 	if (!defaultResponse || !defaultResponse.defaultContent) return
 	
-	const wrapperName = (defaultResponse as MyResponse).wrapper?.name
+	const wrapperName = (defaultResponse as MyResponse).__wrapper?.name
 	expect(wrapperName).toBeDefined()
 	expect(typeof wrapperName).toBe('string')
-	expect((defaultResponse as MyResponse).wrapper?.headers).toBeDefined()
-	expect((defaultResponse as MyResponse).wrapper?.bodyNativeType).toBeDefined()
+	expect((defaultResponse as MyResponse).__wrapper?.headers).toBeDefined()
+	expect((defaultResponse as MyResponse).__wrapper?.bodyNativeType).toBeDefined()
 })
 
 test('response with headers generates wrapper for listItems', async() => {
@@ -105,7 +105,7 @@ test('response with headers generates wrapper for listItems', async() => {
 	expect(defaultResponse.defaultContent).toBeDefined()
 	if (!defaultResponse.defaultContent) return
 
-	const wrapperName = (defaultResponse as MyResponse).wrapper?.name
+	const wrapperName = (defaultResponse as MyResponse).__wrapper?.name
 	expect(wrapperName).toBe('ListItemsDefaultResponse')
 })
 

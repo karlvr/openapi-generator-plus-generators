@@ -75,12 +75,12 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#with defaultResponse}}
-			{{#if wrapper}}
-			{{{wrapper.nativeType}}} __wrapper = this.delegate.{{identifier ../name}}({{{../_arguments}}});
-			{{#if wrapper.bodyNativeType}}
-			{{{wrapper.bodyNativeType}}} __entity = __wrapper.getBody();
+			{{#if __wrapper}}
+			{{{__wrapper.nativeType}}} __wrapper = this.delegate.{{identifier ../name}}({{{../_arguments}}});
+			{{#if __wrapper.bodyNativeType}}
+			{{{__wrapper.bodyNativeType}}} __entity = __wrapper.getBody();
 			{{/if}}
-			{{#each wrapper.headers}}
+			{{#each __wrapper.headers}}
 			__addHeader(__response, {{{stringLiteral serializedName}}}, __wrapper.{{getter .}}());
 			{{/each}}
 			{{else}}

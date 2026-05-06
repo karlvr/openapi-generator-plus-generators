@@ -1,4 +1,4 @@
-import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenHeader, CodegenNativeType, CodegenResponse } from '@openapi-generator-plus/types'
+import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
 import path from 'path'
 import { apiBasePath, configString, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
@@ -184,7 +184,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 								const wrapperNativeType = new context.NativeType(`${generatorOptions.apiServicePackage}.${context.generator().toClassName(group.name)}ApiService.${wrapperName}`)
 								const bodyNativeType = response.defaultContent?.nativeType || null
 								
-								response.wrapper = {
+								response.__wrapper = {
 									name: wrapperName,
 									headers,
 									bodyNativeType: bodyNativeType,
@@ -196,7 +196,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 								operation.returnNativeType = wrapperNativeType
 							}
 						} else {
-							response.wrapper = null
+							response.__wrapper = null
 						}
 					}
 				}

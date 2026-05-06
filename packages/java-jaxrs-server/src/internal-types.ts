@@ -1,7 +1,7 @@
 import { CodegenHeader, CodegenNativeType, CodegenResponse } from '@openapi-generator-plus/types'
 
 export interface MyResponse extends CodegenResponse {
-	wrapper: MyDefaultResponseWrapper | null
+	__wrapper: MyDefaultResponseWrapper | null
 }
 
 export interface MyDefaultResponseWrapper {
