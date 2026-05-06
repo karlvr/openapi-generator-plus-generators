@@ -214,12 +214,22 @@ export function when(condition: unknown, value: string | (() => string)): string
 
 /**
  * Return `value` if it's a non-empty string, else SKIP.
+ * With a transform: if `value` is null, undefined, or empty string, return SKIP;
+ * otherwise call `transform` with the value narrowed to `NonNullable<T>`.
  */
-export function maybe(value: string | null | undefined): string | Skip {
+export function maybe(value: string | null | undefined): string | Skip
+export function maybe<T>(value: T, transform: (v: NonNullable<T>) => string): string | Skip
+export function maybe<T>(
+	value: T | string | null | undefined,
+	transform?: (v: NonNullable<T>) => string,
+): string | Skip {
 	if (value === null || value === undefined || value === '') {
 		return SKIP
 	}
-	return value
+	if (transform) {
+		return transform(value as NonNullable<T>)
+	}
+	return value as string
 }
 
 /**

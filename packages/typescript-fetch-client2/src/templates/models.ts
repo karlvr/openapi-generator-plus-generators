@@ -1,4 +1,4 @@
-import { ts, SKIP } from '@openapi-generator-plus/template-utils'
+import { ts, maybe } from '@openapi-generator-plus/template-utils'
 import { header } from './header'
 import { nestedModels } from './nestedModels'
 import { DocumentContext, FetchClient2Hooks, RootContext } from './types'
@@ -11,7 +11,7 @@ export function models(generatorContext: CodegenGeneratorContext, ctx: DocumentC
 	const modelsImports = hooks.modelsImports?.(ctx as RootContext) ?? ''
 
 	return ts`${header(ctx)}${dateApproachImport}
-${modelsImports || SKIP}
+${maybe(modelsImports)}
 
 type ValuesOf<T> = T[keyof T]
 

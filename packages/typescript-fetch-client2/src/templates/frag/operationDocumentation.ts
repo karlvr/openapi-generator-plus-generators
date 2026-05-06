@@ -1,18 +1,18 @@
 import { CodegenOperation, CodegenGeneratorContext } from '@openapi-generator-plus/types'
-import { ts, md, indent, each, SKIP } from '@openapi-generator-plus/template-utils'
+import { ts, md, indent, each, when, maybe } from '@openapi-generator-plus/template-utils'
 import { parameterDocumentation } from './parameterDocumentation'
 
 export function operationDocumentation(generatorContext: CodegenGeneratorContext, op: CodegenOperation): string {
 	return ts`/**
-${op.description ? indent(md(op.description), ' * ') : SKIP}
-${op.externalDocs ? ` * <p>External documentation: ${op.externalDocs.url}</p>` : SKIP}
-${op.externalDocs?.description ? indent(md(op.externalDocs.description), ' *   ') : SKIP}
-${op.summary ? ` * @summary ${op.summary}` : SKIP}
+${maybe(op.description, d => indent(md(d), ' * '))}
+${maybe(op.externalDocs, ed => ` * <p>External documentation: ${ed.url}</p>`)}
+${maybe(op.externalDocs?.description, d => indent(md(d), ' *   '))}
+${maybe(op.summary, s => ` * @summary ${s}`)}
 ${each(op.parameters, (p) => indent(parameterDocumentation(generatorContext, p), ' *   '))}
-${op.requestBody?.nativeType ? indent(parameterDocumentation(generatorContext, op.requestBody), ' *   ') : SKIP}
+${when(op.requestBody?.nativeType, () => indent(parameterDocumentation(generatorContext, op.requestBody!), ' *   '))}
  * @param {RequestInit} [options] Override http request option.
  * @param {Configuration} [configuration] Override the default configuration.
  * @throws {RequiredError}
-${op.deprecated ? ' * @deprecated' : SKIP}
+${when(op.deprecated, ' * @deprecated')}
  */`
 }

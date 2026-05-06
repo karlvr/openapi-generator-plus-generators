@@ -145,6 +145,14 @@ ${maybe('')}
 b`).toBe('a\npresent\nb')
 		})
 
+		test('maybe(value, fn) calls fn when non-empty, else SKIP', () => {
+			expect(ts`a
+${maybe('x', v => `got ${v}`)}
+${maybe(null, () => 'ignored')}
+${maybe('', () => 'ignored')}
+b`).toBe('a\ngot x\nb')
+		})
+
 		test('ifElse() picks between two branches', () => {
 			expect(ts`${ifElse(true, 'A', 'B')}`).toBe('A')
 			expect(ts`${ifElse(false, 'A', 'B')}`).toBe('B')
