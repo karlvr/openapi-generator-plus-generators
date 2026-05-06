@@ -1,5 +1,5 @@
 import { CodegenGeneratorContext, CodegenOperation, CodegenOperationGroup, CodegenResponse, CodegenContent } from '@openapi-generator-plus/types'
-import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip } from '@openapi-generator-plus/template-utils'
+import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip, when, maybe } from '@openapi-generator-plus/template-utils'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { header } from './header'
 import { parameter as renderParameter } from './frag/parameter'
@@ -39,9 +39,8 @@ export function api(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateC
 	const gen = generatorContext.generator()
 	const groupName = className(gen, ctx.group.name)
 	const apiImports = hooks.apiImports?.(ctx as unknown as RootContext)
-	const dateImport = ctx.dateApproach === 'blind-date'
-		? "import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';"
-		: SKIP
+	const dateImport = when(ctx.dateApproach === 'blind-date',
+		"import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';")
 
 	const namespaceBody = each(ctx.group.operations, (op: AnnotatedOperation) => {
 		const parts: string[] = []
@@ -65,7 +64,7 @@ import { COLLECTION_FORMATS, encodeURIPathSegment, RequiredError, dateToString }
 import type { FetchArgs, UnauthorizedResponse, UndocumentedResponse, FetchErrorResponse } from "../runtime${ext}";
 import { Api } from "../models${ext}";
 ${dateImport}
-${apiImports || SKIP}
+${maybe(apiImports)}
 
 namespace ${groupName}Api {
 ${namespaceBody}
@@ -121,12 +120,12 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 	const reqBodyParam = op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''
 
 	const validateParams = each(op.parameters , (p) => validateParameter({ parameter: p, operation: op, parameterPrefix, generatorContext }), '\n')
-	const validateBody = op.requestBody ? validateParameter({ parameter: op.requestBody, operation: op, parameterPrefix: '', generatorContext }) : SKIP
+	const validateBody = maybe(op.requestBody, rb => validateParameter({ parameter: rb, operation: op, parameterPrefix: '', generatorContext }))
 
 	const pathReplacements = each(op.pathParams, (p) => `\t\t.replace('{${p.serializedName}}', encodeURIPathSegment(String(${parameterPrefix}${identifier(gen, p.name)})))`, '\n')
 
-	const formParamsDecl = parameterCount(op.formParams) > 0 ? '\tconst localVarFormParams = new URLSearchParams();' : SKIP
-	const cookieParamsDecl = parameterCount(op.cookieParams) > 0 ? '\tconst localVarCookieParams = new URLSearchParams();' : SKIP
+	const formParamsDecl = when(parameterCount(op.formParams) > 0, '\tconst localVarFormParams = new URLSearchParams();')
+	const cookieParamsDecl = when(parameterCount(op.cookieParams) > 0, '\tconst localVarCookieParams = new URLSearchParams();')
 
 	const securityBlock = apiSecurityRequirements(generatorContext, op)
 
@@ -179,7 +178,7 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 export function ${identifier(gen, op.name)}ParamCreator(${paramDecls}${reqBodyParam}options: RequestInit = {}, configuration?: Configuration): FetchArgs {
 	configuration ??= getDefaultConfiguration();
 
-${validateParams || SKIP}
+${validateParams}
 ${validateBody}
 
 	let localVarPath = \`${ctx.path ?? ''}${op.path}\`${pathReplacements ? '\n' + pathReplacements : ''};
@@ -194,13 +193,13 @@ ${formParamsDecl}
 ${cookieParamsDecl}
 
 	${securityBlock}
-${queryAppends || SKIP}
-${headerAppends || SKIP}
+${queryAppends}
+${headerAppends}
 ${formBlock}
 ${cookieBlock}
 ${requestBodyContentTypeBlock}
 	localVarRequestOptions.headers = localVarHeaderParameter;
-${parameterCount(op.formParams) > 0 ? '\tlocalVarRequestOptions.body = localVarFormParams.toString();' : SKIP}
+${when(parameterCount(op.formParams) > 0, '\tlocalVarRequestOptions.body = localVarFormParams.toString();')}
 ${requestBodyEncodingBlock}
 
 	const localVarQueryParameterString = localVarQueryParameter.toString();
@@ -261,13 +260,13 @@ ${cr.contents
 }`, '\n')
 	: responseFn(null, cr)}`
 	} else {
-		trailing = ts`${op.addUnauthorizedResponseHandling ? `if (response.status === 401) {
+		trailing = ts`${when(op.addUnauthorizedResponseHandling, () => `if (response.status === 401) {
 	return {
 		status: 'unauthorized',
 		response,
 	}
 }
-` : SKIP}
+`)}
 return {
 	status: 'undocumented',
 	contentType: mimeType,
@@ -275,7 +274,7 @@ return {
 }`
 	}
 
-	return ts`${documentedBranches || SKIP}
+	return ts`${documentedBranches}
 ${trailing}`
 }
 

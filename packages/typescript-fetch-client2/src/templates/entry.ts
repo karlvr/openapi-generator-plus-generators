@@ -1,4 +1,4 @@
-import { ts, each, identifier, className, SKIP } from '@openapi-generator-plus/template-utils'
+import { ts, each, identifier, className, maybe } from '@openapi-generator-plus/template-utils'
 import { CodegenGeneratorContext } from '@openapi-generator-plus/types'
 import { header } from './header'
 import { DocumentContext, FetchClient2Hooks, RootContext } from './types'
@@ -16,7 +16,7 @@ export function entry(generatorContext: CodegenGeneratorContext, ctx: DocumentCo
 
 	return ts`${header(ctx)}
 
-${indexImports || SKIP}
+${maybe(indexImports)}
 import { Configuration } from './configuration${ext}'
 ${each(groups, (g) => `import { withConfiguration as ${identifier(gen, g.name)}ApiWithConfiguration } from './api/${identifier(gen, g.name)}${ext}'`, '\n')}
 

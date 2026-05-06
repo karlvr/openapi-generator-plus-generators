@@ -1,5 +1,5 @@
 import { CodegenObjectSchema, CodegenGeneratorContext, CodegenMapSchema } from '@openapi-generator-plus/types'
-import { ts, each, className, quoteInvalidIdentifier, SKIP } from '@openapi-generator-plus/template-utils'
+import { ts, each, className, quoteInvalidIdentifier, maybe } from '@openapi-generator-plus/template-utils'
 import { schemaDocumentation } from './frag/schemaDocumentation'
 import { discriminator } from './frag/discriminator'
 import { extendsClause } from './frag/extends'
@@ -27,21 +27,21 @@ export function modelGeneric(generatorContext: CodegenGeneratorContext, schema: 
 	}
 
 	const additionalProps = (schema as CodegenObjectSchema & { additionalProperties?: { component: { nativeType: string } } | null }).additionalProperties
-	const additional = additionalProps ? `	[key: string]: ${additionalProps.component.nativeType} | undefined;\n` : SKIP
+	const additional = maybe(additionalProps, ap => `	[key: string]: ${ap.component.nativeType} | undefined;\n`)
 	const component = (schema as CodegenObjectSchema & { component?: { nativeType: string } | null }).component
-	const componentLine = component ? `	[key: string]: ${component.nativeType};\n` : SKIP
+	const componentLine = maybe(component, c => `	[key: string]: ${c.nativeType};\n`)
 
 	const propsBody = each(schema.properties, (p) => {
 		const doc = propertyDocumentation({ property: p, memberOf: schema.name, generatorContext })
 		const ro = p.readOnly ? 'readonly ' : ''
 		const optional = p.required ? '' : '?'
-		return ts`	${doc || SKIP}
+		return ts`	${maybe(doc)}
 	${ro}${quoteInvalidIdentifier(generatorContext, p.serializedName)}${optional}: ${p.nativeType.serializedType};`
 	}, '\n')
 
-	return ts`${schemaDocumentation(schema) || SKIP}
+	return ts`${maybe(schemaDocumentation(schema))}
 export interface ${name}${extendsList} {
-${discriminator(schema as unknown as Parameters<typeof discriminator>[0]) || SKIP}
+${maybe(discriminator(schema as unknown as Parameters<typeof discriminator>[0]))}
 ${additional}
 ${componentLine}
 ${propsBody}

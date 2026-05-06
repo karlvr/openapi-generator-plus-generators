@@ -1,4 +1,4 @@
-import { ts, each, identifier, stringLiteral, isContentJson, isBinary, isString, SKIP } from '@openapi-generator-plus/template-utils'
+import { ts, each, identifier, stringLiteral, isContentJson, isBinary, isString, maybe } from '@openapi-generator-plus/template-utils'
 import {
 	FetchClient2Hooks,
 	ApiResponseContentArgs,
@@ -38,9 +38,9 @@ import type { RequestInit } from "node-fetch";`,
 }
 
 function apiResponseContentNode({ content, response, generatorContext }: ApiResponseContentArgs): string {
-	const headersBlock = response.headers ? ts`	headers: {
-${each(response.headers, (h: { name: string; serializedName: string }) => `		${identifier(generatorContext.generator(), h.name)}: response.headers.get(${stringLiteral(generatorContext, h.serializedName)}) ?? undefined,`, '\n')}
-	},` : SKIP
+	const headersBlock = maybe(response.headers, headers => ts`	headers: {
+${each(headers, (h: { name: string; serializedName: string }) => `		${identifier(generatorContext.generator(), h.name)}: response.headers.get(${stringLiteral(generatorContext, h.serializedName)}) ?? undefined,`, '\n')}
+	},`)
 
 	if (!content) {
 		return ts`return {

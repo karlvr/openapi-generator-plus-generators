@@ -1,5 +1,5 @@
 import { CodegenContent, CodegenResponse, CodegenGeneratorContext } from '@openapi-generator-plus/types'
-import { ts, each, identifier, stringLiteral, isContentJson, isBinary, isString, SKIP } from '@openapi-generator-plus/template-utils'
+import { ts, each, identifier, stringLiteral, isContentJson, isBinary, isString, maybe } from '@openapi-generator-plus/template-utils'
 
 export interface ApiResponseContentArgs {
 	content: CodegenContent | null
@@ -14,9 +14,9 @@ export interface ApiResponseContentArgs {
  * `response.blob()` for a Buffer-based read.
  */
 export function apiResponseContent({ content, response, generatorContext }: ApiResponseContentArgs): string {
-	const headersBlock = response.headers ? ts`	headers: {
-${each(response.headers, (h) => `		${identifier(generatorContext.generator(), h.name)}: response.headers.get(${stringLiteral(generatorContext, h.serializedName)}) ?? undefined,`, '\n')}
-	},` : SKIP
+	const headersBlock = maybe(response.headers, headers => ts`	headers: {
+${each(headers, (h) => `		${identifier(generatorContext.generator(), h.name)}: response.headers.get(${stringLiteral(generatorContext, h.serializedName)}) ?? undefined,`, '\n')}
+	},`)
 
 	if (!content) {
 		return ts`return {
