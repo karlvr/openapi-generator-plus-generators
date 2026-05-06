@@ -1,9 +1,10 @@
-import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from '@openapi-generator-plus/types'
+import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenHeader, CodegenNativeType, CodegenResponse } from '@openapi-generator-plus/types'
 import path from 'path'
 import { apiBasePath, configString, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaServer } from './types'
+import { MyResponse } from './internal-types'
 export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 export { CodegenOptionsJavaServer } from './types'
 
@@ -163,6 +164,44 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			}
 		},
 		generatorType: () => CodegenGeneratorType.SERVER,
+		postProcessDocument: (doc, helper) => {
+			if (base.postProcessDocument) {
+				base.postProcessDocument(doc, helper)
+			}
+
+			/* Create response wrappers in order to support response headers */
+			for (const group of doc.groups) {
+				for (const operation of group.operations) {
+					if (!operation.responses) {
+						continue
+					}
+					
+					for (const response of context.utils.values(operation.responses) as Iterable<MyResponse>) {
+						if (response.headers && response.isDefault) {
+							const headers = Array.from(context.utils.values(response.headers))
+							if (headers.length > 0) {
+								const wrapperName = `${context.generator().toClassName(operation.uniqueName)}DefaultResponse`
+								const wrapperNativeType = new context.NativeType(`${generatorOptions.apiServicePackage}.${context.generator().toClassName(group.name)}ApiService.${wrapperName}`)
+								const bodyNativeType = response.defaultContent?.nativeType || null
+								
+								response.wrapper = {
+									name: wrapperName,
+									headers,
+									bodyNativeType: bodyNativeType,
+									nativeType: wrapperNativeType,
+								}
+								if (response.defaultContent) {
+									response.defaultContent.nativeType = wrapperNativeType
+								}
+								operation.returnNativeType = wrapperNativeType
+							}
+						} else {
+							response.wrapper = null
+						}
+					}
+				}
+			}
+		},
 	}
 }
 

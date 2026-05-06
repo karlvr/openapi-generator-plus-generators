@@ -19,6 +19,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 __response
 {{/unless}}
 {{/join}}
+	{{>frag/operationDocumentation}}
 	@java.lang.Override
 	{{#if deprecated}}
 	@java.lang.SuppressWarnings("deprecation")
@@ -77,15 +78,23 @@ __response
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#with defaultResponse}}
+			{{#if wrapper}}
+			{{{wrapper.nativeType}}} __wrapper = this.delegate.{{identifier ../name}}({{{../_arguments}}});
+			{{#if wrapper.bodyNativeType}}
+			{{{wrapper.bodyNativeType}}} __entity = __wrapper.getBody();
+			{{/if}}
+			{{#each wrapper.headers}}
+			__addHeader(__response, {{{stringLiteral serializedName}}}, __wrapper.{{getter .}}());
+			{{/each}}
+			{{else}}
 			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{{../_arguments}}});
+			{{/if}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__entity' schema=defaultContent.schema}}
 			{{/if}}
 			__response.entity(__entity);
-			{{#if defaultContent}}
 			__response.type({{{stringLiteral defaultContent.mediaType.mediaType}}});
-			{{/if}}
 			{{/if}}
 			return __response.build();
 			{{/with}}
@@ -97,6 +106,9 @@ __response
 			{{else}}
 			__response.status(__e.getResponseCode());
 			{{/unless}}
+			{{#each headers}}
+			__addHeader(__response, {{{stringLiteral serializedName}}}, __e.{{getter .}}());
+			{{/each}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()' schema=defaultContent.schema}}
@@ -115,4 +127,12 @@ __response
 	}
 
 {{/each}}
+	private void __addHeader({{javax}}.ws.rs.core.Response.ResponseBuilder response, java.lang.String name, java.lang.Object value) {
+		{{!-- Remove existing headers, such as the default Cache-Control header we add. --}}
+		response.header(name, null);
+		if (value != null) {
+			response.header(name, value);
+		}
+	}
+
 }
