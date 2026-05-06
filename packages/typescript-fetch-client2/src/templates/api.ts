@@ -117,7 +117,7 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 
 	const paramDecls = useInterface
 		? `__params: ${groupName}Api.${parametersInterfaceName}, `
-		: each(op.parameters , (p) => `${renderParameter(generatorContext, p)}, `)
+		: each(op.parameters, (p) => `${renderParameter(generatorContext, p)}, `) ?? ''
 	const reqBodyParam = op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''
 
 	const validateParams = each(op.parameters , (p) => validateParameter({ parameter: p, operation: op, parameterPrefix, generatorContext }), '\n')
@@ -217,7 +217,7 @@ ${operationDocumentation(generatorContext, op)}
 export async function ${identifier(gen, op.name)}(${paramDecls}${reqBodyParam}options?: RequestInit, configuration?: Configuration): Promise<${groupName}Api.${className(gen, op.name)}Response> {
 	try {
 		configuration ??= getDefaultConfiguration();
-		const localVarFetchArgs = ${identifier(gen, op.name)}ParamCreator(${useInterface ? '__params, ' : each(op.parameters , (p) => `${identifier(gen, p.name)}, `)}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration);
+		const localVarFetchArgs = ${identifier(gen, op.name)}ParamCreator(${useInterface ? '__params, ' : each(op.parameters, (p) => `${identifier(gen, p.name)}, `) ?? ''}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration);
 		const response = await configuration.fetch(configuration.baseUri + localVarFetchArgs.url, localVarFetchArgs.options)
 		const contentType = response.headers.get('Content-Type');
 		const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
@@ -351,9 +351,9 @@ function renderWithConfigurationEntry(generatorContext: CodegenGeneratorContext,
 	const useInterface = parameterCount(op.parameters) > 1
 	const params = useInterface
 		? `__params: ${groupName}Api.${className(gen, op.name + '_parameters')}, ${op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''}options?: RequestInit, configuration?: Configuration`
-		: `${each(op.parameters , (p) => `${renderParameter(generatorContext, p)}, `)}${op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''}options?: RequestInit, configuration?: Configuration`
+		: `${each(op.parameters, (p) => `${renderParameter(generatorContext, p)}, `) ?? ''}${op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''}options?: RequestInit, configuration?: Configuration`
 	const args = useInterface
 		? `__params, ${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration ?? defaultConfiguration`
-		: `${each(op.parameters , (p) => `${identifier(gen, p.name)}, `)}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration ?? defaultConfiguration`
+		: `${each(op.parameters, (p) => `${identifier(gen, p.name)}, `) ?? ''}${op.requestBody?.nativeType ? `${identifier(gen, (op.requestBody as { name: string }).name)}, ` : ''}options, configuration ?? defaultConfiguration`
 	return `\t\t${identifier(gen, op.name)}: (${params}) => ${identifier(gen, op.name)}(${args}),`
 }

@@ -38,7 +38,7 @@ export function apiSecurityRequirements(generatorContext: CodegenGeneratorContex
 	}
 	return each(sr.requirements, (req) => {
 		return each(req.schemes, ({ scheme, scopes }) => renderScheme(generatorContext, scheme, scopes ?? []), '\n')
-	}, '\n')
+	}, '\n') ?? ''
 }
 
 function renderScheme(generatorContext: CodegenGeneratorContext, scheme: SecurityScheme, scopes: Array<{ name: string }>): string {
