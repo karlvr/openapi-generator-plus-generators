@@ -2,12 +2,15 @@ import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenCo
 import { BlindDateOptions, CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
-import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
+import { loadTemplates, emit as hbsEmit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
+import { emit } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator, configBoolean, configObject, configString, configStringArray, debugStringify, nullableConfigBoolean, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import pluralize, { isPlural } from 'pluralize'
+import { gitignore as gitignoreTemplate, TemplateRootContext, TypeScriptCommonTemplates } from './templates'
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions, DateApproach } from './types'
+export { TemplateRootContext, TypeScriptCommonTemplates } from './templates'
 
 function escapeString(value: string | number | boolean) {
 	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
@@ -45,6 +48,20 @@ export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	defaultNpmOptions?: (config: CodegenConfig, defaultValue: NpmOptions) => NpmOptions
 	defaultTypeScriptOptions?: (config: CodegenConfig, defaultValue: TypeScriptOptions) => TypeScriptOptions
 	toEnumLiteral?: CodegenGenerator['toLiteral']
+
+	/**
+	 * Typed templates supplied by a child generator that has migrated away from
+	 * Handlebars. When a key is present here it takes precedence over the
+	 * Handlebars partial of the same name.
+	 */
+	templates?: TypeScriptCommonTemplates
+	/**
+	 * Emit additional generator-specific files. The migrated equivalent of
+	 * {@link additionalExportTemplates}: takes only the data the templates need,
+	 * with no Handlebars instance. Both may be supplied during transition; both
+	 * will be called in turn.
+	 */
+	exportFiles?: (outputPath: string, doc: CodegenDocument, rootContext: TemplateRootContext) => Promise<void>
 }
 
 export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext, add: Partial<TypeScriptGeneratorContext>): TypeScriptGeneratorContext {
@@ -76,6 +93,16 @@ export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext
 			}
 			if (add.additionalExportTemplates) {
 				await add.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+			}
+		},
+		/* For typed templates, `add` (the child closer to the leaf) wins. */
+		templates: { ...base.templates, ...add.templates },
+		exportFiles: async function(outputPath, doc, rootContext) {
+			if (base.exportFiles) {
+				await base.exportFiles(outputPath, doc, rootContext)
+			}
+			if (add.exportFiles) {
+				await add.exportFiles(outputPath, doc, rootContext)
 			}
 		},
 		defaultNpmOptions: function(config, defaultOptions) {
@@ -501,19 +528,34 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 
-			const rootContext = context.generator().templateRootContext()
+			const rootContext = { ...context.generator().templateRootContext(), ...doc } as TemplateRootContext
 
 			if (generatorOptions.npm) {
-				await emit('package', path.join(outputPath, 'package.json'), { ...rootContext, ...generatorOptions.npm }, false, hbs)
-				await emit('gitignore', path.join(outputPath, '.gitignore'), { ...rootContext, ...doc }, false, hbs)
+				const packageContext = { ...rootContext, ...generatorOptions.npm }
+				if (context.templates?.package) {
+					await emit(context.templates.package(packageContext), path.join(outputPath, 'package.json'), false)
+				} else {
+					await hbsEmit('package', path.join(outputPath, 'package.json'), packageContext, false, hbs)
+				}
+				const gitignoreContext = { ...rootContext, ...doc }
+				const gitignoreFn = context.templates?.gitignore ?? gitignoreTemplate
+				await emit(gitignoreFn(gitignoreContext), path.join(outputPath, '.gitignore'), false)
 			}
-			
+
 			if (generatorOptions.typescript) {
-				await emit('tsconfig', path.join(outputPath, 'tsconfig.json'), { ...rootContext, ...generatorOptions.typescript }, false, hbs)
+				const tsconfigContext = { ...rootContext, ...generatorOptions.typescript }
+				if (context.templates?.tsconfig) {
+					await emit(context.templates.tsconfig(tsconfigContext), path.join(outputPath, 'tsconfig.json'), false)
+				} else {
+					await hbsEmit('tsconfig', path.join(outputPath, 'tsconfig.json'), tsconfigContext, false, hbs)
+				}
 			}
-	
+
 			if (context.additionalExportTemplates) {
 				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+			}
+			if (context.exportFiles) {
+				await context.exportFiles(outputPath, doc, rootContext)
 			}
 		},
 
