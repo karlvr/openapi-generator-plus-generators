@@ -2,27 +2,39 @@ import { ts } from '@openapi-generator-plus/template-utils'
 import { header } from './header'
 import { DocumentContext, FetchClient2Hooks, RootContext } from './types'
 
-export function runtime(ctx: DocumentContext, hooks: FetchClient2Hooks): string {
-	const baseUriLine = (ctx.servers && ctx.servers.length > 0)
-		? `export const BASE_URI = "${ctx.servers[0].url}".replace(/\\/+$/, "");`
-		: 'export const BASE_URI = "";'
+/**
+ * Default body for the `runtimeImports` hook: the polyfill import line, used
+ * when `includePolyfills` is set in the generator options. Child generators
+ * that override `runtimeImports` typically don't want polyfills and just
+ * supply their own import block instead.
+ */
+function defaultRuntimeImports(ctx: RootContext): string {
+	return ctx.includePolyfills ? 'import "whatwg-fetch";' : ''
+}
 
-	const polyfillsImport = ctx.includePolyfills ? 'import "whatwg-fetch";' : null
-	const polyfillsDep = ctx.includePolyfills ? '"whatwg-fetch": "^3.6.2"' : null
-	void polyfillsDep
-
-	const runtimeImports = hooks.runtimeImports?.(ctx as RootContext)
-	const defaultFetchImpl = hooks.defaultFetch?.(ctx as RootContext) ?? `const MISSING_FETCH: FetchAPI = () => { throw new Error('fetch is undefined'); };
+/**
+ * Default body for the `defaultFetch` hook: the browser-fetch fallback.
+ */
+function defaultDefaultFetch(): string {
+	return `const MISSING_FETCH: FetchAPI = () => { throw new Error('fetch is undefined'); };
 export const defaultFetch: FetchAPI = typeof window !== "undefined" && typeof window.fetch !== "undefined"
 	? window.fetch.bind(window) as typeof window.fetch
 	: typeof fetch !== "undefined"
 		? fetch
 		: MISSING_FETCH
 		;`
+}
+
+export function runtime(ctx: DocumentContext, hooks: FetchClient2Hooks): string {
+	const baseUriLine = (ctx.servers && ctx.servers.length > 0)
+		? `export const BASE_URI = "${ctx.servers[0].url}".replace(/\\/+$/, "");`
+		: 'export const BASE_URI = "";'
+
+	const runtimeImports = (hooks.runtimeImports ?? defaultRuntimeImports)(ctx as RootContext)
+	const defaultFetchImpl = (hooks.defaultFetch ?? defaultDefaultFetch)(ctx as RootContext)
 
 	return ts`${header(ctx)}
 
-${polyfillsImport}
 ${runtimeImports || null}
 ${defaultFetchImpl}
 ${baseUriLine}
