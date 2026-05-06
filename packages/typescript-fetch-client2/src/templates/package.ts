@@ -1,4 +1,4 @@
-import { ts, join } from '@openapi-generator-plus/template-utils'
+import { ts, join, when, SKIP } from '@openapi-generator-plus/template-utils'
 import { NpmOptions, TemplateRootContext } from '@openapi-generator-plus/typescript-generator-common'
 import { FetchClient2Hooks, RootContext } from './types'
 
@@ -13,9 +13,9 @@ function defaultPackageDependencies(ctx: RootContext): string[] {
 
 export function packageJson(ctx: TemplateRootContext & NpmOptions, hooks: FetchClient2Hooks): string {
 	const root = ctx as TemplateRootContext & NpmOptions & RootContext
-	const dependencies = [
+	const dependencies: (string | typeof SKIP)[] = [
 		...(hooks.packageDependencies ?? defaultPackageDependencies)(root),
-		root.dateApproach === 'blind-date' && '"blind-date": "^3.2.0"',
+		when(root.dateApproach === 'blind-date', '"blind-date": "^3.2.0"'),
 	]
 
 	/* `publishConfig` is appended after the closing `}` of `devDependencies`,
@@ -29,7 +29,7 @@ export function packageJson(ctx: TemplateRootContext & NpmOptions, hooks: FetchC
 	return ts`
 {
 	"name": "${ctx.name}",
-	${ctx.private && '"private": true,'}
+	${ctx.private ? '"private": true,' : SKIP}
 	"version": "${ctx.version}",
 	"description": "API client for ${ctx.name}",
 	"author": "${root.generatorClass}",

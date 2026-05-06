@@ -1,4 +1,4 @@
-import { ts, when, maybe, ifElse, each, indent, join, joinLines, SKIP } from '../tagged'
+import { ts, when, maybe, ifElse, each, indent, join, joinLines, SKIP, TsValue } from '../tagged'
 
 describe('ts tagged template', () => {
 	describe('basic interpolation', () => {
@@ -10,104 +10,61 @@ describe('ts tagged template', () => {
 			expect(ts`hello ${'world'}`).toBe('hello world')
 		})
 
-		test('interpolates numbers and booleans', () => {
-			expect(ts`${1} ${true}`).toBe('1 true')
+		test('renders Stringable values via toString', () => {
+			class Foo {
+				toString() { return 'foo!' }
+			}
+			expect(ts`a ${new Foo()} b`).toBe('a foo! b')
 		})
 	})
 
-	describe('alone-on-line drop semantics', () => {
-		test('drops a line when interpolation is null and alone on its line', () => {
-			const value: string | null = null
-			expect(ts`one
-${value}
-three`).toBe('one\nthree')
-		})
-
-		test('drops a line when interpolation is undefined and alone on its line', () => {
-			const value: string | undefined = undefined
-			expect(ts`one
-${value}
-three`).toBe('one\nthree')
-		})
-
-		test('drops a line when interpolation is false and alone on its line', () => {
-			expect(ts`one
-${false}
-three`).toBe('one\nthree')
-		})
-
-		test('drops a line when interpolation is SKIP and alone on its line', () => {
+	describe('SKIP', () => {
+		test('drops the line when SKIP is alone on its line', () => {
 			expect(ts`one
 ${SKIP}
 three`).toBe('one\nthree')
 		})
 
-		test('preserves blank line for empty-string interpolation alone on line', () => {
+		test('drops the line including its leading whitespace', () => {
 			expect(ts`one
-${''}
-three`).toBe('one\n\nthree')
-		})
-
-		test('drops a line including its leading whitespace', () => {
-			expect(ts`one
-\t${null}
+\t${SKIP}
 three`).toBe('one\nthree')
-		})
-
-		test('React-style ${cond && value} drops the line when cond is false', () => {
-			const result = ts`a
-\t${false && '"private": true,'}
-b`
-			expect(result).toBe('a\nb')
-		})
-
-		test('React-style ${cond && value} renders when cond is truthy', () => {
-			const result = ts`a
-\t${true && '"private": true,'}
-b`
-			expect(result).toBe('a\n\t"private": true,\nb')
-		})
-	})
-
-	describe('mid-line rendering', () => {
-		test('renders null/undefined/false as their string forms mid-line', () => {
-			expect(ts`x ${null} y`).toBe('x null y')
-			expect(ts`x ${undefined} y`).toBe('x undefined y')
-			expect(ts`x ${false} y`).toBe('x false y')
 		})
 
 		test('renders SKIP as empty string mid-line', () => {
 			expect(ts`x ${SKIP} y`).toBe('x  y')
 		})
 
-		test('renders true and 0 as their string forms mid-line', () => {
-			expect(ts`x ${true} y`).toBe('x true y')
-			expect(ts`x ${0} y`).toBe('x 0 y')
+		test('does NOT drop the line for empty string alone-on-line', () => {
+			expect(ts`one
+${''}
+three`).toBe('one\n\nthree')
 		})
 
-		test('mid-line conditional uses empty-string fallback', () => {
-			const cond: boolean = false
-			expect(ts`}${cond ? 'shown' : ''}`).toBe('}')
+		test('${cond ? value : SKIP} drops the line when cond is false', () => {
+			const cond = false
+			expect(ts`a
+\t${cond ? 'shown' : SKIP}
+b`).toBe('a\nb')
 		})
 	})
 
-	describe('arrays', () => {
-		test('renders an array joined without separator', () => {
-			expect(ts`${['a', 'b', 'c']}`).toBe('abc')
+	describe('rejects invalid interpolation values at runtime', () => {
+		test('throws on null', () => {
+			expect(() => ts`${null as unknown as TsValue}`).toThrow(/null/)
 		})
-
-		test('drops null/undefined/false/SKIP elements from an array', () => {
-			expect(ts`${['a', null, 'b', undefined, 'c', false, 'd', SKIP]}`).toBe('abcd')
+		test('throws on undefined', () => {
+			expect(() => ts`${undefined as unknown as TsValue}`).toThrow(/undefined/)
 		})
-
-		test('drops a line when an array produces no output and is alone on its line', () => {
-			expect(ts`one
-${[null, undefined, false]}
-three`).toBe('one\nthree')
+		test('throws on boolean', () => {
+			expect(() => ts`${false as unknown as TsValue}`).toThrow(/boolean/)
+			expect(() => ts`${true as unknown as TsValue}`).toThrow(/boolean/)
 		})
-
-		test('does not drop the line when an empty array is mid-line', () => {
-			expect(ts`x ${[]} y`).toBe('x  y')
+		test('throws on number', () => {
+			expect(() => ts`${1 as unknown as TsValue}`).toThrow(/number/)
+		})
+		test('throws on array', () => {
+			expect(() => ts`${[1, 2] as unknown as TsValue}`).toThrow(/array/)
 		})
 	})
 
@@ -162,11 +119,16 @@ hello`).toBe('\nhello')
 	})
 
 	describe('helpers', () => {
-		test('when() renders or skips based on condition', () => {
+		test('when() returns the value when condition truthy', () => {
 			expect(ts`a
 ${when(true, 'shown')}
-${when(false, 'hidden')}
 b`).toBe('a\nshown\nb')
+		})
+
+		test('when() returns SKIP and drops the line when condition falsy', () => {
+			expect(ts`a
+${when(false, 'hidden')}
+b`).toBe('a\nb')
 		})
 
 		test('when() supports thunks', () => {
@@ -175,7 +137,7 @@ ${when(true, () => 'computed')}
 b`).toBe('a\ncomputed\nb')
 		})
 
-		test('maybe() drops empty/null values', () => {
+		test('maybe() returns the value when non-empty, else SKIP', () => {
 			expect(ts`a
 ${maybe('present')}
 ${maybe(null)}
@@ -192,14 +154,15 @@ b`).toBe('a\npresent\nb')
 			expect(each(['a', 'b', 'c'], (item, _i, _f, isLast) => isLast ? item : `${item}, `)).toBe('a, b, c')
 		})
 
-		test('each() skips items that render to SKIP/null', () => {
-			expect(each([1, 2, 3, 4], (n) => n % 2 === 0 ? `${n}` : SKIP, ',')).toBe('2,4')
+		test('each() skips items that return SKIP', () => {
+			expect(each([1, 2, 3, 4], n => n % 2 === 0 ? `${n}` : SKIP, ',')).toBe('2,4')
 		})
 
-		test('each() returns null when the collection is empty', () => {
-			expect(each(null, () => 'x')).toBeNull()
-			expect(each(undefined, () => 'x')).toBeNull()
-			expect(each([], () => 'x')).toBeNull()
+		test('each() returns SKIP for empty / all-skipped collections', () => {
+			expect(each(null, () => 'x')).toBe(SKIP)
+			expect(each(undefined, () => 'x')).toBe(SKIP)
+			expect(each([], () => 'x')).toBe(SKIP)
+			expect(each([1, 2, 3], () => SKIP)).toBe(SKIP)
 		})
 
 		test('${each(...)} drops the line when alone on a line and empty', () => {
@@ -208,20 +171,25 @@ ${each([], () => 'x')}
 b`).toBe('a\nb')
 		})
 
+		test('${each(...)} renders empty mid-line when empty', () => {
+			expect(ts`x ${each([], () => 'x')} y`).toBe('x  y')
+		})
+
+		test('join() filters SKIP and empty strings, joins the rest', () => {
+			expect(join(['a', SKIP, 'b', '', 'c'], ',')).toBe('a,b,c')
+		})
+
+		test('join() returns SKIP when all items are SKIP/empty', () => {
+			expect(join([SKIP, SKIP], ',')).toBe(SKIP)
+			expect(join([], ',')).toBe(SKIP)
+		})
+
 		test('indent() prefixes every non-empty line', () => {
 			expect(indent('a\nb\n\nc', '  ')).toBe('  a\n  b\n\n  c')
 		})
 
 		test('joinLines() drops empty lines and joins with separator', () => {
 			expect(joinLines('a\n\nb\n  \nc', ', ')).toBe('a, b, c')
-		})
-
-		test('join() filters falsy values and joins the rest', () => {
-			expect(join(['a', false, 'b', null, 'c', undefined], ',')).toBe('a,b,c')
-		})
-
-		test('join() returns null when every item is falsy', () => {
-			expect(join([null, false, undefined], ',')).toBeNull()
 		})
 	})
 })

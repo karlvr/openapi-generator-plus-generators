@@ -1,5 +1,5 @@
 import { CodegenOperation, CodegenGeneratorContext } from '@openapi-generator-plus/types'
-import { ts, each, capitalize, stringLiteral } from '@openapi-generator-plus/template-utils'
+import { ts, each, capitalize, stringLiteral, Skip, SKIP } from '@openapi-generator-plus/template-utils'
 
 interface SecurityScheme {
 	name: string
@@ -31,14 +31,14 @@ interface SecurityRequirements {
  * Render the auth-injection block for an API operation. Emits one chunk per
  * scheme per requirement.
  */
-export function apiSecurityRequirements(generatorContext: CodegenGeneratorContext, op: CodegenOperation): string {
+export function apiSecurityRequirements(generatorContext: CodegenGeneratorContext, op: CodegenOperation): string | Skip {
 	const sr = (op as CodegenOperation & { securityRequirements: SecurityRequirements | null }).securityRequirements
 	if (!sr) {
-		return ''
+		return SKIP
 	}
 	return each(sr.requirements, (req) => {
 		return each(req.schemes, ({ scheme, scopes }) => renderScheme(generatorContext, scheme, scopes ?? []), '\n')
-	}, '\n') ?? ''
+	}, '\n')
 }
 
 function renderScheme(generatorContext: CodegenGeneratorContext, scheme: SecurityScheme, scopes: Array<{ name: string }>): string {

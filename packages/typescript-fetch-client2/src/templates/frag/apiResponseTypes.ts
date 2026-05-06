@@ -102,7 +102,7 @@ function renderNoContentInterface(generatorContext: CodegenGeneratorContext, op:
 ${each(response.headers, (h) => `		${stringLiteral(generatorContext, h.name)}?: ${h.schema.nativeType}`, '\n')}
 	}` : '	headers?: undefined'
 	return ts`export interface ${interfaceName} {
-	status: ${response.code}
+	status: ${String(response.code)}
 	body?: undefined
 ${headersBlock}
 }`
