@@ -1,4 +1,4 @@
-import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose, CodegenEncodingStyle } from '@openapi-generator-plus/types'
+import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose, CodegenEncodingStyle, CodegenParameter, CodegenHeader } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
@@ -600,7 +600,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 			registerStandardHelpers(hbs, context)
 
-			hbs.registerHelper('getter', function(property: CodegenProperty) {
+			hbs.registerHelper('getter', function(property: CodegenProperty | CodegenParameter | CodegenHeader) {
 				let propertyName = context.generator().toIdentifier(property.name)
 				if (generatorOptions.useLombok) {
 					propertyName = lombokPropertyName(property, propertyName)
@@ -611,7 +611,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					return `get${capitalize(propertyName)}`
 				}
 			})
-			hbs.registerHelper('setter', function(property: CodegenProperty) {
+			hbs.registerHelper('setter', function(property: CodegenProperty | CodegenParameter | CodegenHeader) {
 				let propertyName = context.generator().toIdentifier(property.name)
 				if (generatorOptions.useLombok) {
 					propertyName = lombokPropertyName(property, propertyName)
@@ -778,7 +778,7 @@ function isNativeArrayType(nativeType: CodegenNativeType): boolean {
 	return nativeType.nativeType.endsWith('[]')
 }
 
-function isPrimitiveBool(property: CodegenProperty): boolean {
+function isPrimitiveBool(property: CodegenProperty | CodegenParameter | CodegenHeader): boolean {
 	return property.schema.schemaType === CodegenSchemaType.BOOLEAN && property.required && !property.nullable
 }
 
@@ -788,7 +788,7 @@ function isPrimitiveBool(property: CodegenProperty): boolean {
  * instead of `@Getter isIsAdmin()`, `@Setter setIsAdmin()`
  * See https://projectlombok.org/features/GetterSetter
  */
-function lombokPropertyName(property: CodegenProperty, propertyName: string) {
+function lombokPropertyName(property: CodegenProperty | CodegenParameter | CodegenHeader, propertyName: string) {
 	if (isPrimitiveBool(property)) {
 		return propertyName.replace(/^is(?=[A-Z])/, '')
 	} else {

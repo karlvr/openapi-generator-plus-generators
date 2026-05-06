@@ -9,8 +9,11 @@ public interface {{className name}}ApiService {
 	{{>frag/operationDocumentation}}
 	{{#if returnNativeType}}{{{returnNativeType}}}{{else}}void{{/if}} {{identifier name}}({{{_parameters}}}){{#each (nonDefaultResponses)}}{{#if @first}} throws{{else}},{{/if}} {{{className (concat ../name '_' code)}}}Exception{{/each}};
 {{/each}}
-	
+
 	{{#each operations}}
+	{{#if defaultResponse.wrapper}}
+	{{>frag/responseWrapper defaultResponse.wrapper}}
+	{{/if}}
 	{{#each (nonDefaultResponses)}}
 	/**
 	{{#if description}}
@@ -22,52 +25,93 @@ public interface {{className name}}ApiService {
 	 * <p>Sends a response with a {{code}} status.</p>
 	{{/if}}
 	 */
+	{{#if @root.useLombok}}
+	@lombok.Getter
+	@lombok.Setter
+	{{/if}}
 	class {{{className (concat ../name '_' code)}}}Exception extends Exception {
 
 		private static final long serialVersionUID = 1L;
 
-{{#set '_parameters'}}
-{{/set}}
 		{{#if isCatchAll}}
 		private int responseCode;
-{{#set '_parameters'}}
-{{{_parameters}}}
-int responseCode
-{{/set}}
-
 		{{/if}}
 		{{#if defaultContent.nativeType}}
 		private {{{defaultContent.nativeType}}} entity;
-{{#set '_parameters'}}
-{{{_parameters}}}
+		{{/if}}
+		{{#each headers}}
+		private {{{nativeType}}} {{identifier name}};
+		{{/each}}
+{{#join '_parameters' ', '}}
+{{#if isCatchAll}}
+int responseCode
+{{/if}}
+{{#if defaultContent.nativeType}}
 {{{defaultContent.nativeType}}} entity
+{{/if}}
+{{#each headers}}
+{{#if required}}
+{{{nativeType}}} {{identifier name}}
+{{/if}}
+{{/each}}
+{{/join}}
+{{#set '__responseExceptionClassName'}}
+{{{className (concat ../name '_' code)}}}Exception
 {{/set}}
 
-		{{/if}}
-{{#join '_parameters' ', '}}
-{{{_parameters}}}
-{{/join}}
-		public {{{className (concat ../name '_' code)}}}Exception({{{_parameters}}}) {
+		public {{{__responseExceptionClassName}}}({{{_parameters}}}) {
 			{{#if isCatchAll}}
 			this.responseCode = responseCode;
 			{{/if}}
 			{{#if defaultContent.nativeType}}
 			this.entity = entity;
 			{{/if}}
+			{{#each headers}}
+			{{#if required}}
+			this.{{identifier name}} = {{identifier name}};
+			{{/if}}
+			{{/each}}
 		}
 
 		{{#if isCatchAll}}
+		{{#unless @root.useLombok}}
 		public int getResponseCode() {
 			return this.responseCode;
 		}
 
+		{{/unless}}
+		public {{{__responseExceptionClassName}}} responseCode(int responseCode) {
+			this.responseCode = responseCode;
+			return this;
+		}
+
 		{{/if}}
 		{{#if defaultContent.nativeType}}
+		{{#unless @root.useLombok}}
 		public {{{defaultContent.nativeType}}} getEntity() {
 			return this.entity;
 		}
 
+		{{/unless}}
+		public {{{__responseExceptionClassName}}} entity({{{defaultContent.nativeType}}} entity) {
+			this.entity = entity;
+			return this;
+		}
+
 		{{/if}}
+		{{#each headers}}
+		{{#unless @root.useLombok}}
+		public {{{nativeType}}} {{getter .}}() {
+			return this.{{identifier name}};
+		}
+
+		{{/unless}}
+		public {{{../__responseExceptionClassName}}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
+			this.{{identifier name}} = {{identifier name}};
+			return this;
+		}
+
+		{{/each}}
 		{{>hooks/apiServiceException operation=..}}
 	}
 
