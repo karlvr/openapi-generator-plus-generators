@@ -1,13 +1,7 @@
 {{>frag/operationVars op=op jaxrs=false service=true}}
 {{#join 'op._parameters' ', '}}
 {{{op._parameters}}}
-{{#unless op.returnNativeType}}
-{{javax}}.ws.rs.core.Response.ResponseBuilder response
-{{/unless}}
 {{/join}}
 {{#join 'op._arguments' ', '}}
 {{{op._arguments}}}
-{{#unless op.returnNativeType}}
-response
-{{/unless}}
 {{/join}}

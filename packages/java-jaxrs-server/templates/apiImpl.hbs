@@ -15,9 +15,6 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 {{>frag/operationVars op=. jaxrs=false service=false}}
 {{#join '_arguments' ', '}}
 {{{_arguments}}}
-{{#unless defaultResponse.defaultContent.nativeType}}
-__response
-{{/unless}}
 {{/join}}
 	{{>frag/operationDocumentation}}
 	@java.lang.Override
