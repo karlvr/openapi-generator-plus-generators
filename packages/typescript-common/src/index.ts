@@ -519,7 +519,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 			registerStandardHelpers(hbs, context)
 
-			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
+			/* typescript-common no longer ships its own .hbs templates; the directory
+			 * may not exist. Unmigrated child generators still load their own
+			 * partials via loadAdditionalTemplates below. */
 			if (context.loadAdditionalTemplates) {
 				await context.loadAdditionalTemplates(hbs)
 			}

@@ -1,9 +1,0 @@
-{{!--
-@param this the schema doing the extending
-@param extends the native type that we are exending
---}}
-{{#if discriminatorValues}}
-Omit<{{{extends}}}, {{#each discriminatorValues}}'{{discriminator.serializedName}}'{{#hasMore}} | {{/hasMore}}{{/each}}>
-{{~else}}
-{{{extends}}}
-{{~/if}}

@@ -1,22 +1,16 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType, CodegenSchemaType } from '@openapi-generator-plus/types'
-import path from 'path'
-import { loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import typescriptGenerator from '@openapi-generator-plus/typescript-fetch-client-generator2'
-import { TypeScriptGeneratorContext, chainTypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
+import typescriptGenerator, { FetchClient2Context } from '@openapi-generator-plus/typescript-fetch-client-generator2'
+import { chainTypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
+import { hooks as nodeHooks } from './templates/hooks'
 
 const createGenerator: CodegenGeneratorConstructor = (config, context) => {
-	const myContext: TypeScriptGeneratorContext = chainTypeScriptGeneratorContext(context, {
-		loadAdditionalTemplates: async(hbs) => {
-			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
-		},
-		additionalWatchPaths: () => {
-			return [path.resolve(__dirname, '../templates')]
-		},
+	const myContext: FetchClient2Context = chainTypeScriptGeneratorContext(context, {
 		defaultTypeScriptOptions: () => ({
 			target: 'ES5',
 			libs: ['$target', 'DOM', 'ES2021.String'],
 		}),
 	})
+	myContext.fetchClient2Hooks = nodeHooks
 	const base = typescriptGenerator(config, myContext)
 
 	return {
