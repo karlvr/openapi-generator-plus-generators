@@ -1,4 +1,4 @@
-import { ts } from '@openapi-generator-plus/template-utils'
+import { ts, join } from '@openapi-generator-plus/template-utils'
 import { NpmOptions, TemplateRootContext } from '@openapi-generator-plus/typescript-generator-common'
 import { FetchClient2Hooks, RootContext } from './types'
 
@@ -13,19 +13,26 @@ function defaultPackageDependencies(ctx: RootContext): string[] {
 
 export function packageJson(ctx: TemplateRootContext & NpmOptions, hooks: FetchClient2Hooks): string {
 	const root = ctx as TemplateRootContext & NpmOptions & RootContext
-	const dependencies: string[] = []
-	dependencies.push(...(hooks.packageDependencies ?? defaultPackageDependencies)(root))
-	if (root.dateApproach === 'blind-date') {
-		dependencies.push('"blind-date": "^3.2.0"')
-	}
-	const depsBlock = dependencies.join(',\n\t\t')
+	const dependencies = [
+		...(hooks.packageDependencies ?? defaultPackageDependencies)(root),
+		root.dateApproach === 'blind-date' && '"blind-date": "^3.2.0"',
+	]
 
-	return ts`{
+	/* `publishConfig` is appended after the closing `}` of `devDependencies`,
+	 * so it can't be on its own line — we precompute either the trailing block
+	 * or an empty string and interpolate that mid-line. */
+	const publishConfig = ctx.repository ? ts`,
+	"publishConfig": {
+		"registry": "${ctx.repository}"
+	}` : ''
+
+	return ts`
+{
 	"name": "${ctx.name}",
-${ctx.private ? '	"private": true,' : null}
+	${ctx.private && '"private": true,'}
 	"version": "${ctx.version}",
 	"description": "API client for ${ctx.name}",
-	"author": "${(root as RootContext & { generatorClass?: string }).generatorClass ?? ''}",
+	"author": "${root.generatorClass}",
 	"keywords": [
 		"fetch",
 		"typescript",
@@ -41,15 +48,12 @@ ${ctx.private ? '	"private": true,' : null}
 		"prepare": "npm run build"
 	},
 	"dependencies": {
-		${depsBlock}
+		${join(dependencies, ',\n')}
 	},
 	"devDependencies": {
 		"@types/node": "^20.14.8",
 		"typescript": "^5.9.2"
-${ctx.repository ? `	},
-	"publishConfig": {
-		"registry": "${ctx.repository}"` : null}
-	}
+	}${publishConfig}
 }
 `
 }
