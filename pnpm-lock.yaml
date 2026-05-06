@@ -287,6 +287,27 @@ importers:
         specifier: ^4.4.2
         version: 4.6.4
 
+  packages/template-utils:
+    dependencies:
+      '@openapi-generator-plus/generator-common':
+        specifier: workspace:*
+        version: link:../generator-common
+      '@openapi-generator-plus/indexed-type':
+        specifier: link:../../../openapi-generator-plus/packages/indexed-type
+        version: link:../../../openapi-generator-plus/packages/indexed-type
+      '@openapi-generator-plus/types':
+        specifier: link:../../../openapi-generator-plus/packages/types
+        version: link:../../../openapi-generator-plus/packages/types
+      change-case:
+        specifier: ^4.1.2
+        version: 4.1.2
+      marked:
+        specifier: ^12.0.2
+        version: 12.0.2
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
+
   packages/typescript-common:
     dependencies:
       '@openapi-generator-plus/generator-common':
@@ -298,6 +319,9 @@ importers:
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -349,12 +373,12 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: link:../../../openapi-generator-plus/packages/indexed-type
         version: link:../../../openapi-generator-plus/packages/indexed-type
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -2050,7 +2074,7 @@ packages:
     hasBin: true
 
   maven@https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2}
+    resolution: {gitHosted: true, integrity: sha512-b+khz9wPOSNEg/mYq8WvfkbbrSSMm0sMmWN0kOy1ym9EqLLHKuZo/U8DDPJ3P9FwPErx6sElZhbrKe+T3Q/09A==, tarball: https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2}
     version: 4.7.0
     engines: {node: '>=4.0.0'}
 

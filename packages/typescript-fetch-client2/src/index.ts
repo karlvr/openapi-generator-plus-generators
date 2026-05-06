@@ -1,17 +1,36 @@
 import { CodegenGeneratorConstructor, CodegenGeneratorType, CodegenSchemaType, isCodegenAnyOfSchema, isCodegenEnumSchema, isCodegenInterfaceSchema, isCodegenObjectSchema, isCodegenOneOfSchema } from '@openapi-generator-plus/types'
 import path from 'path'
-import { loadTemplates, emit } from '@openapi-generator-plus/handlebars-templates'
-import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext, chainTypeScriptGeneratorContext } from '@openapi-generator-plus/typescript-generator-common'
+import { emit } from '@openapi-generator-plus/template-utils'
+import typescriptGenerator, { options as typescriptCommonOptions, TypeScriptGeneratorContext, chainTypeScriptGeneratorContext, TemplateRootContext } from '@openapi-generator-plus/typescript-generator-common'
 import { CodegenOptionsTypeScriptFetchClient } from './types'
 import * as idx from '@openapi-generator-plus/indexed-type'
+import {
+	api,
+	models,
+	runtime,
+	configuration,
+	entry,
+	readme,
+	packageJson,
+	tsconfig,
+	FetchClient2Hooks,
+	RootContext,
+} from './templates'
+
+/**
+ * Extension to {@link TypeScriptGeneratorContext} for downstream generators
+ * (e.g. typescript-fetch-node-client2) that want to override fragments of
+ * fetch-client2's templates. Set the `fetchClient2Hooks` field on the chained
+ * context.
+ */
+export interface FetchClient2Context extends TypeScriptGeneratorContext {
+	fetchClient2Hooks?: FetchClient2Hooks
+}
 
 const createGenerator: CodegenGeneratorConstructor = (config, context) => {
-	const myContext: TypeScriptGeneratorContext = chainTypeScriptGeneratorContext(context, {
-		loadAdditionalTemplates: async(hbs) => {
-			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
-		},
+	const myContext: FetchClient2Context = chainTypeScriptGeneratorContext(context, {
 		additionalWatchPaths: () => {
-			return [path.resolve(__dirname, '../templates')]
+			return [path.resolve(__dirname, 'templates')]
 		},
 		defaultNpmOptions: () => ({
 			name: 'typescript-fetch-api',
@@ -37,34 +56,42 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		includePolyfills: config.includePolyfills !== undefined ? !!config.includePolyfills : true,
 	}
 
-	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+	const hooks: FetchClient2Hooks = myContext.fetchClient2Hooks ?? {}
+
+	myContext.templates = {
+		package: (ctx) => packageJson(ctx, hooks),
+		tsconfig,
+	}
+
+	myContext.exportFiles = async(outputPath, doc, rootContext) => {
+		const root = rootContext as RootContext
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+
 		for (const group of doc.groups) {
 			if (group.operations.length === 0) {
 				continue
 			}
 
-			/* Check whether we should add UnauthorizedResponse handling */
+			/* Decide whether to add UnauthorizedResponse handling per operation */
 			for (const op of group.operations) {
-				/* Operation must have securityRequirements, no catch-all response and no explicit 401 response declared */
 				const addUnauthorizedResponseHandling: boolean = !!op.securityRequirements && !op.catchAllResponse && (!op.responses || !idx.allValues(op.responses).find(r => r.code === 401))
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				;(op as any).addUnauthorizedResponseHandling = addUnauthorizedResponseHandling
+				;(op as { addUnauthorizedResponseHandling?: boolean }).addUnauthorizedResponseHandling = addUnauthorizedResponseHandling
 			}
 
-			await emit('api', path.join(outputPath, relativeSourceOutputPath, 'api', `${context.generator().toIdentifier(group.name)}.ts`),
-				{ ...rootContext, ...doc, ...group }, true, hbs)
+			const apiOutput = api(myContext, { ...root, ...doc, group } as TemplateRootContext & RootContext & typeof doc & { group: typeof group }, hooks)
+			await emit(apiOutput, path.join(outputPath, relativeSourceOutputPath, 'api', `${myContext.generator().toIdentifier(group.name)}.ts`), true)
 		}
 
-		await emit('models', path.join(outputPath, relativeSourceOutputPath, 'models.ts'), {
-			...rootContext,
+		const filteredDoc = {
 			...doc,
 			schemas: idx.filter(doc.schemas, schema => isCodegenObjectSchema(schema) || isCodegenEnumSchema(schema) || isCodegenOneOfSchema(schema) || isCodegenAnyOfSchema(schema) || isCodegenInterfaceSchema(schema)),
-		}, true, hbs)
-		await emit('runtime', path.join(outputPath, relativeSourceOutputPath, 'runtime.ts'), { ...rootContext, ...doc }, true, hbs)
-		await emit('configuration', path.join(outputPath, relativeSourceOutputPath, 'configuration.ts'), { ...rootContext, ...doc }, true, hbs)
-		await emit('index', path.join(outputPath, relativeSourceOutputPath, 'index.ts'), { ...rootContext, ...doc }, true, hbs)
-		await emit('README', path.join(outputPath, 'README.md'), { ...rootContext, ...doc }, false, hbs)
+		}
+
+		await emit(models(myContext, { ...root, ...filteredDoc } as RootContext & typeof filteredDoc, hooks), path.join(outputPath, relativeSourceOutputPath, 'models.ts'), true)
+		await emit(runtime({ ...root, ...doc } as RootContext & typeof doc, hooks), path.join(outputPath, relativeSourceOutputPath, 'runtime.ts'), true)
+		await emit(configuration({ ...root, ...doc } as RootContext & typeof doc), path.join(outputPath, relativeSourceOutputPath, 'configuration.ts'), true)
+		await emit(entry(myContext, { ...root, ...doc } as RootContext & typeof doc, hooks), path.join(outputPath, relativeSourceOutputPath, 'index.ts'), true)
+		await emit(readme({ ...root, ...doc } as RootContext & typeof doc), path.join(outputPath, 'README.md'), false)
 	}
 
 	const base = typescriptGenerator(config, myContext)
@@ -125,5 +152,5 @@ function isForbiddenHeaderName(name: string): boolean {
 	].map(h => h.toLowerCase()).includes(name.toLowerCase())
 }
 
+export { FetchClient2Hooks } from './templates'
 export default createGenerator
-
