@@ -190,9 +190,6 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 									bodyNativeType: bodyNativeType,
 									nativeType: wrapperNativeType,
 								}
-								if (response.defaultContent) {
-									response.defaultContent.nativeType = wrapperNativeType
-								}
 								operation.returnNativeType = wrapperNativeType
 							}
 						} else {

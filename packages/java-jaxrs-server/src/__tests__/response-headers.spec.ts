@@ -31,9 +31,6 @@ test('response with headers generates wrapper class info', async() => {
 	expect(typeof wrapperName).toBe('string')
 	expect(wrapperName).toContain('ListItemsDefaultResponse')
 	
-	expect(defaultResponse.defaultContent.nativeType?.nativeType).toBeDefined()
-	expect(defaultResponse.defaultContent.nativeType?.nativeType).toContain('ListItemsDefaultResponse')
-	
 	const wrapperHeaders = (defaultResponse as MyResponse).__wrapper?.headers
 	expect(wrapperHeaders).toBeDefined()
 	expect(Array.isArray(wrapperHeaders)).toBe(true)

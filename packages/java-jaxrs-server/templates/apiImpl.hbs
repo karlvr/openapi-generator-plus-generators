@@ -81,6 +81,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{{__wrapper.bodyNativeType}}} __entity = __wrapper.getBody();
 			{{/if}}
 			{{#each __wrapper.headers}}
+			{{!-- Remove existing headers, such as the default Cache-Control header we add. --}}
 			__response.header({{{stringLiteral serializedName}}}, null).header({{{stringLiteral serializedName}}}, __wrapper.{{getter .}}());
 			{{/each}}
 			{{else}}
@@ -104,6 +105,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			__response.status(__e.getResponseCode());
 			{{/unless}}
 			{{#each headers}}
+			{{!-- Remove existing headers, such as the default Cache-Control header we add. --}}
 			__response.header({{{stringLiteral serializedName}}}, null).header({{{stringLiteral serializedName}}}, __e.{{getter .}}());
 			{{/each}}
 			{{#if defaultContent.nativeType}}
