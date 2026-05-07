@@ -1,5 +1,11 @@
 # @openapi-generator-plus/java-jaxrs-server-generator
 
+## 3.12.1
+
+### Patch Changes
+
+- 2379096: Remove extraneous whitespace from the end of apiImpl
+
 ## 3.12.0
 
 ### Minor Changes
