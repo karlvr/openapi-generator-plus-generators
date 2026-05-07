@@ -1,5 +1,12 @@
 # @openapi-generator-plus/java-like-generator-helper
 
+## 2.6.4
+
+### Patch Changes
+
+- Updated dependencies [337b525]
+  - @openapi-generator-plus/generator-common@1.7.4
+
 ## 2.6.3
 
 ### Patch Changes

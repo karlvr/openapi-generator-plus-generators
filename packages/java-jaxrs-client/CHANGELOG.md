@@ -1,5 +1,16 @@
 # @openapi-generator-plus/java-jaxrs-client-generator
 
+## 4.2.2
+
+### Patch Changes
+
+- 6b6eaa4: Upgrade Lombok to 1.18.46 in generated pom.xml
+- Updated dependencies [337b525]
+  - @openapi-generator-plus/generator-common@1.7.4
+  - @openapi-generator-plus/handlebars-templates@1.11.6
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.12.2
+  - @openapi-generator-plus/java-like-generator-helper@2.6.4
+
 ## 4.2.1
 
 ### Patch Changes

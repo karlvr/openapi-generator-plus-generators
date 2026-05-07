@@ -1,5 +1,23 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 3.6.0
+
+### Minor Changes
+
+- b488bea: Add support for response headers
+
+### Patch Changes
+
+- 6b6eaa4: Upgrade Lombok to 1.18.46 in generated pom.xml
+- Updated dependencies [b488bea]
+- Updated dependencies [337b525]
+- Updated dependencies [6b6eaa4]
+- Updated dependencies [453e015]
+  - @openapi-generator-plus/java-jaxrs-server-generator@3.12.0
+  - @openapi-generator-plus/generator-common@1.7.4
+  - @openapi-generator-plus/handlebars-templates@1.11.6
+  - @openapi-generator-plus/java-jaxrs-generator-common@3.12.2
+
 ## 3.5.1
 
 ### Patch Changes

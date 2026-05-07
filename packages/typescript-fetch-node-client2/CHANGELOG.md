@@ -1,5 +1,17 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 0.0.3
+
+### Patch Changes
+
+- 4f5319c: Fix handling of non-string header schemas
+- Updated dependencies [337b525]
+- Updated dependencies [4f5319c]
+  - @openapi-generator-plus/generator-common@1.7.4
+  - @openapi-generator-plus/typescript-fetch-client-generator2@1.5.1
+  - @openapi-generator-plus/handlebars-templates@1.11.6
+  - @openapi-generator-plus/typescript-generator-common@1.13.1
+
 ## 0.0.2
 
 ### Patch Changes

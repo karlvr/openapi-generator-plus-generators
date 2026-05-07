@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.7.4
+
+### Patch Changes
+
+- 337b525: Update core
+
 ## 1.7.3
 
 ### Patch Changes
