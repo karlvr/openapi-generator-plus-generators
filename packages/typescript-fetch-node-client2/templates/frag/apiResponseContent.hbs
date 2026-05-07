@@ -30,7 +30,10 @@ return {
 {{#if response.headers}}
 	headers: {
 {{#each response.headers}}
-		{{identifier name}}: response.headers.get({{{stringLiteral serializedName}}}) ?? undefined,
+{{#set '__headerValue'}}
+response.headers.get({{{stringLiteral serializedName}}})
+{{/set}}
+		{{identifier name}}: {{{__headerValue}}} ? {{>frag/stringToSchema value=__headerValue}} ?? undefined : undefined,
 {{/each}}
 	},
 {{/if}}

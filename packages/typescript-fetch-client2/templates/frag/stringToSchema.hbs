@@ -1,0 +1,22 @@
+{{!--  
+@param value the expression containing the value
+@param this the CodegenParameter
+--}}
+{{#if (isDateTime)}}
+{{#ifeq @root.dateApproach 'native'}}
+new Date({{{value}}})
+{{~else}}
+{{{value}}}
+{{~/ifeq}}
+{{~else or (isDate) (isTime)}}
+{{{value}}}
+{{~else or (isObject) (isArray)}}
+{{!-- TODO we need to support explode etc --}}
+{{{value}}}
+{{~else if (isNumeric)}}
+Number({{{value}}})
+{{~else if (isBoolean)}}
+({{{value}}} && {{{value}}}.toLowerCase() === 'true')
+{{~else}}
+{{{value}}}
+{{~/if~}}

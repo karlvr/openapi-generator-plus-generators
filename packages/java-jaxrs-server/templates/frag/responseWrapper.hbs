@@ -1,0 +1,70 @@
+{{#if @root.useLombok}}
+@lombok.Getter
+@lombok.Setter
+{{/if}}
+public static class {{className name}} {
+
+{{#if bodyNativeType}}
+	private {{{bodyNativeType}}} body;
+{{/if}}
+{{#each headers}}
+	private {{{nativeType}}} {{identifier name}};
+{{/each}}
+
+{{#join '_parameters' ', '}}
+{{#if bodyNativeType}}
+{{{bodyNativeType}}} body
+{{/if}}
+{{#each headers}}
+{{#if required}}
+{{{nativeType}}} {{identifier name}}
+{{/if}}
+{{/each}}
+{{/join}}
+	public {{className name}}({{{_parameters}}}) {
+		{{#if bodyNativeType}}
+		this.body = body;
+		{{/if}}
+		{{#each headers}}
+		{{#if required}}
+		this.{{identifier name}} = {{identifier name}};
+		{{/if}}
+		{{/each}}
+	}
+
+{{#if bodyNativeType}}
+	{{#unless @root.useLombok}}
+	public {{{bodyNativeType}}} getBody() {
+		return this.body;
+	}
+
+	public void setBody({{{bodyNativeType}}} body) {
+		this.body = body;
+	}
+
+	{{/unless}}
+	public {{className name}} body({{{bodyNativeType}}} body) {
+		setBody(body);
+		return this;
+	}
+
+{{/if}}
+{{#each headers}}
+	{{#unless @root.useLombok}}
+	public {{{nativeType}}} {{getter .}}() {
+		return this.{{identifier name}};
+	}
+
+	public void {{setter .}}({{{nativeType}}} {{identifier name}}) {
+		this.{{identifier name}} = {{identifier name}};
+	}
+
+	{{/unless}}
+	public {{className ../name}} {{identifier name}}({{{nativeType}}} {{identifier name}}) {
+		{{setter .}}({{identifier name}});
+		return this;
+	}
+
+{{/each}}
+}
+

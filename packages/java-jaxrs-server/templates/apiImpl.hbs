@@ -15,10 +15,8 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 {{>frag/operationVars op=. jaxrs=false service=false}}
 {{#join '_arguments' ', '}}
 {{{_arguments}}}
-{{#unless defaultResponse.defaultContent.nativeType}}
-__response
-{{/unless}}
 {{/join}}
+	{{>frag/operationDocumentation}}
 	@java.lang.Override
 	{{#if deprecated}}
 	@java.lang.SuppressWarnings("deprecation")
@@ -77,15 +75,23 @@ __response
 			{{>frag/beanValidationValidateParams}}
 			{{/if}}
 			{{#with defaultResponse}}
+			{{#if __wrapper}}
+			{{{__wrapper.nativeType}}} __wrapper = this.delegate.{{identifier ../name}}({{{../_arguments}}});
+			{{#if __wrapper.bodyNativeType}}
+			{{{__wrapper.bodyNativeType}}} __entity = __wrapper.getBody();
+			{{/if}}
+			{{#each __wrapper.headers}}
+			__response.header({{{stringLiteral serializedName}}}, null).header({{{stringLiteral serializedName}}}, __wrapper.{{getter .}}());
+			{{/each}}
+			{{else}}
 			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{{../_arguments}}});
+			{{/if}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__entity' schema=defaultContent.schema}}
 			{{/if}}
 			__response.entity(__entity);
-			{{#if defaultContent}}
 			__response.type({{{stringLiteral defaultContent.mediaType.mediaType}}});
-			{{/if}}
 			{{/if}}
 			return __response.build();
 			{{/with}}
@@ -97,6 +103,9 @@ __response
 			{{else}}
 			__response.status(__e.getResponseCode());
 			{{/unless}}
+			{{#each headers}}
+			__response.header({{{stringLiteral serializedName}}}, null).header({{{stringLiteral serializedName}}}, __e.{{getter .}}());
+			{{/each}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
 			{{>frag/beanValidationValidateResponse responseVar='__e.getEntity()' schema=defaultContent.schema}}
@@ -115,4 +124,5 @@ __response
 	}
 
 {{/each}}
+
 }
