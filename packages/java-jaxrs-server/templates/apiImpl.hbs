@@ -81,7 +81,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			{{{__wrapper.bodyNativeType}}} __entity = __wrapper.getBody();
 			{{/if}}
 			{{#each __wrapper.headers}}
-			__addHeader(__response, {{{stringLiteral serializedName}}}, __wrapper.{{getter .}}());
+			__response.header({{{stringLiteral serializedName}}}, null).header({{{stringLiteral serializedName}}}, __wrapper.{{getter .}}());
 			{{/each}}
 			{{else}}
 			{{#if defaultContent.nativeType}}{{{defaultContent.nativeType}}} __entity = {{/if}}this.delegate.{{identifier ../name}}({{{../_arguments}}});
@@ -104,7 +104,7 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 			__response.status(__e.getResponseCode());
 			{{/unless}}
 			{{#each headers}}
-			__addHeader(__response, {{{stringLiteral serializedName}}}, __e.{{getter .}}());
+			__response.header({{{stringLiteral serializedName}}}, null).header({{{stringLiteral serializedName}}}, __e.{{getter .}}());
 			{{/each}}
 			{{#if defaultContent.nativeType}}
 			{{#if @root.useBeanValidation}}
@@ -124,12 +124,5 @@ public class {{className name}}ApiImpl implements {{apiPackage}}.{{className nam
 	}
 
 {{/each}}
-	private void __addHeader({{javax}}.ws.rs.core.Response.ResponseBuilder response, java.lang.String name, java.lang.Object value) {
-		{{!-- Remove existing headers, such as the default Cache-Control header we add. --}}
-		response.header(name, null);
-		if (value != null) {
-			response.header(name, value);
-		}
-	}
 
 }
