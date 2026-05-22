@@ -1,0 +1,21 @@
+swagger: '2.0'
+info:
+  title: Test
+  version: '1.0'
+paths: {}
+definitions:
+  Outer:
+    type: object
+    properties:
+      name:
+        type: string
+  Container:
+    type: object
+    properties:
+      outer:
+        allOf:
+          - $ref: '#/definitions/Outer'
+          - type: object
+            properties:
+              inner:
+                type: string

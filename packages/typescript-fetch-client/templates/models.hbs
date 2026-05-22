@@ -5,7 +5,7 @@ import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeSt
 {{/ifeq}}
 {{>hooks/modelsImports}}
 
-export namespace Api {
+export namespace {{apiNamespace}} {
 {{>nestedModels}}
 }
 {{#if legacyUnnamespacedModelSupport}}
@@ -13,10 +13,10 @@ export namespace Api {
 {{#each schemas}}
 {{#if (isEnum)}}
 {{>frag/schemaDocumentation}}
-export import {{className name}} = Api.{{className name}}
+export import {{className name}} = {{apiNamespace}}.{{className name}}
 {{else}}
 {{>frag/schemaDocumentation}}
-export type {{className name}} = Api.{{className name}}
+export type {{className name}} = {{apiNamespace}}.{{className name}}
 {{/if}}
 
 {{/each}}

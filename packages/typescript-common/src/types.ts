@@ -11,6 +11,7 @@ export interface CodegenOptionsTypeScript extends JavaLikeOptions {
 	dateApproach: DateApproach
 	blindDate: BlindDateOptions
 	esm: boolean | null
+	apiNamespace: string
 }
 
 export enum DateApproach {

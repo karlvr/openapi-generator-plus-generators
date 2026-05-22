@@ -2,7 +2,7 @@
 
 import { Configuration } from "./configuration";
 import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch } from "./runtime";
-import { Api } from "./models";
+import { {{apiNamespace}} } from "./models";
 {{#ifeq dateApproach 'blind-date'}}
 import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';
 {{/ifeq}}
