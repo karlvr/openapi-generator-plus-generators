@@ -28,6 +28,7 @@ The available config file properties are:
 |`legacyUnnamespacedModelSupport`|`boolean`|Generate unnamespaced versions of the models.|`false`|
 |`includePolyfills`|`boolean`|Include polyfills for features that browsers might not support or support well.|`true`|
 |`esm`|`boolean`|Whether to output ESM-style code.|`false`|
+|`apiNamespace`|`string`|The name of the TypeScript namespace used to export all models.|`"Api"`|
 
 ### `blind-date`
 

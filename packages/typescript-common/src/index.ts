@@ -190,6 +190,7 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 		dateApproach,
 		blindDate: blindDateOptions,
 		esm: configBoolean(config, 'esm', false),
+		apiNamespace: configString(config, 'apiNamespace', 'Api'),
 	}
 
 	return options
@@ -387,7 +388,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 		toNativeObjectType: function(options) {
 			const { scopedName } = options
-			let modelName = 'Api'
+			let modelName = generatorOptions.apiNamespace
 			for (const name of scopedName) {
 				modelName += `.${context.generator().toClassName(name)}`
 			}
