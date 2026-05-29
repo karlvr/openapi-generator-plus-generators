@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-node-client-generator
 
+## 1.9.6
+
+### Patch Changes
+
+- d72294a: Add support for customising the generated api namespace
+- Updated dependencies [d72294a]
+  - @openapi-generator-plus/typescript-generator-common@1.13.2
+  - @openapi-generator-plus/typescript-fetch-client-generator@1.15.3
+
 ## 1.9.5
 
 ### Patch Changes

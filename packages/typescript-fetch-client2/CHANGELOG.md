@@ -1,5 +1,14 @@
 # @openapi-generator-plus/typescript-fetch-client-generator2
 
+## 1.5.2
+
+### Patch Changes
+
+- bffeebd: Fix indentation for multipart form parameters
+- d72294a: Add support for customising the generated api namespace
+- Updated dependencies [d72294a]
+  - @openapi-generator-plus/typescript-generator-common@1.13.2
+
 ## 1.5.1
 
 ### Patch Changes

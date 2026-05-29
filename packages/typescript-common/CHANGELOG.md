@@ -1,5 +1,11 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.13.2
+
+### Patch Changes
+
+- d72294a: Add support for customising the generated api namespace
+
 ## 1.13.1
 
 ### Patch Changes
