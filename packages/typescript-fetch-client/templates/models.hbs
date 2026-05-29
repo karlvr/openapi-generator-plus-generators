@@ -13,10 +13,10 @@ export namespace {{apiNamespace}} {
 {{#each schemas}}
 {{#if (isEnum)}}
 {{>frag/schemaDocumentation}}
-export import {{className name}} = {{apiNamespace}}.{{className name}}
+export import {{className name}} = {{@root.apiNamespace}}.{{className name}}
 {{else}}
 {{>frag/schemaDocumentation}}
-export type {{className name}} = {{apiNamespace}}.{{className name}}
+export type {{className name}} = {{@root.apiNamespace}}.{{className name}}
 {{/if}}
 
 {{/each}}
