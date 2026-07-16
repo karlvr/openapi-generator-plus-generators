@@ -1,0 +1,45 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: 'oneOf discriminator where each member has its own inline enum'
+paths: {}
+components:
+  schemas:
+    # Each member declares its own inline single-value `action` enum (its discriminator value),
+    # rather than referencing a shared enum schema.
+    EventItemAdded:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum:
+            - item_added
+        item:
+          type: string
+
+    EventItemRemoved:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum:
+            - item_removed
+        reason:
+          type: string
+
+    # The discriminator picks the first member's `action` enum as the "common" type, so every member's
+    # discriminator value is typed against EventItemAdded's enum — which only contains `item_added`.
+    # EventItemRemoved then references EventItemAdded.ActionEnum.ItemRemoved, which does not exist.
+    Event:
+      oneOf:
+        - $ref: '#/components/schemas/EventItemAdded'
+        - $ref: '#/components/schemas/EventItemRemoved'
+      discriminator:
+        propertyName: action
+        mapping:
+          item_added: '#/components/schemas/EventItemAdded'
+          item_removed: '#/components/schemas/EventItemRemoved'

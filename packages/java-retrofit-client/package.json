@@ -31,7 +31,7 @@
   "dependencies": {
     "@openapi-generator-plus/handlebars-templates": "workspace:*",
     "@openapi-generator-plus/java-jaxrs-client-generator": "workspace:*",
-    "@openapi-generator-plus/types": "^2.22.0"
+    "@openapi-generator-plus/types": "^2.22.2"
   },
   "publishConfig": {
     "access": "public"

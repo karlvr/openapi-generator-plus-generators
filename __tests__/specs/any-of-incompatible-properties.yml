@@ -1,0 +1,43 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: 'anyOf members with incompatible shared property types'
+paths: {}
+components:
+  schemas:
+    CustomerId:
+      type: string
+      pattern: '^ctm_[a-z\d]{26}$'
+
+    # customer_id is nullable (Optional<String>) here, and `items` is the JSON Schema null type (Object)
+    MemberA:
+      type: object
+      properties:
+        customer_id:
+          anyOf:
+            - $ref: '#/components/schemas/CustomerId'
+            - type: 'null'
+        items:
+          type: 'null'
+
+    # customer_id is required and non-nullable (plain String) here, and `items` is an array (List)
+    MemberB:
+      type: object
+      required:
+        - customer_id
+      properties:
+        customer_id:
+          allOf:
+            - $ref: '#/components/schemas/CustomerId'
+        items:
+          type: array
+          items:
+            type: string
+
+    # A single object absorbs both members. Because customer_id (nullable vs not) and items (null vs
+    # array) have incompatible types across the members, the object must NOT implement the member
+    # interfaces, otherwise it cannot satisfy their conflicting getters/setters.
+    Combined:
+      anyOf:
+        - $ref: '#/components/schemas/MemberA'
+        - $ref: '#/components/schemas/MemberB'
