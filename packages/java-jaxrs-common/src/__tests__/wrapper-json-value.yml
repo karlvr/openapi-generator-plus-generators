@@ -1,0 +1,25 @@
+openapi: '3.0.3'
+info:
+  title: Wrapper @JsonValue test
+  version: '1.0'
+paths:
+  /thing:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Thing'
+      responses:
+        200:
+          description: OK
+components:
+  schemas:
+    # A oneOf of primitives produces a wrapper class for each member. The wrapped value must be
+    # annotated with @JsonValue (and paired with @JsonCreator) so the wrapper serializes as its raw
+    # value rather than as an object with a `value` property.
+    Thing:
+      oneOf:
+        - type: string
+        - type: integer
