@@ -40,6 +40,6 @@
     "typescript-eslint": "^8.59.2"
   },
   "dependencies": {
-    "@openapi-generator-plus/testing": "^2.29.0"
+    "@openapi-generator-plus/testing": "^2.30.0"
   }
 }
