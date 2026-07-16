@@ -1,6 +1,13 @@
 {{>frag/schemaDocumentation}}
 export enum {{className name}} {
 {{#each enumValues}}
+{{#ifdef description}}
+{{#if description}}
+	/**
+	 * {{#indent '	 * '}}{{{md description}}}{{/indent}}
+	 */
+{{/if}}
+{{/ifdef}}
 	{{{name}}} = {{{literalValue}}}{{#hasMore}},{{/hasMore}}
 {{/each}}
 }

@@ -3,6 +3,13 @@ export type {{className name}} = ValuesOf<typeof {{className name}}>;
 
 export const {{className name}} = {
 {{#each enumValues}}
+{{#ifdef description}}
+{{#if description}}
+	/**
+	 * {{#indent '	 * '}}{{{md description}}}{{/indent}}
+	 */
+{{/if}}
+{{/ifdef}}
 	{{{name}}}: {{{literalValue}}},
 {{/each}}
 } as const;

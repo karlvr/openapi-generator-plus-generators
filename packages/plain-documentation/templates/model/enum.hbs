@@ -2,7 +2,7 @@
 	<h4>Values</h4>
 	<ul class="model-property-enum">
 		{{#each enumValues}}
-			<li class="model-property-enum-item" title="{{literalValue}}">{{name}}</li>
+			<li class="model-property-enum-item" title="{{literalValue}}">{{name}}{{#ifdef description}}{{#if description}} <span class="model-property-enum-item-description">{{{md description}}}</span>{{/if}}{{/ifdef}}</li>
 		{{/each}}
 	</ul>
 </div>

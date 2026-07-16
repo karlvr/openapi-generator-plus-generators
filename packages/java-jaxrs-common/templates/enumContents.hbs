@@ -1,5 +1,12 @@
 {{>hooks/enumHeader}}
 {{#each enumValues}}
+{{#ifdef description}}
+{{#if description}}
+/**
+ * {{#indent ' * '}}{{{md description}}}{{/indent}}
+ */
+{{/if}}
+{{/ifdef}}
 @{{javax}}.xml.bind.annotation.XmlEnumValue({{{stringLiteral value}}}) {{{name}}}({{{literalValue}}}),
 {{/each}}
 {{#if enumValues}}

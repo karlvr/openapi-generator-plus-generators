@@ -13,6 +13,10 @@ paths:
               - first
               - empty
               - ''
+            x-enum-descriptions:
+              - "The first"
+              - "The empty one"
+              - "An empty one"
       responses:
         200:
           description: OK
