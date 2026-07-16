@@ -382,6 +382,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 				case CodegenSchemaType.ANY: {
 					return new context.NativeType('unknown')
 				}
+				case CodegenSchemaType.NULL: {
+					return new context.NativeType('null')
+				}
 			}
 
 			throw new Error(`Unsupported schema type: ${schemaType}`)

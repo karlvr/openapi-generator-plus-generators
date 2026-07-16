@@ -1,4 +1,4 @@
-openapi: '3.0.3'
+openapi: '3.1.0'
 info:
   title: Oddities
   version: '1.0'
@@ -10,3 +10,8 @@ components:
       properties:
         derp-derp:
           type: string
+    NullProperty:
+      type: object
+      properties:
+        meNull:
+          type: "null"

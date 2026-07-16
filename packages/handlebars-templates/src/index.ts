@@ -901,6 +901,7 @@ export function registerStandardHelpers(hbs: typeof Handlebars, { generator, log
 	registerPropertyTypeHelper('isBinary', CodegenSchemaType.BINARY, hbs)
 	registerPropertyTypeHelper('isFile', CodegenSchemaType.FILE, hbs)
 	registerPropertyTypeHelper('isAny', CodegenSchemaType.ANY, hbs)
+	registerPropertyTypeHelper('isNull', CodegenSchemaType.NULL, hbs)
 
 	/* Content type helpers */
 	hbs.registerHelper('isContentJson', function(value: CodegenContent): boolean {
