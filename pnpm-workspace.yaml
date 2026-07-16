@@ -3,6 +3,7 @@ packages:
 allowBuilds:
   unrs-resolver: set this to true or false
 overrides:
+  '@openapi-generator-plus/core': link:../openapi-generator-plus/packages/core
   '@openapi-generator-plus/indexed-type': link:../openapi-generator-plus/packages/indexed-type
   '@openapi-generator-plus/testing': link:../openapi-generator-plus/packages/testing
   '@openapi-generator-plus/types': link:../openapi-generator-plus/packages/types
