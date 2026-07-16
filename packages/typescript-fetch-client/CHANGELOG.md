@@ -1,5 +1,17 @@
 # @openapi-generator-plus/typescript-fetch-client-generator
 
+## 1.16.0
+
+### Minor Changes
+
+- 68c0def: Support enum value descriptions
+
+### Patch Changes
+
+- Updated dependencies [c9a78e6]
+  - @openapi-generator-plus/handlebars-templates@1.12.0
+  - @openapi-generator-plus/typescript-generator-common@1.14.0
+
 ## 1.15.3
 
 ### Patch Changes

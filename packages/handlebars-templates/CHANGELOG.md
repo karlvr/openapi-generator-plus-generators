@@ -1,5 +1,11 @@
 # @openapi-generator-plus/handlebars-templates
 
+## 1.12.0
+
+### Minor Changes
+
+- c9a78e6: Handle null type
+
 ## 1.11.6
 
 ### Patch Changes

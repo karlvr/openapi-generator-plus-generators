@@ -1,5 +1,16 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 1.11.0
+
+### Minor Changes
+
+- 68c0def: Support enum value descriptions
+
+### Patch Changes
+
+- Updated dependencies [c9a78e6]
+  - @openapi-generator-plus/handlebars-templates@1.12.0
+
 ## 1.10.5
 
 ### Patch Changes

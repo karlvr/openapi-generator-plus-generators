@@ -1,5 +1,16 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 1.14.0
+
+### Minor Changes
+
+- c9a78e6: Handle null type
+
+### Patch Changes
+
+- Updated dependencies [c9a78e6]
+  - @openapi-generator-plus/handlebars-templates@1.12.0
+
 ## 1.13.2
 
 ### Patch Changes
