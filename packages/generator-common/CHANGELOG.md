@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.7.5
+
+### Patch Changes
+
+- 8fd8e7c: Bump core version
+
 ## 1.7.4
 
 ### Patch Changes
