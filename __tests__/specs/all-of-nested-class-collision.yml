@@ -1,0 +1,30 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: 'Nested class whose name collides with an inherited nested class'
+paths: {}
+components:
+  schemas:
+    # Base has a property `discount`, which generates a nested class Base.Discount.
+    Base:
+      type: object
+      properties:
+        discount:
+          type: object
+          properties:
+            amount:
+              type: string
+        label:
+          type: string
+
+    # Outer.discount is an allOf of Base plus a description, so it generates a nested subclass
+    # Outer.Discount extends Base. Because Base already has a nested class named `Discount`, the
+    # subclass's own simple name `Discount` collides with the inherited Base.Discount, which broke
+    # the covariant return type of the inherited fluent setters until they were fully qualified.
+    Outer:
+      type: object
+      properties:
+        discount:
+          allOf:
+            - $ref: '#/components/schemas/Base'
+          description: A discount that extends Base.
