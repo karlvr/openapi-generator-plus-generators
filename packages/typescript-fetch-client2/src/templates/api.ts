@@ -1,5 +1,5 @@
 import { CodegenGeneratorContext, CodegenOperation, CodegenOperationGroup, CodegenResponse, CodegenContent } from '@openapi-generator-plus/types'
-import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip, when, maybe } from '@openapi-generator-plus/template-utils'
+import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip, when, maybe, join } from '@openapi-generator-plus/template-utils'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { header } from './header'
 import { parameter as renderParameter } from './frag/parameter'
@@ -38,24 +38,6 @@ export function api(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateC
 	const ext = ctx.esm ? '.js' : ''
 	const gen = generatorContext.generator()
 	const groupName = className(gen, ctx.group.name)
-	const apiImports = hooks.apiImports?.(ctx as unknown as RootContext)
-	const dateImport = when(ctx.dateApproach === 'blind-date',
-		"import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';")
-
-	const namespaceBody = each(ctx.group.operations, (op: AnnotatedOperation) => {
-		const parts: string[] = []
-		if (parameterCount(op.parameters) > 1) {
-			parts.push(apiParametersInterface(generatorContext, op))
-		}
-		parts.push(apiResponseTypes(generatorContext, op))
-		return parts.join('\n\n')
-	}, '\n\n')
-
-	const operations = each(ctx.group.operations, (op: AnnotatedOperation) => renderOperationFunction(generatorContext, ctx, op, hooks), '\n\n')
-
-	const withConfigurationBody = each(ctx.group.operations, (op: AnnotatedOperation) => renderWithConfigurationEntry(generatorContext, op, groupName), '\n')
-
-	const exportObjectEntries = each(ctx.group.operations, (op) => `${identifier(gen, op.name)}, `)
 
 	return ts`${header(ctx)}
 
@@ -63,14 +45,18 @@ import { Configuration, getDefaultConfiguration } from "../configuration${ext}";
 import { COLLECTION_FORMATS, encodeURIPathSegment, RequiredError, dateToString } from "../runtime${ext}";
 import type { FetchArgs, UnauthorizedResponse, UndocumentedResponse, FetchErrorResponse } from "../runtime${ext}";
 import { Api } from "../models${ext}";
-${dateImport}
-${maybe(apiImports)}
+${when(ctx.dateApproach === 'blind-date',
+	"import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';")}
+${maybe(hooks.apiImports?.(ctx as unknown as RootContext))}
 
 namespace ${groupName}Api {
-${namespaceBody}
+${each(ctx.group.operations, (op: AnnotatedOperation) => join([
+	when(parameterCount(op.parameters) > 1, () => apiParametersInterface(generatorContext, op)),
+	apiResponseTypes(generatorContext, op),
+], '\n\n'), '\n\n')}
 }
 
-${operations}
+${each(ctx.group.operations, (op: AnnotatedOperation) => renderOperationFunction(generatorContext, ctx, op, hooks), '\n\n')}
 
 /**
  * ${groupName}Api - parameter creator
@@ -90,7 +76,7 @@ export function paramCreator(configuration?: Configuration) {
  */
 export function withConfiguration(defaultConfiguration: Configuration) {
 	return {
-${withConfigurationBody}
+${each(ctx.group.operations, (op: AnnotatedOperation) => renderWithConfigurationEntry(generatorContext, op, groupName), '\n')}
 	}
 };
 
@@ -100,7 +86,7 @@ ${withConfigurationBody}
  * specific endpoints from this file directly.
  */
 const ${groupName}Api = {
-	${exportObjectEntries}
+	${each(ctx.group.operations, (op) => `${identifier(gen, op.name)}, `)}
 };
 
 export default ${groupName}Api;
