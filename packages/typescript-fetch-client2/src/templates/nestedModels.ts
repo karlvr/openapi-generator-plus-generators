@@ -24,7 +24,8 @@ export function nestedModels(generatorContext: CodegenGeneratorContext, scope: {
 		} else {
 			return SKIP
 		}
-		/* Indent every nested model so it sits inside its enclosing namespace. */
-		return indent(body, '\t')
-	}, '\n\n')
+		/* Indent every nested model so it sits inside its enclosing namespace, with a
+		 * separating blank line after each. */
+		return `${indent(body, '\t')}\n`
+	}, '\n')
 }

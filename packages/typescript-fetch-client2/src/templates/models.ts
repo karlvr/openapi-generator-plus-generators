@@ -6,7 +6,7 @@ import { CodegenGeneratorContext } from '@openapi-generator-plus/types'
 
 export function models(generatorContext: CodegenGeneratorContext, ctx: DocumentContext, hooks: FetchClient2Hooks): string {
 	return ts`${header(ctx)}${ctx.dateApproach === 'blind-date'
-		? `\nimport { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date'`
+		? `\n\nimport { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date'`
 		: ''}
 ${maybe(hooks.modelsImports?.(ctx as RootContext))}
 
@@ -15,5 +15,6 @@ type ValuesOf<T> = T[keyof T]
 export namespace ${ctx.apiNamespace} {
 ${nestedModels(generatorContext, { schemas: ctx.schemas })}
 }
+
 `
 }

@@ -304,6 +304,16 @@ export function indent(value: string, prefix: string): string {
 }
 
 /**
+ * Indent every non-empty line of `value` after the first with `prefix`. Use
+ * when appending multi-line content to an existing line, where the first line
+ * continues that line and the remaining lines should align beneath it.
+ */
+export function indentTail(value: string, prefix: string): string {
+	const [first, ...rest] = value.split(/\r?\n/)
+	return [first, ...rest.map(line => line.length === 0 ? line : prefix + line)].join('\n')
+}
+
+/**
  * Join the non-empty lines of `value` with `separator`. Useful for replicating
  * the `{{#join}}` Handlebars helper.
  */

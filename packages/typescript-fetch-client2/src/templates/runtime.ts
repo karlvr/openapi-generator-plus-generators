@@ -30,6 +30,7 @@ export function runtime(ctx: DocumentContext, hooks: FetchClient2Hooks): string 
 
 ${maybe((hooks.runtimeImports ?? defaultRuntimeImports)(ctx as RootContext))}
 ${(hooks.defaultFetch ?? defaultDefaultFetch)(ctx as RootContext)}
+
 ${(ctx.servers && ctx.servers.length > 0)
 	? `export const BASE_URI = "${ctx.servers[0].url}".replace(/\\/+$/, "");`
 	: 'export const BASE_URI = "";'}

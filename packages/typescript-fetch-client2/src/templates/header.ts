@@ -5,6 +5,5 @@ import { DocumentContext } from './types'
 export function header(ctx: DocumentContext): string {
 	return ts`/* eslint-disable */
 // tslint:disable
-${licenseInfo(ctx)}
-`
+${licenseInfo(ctx)}`
 }

@@ -15,7 +15,7 @@ export function entry(generatorContext: CodegenGeneratorContext, ctx: DocumentCo
 
 	return ts`${header(ctx)}
 
-${maybe(hooks.indexImports?.(ctx as RootContext))}
+${maybe(hooks.indexImports?.(ctx as RootContext), v => `${v}\n`)}
 import { Configuration } from './configuration${ext}'
 ${each(groups, (g) => `import { withConfiguration as ${identifier(gen, g.name)}ApiWithConfiguration } from './api/${identifier(gen, g.name)}${ext}'`, '\n')}
 
