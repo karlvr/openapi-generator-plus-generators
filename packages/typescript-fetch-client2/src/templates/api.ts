@@ -172,7 +172,7 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 	const requestBodyContentTypeBlock = renderRequestBodyContentTypeBlock(op.requestBody as RequestBodyShape | null)
 	const requestBodyEncodingBlock = renderRequestBodyEncodingBlock(generatorContext, op, parameterPrefix)
 
-	const responsesBlock = renderResponses(generatorContext, op, ctx.group, hooks)
+	const responsesBlock = renderResponses(generatorContext, ctx, op, hooks)
 
 	return ts`${operationDocumentation(generatorContext, op)}
 export function ${identifier(gen, op.name)}ParamCreator(${paramDecls}${reqBodyParam}options: RequestInit = {}, configuration?: Configuration): FetchArgs {
@@ -231,10 +231,11 @@ ${responsesBlock}
 }`
 }
 
-function renderResponses(generatorContext: CodegenGeneratorContext, op: AnnotatedOperation, group: CodegenOperationGroup, hooks: FetchClient2Hooks): string {
+function renderResponses(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateContext, op: AnnotatedOperation, hooks: FetchClient2Hooks): string {
+	const group = ctx.group
 	const responseFn = hooks.apiResponseContent
-		? (content: CodegenContent | null, response: CodegenResponse) => hooks.apiResponseContent!({ content, response, operation: op, group, rootContext: {} as RootContext, generatorContext })
-		: (content: CodegenContent | null, response: CodegenResponse) => defaultApiResponseContent({ content, response, generatorContext })
+		? (content: CodegenContent | null, response: CodegenResponse) => hooks.apiResponseContent!({ content, response, operation: op, group, rootContext: ctx as unknown as RootContext, generatorContext })
+		: (content: CodegenContent | null, response: CodegenResponse) => defaultApiResponseContent({ content, response, dateApproach: ctx.dateApproach, generatorContext })
 
 	const documentedBranches = each(op.responses, (response: CodegenResponse) => {
 		if (response.isCatchAll) {

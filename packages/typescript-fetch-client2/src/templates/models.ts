@@ -15,7 +15,7 @@ ${maybe(modelsImports)}
 
 type ValuesOf<T> = T[keyof T]
 
-export namespace Api {
+export namespace ${ctx.apiNamespace} {
 ${nestedModels(generatorContext, { schemas: ctx.schemas })}
 }
 `

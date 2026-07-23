@@ -1,10 +1,26 @@
-import { CodegenContent, CodegenResponse, CodegenGeneratorContext } from '@openapi-generator-plus/types'
+import { CodegenContent, CodegenHeader, CodegenResponse, CodegenGeneratorContext } from '@openapi-generator-plus/types'
 import { ts, each, identifier, stringLiteral, isContentJson, isBinary, isString, maybe } from '@openapi-generator-plus/template-utils'
+import { DateApproach } from '@openapi-generator-plus/typescript-generator-common'
+import { stringToSchema } from './stringToSchema'
 
 export interface ApiResponseContentArgs {
 	content: CodegenContent | null
 	response: CodegenResponse
+	dateApproach: DateApproach
 	generatorContext: CodegenGeneratorContext
+}
+
+/**
+ * Render the `headers:` block of a response object, converting each raw header
+ * string to its schema's native type.
+ */
+export function responseHeaders(response: CodegenResponse, dateApproach: DateApproach, generatorContext: CodegenGeneratorContext) {
+	return maybe(response.headers, headers => ts`	headers: {
+${each(headers, (h: CodegenHeader) => {
+		const value = `response.headers.get(${stringLiteral(generatorContext, h.serializedName)})`
+		return `		${identifier(generatorContext.generator(), h.name)}: ${value} ? ${stringToSchema(h, value, dateApproach)} ?? undefined : undefined,`
+	}, '\n')}
+	},`)
 }
 
 /**
@@ -13,10 +29,8 @@ export interface ApiResponseContentArgs {
  * (e.g. fetch-node-client2) override via the `apiResponseContent` hook to swap
  * `response.blob()` for a Buffer-based read.
  */
-export function apiResponseContent({ content, response, generatorContext }: ApiResponseContentArgs): string {
-	const headersBlock = maybe(response.headers, headers => ts`	headers: {
-${each(headers, (h) => `		${identifier(generatorContext.generator(), h.name)}: response.headers.get(${stringLiteral(generatorContext, h.serializedName)}) ?? undefined,`, '\n')}
-	},`)
+export function apiResponseContent({ content, response, dateApproach, generatorContext }: ApiResponseContentArgs): string {
+	const headersBlock = responseHeaders(response, dateApproach, generatorContext)
 
 	if (!content) {
 		return ts`return {

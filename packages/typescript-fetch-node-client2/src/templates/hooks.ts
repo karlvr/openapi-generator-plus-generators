@@ -1,8 +1,9 @@
-import { ts, each, identifier, stringLiteral, isContentJson, isBinary, isString, maybe } from '@openapi-generator-plus/template-utils'
+import { ts, isContentJson, isBinary, isString, stringLiteral } from '@openapi-generator-plus/template-utils'
 import {
 	FetchClient2Hooks,
 	ApiResponseContentArgs,
 	RootContext,
+	responseHeaders,
 } from '@openapi-generator-plus/typescript-fetch-client-generator2'
 
 /**
@@ -37,10 +38,8 @@ import type { RequestInit } from "node-fetch";`,
 	apiResponseContent: (args: ApiResponseContentArgs) => apiResponseContentNode(args),
 }
 
-function apiResponseContentNode({ content, response, generatorContext }: ApiResponseContentArgs): string {
-	const headersBlock = maybe(response.headers, headers => ts`	headers: {
-${each(headers, (h: { name: string; serializedName: string }) => `		${identifier(generatorContext.generator(), h.name)}: response.headers.get(${stringLiteral(generatorContext, h.serializedName)}) ?? undefined,`, '\n')}
-	},`)
+function apiResponseContentNode({ content, response, rootContext, generatorContext }: ApiResponseContentArgs): string {
+	const headersBlock = responseHeaders(response, rootContext.dateApproach, generatorContext)
 
 	if (!content) {
 		return ts`return {

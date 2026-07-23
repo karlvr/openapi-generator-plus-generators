@@ -1,5 +1,5 @@
 import { CodegenEnumSchema, CodegenGeneratorContext } from '@openapi-generator-plus/types'
-import { ts, each, className, maybe } from '@openapi-generator-plus/template-utils'
+import { ts, each, className, maybe, md, indent } from '@openapi-generator-plus/template-utils'
 import { schemaDocumentation } from './frag/schemaDocumentation'
 
 export function modelEnum(generatorContext: CodegenGeneratorContext, schema: CodegenEnumSchema): string {
@@ -8,6 +8,9 @@ export function modelEnum(generatorContext: CodegenGeneratorContext, schema: Cod
 export type ${name} = ValuesOf<typeof ${name}>;
 
 export const ${name} = {
-${each(schema.enumValues, (v) => `	${v.name}: ${v.literalValue},`, '\n')}
+${each(schema.enumValues, (v) => ts`${maybe(v.description, d => `	/**
+${indent(md(d), '	 * ')}
+	 */`)}
+	${v.name}: ${v.literalValue},`, '\n')}
 } as const;`
 }
