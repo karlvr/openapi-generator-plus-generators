@@ -11,12 +11,11 @@ import { DocumentContext, FetchClient2Hooks, RootContext } from './types'
 export function entry(generatorContext: CodegenGeneratorContext, ctx: DocumentContext, hooks: FetchClient2Hooks): string {
 	const ext = ctx.esm ? '.js' : ''
 	const groups = ctx.groups
-	const indexImports = hooks.indexImports?.(ctx as RootContext)
 	const gen = generatorContext.generator()
 
 	return ts`${header(ctx)}
 
-${maybe(indexImports)}
+${maybe(hooks.indexImports?.(ctx as RootContext))}
 import { Configuration } from './configuration${ext}'
 ${each(groups, (g) => `import { withConfiguration as ${identifier(gen, g.name)}ApiWithConfiguration } from './api/${identifier(gen, g.name)}${ext}'`, '\n')}
 

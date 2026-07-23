@@ -1,5 +1,5 @@
 import { CodegenObjectSchema, CodegenGeneratorContext, CodegenMapSchema } from '@openapi-generator-plus/types'
-import { ts, each, className, quoteInvalidIdentifier, maybe } from '@openapi-generator-plus/template-utils'
+import { ts, each, className, quoteInvalidIdentifier, maybe, when, join } from '@openapi-generator-plus/template-utils'
 import { schemaDocumentation } from './frag/schemaDocumentation'
 import { discriminator } from './frag/discriminator'
 import { extendsClause } from './frag/extends'
@@ -10,41 +10,19 @@ export function modelGeneric(generatorContext: CodegenGeneratorContext, schema: 
 	const name = className(generatorContext.generator(), schema.name)
 	const parents = schema.parents ?? []
 	const implementsList = (schema as CodegenObjectSchema & { implements?: Array<{ nativeType: string }> }).implements ?? []
-
-	let extendsList = ''
-	if (parents.length > 0) {
-		extendsList = ' extends ' + each(parents, (p, _i, _f, isLast) => {
-			const ext = extendsClause(p, p.nativeType.parentType)
-			return isLast ? ext : `${ext}, `
-		})
-	}
-	if (implementsList.length > 0) {
-		extendsList += parents.length > 0 ? ', ' : ' extends '
-		extendsList += each(implementsList, (i, _idx, _f, isLast) => {
-			const ext = extendsClause(schema, i.nativeType)
-			return isLast ? ext : `${ext}, `
-		})
-	}
-
 	const additionalProps = (schema as CodegenObjectSchema & { additionalProperties?: { component: { nativeType: string } } | null }).additionalProperties
-	const additional = maybe(additionalProps, ap => `	[key: string]: ${ap.component.nativeType} | undefined;\n`)
 	const component = (schema as CodegenObjectSchema & { component?: { nativeType: string } | null }).component
-	const componentLine = maybe(component, c => `	[key: string]: ${c.nativeType};\n`)
-
-	const propsBody = each(schema.properties, (p) => {
-		const doc = propertyDocumentation({ property: p, memberOf: schema.name, generatorContext })
-		const ro = p.readOnly ? 'readonly ' : ''
-		const optional = p.required ? '' : '?'
-		return ts`	${maybe(doc)}
-	${ro}${quoteInvalidIdentifier(generatorContext, p.serializedName)}${optional}: ${p.nativeType.serializedType};`
-	}, '\n')
 
 	return ts`${maybe(schemaDocumentation(schema))}
-export interface ${name}${extendsList} {
+export interface ${name}${when(parents.length > 0 || implementsList.length > 0, () => ` extends ${join([
+	each(parents, (p) => extendsClause(p, p.nativeType.parentType), ', '),
+	each(implementsList, (i) => extendsClause(schema, i.nativeType), ', '),
+], ', ')}`)} {
 ${maybe(discriminator(schema as unknown as Parameters<typeof discriminator>[0]))}
-${additional}
-${componentLine}
-${propsBody}
+${maybe(additionalProps, ap => `	[key: string]: ${ap.component.nativeType} | undefined;\n`)}
+${maybe(component, c => `	[key: string]: ${c.nativeType};\n`)}
+${each(schema.properties, (p) => ts`	${maybe(propertyDocumentation({ property: p, memberOf: schema.name, generatorContext }))}
+	${p.readOnly ? 'readonly ' : ''}${quoteInvalidIdentifier(generatorContext, p.serializedName)}${p.required ? '' : '?'}: ${p.nativeType.serializedType};`, '\n')}
 }
 ${modelNestedModels(generatorContext, schema)}`
 }

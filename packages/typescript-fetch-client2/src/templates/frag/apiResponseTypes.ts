@@ -15,14 +15,10 @@ export function apiResponseTypes(generatorContext: CodegenGeneratorContext, op: 
 	}
 	trailingMembers.push('FetchErrorResponse')
 
-	const allMembers = [...unionMembers, ...trailingMembers]
-	const union = each(allMembers, (m) => `\t| ${m}`, '\n')
-
-	const interfaces = collectInterfaces(generatorContext, op)
 	return ts`export type ${responseTypeName} =
-${union}
+${each([...unionMembers, ...trailingMembers], (m) => `	| ${m}`, '\n')}
 
-${interfaces}`
+${collectInterfaces(generatorContext, op)}`
 }
 
 function collectUnionMembers(generatorContext: CodegenGeneratorContext, op: CodegenOperation): string[] {

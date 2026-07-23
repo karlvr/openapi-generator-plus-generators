@@ -26,18 +26,13 @@ export const defaultFetch: FetchAPI = typeof window !== "undefined" && typeof wi
 }
 
 export function runtime(ctx: DocumentContext, hooks: FetchClient2Hooks): string {
-	const baseUriLine = (ctx.servers && ctx.servers.length > 0)
-		? `export const BASE_URI = "${ctx.servers[0].url}".replace(/\\/+$/, "");`
-		: 'export const BASE_URI = "";'
-
-	const runtimeImports = (hooks.runtimeImports ?? defaultRuntimeImports)(ctx as RootContext)
-	const defaultFetchImpl = (hooks.defaultFetch ?? defaultDefaultFetch)(ctx as RootContext)
-
 	return ts`${header(ctx)}
 
-${maybe(runtimeImports)}
-${defaultFetchImpl}
-${baseUriLine}
+${maybe((hooks.runtimeImports ?? defaultRuntimeImports)(ctx as RootContext))}
+${(hooks.defaultFetch ?? defaultDefaultFetch)(ctx as RootContext)}
+${(ctx.servers && ctx.servers.length > 0)
+	? `export const BASE_URI = "${ctx.servers[0].url}".replace(/\\/+$/, "");`
+	: 'export const BASE_URI = "";'}
 
 /**
  *

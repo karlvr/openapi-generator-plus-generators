@@ -4,7 +4,6 @@ import { modelNestedModels } from './modelNestedModels'
 
 export function modelOneOf(generatorContext: CodegenGeneratorContext, schema: CodegenOneOfSchema | CodegenAnyOfSchema): string {
 	const name = className(generatorContext.generator(), schema.name)
-	const members = each(schema.composes, (s, _i, _f, isLast) => isLast ? s.nativeType.parentType : `${s.nativeType.parentType} | `)
-	return ts`export type ${name} = ${members};
+	return ts`export type ${name} = ${each(schema.composes, (s) => `${s.nativeType.parentType}`, ' | ')};
 ${modelNestedModels(generatorContext, schema)}`
 }

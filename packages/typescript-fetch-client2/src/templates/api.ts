@@ -1,4 +1,4 @@
-import { CodegenGeneratorContext, CodegenOperation, CodegenOperationGroup, CodegenResponse, CodegenContent } from '@openapi-generator-plus/types'
+import { CodegenGeneratorContext, CodegenOperationGroup, CodegenParameter, CodegenResponse, CodegenContent } from '@openapi-generator-plus/types'
 import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip, when, maybe, join } from '@openapi-generator-plus/template-utils'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { header } from './header'
@@ -105,67 +105,23 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 		: each(op.parameters, (p) => `${renderParameter(generatorContext, p)}, `)
 	const reqBodyParam = op.requestBody?.nativeType ? `${renderParameter(generatorContext, op.requestBody)}, ` : ''
 
-	const validateParams = each(op.parameters , (p) => validateParameter({ parameter: p, operation: op, parameterPrefix, generatorContext }), '\n')
-	const validateBody = maybe(op.requestBody, rb => validateParameter({ parameter: rb, operation: op, parameterPrefix: '', generatorContext }))
+	/* Renders the code that appends a parameter value to the given destination collection. */
+	const appendParameter = (p: CodegenParameter, dest: string) => requestParameter({
+		parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
+		dest,
+		var: `${parameterPrefix}${identifier(gen, p.name)}`,
+		dateApproach: ctx.dateApproach,
+		generatorContext,
+	})
 
 	const pathReplacements = each(op.pathParams, (p) => `\t\t.replace('{${p.serializedName}}', encodeURIPathSegment(String(${parameterPrefix}${identifier(gen, p.name)})))`, '\n')
-
-	const formParamsDecl = when(parameterCount(op.formParams) > 0, '\tconst localVarFormParams = new URLSearchParams();')
-	const cookieParamsDecl = when(parameterCount(op.cookieParams) > 0, '\tconst localVarCookieParams = new URLSearchParams();')
-
-	const securityBlock = apiSecurityRequirements(generatorContext, op)
-
-	const queryAppends = each(op.queryParams , (p) => requestParameter({
-		parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
-		dest: 'localVarQueryParameter',
-		var: `${parameterPrefix}${identifier(gen, p.name)}`,
-		dateApproach: ctx.dateApproach,
-		generatorContext,
-	}), '\n\n')
-
-	const headerAppends = each(op.headerParams , (p) => requestParameter({
-		parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
-		dest: 'localVarHeaderParameter',
-		var: `${parameterPrefix}${identifier(gen, p.name)}`,
-		dateApproach: ctx.dateApproach,
-		generatorContext,
-	}), '\n\n')
-
-	let formBlock: string | Skip = SKIP
-	if (parameterCount(op.formParams) > 0) {
-		const appends = each(op.formParams , (p) => requestParameter({
-			parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
-			dest: 'localVarFormParams',
-			var: `${parameterPrefix}${identifier(gen, p.name)}`,
-			dateApproach: ctx.dateApproach,
-			generatorContext,
-		}), '\n\n')
-		formBlock = `${appends}\n\tlocalVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');`
-	}
-
-	let cookieBlock: string | Skip = SKIP
-	if (parameterCount(op.cookieParams) > 0) {
-		const appends = each(op.cookieParams , (p) => requestParameter({
-			parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
-			dest: 'localVarCookieParams',
-			var: `${parameterPrefix}${identifier(gen, p.name)}`,
-			dateApproach: ctx.dateApproach,
-			generatorContext,
-		}), '\n\n')
-		cookieBlock = `${appends}\n\t/* NB: setting Cookies does not work in a browser, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */\n\tlocalVarHeaderParameter.set("Cookie", localVarCookieParams.toString().replace(/&/g, "; "));`
-	}
-
-	const requestBodyContentTypeBlock = renderRequestBodyContentTypeBlock(op.requestBody as RequestBodyShape | null)
-	const requestBodyEncodingBlock = renderRequestBodyEncodingBlock(generatorContext, op, parameterPrefix)
-
-	const responsesBlock = renderResponses(generatorContext, ctx, op, hooks)
 
 	return ts`${operationDocumentation(generatorContext, op)}
 export function ${identifier(gen, op.name)}ParamCreator(${paramDecls}${reqBodyParam}options: RequestInit = {}, configuration?: Configuration): FetchArgs {
 	configuration ??= getDefaultConfiguration();
 
-${validateParams}
-${validateBody}
+${each(op.parameters, (p) => validateParameter({ parameter: p, operation: op, parameterPrefix, generatorContext }), '\n')}
+${maybe(op.requestBody, rb => validateParameter({ parameter: rb, operation: op, parameterPrefix: '', generatorContext }))}
 
 	let localVarPath = \`${ctx.path ?? ''}${op.path}\`${pathReplacements ? '\n' + pathReplacements : ''};
 	const localVarPathQueryStart = localVarPath.indexOf("?");
@@ -175,18 +131,21 @@ ${validateBody}
 	if (localVarPathQueryStart !== -1) {
 		localVarPath = localVarPath.substring(0, localVarPathQueryStart);
 	}
-${formParamsDecl}
-${cookieParamsDecl}
+${when(parameterCount(op.formParams) > 0, '\tconst localVarFormParams = new URLSearchParams();')}
+${when(parameterCount(op.cookieParams) > 0, '\tconst localVarCookieParams = new URLSearchParams();')}
 
-	${securityBlock}
-${queryAppends}
-${headerAppends}
-${formBlock}
-${cookieBlock}
-${requestBodyContentTypeBlock}
+	${apiSecurityRequirements(generatorContext, op)}
+${each(op.queryParams, (p) => appendParameter(p, 'localVarQueryParameter'), '\n\n')}
+${each(op.headerParams, (p) => appendParameter(p, 'localVarHeaderParameter'), '\n\n')}
+${when(parameterCount(op.formParams) > 0, () => `${each(op.formParams, (p) => appendParameter(p, 'localVarFormParams'), '\n\n')}
+	localVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');`)}
+${when(parameterCount(op.cookieParams) > 0, () => `${each(op.cookieParams, (p) => appendParameter(p, 'localVarCookieParams'), '\n\n')}
+	/* NB: setting Cookies does not work in a browser, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
+	localVarHeaderParameter.set("Cookie", localVarCookieParams.toString().replace(/&/g, "; "));`)}
+${renderRequestBodyContentTypeBlock(op.requestBody as RequestBodyShape | null)}
 	localVarRequestOptions.headers = localVarHeaderParameter;
 ${when(parameterCount(op.formParams) > 0, '\tlocalVarRequestOptions.body = localVarFormParams.toString();')}
-${requestBodyEncodingBlock}
+${renderRequestBodyEncodingBlock(generatorContext, op, parameterPrefix)}
 
 	const localVarQueryParameterString = localVarQueryParameter.toString();
 	if (localVarQueryParameterString) {
@@ -207,7 +166,7 @@ export async function ${identifier(gen, op.name)}(${paramDecls}${reqBodyParam}op
 		const contentType = response.headers.get('Content-Type');
 		const mimeType = contentType ? contentType.replace(/;.*/, '') : undefined;
 
-${responsesBlock}
+${renderResponses(generatorContext, ctx, op, hooks)}
 	} catch (error) {
 		return {
 			status: 'error',
@@ -223,31 +182,18 @@ function renderResponses(generatorContext: CodegenGeneratorContext, ctx: ApiTemp
 		? (content: CodegenContent | null, response: CodegenResponse) => hooks.apiResponseContent!({ content, response, operation: op, group, rootContext: ctx as unknown as RootContext, generatorContext })
 		: (content: CodegenContent | null, response: CodegenResponse) => defaultApiResponseContent({ content, response, dateApproach: ctx.dateApproach, generatorContext })
 
-	const documentedBranches = each(op.responses, (response: CodegenResponse) => {
-		if (response.isCatchAll) {
-			return SKIP
-		}
-		const inner = response.contents
-			? each(response.contents, (content) => ts`if (mimeType === ${stringLiteral(generatorContext, content.mediaType.mimeType)}) {
+	/* Renders the mime-type dispatch for a response's contents, or the no-content body. */
+	const contentBranches = (response: CodegenResponse) => response.contents
+		? each(response.contents, (content) => ts`if (mimeType === ${stringLiteral(generatorContext, content.mediaType.mimeType)}) {
 	${responseFn(content, response)}
 }`, '\n')
-			: responseFn(null, response)
-		return ts`if (response.status === ${String(response.code)}) {
-	${inner}
-}`
-	}, '\n')
+		: responseFn(null, response)
 
-	let trailing: string
-	if (op.catchAllResponse) {
-		const cr = op.catchAllResponse
-		trailing = ts`/* Catch-all response */
-${cr.contents
-	? each(cr.contents, (content) => ts`if (mimeType === ${stringLiteral(generatorContext, content.mediaType.mimeType)}) {
-	${responseFn(content, cr)}
-}`, '\n')
-	: responseFn(null, cr)}`
-	} else {
-		trailing = ts`${when(op.addUnauthorizedResponseHandling, () => `if (response.status === 401) {
+	return ts`${each(op.responses, (response: CodegenResponse) => when(!response.isCatchAll, () => ts`if (response.status === ${String(response.code)}) {
+	${contentBranches(response)}
+}`), '\n')}
+${op.catchAllResponse ? ts`/* Catch-all response */
+${contentBranches(op.catchAllResponse)}` : ts`${when(op.addUnauthorizedResponseHandling, () => `if (response.status === 401) {
 	return {
 		status: 'unauthorized',
 		response,
@@ -258,11 +204,7 @@ return {
 	status: 'undocumented',
 	contentType: mimeType,
 	response,
-}`
-	}
-
-	return ts`${documentedBranches}
-${trailing}`
+}`}`
 }
 
 function renderRequestBodyContentTypeBlock(rb: RequestBodyShape | null): string | Skip {
@@ -290,37 +232,33 @@ function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContex
 	if (!dc) {
 		inner = `localVarRequestOptions.body = ${id};`
 	} else if (isContentFormUrlEncoded(dc)) {
-		const props = allProperties(rb.schema!)
-		const appends = each(props, (p) => requestParameter({
-			parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
-			dest: 'localVarFormParams',
-			var: `${id}["${p.serializedName}"]`,
-			dateApproach: 'native',
-			generatorContext,
-		}), '\n')
 		inner = ts`const localVarFormParams = new URLSearchParams();
-${appends}
+${each(allProperties(rb.schema!), (p) => requestParameter({
+	parameter: p as unknown as Parameters<typeof requestParameter>[0]['parameter'],
+	dest: 'localVarFormParams',
+	var: `${id}["${p.serializedName}"]`,
+	dateApproach: 'native',
+	generatorContext,
+}), '\n')}
 localVarRequestOptions.body = localVarFormParams;`
 	} else if (isContentJson(dc)) {
 		inner = `localVarRequestOptions.body = JSON.stringify(${id} || {});`
 	} else if (isContentMultipart(dc)) {
 		const encProps = rb.encoding?.properties
-		const propLoops = encProps ? each(encProps, (encProp) => {
-			const propName = encProp.property.serializedName
-			const propIsArray = isArray(encProp.property)
-			if (propIsArray) {
-				return ts`if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
+		inner = ts`const localVarFormData = new FormData();
+${encProps ? each(encProps, (encProp) => {
+	const propName = encProp.property.serializedName
+	if (isArray(encProp.property)) {
+		return ts`if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
 	for (const __anObject of ${id}.${identifier(gen, encProp.property.name)}${(encProp.property as { nullable?: boolean }).nullable ? ' || []' : ''}) {
 		${multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext })}
 	}
 }`
-			}
-			return ts`if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
+	}
+	return ts`if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
 	${multipartProperty({ encoding: encProp, propertyVar: `${id}[${stringLiteral(generatorContext, propName)}]`, bodyPartsVar: 'localVarFormData', generatorContext })}
 }`
-		}, '\n') : ''
-		inner = ts`const localVarFormData = new FormData();
-${propLoops}
+}, '\n') : ''}
 localVarRequestOptions.body = localVarFormData;`
 	} else {
 		inner = `localVarRequestOptions.body = ${id};`
