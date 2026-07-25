@@ -5,7 +5,9 @@ package {{apiPackage}};
 public interface {{className name}}Api {
 
 {{#each operations}}
+	{{#ifdef schemas}}
 	{{>nestedModels}}
+	{{/ifdef}}
 	{{#if path}}
 	@retrofit2.http.{{httpMethod}}("{{{path}}}")
 	{{else}}

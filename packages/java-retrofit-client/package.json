@@ -16,6 +16,7 @@
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
+    "test": "../../node_modules/.bin/jest",
     "watch": "../../node_modules/.bin/tsc --watch"
   },
   "repository": {
@@ -29,6 +30,7 @@
   },
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-retrofit-client#readme",
   "dependencies": {
+    "@openapi-generator-plus/generator-common": "workspace:*",
     "@openapi-generator-plus/handlebars-templates": "workspace:*",
     "@openapi-generator-plus/java-jaxrs-client-generator": "workspace:*",
     "@openapi-generator-plus/types": "^2.22.2"
