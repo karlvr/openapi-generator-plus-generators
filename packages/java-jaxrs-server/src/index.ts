@@ -44,18 +44,10 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 	const myContext: JavaGeneratorContext = chainJavaGeneratorContext(context, {
 		templates: hooks,
 	})
-	myContext.loadAdditionalTemplates = async(hbs) => {
-		if (context.loadAdditionalTemplates) {
-			await context.loadAdditionalTemplates(hbs)
-		}
-	}
-	myContext.additionalWatchPaths = () => {
-		return context.additionalWatchPaths ? context.additionalWatchPaths() : []
-	}
 
 	const generatorOptions = options(config, myContext)
 
-	myContext.additionalExportTemplates = async(outputPath, doc, _hbs, rootContext) => {
+	myContext.exportFiles = async(outputPath, doc, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 		const relativeApiSourceOutputPath = generatorOptions.relativeApiSourceOutputPath
 		const relativeApiImplSourceOutputPath = generatorOptions.relativeApiImplSourceOutputPath
@@ -125,8 +117,8 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			await emitTemplate(apiJaxbJsonProvider(ctx), path.join(outputPath, relativeApiImplSourceOutputPath, providerPackagePath, 'ApiJaxbJsonProvider.java'), false)
 		}
 
-		if (context.additionalExportTemplates) {
-			await context.additionalExportTemplates(outputPath, doc, _hbs, rootContext)
+		if (context.exportFiles) {
+			await context.exportFiles(outputPath, doc, rootContext)
 		}
 	}
 

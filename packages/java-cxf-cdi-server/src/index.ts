@@ -14,7 +14,7 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 
 	const generatorOptions = javaGeneratorOptions(config, myContext)
 
-	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+	myContext.exportFiles = async(outputPath, doc, rootContext) => {
 		const root = rootContext as RootContext
 
 		const relativeResourcesOutputPath = generatorOptions.relativeResourcesOutputPath
@@ -29,8 +29,8 @@ export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> 
 			await emit(testConfiguration(root), path.join(outputPath, relativeTestOutputPath, apiPackagePath, 'TestConfiguration.java'), false)
 		}
 
-		if (context.additionalExportTemplates) {
-			await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+		if (context.exportFiles) {
+			await context.exportFiles(outputPath, doc, rootContext)
 		}
 	}
 

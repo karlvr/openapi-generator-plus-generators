@@ -34,7 +34,6 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	relativeResourcesOutputPath?: string
 	relativeTestOutputPath: string
 	relativeTestResourcesOutputPath?: string
-	customTemplatesPath?: string
 
 	/**
 	 * Use jakarta instead of javax for imports

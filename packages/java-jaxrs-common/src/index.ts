@@ -2,8 +2,6 @@ import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocum
 import { CodegenOptionsJava } from './types'
 import path from 'path'
 import { existsSync } from 'fs'
-import Handlebars from 'handlebars'
-import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
 import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
@@ -35,14 +33,6 @@ export function packageToPath(packageName: string): string {
 	return packageName.replace(/\./g, path.sep)
 }
 
-function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
-	if (configPath) {
-		return path.resolve(path.dirname(configPath), customTemplatesPath) 
-	} else {
-		return customTemplatesPath
-	}
-}
-
 function computeRelativeSourceOutputPath(config: CodegenConfig) {
 	const maven = config.maven
 	const defaultPath = maven ? path.join('src', 'main', 'java') : ''
@@ -72,9 +62,11 @@ function computeRelativeTestResourcesOutputPath(config: CodegenConfig) {
 }
 
 export interface JavaGeneratorContext extends CodegenGeneratorContext {
-	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
-	additionalWatchPaths?: () => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
+	/**
+	 * Emit additional generator-specific files, beyond the model and support
+	 * files this package emits itself.
+	 */
+	exportFiles?: (outputPath: string, doc: CodegenDocument, rootContext: Record<string, unknown>) => Promise<void>
 	additionalCleanPathPatterns?: () => string[]
 	/**
 	 * Override the class used to capture application/x-www-form-urlencoded messages.
@@ -94,11 +86,8 @@ export interface JavaGeneratorContext extends CodegenGeneratorContext {
  * the calling — and so more specific — generator has already assembled) to
  * produce the context to pass to this generator's base implementation.
  *
- * Mirrors the Handlebars partial-loading order this package's family already
- * relies on: a wrapping generator's own templates are loaded, and so take
- * precedence, after its base implementation's — so here, for the same
- * reason, `context`'s own hook overrides win over `add`'s for any hook both
- * supply.
+ * The more specific generator wins: `context`'s own hook overrides take
+ * precedence over `add`'s for any hook both supply.
  */
 export function chainJavaGeneratorContext(context: JavaGeneratorContext, add: Partial<JavaGeneratorContext>): JavaGeneratorContext {
 	return {
@@ -129,7 +118,9 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 	const apiPackage = configString(config, 'apiPackage', packageName)
 	const maven = configObject(config, 'maven', undefined)
 	const customizations = configObject(config, 'customizations', undefined)
-	const customTemplates = configString(config, 'customTemplates', undefined)
+	if (config.customTemplates !== undefined) {
+		context.log(CodegenLogLevel.WARN, 'The customTemplates config option is no longer supported: templates are TypeScript code and are customized via the generator\'s typed template and hook APIs')
+	}
 	const relativeSourceOutputPath = computeRelativeSourceOutputPath(config)
 
 	const options: CodegenOptionsJava = {
@@ -163,7 +154,6 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
 		relativeTestOutputPath: computeRelativeTestOutputPath(config),
 		relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
-		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
 		useJakarta: configBoolean(config, 'useJakarta', false),
 		useLombok: configBoolean(config, 'useLombok', false),
 		customizations: {
@@ -593,16 +583,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
 		interfaceCanBeNested: () => true,
 	
-		watchPaths: () => {
-			const result = [path.resolve(__dirname, '..', 'templates')]
-			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths())
-			}
-			if (generatorOptions.customTemplatesPath) {
-				result.push(generatorOptions.customTemplatesPath)
-			}
-			return result
-		},
+		watchPaths: () => undefined,
 	
 		cleanPathPatterns: () => {
 			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
@@ -630,71 +611,6 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		},
 	
 		exportTemplates: async(outputPath, doc) => {
-			const hbs = Handlebars.create()
-
-			registerStandardHelpers(hbs, context)
-
-			hbs.registerHelper('getter', function(property: CodegenProperty | CodegenParameter | CodegenHeader) {
-				let propertyName = context.generator().toIdentifier(property.name)
-				if (generatorOptions.useLombok) {
-					propertyName = lombokPropertyName(property, propertyName)
-				}
-				if (isPrimitiveBool(property)) {
-					return `is${capitalize(propertyName)}`
-				} else {
-					return `get${capitalize(propertyName)}`
-				}
-			})
-			hbs.registerHelper('setter', function(property: CodegenProperty | CodegenParameter | CodegenHeader) {
-				let propertyName = context.generator().toIdentifier(property.name)
-				if (generatorOptions.useLombok) {
-					propertyName = lombokPropertyName(property, propertyName)
-				}
-				return `set${capitalize(propertyName)}`
-			})
-			hbs.registerHelper('isNativeArray', function(property: CodegenProperty) {
-				return isNativeArrayType(property.nativeType)
-			})
-			hbs.registerHelper('escapeString', function(value: string) {
-				// eslint-disable-next-line prefer-rest-params
-				const options = arguments[arguments.length - 1] as ActualHelperOptions
-				try {
-					return escapeString(value)
-				} catch (error) {
-					throw new Error(`${error instanceof Error ? error.message : error} @ ${sourcePosition(options)}`)
-				}
-			})
-			hbs.registerHelper('javax', function() {
-				if (generatorOptions.useJakarta) {
-					return 'jakarta'
-				} else {
-					return 'javax'
-				}
-			})
-	
-			/*
-			 * This package's own `templates/` directory is gone now that every hbs fragment
-			 * it used to hold has been superseded by the TypeScript model templates (see
-			 * `./templates/pojo.ts` and its siblings) and the TS-only `pom`/`apiTest` hooks
-			 * every current descendant generator supplies — so there's nothing left for a
-			 * child generator's own hbs (if any, via `loadAdditionalTemplates` below or
-			 * `customTemplatesPath`) to override by same-named partial. Guarded rather than
-			 * called unconditionally, since the directory no longer exists to `readdir`;
-			 * left in place (rather than removed outright) pending a future pass that retires
-			 * this generator's Handlebars machinery entirely.
-			 */
-			const ownTemplatesPath = path.resolve(__dirname, '..', 'templates')
-			if (existsSync(ownTemplatesPath)) {
-				await loadTemplates(ownTemplatesPath, hbs)
-			}
-			if (context.loadAdditionalTemplates) {
-				await context.loadAdditionalTemplates(hbs)
-			}
-	
-			if (generatorOptions.customTemplatesPath) {
-				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
-			}
-	
 			/* `securitySchemes` is document-wide (not a per-package option), so it's merged in
 			   here rather than contributed by any generator's own `templateRootContext` — every
 			   template in the family can rely on it being present on the root context. */
@@ -711,10 +627,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
-			/* Model files (pojo/enum/interface/wrapper) are rendered by the typed TS templates
-			   below, not Handlebars; everything else in this method still uses the hbs
-			   machinery set up above. The effective hook bag merges this package's
-			   defaults underneath whatever the generator chain has overridden. */
+			/* The effective hook bag merges this package's defaults underneath
+			   whatever the generator chain has overridden. */
 			const modelTemplates: EffectiveJavaJaxrsTemplates = { ...javaJaxrsCommonTemplates, ...context.templates }
 			const modelCtx: JavaModelContext = {
 				generatorContext: context,
@@ -752,19 +666,16 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 
 			/* `pom` and `apiTest` are supplied by child generators (this package has
-			   no Maven or test-scaffold template of its own); until a child migrates
-			   one to TypeScript, the hbs partial of the same name keeps rendering it. */
+			   no Maven or test-scaffold template of its own). */
 			const maven = generatorOptions.maven
 			if (maven) {
-				const pomOutputPath = path.join(outputPath, 'pom.xml')
-				if (modelTemplates.pom) {
-					await emitTemplate(modelTemplates.pom(modelCtx), pomOutputPath, false)
-				} else {
-					await emit('pom', pomOutputPath, { ...rootContext, ...maven }, false, hbs)
+				if (!modelTemplates.pom) {
+					throw new Error('The generator did not supply a pom template')
 				}
+				await emitTemplate(modelTemplates.pom(modelCtx), path.join(outputPath, 'pom.xml'), false)
 			}
 
-			if (generatorOptions.includeTests && (modelTemplates.apiTest || hbs.partials['tests/apiTest'])) {
+			if (generatorOptions.includeTests && modelTemplates.apiTest) {
 				const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 				for (const group of doc.groups) {
 					const operations = group.operations
@@ -772,16 +683,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 						continue
 					}
 					const apiTestOutputPath = path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}ApiTest.java`)
-					if (modelTemplates.apiTest) {
-						await emitTemplate(modelTemplates.apiTest(group, modelCtx), apiTestOutputPath, false)
-					} else {
-						await emit('tests/apiTest', apiTestOutputPath, { ...rootContext, ...group }, false, hbs)
-					}
+					await emitTemplate(modelTemplates.apiTest(group, modelCtx), apiTestOutputPath, false)
 				}
 			}
-	
-			if (context.additionalExportTemplates) {
-				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+
+			if (context.exportFiles) {
+				await context.exportFiles(outputPath, doc, rootContext)
 			}
 		},
 

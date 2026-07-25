@@ -205,9 +205,6 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: link:../../../openapi-generator-plus/packages/indexed-type
         version: link:../../../openapi-generator-plus/packages/indexed-type
@@ -223,18 +220,12 @@ importers:
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.9
 
   packages/java-jaxrs-server:
     dependencies:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: link:../../../openapi-generator-plus/packages/indexed-type
         version: link:../../../openapi-generator-plus/packages/indexed-type

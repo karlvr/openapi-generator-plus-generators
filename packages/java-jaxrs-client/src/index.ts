@@ -41,20 +41,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	const myContext: JavaGeneratorContext = chainJavaGeneratorContext(context, {
 		templates: hooks,
 	})
-	myContext.loadAdditionalTemplates = async(hbs) => {
-		if (context.loadAdditionalTemplates) {
-			await context.loadAdditionalTemplates(hbs)
-		}
-	}
-	myContext.additionalWatchPaths = () => {
-		return context.additionalWatchPaths ? context.additionalWatchPaths() : []
-	}
 	// eslint-disable-next-line @typescript-eslint/no-use-before-define
 	myContext.formUrlEncodedImplementation = () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`)
 
 	const generatorOptions = options(config, myContext)
 
-	myContext.additionalExportTemplates = async(outputPath, doc, _hbs, rootContext) => {
+	myContext.exportFiles = async(outputPath, doc, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 		const relativeApiSourceOutputPath = generatorOptions.relativeApiSourceOutputPath
 		const relativeApiImplSourceOutputPath = generatorOptions.relativeApiImplSourceOutputPath
@@ -116,8 +108,8 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		const apiSpiPackagePath = packageToPath(generatorOptions.apiSpiPackage)
 		await emitTemplate(apiAuthorizationProvider(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiSpiPackagePath, 'ApiAuthorizationProvider.java'), true)
 
-		if (context.additionalExportTemplates) {
-			await context.additionalExportTemplates(outputPath, doc, _hbs, rootContext)
+		if (context.exportFiles) {
+			await context.exportFiles(outputPath, doc, rootContext)
 		}
 	}
 
