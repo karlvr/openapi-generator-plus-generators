@@ -1,9 +1,10 @@
 import { CodegenGeneratorType, CodegenGenerator, CodegenConfig } from '@openapi-generator-plus/types'
 import path from 'path'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext, chainJavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaClient } from './types'
 import { configBoolean, configNumber, configString } from '@openapi-generator-plus/generator-common'
+import { hooks } from './templates/hooks'
 export { CodegenOptionsJavaClient } from './types'
 export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
@@ -21,27 +22,27 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 }
 
 export default function createGenerator(config: CodegenConfig, context: JavaGeneratorContext): CodegenGenerator {
-	const myContext: JavaGeneratorContext = {
-		...context,
-		loadAdditionalTemplates: async(hbs) => {
-			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+	const myContext: JavaGeneratorContext = chainJavaGeneratorContext(context, {
+		templates: hooks,
+	})
+	myContext.loadAdditionalTemplates = async(hbs) => {
+		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
-			if (context.loadAdditionalTemplates) {
-				await context.loadAdditionalTemplates(hbs)
-			}
-		},
-		additionalWatchPaths: () => {
-			const result = [path.resolve(__dirname, '../templates')]
-			
-			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths())
-			}
-
-			return result
-		},
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		formUrlEncodedImplementation: () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`),
+		if (context.loadAdditionalTemplates) {
+			await context.loadAdditionalTemplates(hbs)
+		}
 	}
+	myContext.additionalWatchPaths = () => {
+		const result = [path.resolve(__dirname, '../templates')]
+
+		if (context.additionalWatchPaths) {
+			result.push(...context.additionalWatchPaths())
+		}
+
+		return result
+	}
+	// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	myContext.formUrlEncodedImplementation = () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`)
 
 	const generatorOptions = options(config, myContext)
 

@@ -190,6 +190,9 @@ importers:
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -211,6 +214,9 @@ importers:
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -235,6 +241,9 @@ importers:
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -2074,7 +2083,7 @@ packages:
     hasBin: true
 
   maven@https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2:
-    resolution: {gitHosted: true, integrity: sha512-b+khz9wPOSNEg/mYq8WvfkbbrSSMm0sMmWN0kOy1ym9EqLLHKuZo/U8DDPJ3P9FwPErx6sElZhbrKe+T3Q/09A==, tarball: https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2}
     version: 4.7.0
     engines: {node: '>=4.0.0'}
 

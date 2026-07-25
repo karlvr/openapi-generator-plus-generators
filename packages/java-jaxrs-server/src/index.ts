@@ -2,9 +2,10 @@ import { CodegenConfig, CodegenGeneratorConstructor, CodegenGeneratorType } from
 import path from 'path'
 import { apiBasePath, configString, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext, chainJavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaServer } from './types'
 import { MyResponse } from './internal-types'
+import { hooks } from './templates/hooks'
 export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 export { CodegenOptionsJavaServer } from './types'
 
@@ -26,24 +27,24 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 }
 
 export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> = (config, context) => {
-	const myContext: JavaGeneratorContext = {
-		...context,
-		loadAdditionalTemplates: async(hbs) => {
-			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
+	const myContext: JavaGeneratorContext = chainJavaGeneratorContext(context, {
+		templates: hooks,
+	})
+	myContext.loadAdditionalTemplates = async(hbs) => {
+		await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
 
-			if (context.loadAdditionalTemplates) {
-				await context.loadAdditionalTemplates(hbs)
-			}
-		},
-		additionalWatchPaths: () => {
-			const result = [path.resolve(__dirname, '../templates')]
-			
-			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths())
-			}
+		if (context.loadAdditionalTemplates) {
+			await context.loadAdditionalTemplates(hbs)
+		}
+	}
+	myContext.additionalWatchPaths = () => {
+		const result = [path.resolve(__dirname, '../templates')]
 
-			return result
-		},
+		if (context.additionalWatchPaths) {
+			result.push(...context.additionalWatchPaths())
+		}
+
+		return result
 	}
 
 	const generatorOptions = options(config, myContext)

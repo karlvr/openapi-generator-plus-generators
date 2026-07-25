@@ -38,11 +38,11 @@ fi
 # diff anyway) and strip trailing whitespace from every line.
 normalize() {
 	local src="$1" dst="$2"
-	rsync -a --delete \
-		--exclude node_modules --exclude dist \
+	rsync -a --delete --delete-excluded \
+		--exclude node_modules --exclude dist --exclude target \
 		--exclude pnpm-lock.yaml --exclude package-lock.json \
 		"$src/" "$dst/"
-	find "$dst" -type f -exec sed -i '' -E 's/[[:space:]]+$//' {} +
+	find "$dst" -type f -exec env LC_ALL=C sed -i '' -E 's/[[:space:]]+$//' {} +
 }
 
 PACKAGES=("$@")

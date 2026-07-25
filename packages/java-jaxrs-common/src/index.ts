@@ -3,11 +3,14 @@ import { CodegenOptionsJava } from './types'
 import path from 'path'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
+import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import * as idx from '@openapi-generator-plus/indexed-type'
+import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper } from './templates'
 
 export { CodegenOptionsJava } from './types'
+export { JavaJaxrsTemplates, JavaModelContext, RootContext } from './templates'
 
 function escapeString(value: string | number | boolean) {
 	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
@@ -75,6 +78,32 @@ export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	 * Override the class used to capture application/x-www-form-urlencoded messages.
 	 */
 	formUrlEncodedImplementation?: () => CodegenNativeType
+	/**
+	 * Typed overrides for the model-emission hooks (see {@link JavaJaxrsTemplates}).
+	 * A child generator sets its own overrides via {@link chainJavaGeneratorContext};
+	 * this package merges its own defaults underneath whatever the effective
+	 * chain supplies.
+	 */
+	templates?: Partial<JavaJaxrsTemplates>
+}
+
+/**
+ * Merge `add` (this generator's own contribution) with `context` (whatever
+ * the calling — and so more specific — generator has already assembled) to
+ * produce the context to pass to this generator's base implementation.
+ *
+ * Mirrors the Handlebars partial-loading order this package's family already
+ * relies on: a wrapping generator's own templates are loaded, and so take
+ * precedence, after its base implementation's — so here, for the same
+ * reason, `context`'s own hook overrides win over `add`'s for any hook both
+ * supply.
+ */
+export function chainJavaGeneratorContext(context: JavaGeneratorContext, add: Partial<JavaGeneratorContext>): JavaGeneratorContext {
+	return {
+		...context,
+		...add,
+		templates: { ...add.templates, ...context.templates },
+	}
 }
 
 interface AugmentedCodegenSchema {
@@ -663,20 +692,27 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
+			/* Model files (pojo/enum/interface/wrapper) are rendered by the typed TS templates
+			   below, not Handlebars; everything else in this method still uses the hbs
+			   machinery set up above. The effective hook bag merges this package's
+			   defaults underneath whatever the generator chain has overridden. */
+			const modelTemplates: Required<JavaJaxrsTemplates> = { ...javaJaxrsCommonTemplates, ...context.templates }
+			const modelCtx: JavaModelContext = {
+				generatorContext: context,
+				root: rootContext as RootContext,
+				templates: modelTemplates,
+			}
+
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
 			for (const schema of context.utils.values(doc.schemas)) {
 				if (isCodegenObjectSchema(schema)) {
-					await emit('pojo', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, pojo: schema }, true, hbs)
+					await emitTemplate(pojo(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				} else if (isCodegenEnumSchema(schema)) {
-					await emit('enum', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, enum: schema }, true, hbs)
+					await emitTemplate(enumTemplate(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				} else if (isCodegenInterfaceSchema(schema)) {
-					await emit('interface', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, interface: schema }, true, hbs)
+					await emitTemplate(interfaceTemplate(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				} else if (isCodegenWrapperSchema(schema)) {
-					await emit('wrapper', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, schema }, true, hbs)
+					await emitTemplate(wrapper(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				}
 			}
 
