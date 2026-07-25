@@ -8,7 +8,8 @@ export function readme(ctx: DocumentContext): string {
 		? '```shell\n' + `npm install ${npm.name}@${npm.version} --save` + '\n```'
 		: '```shell\nnpm install PATH_TO_GENERATED_PACKAGE --save\n```'
 
-	return ts`${heading}
+	return ts`
+${heading}
 
 This generator creates TypeScript/JavaScript client that utilizes [Fetch API](https://fetch.spec.whatwg.org/). The generated Node module can be used in the following environments:
 

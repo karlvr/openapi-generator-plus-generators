@@ -28,7 +28,7 @@ export default tseslint.config(
 			'@typescript-eslint/explicit-module-boundary-types': 'off',
 			'func-call-spacing': 'warn',
 			'generator-star-spacing': ['warn', 'after'],
-			'@stylistic/indent': ['warn', 'tab'],
+			'@stylistic/indent': ['warn', 'tab', { flatTernaryExpressions: true }],
 			'@stylistic/eol-last': ['warn', 'always'],
 			'jsx-a11y/alt-text': 'off',
 			'jsx-a11y/anchor-is-valid': 'off',

@@ -14,7 +14,8 @@ interface SchemaWithDiscriminator {
 export function discriminator(schema: SchemaWithDiscriminator): string {
 	const parts: string[] = []
 	if (schema.discriminator) {
-		parts.push(ts`	/**
+		parts.push(ts`
+	/**
 	 * Discriminator property
 	 */
 	${schema.discriminator.serializedName}: ${schema.discriminator.nativeType.serializedType};
@@ -23,7 +24,8 @@ export function discriminator(schema: SchemaWithDiscriminator): string {
 	if (schema.discriminatorValues) {
 		for (const dv of schema.discriminatorValues) {
 			const schemaList = each(dv.schemas, (s, _i, _f, isLast) => isLast ? s.nativeType.parentType : `${s.nativeType.parentType}, `)
-			parts.push(ts`	/**
+			parts.push(ts`
+	/**
 	 * Value for discriminator in ${schemaList}
 	 */
 	${dv.discriminator.serializedName}: ${dv.literalValue};

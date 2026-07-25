@@ -38,14 +38,15 @@ export function api(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateC
 	const gen = generatorContext.generator()
 	const groupName = className(gen, ctx.group.name)
 
-	return ts`${header(ctx)}
+	return ts`
+${header(ctx)}
 
 import { Configuration, getDefaultConfiguration } from "../configuration${ext}";
 import { COLLECTION_FORMATS, encodeURIPathSegment, RequiredError, dateToString } from "../runtime${ext}";
 import type { FetchArgs, UnauthorizedResponse, UndocumentedResponse, FetchErrorResponse } from "../runtime${ext}";
 import { Api } from "../models${ext}";
 ${when(ctx.dateApproach === 'blind-date',
-	"import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from 'blind-date';")}
+	'import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from \'blind-date\';')}
 ${maybe(hooks.apiImports?.(ctx as unknown as RootContext))}
 
 namespace ${groupName}Api {
@@ -133,7 +134,8 @@ function renderParamCreatorFunction(generatorContext: CodegenGeneratorContext, c
 		generatorContext,
 	})
 
-	return ts`${operationDocumentation(generatorContext, op)}
+	return ts`
+${operationDocumentation(generatorContext, op)}
 export function ${identifier(gen, op.name)}ParamCreator(${parameterList(generatorContext, op, groupName)}options: RequestInit = {}, configuration?: Configuration): FetchArgs {
 	configuration ??= getDefaultConfiguration();
 
@@ -181,7 +183,8 @@ function renderOperationFunction(generatorContext: CodegenGeneratorContext, ctx:
 	const gen = generatorContext.generator()
 	const groupName = className(gen, ctx.group.name)
 
-	return ts`${operationDocumentation(generatorContext, op)}
+	return ts`
+${operationDocumentation(generatorContext, op)}
 export async function ${identifier(gen, op.name)}(${parameterList(generatorContext, op, groupName)}options?: RequestInit, configuration?: Configuration): Promise<${groupName}Api.${className(gen, op.name)}Response> {
 	try {
 		configuration ??= getDefaultConfiguration();
@@ -208,15 +211,19 @@ function renderResponses(generatorContext: CodegenGeneratorContext, ctx: ApiTemp
 
 	/* Renders the mime-type dispatch for a response's contents, or the no-content body. */
 	const contentBranches = (response: CodegenResponse) => response.contents
-		? each(response.contents, (content) => ts`if (mimeType === ${stringLiteral(generatorContext, content.mediaType.mimeType)}) {
+		? each(response.contents, (content) => ts`
+if (mimeType === ${stringLiteral(generatorContext, content.mediaType.mimeType)}) {
 	${responseFn(content, response)}
 }`, '\n')
 		: responseFn(null, response)
 
-	return ts`${each(op.responses, (response: CodegenResponse) => when(!response.isCatchAll, () => ts`if (response.status === ${String(response.code)}) {
+	return ts`
+${each(op.responses, (response: CodegenResponse) => when(!response.isCatchAll, () => ts`
+if (response.status === ${String(response.code)}) {
 	${contentBranches(response)}
 }`), '\n')}
-${op.catchAllResponse ? ts`/* Catch-all response */
+${op.catchAllResponse ? ts`
+/* Catch-all response */
 ${contentBranches(op.catchAllResponse)}` : ts`
 
 ${when(op.addUnauthorizedResponseHandling, () => `if (response.status === 401) {
@@ -238,7 +245,7 @@ function renderRequestBodyContentTypeBlock(rb: RequestBodyShape): string {
 	if (consumes && consumes.length > 0) {
 		return `\tlocalVarHeaderParameter.set('Content-Type', '${consumes[0].mediaType}');`
 	}
-	return "\tlocalVarHeaderParameter.set('Content-Type', 'application/json');"
+	return '\tlocalVarHeaderParameter.set(\'Content-Type\', \'application/json\');'
 }
 
 function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateContext, op: AnnotatedOperation): string | Skip {
@@ -255,7 +262,8 @@ function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContex
 	if (!dc) {
 		inner = `localVarRequestOptions.body = ${id};`
 	} else if (isContentFormUrlEncoded(dc)) {
-		inner = ts`const localVarFormParams = new URLSearchParams();
+		inner = ts`
+const localVarFormParams = new URLSearchParams();
 ${each(allProperties(rb.schema!), (p) => requestParameter({
 	parameter: { ...p, encoding: dc.encoding ? idx.get(dc.encoding.properties, p.name) : null } as unknown as Parameters<typeof requestParameter>[0]['parameter'],
 	dest: 'localVarFormParams',
@@ -267,17 +275,20 @@ localVarRequestOptions.body = localVarFormParams;`
 	} else if (isContentJson(dc)) {
 		inner = `localVarRequestOptions.body = JSON.stringify(${id} || {});`
 	} else if (isContentMultipart(dc)) {
-		inner = ts`const localVarFormData = new FormData();
+		inner = ts`
+const localVarFormData = new FormData();
 ${each(dc.encoding?.properties, (encProp) => {
 	const propName = encProp.property.serializedName
 	if (isArray(encProp.property)) {
-		return ts`if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
+		return ts`
+if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
 	for (const __anObject of ${id}.${identifier(gen, encProp.property.name)}${(encProp.property as { nullable?: boolean }).nullable ? ' || []' : ''}) {
 		${multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext })}
 	}
 }`
 	}
-	return ts`if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
+	return ts`
+if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
 	${multipartProperty({ encoding: encProp, propertyVar: `${id}[${stringLiteral(generatorContext, propName)}]`, bodyPartsVar: 'localVarFormData', generatorContext })}
 }`
 }, '\n')}
@@ -286,6 +297,8 @@ localVarRequestOptions.body = localVarFormData;`
 		inner = `localVarRequestOptions.body = ${id};`
 	}
 
+	/* The first line of the template is the margin; the second, blank, line
+	 * separates the rendered block from the statements that precede it. */
 	return ts`
 
 	if (${id} !== undefined) {

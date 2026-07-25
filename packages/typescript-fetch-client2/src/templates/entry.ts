@@ -13,7 +13,8 @@ export function entry(generatorContext: CodegenGeneratorContext, ctx: DocumentCo
 	const groups = ctx.groups
 	const gen = generatorContext.generator()
 
-	return ts`${header(ctx)}
+	return ts`
+${header(ctx)}
 
 ${maybe(hooks.indexImports?.(ctx as RootContext), v => `${v}\n`)}
 import { Configuration } from './configuration${ext}'

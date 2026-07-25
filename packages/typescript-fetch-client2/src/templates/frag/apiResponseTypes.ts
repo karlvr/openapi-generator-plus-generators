@@ -15,7 +15,8 @@ export function apiResponseTypes(generatorContext: CodegenGeneratorContext, op: 
 	}
 	trailingMembers.push('FetchErrorResponse')
 
-	return ts`export type ${responseTypeName} =
+	return ts`
+export type ${responseTypeName} =
 ${each([...unionMembers, ...trailingMembers], (m) => `	| ${m}`, '\n')}
 
 ${collectInterfaces(generatorContext, op)}`
@@ -63,7 +64,8 @@ function renderContentInterface(generatorContext: CodegenGeneratorContext, op: C
 	const suffix = response.contents && response.contents.length > 1 ? className(generatorContext.generator(), content.mediaType.mimeType) : ''
 	const interfaceName = `${className(generatorContext.generator(), baseName)}${suffix}Response`
 	const statusLine = response.isCatchAll ? 'status: number' : `status: ${response.code}`
-	const headersBlock = response.headers ? ts`	headers: {
+	const headersBlock = response.headers ? ts`
+	headers: {
 ${each(response.headers, (h) => `		${stringLiteral(generatorContext, h.name)}?: ${h.schema.nativeType}`, '\n')}
 	}` : '	headers?: undefined'
 
@@ -84,7 +86,8 @@ ${each(response.headers, (h) => `		${stringLiteral(generatorContext, h.name)}?: 
 		bodyBlock = '	body?: undefined'
 	}
 
-	return ts`export interface ${interfaceName} {
+	return ts`
+export interface ${interfaceName} {
 	${statusLine}
 	contentType: ${stringLiteral(generatorContext, content.mediaType.mimeType)}
 ${bodyBlock}
@@ -94,10 +97,12 @@ ${headersBlock}
 
 function renderNoContentInterface(generatorContext: CodegenGeneratorContext, op: CodegenOperation, response: CodegenResponse): string {
 	const interfaceName = `${className(generatorContext.generator(), op.name)}${response.code}Response`
-	const headersBlock = response.headers ? ts`	headers: {
+	const headersBlock = response.headers ? ts`
+	headers: {
 ${each(response.headers, (h) => `		${stringLiteral(generatorContext, h.name)}?: ${h.schema.nativeType}`, '\n')}
 	}` : '	headers?: undefined'
-	return ts`export interface ${interfaceName} {
+	return ts`
+export interface ${interfaceName} {
 	status: ${String(response.code)}
 	body?: undefined
 ${headersBlock}

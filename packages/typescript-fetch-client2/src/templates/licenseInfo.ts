@@ -3,7 +3,8 @@ import { DocumentContext } from './types'
 
 export function licenseInfo(ctx: DocumentContext): string {
 	const info = ctx.info
-	return ts`/**
+	return ts`
+/**
  * ${info.title}
  * ${info.description ?? ''}
  *

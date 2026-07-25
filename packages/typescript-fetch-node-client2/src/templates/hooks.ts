@@ -12,14 +12,16 @@ import {
  * Node-flavoured equivalents.
  */
 export const hooks: FetchClient2Hooks = {
-	apiImports: () => ts`import { btoa } from "abab";
+	apiImports: () => ts`
+import { btoa } from "abab";
 import { Buffer } from "buffer";
 import { Headers, Response } from "node-fetch";
 import type { RequestInit } from "node-fetch";
 import { URLSearchParams } from "url";
 import FormData from "form-data";`,
 
-	indexImports: () => ts`import type { RequestInit } from "node-fetch";
+	indexImports: () => ts`
+import type { RequestInit } from "node-fetch";
 export type { RequestInit } from "node-fetch";`,
 
 	modelsImports: () => 'import { Buffer } from "buffer";',
@@ -30,7 +32,8 @@ export type { RequestInit } from "node-fetch";`,
 		'"node-fetch": "^3.0.0"',
 	],
 
-	runtimeImports: () => ts`import fetch, { Response } from "node-fetch";
+	runtimeImports: () => ts`
+import fetch, { Response } from "node-fetch";
 import type { RequestInit } from "node-fetch";`,
 
 	defaultFetch: () => 'export const defaultFetch = fetch;',
@@ -42,30 +45,23 @@ function apiResponseContentNode({ content, response, rootContext, generatorConte
 	const headersBlock = responseHeaders(response, rootContext.dateApproach, generatorContext)
 
 	if (!content) {
-		return ts`return {
+		return ts`
+return {
 	status: response.status,
 	/* No content */
 ${headersBlock}
 }`
 	}
 
-	let bodyBlock: string
-	if (!content.schema) {
-		bodyBlock = '	/* No schema */'
-	} else if (isContentJson(content)) {
-		bodyBlock = `	body: await response.json() as ${content.nativeType},`
-	} else if (isBinary(content.schema)) {
-		bodyBlock = '	body: Buffer.from(await response.arrayBuffer()),'
-	} else if (isString(content.schema)) {
-		bodyBlock = '	body: await response.text(),'
-	} else {
-		bodyBlock = '	/* Unsupported mimeType for parsing */\n	response,'
-	}
-
-	return ts`return {
+	return ts`
+return {
 	status: response.status,
 	contentType: ${stringLiteral(generatorContext, content.mediaType.mimeType)},
-${bodyBlock}
+${!content.schema ? '	/* No schema */'
+	: isContentJson(content) ? `	body: await response.json() as ${content.nativeType},`
+	: isBinary(content.schema) ? '	body: Buffer.from(await response.arrayBuffer()),'
+	: isString(content.schema) ? '	body: await response.text(),'
+	: '	/* Unsupported mimeType for parsing */\n	response,'}
 ${headersBlock}
 }`
 }

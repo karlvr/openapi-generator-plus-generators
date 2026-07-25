@@ -13,7 +13,8 @@ export function propertyDocumentation({ property, memberOf, generatorContext }: 
 		return ''
 	}
 	const numericSchema = isNumeric(property.schema) ? (property.schema as unknown as { minimum: number | null; maximum: number | null }) : null
-	return ts`/**
+	return ts`
+/**
 ${maybe(property.description, d => ` * ${indentTail(`@description ${md(d)}`, ' *  ')}`)}
  * @type {${property.nativeType.serializedType}}
 ${maybe(memberOf, m => ` * @memberof ${className(generatorContext.generator(), m)}`)}

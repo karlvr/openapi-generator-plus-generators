@@ -1,5 +1,5 @@
 import { CodegenOperation, CodegenGeneratorContext } from '@openapi-generator-plus/types'
-import { ts, each, capitalize, stringLiteral, Skip, SKIP } from '@openapi-generator-plus/template-utils'
+import { ts, each, capitalize, stringLiteral, when, Skip, SKIP } from '@openapi-generator-plus/template-utils'
 
 interface SecurityScheme {
 	name: string
@@ -42,49 +42,43 @@ export function apiSecurityRequirements(generatorContext: CodegenGeneratorContex
 }
 
 function renderScheme(generatorContext: CodegenGeneratorContext, scheme: SecurityScheme, scopes: Array<{ name: string }>): string {
-	const lines: string[] = [`// authentication ${scheme.name} required`]
-	if (scheme.isApiKey) {
-		if (scheme.isInHeader) {
-			lines.push(ts`if (configuration && configuration.apiKey) {
+	return ts`
+// authentication ${scheme.name} required
+${when(scheme.isApiKey && scheme.isInHeader, () => ts`
+if (configuration && configuration.apiKey) {
 	const localVarApiKeyValue = typeof configuration.apiKey === 'function'
 		? configuration.apiKey(${stringLiteral(generatorContext, scheme.name)})
 		: configuration.apiKey;
 	if (localVarApiKeyValue !== null) {
 		localVarHeaderParameter.set(${stringLiteral(generatorContext, scheme.paramName)}, localVarApiKeyValue);
 	}
-}`)
-		}
-		if (scheme.isInQuery) {
-			lines.push(ts`if (configuration && configuration.apiKey) {
+}`)}
+${when(scheme.isApiKey && scheme.isInQuery, () => ts`
+if (configuration && configuration.apiKey) {
 	const localVarApiKeyValue = typeof configuration.apiKey === 'function'
 		? configuration.apiKey(${stringLiteral(generatorContext, scheme.name)})
 		: configuration.apiKey;
 	if (localVarApiKeyValue !== null) {
 		localVarQueryParameter.set(${stringLiteral(generatorContext, scheme.paramName)}, localVarApiKeyValue);
 	}
-}`)
-		}
-	}
-	if (scheme.isBasic) {
-		lines.push(ts`// http basic authentication required
+}`)}
+${when(scheme.isBasic, () => ts`
+// http basic authentication required
 if (configuration && (configuration.username || configuration.password)) {
 	localVarHeaderParameter.set("Authorization", "Basic " + btoa(configuration.username + ":" + configuration.password));
-}`)
-	}
-	if (scheme.isOAuth || scheme.isOpenIdConnect) {
-		const scopeArgs = scopes.map(s => stringLiteral(generatorContext, s.name)).join(', ')
-		lines.push(ts`// oauth or openIdConnect required
+}`)}
+${when(scheme.isOAuth || scheme.isOpenIdConnect, () => ts`
+// oauth or openIdConnect required
 if (configuration && configuration.authorization) {
 	const localVarAuthorizationValue = typeof configuration.authorization === 'function'
-		? configuration.authorization(${stringLiteral(generatorContext, scheme.name)}, [${scopeArgs}])
+		? configuration.authorization(${stringLiteral(generatorContext, scheme.name)}, [${scopes.map(s => stringLiteral(generatorContext, s.name)).join(', ')}])
 		: configuration.authorization;
 	if (localVarAuthorizationValue !== null) {
 		localVarHeaderParameter.set("Authorization", "Bearer " + localVarAuthorizationValue);
 	}
-}`)
-	}
-	if (scheme.isHttp) {
-		lines.push(ts`// http authorization required
+}`)}
+${when(scheme.isHttp, () => ts`
+// http authorization required
 if (configuration && configuration.authorization) {
 	const localVarAuthorizationValue = typeof configuration.authorization === 'function'
 		? configuration.authorization(${stringLiteral(generatorContext, scheme.name)})
@@ -92,7 +86,5 @@ if (configuration && configuration.authorization) {
 	if (localVarAuthorizationValue !== null) {
 		localVarHeaderParameter.set("Authorization", "${capitalize(scheme.scheme)} " + localVarAuthorizationValue);
 	}
-}`)
-	}
-	return lines.join('\n')
+}`)}`
 }

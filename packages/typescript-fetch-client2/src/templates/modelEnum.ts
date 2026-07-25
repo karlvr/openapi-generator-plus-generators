@@ -4,11 +4,13 @@ import { schemaDocumentation } from './frag/schemaDocumentation'
 
 export function modelEnum(generatorContext: CodegenGeneratorContext, schema: CodegenEnumSchema): string {
 	const name = className(generatorContext.generator(), schema.name)
-	return ts`${maybe(schemaDocumentation(schema))}
+	return ts`
+${maybe(schemaDocumentation(schema))}
 export type ${name} = ValuesOf<typeof ${name}>;
 
 export const ${name} = {
-${each(schema.enumValues, (v) => ts`${maybe(v.description, d => `	/**
+${each(schema.enumValues, (v) => ts`
+${maybe(v.description, d => `	/**
 ${indent(md(d), '	 * ')}
 	 */`)}
 	${v.name}: ${v.literalValue},`, '\n')}

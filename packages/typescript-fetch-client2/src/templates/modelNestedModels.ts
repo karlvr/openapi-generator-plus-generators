@@ -8,6 +8,8 @@ export function modelNestedModels(generatorContext: CodegenGeneratorContext, sch
 		return SKIP
 	}
 	const name = className(generatorContext.generator(), (schema as { name: string }).name)
+	/* The first line of the template is the margin; the second, blank, line
+	 * separates the namespace from its owning model. */
 	return ts`
 
 /**

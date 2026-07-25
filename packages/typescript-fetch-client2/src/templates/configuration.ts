@@ -4,7 +4,8 @@ import { DocumentContext } from './types'
 
 export function configuration(ctx: DocumentContext): string {
 	const ext = ctx.esm ? '.js' : ''
-	return ts`${header(ctx)}
+	return ts`
+${header(ctx)}
 
 import { BASE_URI, defaultFetch } from "./runtime${ext}";
 import type { FetchAPI } from "./runtime${ext}";

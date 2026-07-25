@@ -3,7 +3,8 @@ import { ts, md, indent, indentTail, each, when, maybe } from '@openapi-generato
 import { parameterDocumentation } from './parameterDocumentation'
 
 export function operationDocumentation(generatorContext: CodegenGeneratorContext, op: CodegenOperation): string {
-	return ts`/**
+	return ts`
+/**
 ${maybe(op.description, d => indent(md(d), ' * '))}
 ${maybe(op.externalDocs, ed => ` * <p>External documentation: ${ed.url}</p>`)}
 ${maybe(op.externalDocs?.description, d => indent(md(d), ' * '))}

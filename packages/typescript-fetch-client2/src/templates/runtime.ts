@@ -26,7 +26,8 @@ export const defaultFetch: FetchAPI = typeof window !== "undefined" && typeof wi
 }
 
 export function runtime(ctx: DocumentContext, hooks: FetchClient2Hooks): string {
-	return ts`${header(ctx)}
+	return ts`
+${header(ctx)}
 
 ${maybe((hooks.runtimeImports ?? defaultRuntimeImports)(ctx as RootContext))}
 ${(hooks.defaultFetch ?? defaultDefaultFetch)(ctx as RootContext)}

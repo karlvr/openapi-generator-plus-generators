@@ -5,7 +5,8 @@ import { CodegenProperty } from '@openapi-generator-plus/types'
 
 export function apiParametersInterface(generatorContext: CodegenGeneratorContext, op: CodegenOperation): string {
 	const interfaceName = className(generatorContext.generator(), `${op.name}_parameters`)
-	return ts`export interface ${interfaceName} {
+	return ts`
+export interface ${interfaceName} {
 ${each(op.parameters, (p) => {
 	/* The parameter doc helper expects a property; we synthesise minimal fields. */
 	const doc = propertyDocumentation({
@@ -14,7 +15,8 @@ ${each(op.parameters, (p) => {
 		generatorContext,
 	})
 	const optional = p.required ? '' : '?'
-	return ts`	${maybe(doc)}
+	return ts`
+	${maybe(doc)}
 	${p.name}${optional}: ${p.nativeType}`
 }, '\n')}
 }`

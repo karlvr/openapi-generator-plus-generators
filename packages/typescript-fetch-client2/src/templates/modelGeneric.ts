@@ -13,7 +13,8 @@ export function modelGeneric(generatorContext: CodegenGeneratorContext, schema: 
 	const additionalProps = (schema as CodegenObjectSchema & { additionalProperties?: { component: { nativeType: string } } | null }).additionalProperties
 	const component = (schema as CodegenObjectSchema & { component?: { nativeType: string } | null }).component
 
-	return ts`${maybe(schemaDocumentation(schema))}
+	return ts`
+${maybe(schemaDocumentation(schema))}
 export interface ${name}${when(parents.length > 0 || implementsList.length > 0, () => ` extends ${join([
 	each(parents, (p) => extendsClause(p, p.nativeType.parentType), ', '),
 	each(implementsList, (i) => extendsClause(schema, i.nativeType), ', '),
@@ -21,7 +22,8 @@ export interface ${name}${when(parents.length > 0 || implementsList.length > 0, 
 ${maybe(discriminator(schema as unknown as Parameters<typeof discriminator>[0]))}
 ${maybe(additionalProps, ap => `	[key: string]: ${ap.component.nativeType} | undefined;\n`)}
 ${maybe(component, c => `	[key: string]: ${c.nativeType};\n`)}
-${each(schema.properties, (p) => ts`	${maybe(propertyDocumentation({ property: p, memberOf: schema.name, generatorContext }))}
+${each(schema.properties, (p) => ts`
+	${maybe(propertyDocumentation({ property: p, memberOf: schema.name, generatorContext }))}
 	${p.readOnly ? 'readonly ' : ''}${quoteInvalidIdentifier(generatorContext, p.serializedName)}${p.required ? '' : '?'}: ${p.nativeType.serializedType};`, '\n')}
 }
 ${modelNestedModels(generatorContext, schema)}`

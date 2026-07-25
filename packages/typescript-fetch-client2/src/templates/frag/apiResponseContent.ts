@@ -15,11 +15,12 @@ export interface ApiResponseContentArgs {
  * string to its schema's native type.
  */
 export function responseHeaders(response: CodegenResponse, dateApproach: DateApproach, generatorContext: CodegenGeneratorContext) {
-	return maybe(response.headers, headers => ts`	headers: {
+	return maybe(response.headers, headers => ts`
+	headers: {
 ${each(headers, (h: CodegenHeader) => {
-		const value = `response.headers.get(${stringLiteral(generatorContext, h.serializedName)})`
-		return `		${identifier(generatorContext.generator(), h.name)}: ${value} ? ${stringToSchema(h, value, dateApproach)} ?? undefined : undefined,`
-	}, '\n')}
+	const value = `response.headers.get(${stringLiteral(generatorContext, h.serializedName)})`
+	return `		${identifier(generatorContext.generator(), h.name)}: ${value} ? ${stringToSchema(h, value, dateApproach)} ?? undefined : undefined,`
+}, '\n')}
 	},`)
 }
 
@@ -33,30 +34,23 @@ export function apiResponseContent({ content, response, dateApproach, generatorC
 	const headersBlock = responseHeaders(response, dateApproach, generatorContext)
 
 	if (!content) {
-		return ts`return {
+		return ts`
+return {
 	status: response.status,
 	/* No content */
 ${headersBlock}
 }`
 	}
 
-	let bodyBlock: string
-	if (!content.schema) {
-		bodyBlock = '	/* No schema */'
-	} else if (isContentJson(content)) {
-		bodyBlock = `	body: await response.json() as ${content.nativeType},`
-	} else if (isBinary(content.schema)) {
-		bodyBlock = `	body: await response.blob(),`
-	} else if (isString(content.schema)) {
-		bodyBlock = `	body: await response.text(),`
-	} else {
-		bodyBlock = '	/* Unsupported mimeType for parsing */\n	response,'
-	}
-
-	return ts`return {
+	return ts`
+return {
 	status: response.status,
 	contentType: ${stringLiteral(generatorContext, content.mediaType.mimeType)},
-${bodyBlock}
+${!content.schema ? '	/* No schema */'
+	: isContentJson(content) ? `	body: await response.json() as ${content.nativeType},`
+	: isBinary(content.schema) ? '	body: await response.blob(),'
+	: isString(content.schema) ? '	body: await response.text(),'
+	: '	/* Unsupported mimeType for parsing */\n	response,'}
 ${headersBlock}
 }`
 }

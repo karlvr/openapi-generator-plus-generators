@@ -3,7 +3,8 @@ import { TypeScriptOptions, TemplateRootContext } from '@openapi-generator-plus/
 
 export function tsconfig(ctx: TemplateRootContext & TypeScriptOptions): string {
 	const libsBlock = each(ctx.libs, (lib, _i, _f, isLast) => `\t\t\t"${lib}"${isLast ? '' : ','}`, '\n')
-	return ts`{
+	return ts`
+{
 	"compilerOptions": {
 		"declaration": true,
 		"target": "${ctx.target}",
