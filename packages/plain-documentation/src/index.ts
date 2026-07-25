@@ -1,20 +1,23 @@
-import { CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenGeneratorConstructor, CodegenGeneratorType, CodegenOneOfStrategy, isCodegenOperation } from '@openapi-generator-plus/types'
+import { CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenGeneratorConstructor, CodegenGeneratorContext, CodegenGeneratorType, CodegenLogLevel, CodegenOneOfStrategy } from '@openapi-generator-plus/types'
 import { CodegenOptionsDocumentation } from './types'
 import path from 'path'
-import Handlebars from 'handlebars'
-import { loadTemplates, emit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
+import { emit } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, JavaLikeContext, ConstantStyle, options as javaLikeOptions, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
-import { commonGenerator, compareHttpMethods, configObject, configString } from '@openapi-generator-plus/generator-common'
+import { commonGenerator, configObject } from '@openapi-generator-plus/generator-common'
 import { emit as emitLess } from './less-utils'
 import { copyContents } from './static-utils'
-import { existsSync, promises as fs } from 'fs'
+import { promises as fs } from 'fs'
+import { documentTemplate } from './templates/document'
+import { DocumentContext, PlainDocumentationHooks } from './templates/types'
 
-function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
-	if (configPath) {
-		return path.resolve(path.dirname(configPath), customTemplatesPath) 
-	} else {
-		return customTemplatesPath
-	}
+/**
+ * Extension to {@link CodegenGeneratorContext} allowing a consumer to inject
+ * markup into the extension points this generator's templates provide,
+ * without forking the templates themselves. Set `hooks` on the context
+ * passed to {@link createGenerator}.
+ */
+export interface PlainDocumentationGeneratorContext extends CodegenGeneratorContext {
+	hooks?: PlainDocumentationHooks
 }
 
 function toSafeTypeForComposing(nativeType: string): string {
@@ -26,13 +29,19 @@ function toSafeTypeForComposing(nativeType: string): string {
 }
 
 export const createGenerator: CodegenGeneratorConstructor = (config, context) => {
+	const myContext = context as PlainDocumentationGeneratorContext
+	const hooks: PlainDocumentationHooks = myContext.hooks ?? {}
+
 	const javaLikeContext: JavaLikeContext = {
 		...context,
 		defaultConstantStyle: ConstantStyle.allCapsSnake,
 		defaultEnumMemberStyle: EnumMemberStyle.preserve,
 	}
-	
-	const customTemplates = configString(config, 'customTemplates', undefined)
+
+	if (config.customTemplates !== undefined) {
+		context.log(CodegenLogLevel.WARN, 'The customTemplates config option is no longer supported: templates are TypeScript code and are customized via the generator\'s typed template and hook APIs')
+	}
+
 	const operationsConfig = configObject<CodegenOptionsDocumentation['operations']>(config, 'operations', {})!
 	if (operationsConfig.navStyle === undefined) {
 		operationsConfig.navStyle = 'name'
@@ -43,7 +52,6 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 
 	const generatorOptions: CodegenOptionsDocumentation = {
 		...javaLikeOptions(config, javaLikeContext),
-		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
 		operations: operationsConfig,
 	}
 
@@ -138,13 +146,10 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		interfaceCanBeNested: () => true,
 
 		watchPaths: () => {
-			const result = [path.resolve(__dirname, '..', 'templates')]
-			result.push(path.resolve(__dirname, '..', 'less'))
-			result.push(path.resolve(__dirname, '..', 'static'))
-			if (generatorOptions.customTemplatesPath) {
-				result.push(generatorOptions.customTemplatesPath)
-			}
-			return result
+			return [
+				path.resolve(__dirname, '..', 'less'),
+				path.resolve(__dirname, '..', 'static'),
+			]
 		},
 
 		cleanPathPatterns: () => {
@@ -188,115 +193,23 @@ export const createGenerator: CodegenGeneratorConstructor = (config, context) =>
 		},
 
 		exportTemplates: async(outputPath, doc) => {
-			const hbs = Handlebars.create()
-
-			registerStandardHelpers(hbs, context)
-			hbs.registerHelper('eachSorted', function(this: unknown, context: unknown, options: Handlebars.HelperOptions) {
-				if (!context) {
-					return options.inverse(this)
-				}
-
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				let collection: any[]
-				if (context instanceof Map) {
-					collection = [...context.values()]
-				} else if (Array.isArray(context)) {
-					collection = context
-				} else if (typeof context === 'object') {
-					collection = []
-					for (const key in context) {
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						collection.push((context as any)[key])
-					}
-				} else {
-					collection = [context]
-				}
-				
-				let result = ''
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				for (const item of collection.sort(function(a: any, b: any) {
-					if (a === b) {
-						return 0
-					}
-					if (typeof a === 'string' && typeof b === 'string') {
-						return a.localeCompare(b)
-					} else if (typeof a === 'number' && typeof b === 'number') {
-						return a < b ? -1 : a > b ? 1 : 0
-					} else if (typeof a === 'object' && typeof b === 'object') {
-						if (a === null) {
-							return 1
-						} else if (b === null) {
-							return -1
-						}
-						
-						if (isCodegenOperation(a) && isCodegenOperation(b)) {
-							/* Sort CodegenOperations first by http method */
-							const result = compareHttpMethods(a.httpMethod, b.httpMethod)
-							if (result !== 0) {
-								return result
-							}
-
-							if (generatorOptions.operations?.navStyle === 'full-path') {
-								if (a.fullPath && b.fullPath) {
-									return a.fullPath.localeCompare(b.fullPath)
-								}
-							}
-						}
-						
-						if (a.name && b.name) {
-							return a.name.localeCompare(b.name)
-						}
-
-						return 0
-					} else {
-						return 0
-					}
-				})) {
-					result += options.fn(item)
-				}
-				return result
-			})
-			hbs.registerHelper('htmlId', function(value: string) {
-				if (value !== undefined) {
-					return `${value}`.replace(/[^-a-zA-Z0-9_]+/g, '_').replace(/^_+/, '').replace(/_+$/, '')
-				} else {
-					return value
-				}
-			})
-
-			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
-
-			if (generatorOptions.customTemplatesPath) {
-				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
-			}
-
 			const rootContext = context.generator().templateRootContext()
 
 			if (!outputPath.endsWith('/')) {
 				outputPath += '/'
 			}
 
-			await emit('index', path.join(outputPath, 'index.html'), { ...rootContext, ...doc }, true, hbs)
+			const documentContext = { ...rootContext, ...doc } as DocumentContext
+			await emit(documentTemplate(documentContext, hooks), path.join(outputPath, 'index.html'), true)
 
 			await emitLess(path.resolve(__dirname, '../less', 'style.less'), path.join(outputPath, 'static/css/main.css'))
 
 			await fs.writeFile(path.join(outputPath, 'custom.css'), '', {})
-			if (generatorOptions.customTemplatesPath) {
-				const customLessPath = path.resolve(generatorOptions.customTemplatesPath, 'less/custom.less')
-				if (existsSync(customLessPath)) {
-					await emitLess(customLessPath, path.join(outputPath, 'static/css/custom.css'))
-				}
-			}
 
 			await copyContents(path.resolve(__dirname, '..', 'static'), path.join(outputPath, 'static'))
-			if (generatorOptions.customTemplatesPath) {
-				const customStaticPath = path.resolve(generatorOptions.customTemplatesPath, 'static')
-				if (existsSync(customStaticPath)) {
-					await copyContents(customStaticPath, path.join(outputPath, 'static'))
-				}
-			}
 		},
 	}
 }
 
+export { PlainDocumentationHooks } from './templates/types'
 export default createGenerator

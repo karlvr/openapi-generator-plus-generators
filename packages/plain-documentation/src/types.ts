@@ -4,8 +4,6 @@ import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-hel
  * Options specific to the template that the user can provide to the code generation process.
  */
 export interface CodegenOptionsDocumentation extends JavaLikeOptions{
-	customTemplatesPath?: string
-
 	operations?: {
 		navStyle?: 'name' | 'full-path'
 		exclude?: string[]
