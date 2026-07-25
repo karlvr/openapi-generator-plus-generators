@@ -8,6 +8,7 @@ import { requestParameter } from './frag/requestParameter'
 import { multipartProperty } from './frag/multipartProperty'
 import { operationDocumentation } from './frag/operationDocumentation'
 import { apiResponseContent as defaultApiResponseContent } from './frag/apiResponseContent'
+import { DateApproach } from '@openapi-generator-plus/typescript-generator-common'
 import { DocumentContext, FetchClientHooks } from './types'
 
 function parameterCount(coll: Record<string, unknown> | null | undefined): number {
@@ -26,7 +27,7 @@ ${header(ctx)}
 import { Configuration } from "./configuration";
 import { BASE_PATH, COLLECTION_FORMATS, encodeURIPathSegment, FetchAPI, FetchArgs, BaseAPI, RequiredError, defaultFetch } from "./runtime";
 import { ${ctx.apiNamespace} } from "./models";
-${when(ctx.dateApproach === 'blind-date',
+${when(ctx.dateApproach === DateApproach.BlindDate,
 		'import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from \'blind-date\';')}
 ${maybe(hooks.apiImports?.(ctx))}
 

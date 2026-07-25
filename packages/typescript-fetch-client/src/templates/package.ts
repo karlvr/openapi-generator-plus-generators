@@ -1,5 +1,5 @@
 import { ts, join, when } from '@openapi-generator-plus/template-utils'
-import { NpmOptions, TemplateRootContext } from '@openapi-generator-plus/typescript-generator-common'
+import { DateApproach, NpmOptions, TemplateRootContext } from '@openapi-generator-plus/typescript-generator-common'
 import { FetchClientHooks, RootContext } from './types'
 
 /**
@@ -46,7 +46,7 @@ export function packageJson(ctx: TemplateRootContext & NpmOptions, hooks: FetchC
 	"dependencies": {
 		${join([
 			...(hooks.packageDependencies ?? defaultPackageDependencies)(root),
-			when(root.dateApproach === 'blind-date', '"blind-date": "^3.3.0"'),
+			when(root.dateApproach === DateApproach.BlindDate, '"blind-date": "^3.3.0"'),
 		], ',\n')}
 	},
 	"devDependencies": {

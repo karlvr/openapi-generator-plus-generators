@@ -4,6 +4,7 @@ import * as idx from '@openapi-generator-plus/indexed-type'
 import { header } from './header'
 import { nestedModels } from './nestedModels'
 import { schemaDocumentation } from './frag/schemaDocumentation'
+import { DateApproach } from '@openapi-generator-plus/typescript-generator-common'
 import { DocumentContext, FetchClientHooks } from './types'
 
 /**
@@ -26,7 +27,7 @@ ${stmt}
 
 export function models(generatorContext: CodegenGeneratorContext, ctx: DocumentContext, hooks: FetchClientHooks): string {
 	return ts`
-${header(ctx)}${ctx.dateApproach === 'blind-date'
+${header(ctx)}${ctx.dateApproach === DateApproach.BlindDate
 		? '\n\nimport { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from \'blind-date\';'
 		: ''}
 ${maybe(hooks.modelsImports?.(ctx))}

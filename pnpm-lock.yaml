@@ -394,9 +394,9 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
+      '@openapi-generator-plus/template-utils':
         specifier: workspace:*
-        version: link:../handlebars-templates
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -438,9 +438,9 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
+      '@openapi-generator-plus/template-utils':
         specifier: workspace:*
-        version: link:../handlebars-templates
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
