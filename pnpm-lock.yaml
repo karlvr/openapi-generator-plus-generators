@@ -313,9 +313,6 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
@@ -325,9 +322,6 @@ importers:
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.9
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0

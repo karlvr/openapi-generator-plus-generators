@@ -25,10 +25,10 @@ export interface TemplateRootContext extends CodegenDocument {
 }
 
 /**
- * Templates that typescript-common knows how to emit by itself. A child generator
- * supplies these via {@link TypeScriptGeneratorContext.templates} when it is fully
- * migrated to TS templates; otherwise typescript-common falls back to the legacy
- * Handlebars partials with the matching name.
+ * Templates for the common output files that typescript-common emits itself.
+ * A child generator supplies these via {@link TypeScriptGeneratorContext.templates};
+ * `package` and `tsconfig` are required when the corresponding generator options
+ * are enabled, while `gitignore` falls back to a built-in default.
  */
 export interface TypeScriptCommonTemplates {
 	/** Renders the `package.json` content, given merged npm options + root context. */

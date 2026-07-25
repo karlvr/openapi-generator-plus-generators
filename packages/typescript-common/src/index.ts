@@ -1,8 +1,6 @@
 import { CodegenSchemaType, CodegenGeneratorContext, CodegenGenerator, CodegenConfig, CodegenDocument, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenOneOfSchema, isCodegenAnyOfSchema, isCodegenInterfaceSchema, isCodegenObjectSchema, CodegenOneOfSchema, CodegenSchemaPurpose, CodegenSchema, CodegenNamedSchema, CodegenScope } from '@openapi-generator-plus/types'
 import { BlindDateOptions, CodegenOptionsTypeScript, DateApproach, NpmOptions, TypeScriptOptions } from './types'
 import path from 'path'
-import Handlebars from 'handlebars'
-import { loadTemplates, emit as hbsEmit, registerStandardHelpers } from '@openapi-generator-plus/handlebars-templates'
 import { emit } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, JavaLikeContext, options as javaLikeOptions, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { commonGenerator, configBoolean, configObject, configString, configStringArray, debugStringify, nullableConfigBoolean, nullableConfigString } from '@openapi-generator-plus/generator-common'
@@ -25,14 +23,6 @@ function escapeString(value: string | number | boolean) {
 	return value
 }
 
-function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
-	if (configPath) {
-		return path.resolve(path.dirname(configPath), customTemplatesPath) 
-	} else {
-		return customTemplatesPath
-	}
-}
-
 function toSafeTypeForComposing(nativeType: string): string {
 	if (/[^a-zA-Z0-9_.]/.test(nativeType)) {
 		return `(${nativeType})`
@@ -42,24 +32,18 @@ function toSafeTypeForComposing(nativeType: string): string {
 }
 
 export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
-	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
-	additionalWatchPaths?: () => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
 	defaultNpmOptions?: (config: CodegenConfig, defaultValue: NpmOptions) => NpmOptions
 	defaultTypeScriptOptions?: (config: CodegenConfig, defaultValue: TypeScriptOptions) => TypeScriptOptions
 	toEnumLiteral?: CodegenGenerator['toLiteral']
 
 	/**
-	 * Typed templates supplied by a child generator that has migrated away from
-	 * Handlebars. When a key is present here it takes precedence over the
-	 * Handlebars partial of the same name.
+	 * Typed templates for the common output files. A child generator must supply
+	 * `package` and `tsconfig`; `gitignore` falls back to the built-in default.
 	 */
 	templates?: TypeScriptCommonTemplates
 	/**
-	 * Emit additional generator-specific files. The migrated equivalent of
-	 * {@link additionalExportTemplates}: takes only the data the templates need,
-	 * with no Handlebars instance. Both may be supplied during transition; both
-	 * will be called in turn.
+	 * Emit additional generator-specific files, beyond the common output files
+	 * emitted from {@link templates}.
 	 */
 	exportFiles?: (outputPath: string, doc: CodegenDocument, rootContext: TemplateRootContext) => Promise<void>
 }
@@ -68,33 +52,6 @@ export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext
 	const result: TypeScriptGeneratorContext = {
 		...base,
 		...add,
-		loadAdditionalTemplates: async function(hbs) {
-			/* Load the additional first, so that earlier contexts in the chain have priority */
-			if (add.loadAdditionalTemplates) {
-				await add.loadAdditionalTemplates(hbs)
-			}
-			if (base.loadAdditionalTemplates) {
-				await base.loadAdditionalTemplates(hbs)
-			}
-		},
-		additionalWatchPaths: function() {
-			const result: string[] = []
-			if (base.additionalWatchPaths) {
-				result.push(...base.additionalWatchPaths())
-			}
-			if (add.additionalWatchPaths) {
-				result.push(...add.additionalWatchPaths())
-			}
-			return result
-		},
-		additionalExportTemplates: async function(outputPath, doc, hbs, rootContext) {
-			if (base.additionalExportTemplates) {
-				await base.additionalExportTemplates(outputPath, doc, hbs, rootContext)
-			}
-			if (add.additionalExportTemplates) {
-				await add.additionalExportTemplates(outputPath, doc, hbs, rootContext)
-			}
-		},
 		/* For typed templates, `add` (the child closer to the leaf) wins. */
 		templates: { ...base.templates, ...add.templates },
 		exportFiles: async function(outputPath, doc, rootContext) {
@@ -193,7 +150,9 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 	}
 
 	const dateApproach = parseDateApproach(config.dateApproach)
-	const customTemplates = configString(config, 'customTemplates', undefined)
+	if (config.customTemplates !== undefined) {
+		context.log(CodegenLogLevel.WARN, 'The customTemplates config option is no longer supported: templates are TypeScript code and are customized via the generator\'s typed template and hook APIs')
+	}
 
 	const defaultBlindDateOptions: BlindDateOptions = {
 		dateTimeImplementation: 'OffsetDateTimeString',
@@ -213,7 +172,6 @@ export function options(config: CodegenConfig, context: TypeScriptGeneratorConte
 		relativeSourceOutputPath,
 		npm: npmConfig || null,
 		typescript: typeScriptOptions || null,
-		customTemplatesPath: customTemplates ? computeCustomTemplatesPath(config.configPath, customTemplates) : null,
 		dateApproach,
 		blindDate: blindDateOptions,
 		esm: configBoolean(config, 'esm', false),
@@ -498,16 +456,7 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
 		interfaceCanBeNested: () => true,
 
-		watchPaths: () => {
-			const result = [path.resolve(__dirname, '..', 'templates')]
-			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths())
-			}
-			if (generatorOptions.customTemplatesPath) {
-				result.push(generatorOptions.customTemplatesPath)
-			}
-			return result
-		},
+		watchPaths: () => undefined,
 
 		cleanPathPatterns: () => undefined,
 
@@ -519,47 +468,28 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		},
 
 		exportTemplates: async(outputPath, doc) => {
-			const hbs = Handlebars.create()
-
-			registerStandardHelpers(hbs, context)
-
-			/* typescript-common no longer ships its own .hbs templates; the directory
-			 * may not exist. Unmigrated child generators still load their own
-			 * partials via loadAdditionalTemplates below. */
-			if (context.loadAdditionalTemplates) {
-				await context.loadAdditionalTemplates(hbs)
-			}
-
-			if (generatorOptions.customTemplatesPath) {
-				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
-			}
-
 			const rootContext = { ...context.generator().templateRootContext(), ...doc } as TemplateRootContext
 
 			if (generatorOptions.npm) {
-				const packageContext = { ...rootContext, ...generatorOptions.npm }
-				if (context.templates?.package) {
-					await emit(context.templates.package(packageContext), path.join(outputPath, 'package.json'), false)
-				} else {
-					await hbsEmit('package', path.join(outputPath, 'package.json'), packageContext, false, hbs)
+				if (!context.templates?.package) {
+					throw new Error('The generator did not supply a package template')
 				}
+				const packageContext = { ...rootContext, ...generatorOptions.npm }
+				await emit(context.templates.package(packageContext), path.join(outputPath, 'package.json'), false)
+
 				const gitignoreContext = { ...rootContext, ...doc }
-				const gitignoreFn = context.templates?.gitignore ?? gitignoreTemplate
+				const gitignoreFn = context.templates.gitignore ?? gitignoreTemplate
 				await emit(gitignoreFn(gitignoreContext), path.join(outputPath, '.gitignore'), false)
 			}
 
 			if (generatorOptions.typescript) {
-				const tsconfigContext = { ...rootContext, ...generatorOptions.typescript }
-				if (context.templates?.tsconfig) {
-					await emit(context.templates.tsconfig(tsconfigContext), path.join(outputPath, 'tsconfig.json'), false)
-				} else {
-					await hbsEmit('tsconfig', path.join(outputPath, 'tsconfig.json'), tsconfigContext, false, hbs)
+				if (!context.templates?.tsconfig) {
+					throw new Error('The generator did not supply a tsconfig template')
 				}
+				const tsconfigContext = { ...rootContext, ...generatorOptions.typescript }
+				await emit(context.templates.tsconfig(tsconfigContext), path.join(outputPath, 'tsconfig.json'), false)
 			}
 
-			if (context.additionalExportTemplates) {
-				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
-			}
 			if (context.exportFiles) {
 				await context.exportFiles(outputPath, doc, rootContext)
 			}

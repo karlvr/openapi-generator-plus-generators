@@ -29,9 +29,6 @@ export interface FetchClient2Context extends TypeScriptGeneratorContext {
 
 const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 	const myContext: FetchClient2Context = chainTypeScriptGeneratorContext(context, {
-		additionalWatchPaths: () => {
-			return [path.resolve(__dirname, 'templates')]
-		},
 		defaultNpmOptions: () => ({
 			name: 'typescript-fetch-api',
 			version: '0.0.1',
