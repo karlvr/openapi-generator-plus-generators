@@ -183,11 +183,11 @@ b`).toBe('a\nb')
 			expect(ts`x ${each([], () => 'x')} y`).toBe('x  y')
 		})
 
-		test('join() filters SKIP and empty strings, joins the rest', () => {
-			expect(join(['a', SKIP, 'b', '', 'c'], ',')).toBe('a,b,c')
+		test('join() filters SKIP, keeps empty strings as content, joins the rest', () => {
+			expect(join(['a', SKIP, 'b', '', 'c'], ',')).toBe('a,b,,c')
 		})
 
-		test('join() returns SKIP when all items are SKIP/empty', () => {
+		test('join() returns SKIP when all items are SKIP or the list is empty', () => {
 			expect(join([SKIP, SKIP], ',')).toBe(SKIP)
 			expect(join([], ',')).toBe(SKIP)
 		})

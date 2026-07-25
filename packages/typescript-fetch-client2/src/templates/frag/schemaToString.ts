@@ -1,11 +1,11 @@
-import { CodegenSchema, CodegenSchemaUsage, CodegenSchemaType } from '@openapi-generator-plus/types'
+import { CodegenSchema, CodegenSchemaUsage } from '@openapi-generator-plus/types'
 import { isDateTime, isDate, isTime, isObject, isArray } from '@openapi-generator-plus/template-utils'
+import { DateApproach } from '@openapi-generator-plus/typescript-generator-common'
 
 export interface SchemaToStringArgs {
 	value: string
 	schema: CodegenSchemaUsage | CodegenSchema
-	dateApproach: string
-	indent: string
+	dateApproach: DateApproach
 }
 
 /**
@@ -13,20 +13,16 @@ export interface SchemaToStringArgs {
  * appropriate for the schema's runtime type.
  */
 export function schemaToString({ value, schema, dateApproach }: SchemaToStringArgs): string {
-	if (isDateTime(asContainer(schema))) {
-		return dateApproach === 'native' ? `dateToString(${value})` : `String(${value})`
+	if (isDateTime(schema)) {
+		return dateApproach === DateApproach.Native ? `dateToString(${value})` : `String(${value})`
 	}
-	if (isDate(asContainer(schema)) || isTime(asContainer(schema))) {
+	if (isDate(schema) || isTime(schema)) {
 		return `String(${value})`
 	}
-	if (isObject(asContainer(schema)) || isArray(asContainer(schema))) {
+	if (isObject(schema) || isArray(schema)) {
 		/* The behaviour for nested objects and arrays is undefined, but
 		   editor.swagger.io transforms these into JSON. */
 		return `JSON.stringify(${value})`
 	}
 	return `String(${value})`
-}
-
-function asContainer(schema: CodegenSchemaUsage | CodegenSchema): { schemaType?: CodegenSchemaType; schema?: { schemaType?: CodegenSchemaType } } {
-	return schema as { schemaType?: CodegenSchemaType; schema?: { schemaType?: CodegenSchemaType } }
 }

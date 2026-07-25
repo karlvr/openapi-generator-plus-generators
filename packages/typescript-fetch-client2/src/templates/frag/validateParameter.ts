@@ -1,5 +1,5 @@
 import { CodegenParameter, CodegenRequestBody, CodegenOperation, CodegenGeneratorContext } from '@openapi-generator-plus/types'
-import { ts, identifier } from '@openapi-generator-plus/template-utils'
+import { ts, identifier, SKIP, Skip } from '@openapi-generator-plus/template-utils'
 
 export interface ValidateParameterArgs {
 	parameter: CodegenParameter | CodegenRequestBody
@@ -8,12 +8,11 @@ export interface ValidateParameterArgs {
 	generatorContext: CodegenGeneratorContext
 }
 
-export function validateParameter({ parameter, operation, parameterPrefix, generatorContext }: ValidateParameterArgs): string {
+export function validateParameter({ parameter, operation, parameterPrefix, generatorContext }: ValidateParameterArgs): string | Skip {
 	if (!parameter.required) {
-		return ''
+		return SKIP
 	}
-	const name = (parameter as CodegenParameter & CodegenRequestBody).name
-	const id = identifier(generatorContext.generator(), name)
+	const id = identifier(generatorContext.generator(), parameter.name)
 	const opId = identifier(generatorContext.generator(), operation.name)
 	return ts`
 // verify required parameter '${id}' is not null or undefined

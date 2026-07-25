@@ -1,10 +1,13 @@
-import { ts, isContentJson, isBinary, isString, stringLiteral } from '@openapi-generator-plus/template-utils'
+import { ts } from '@openapi-generator-plus/template-utils'
 import {
 	FetchClient2Hooks,
 	ApiResponseContentArgs,
 	RootContext,
-	responseHeaders,
+	makeApiResponseContent,
 } from '@openapi-generator-plus/typescript-fetch-client-generator2'
+
+/* Same branch structure as the browser default; only the binary read differs. */
+const apiResponseContentNode = makeApiResponseContent({ binaryBody: 'Buffer.from(await response.arrayBuffer())' })
 
 /**
  * Hook overrides for fetch-node-client2: replace fetch-client2's
@@ -38,30 +41,10 @@ import type { RequestInit } from "node-fetch";`,
 
 	defaultFetch: () => 'export const defaultFetch = fetch;',
 
-	apiResponseContent: (args: ApiResponseContentArgs) => apiResponseContentNode(args),
-}
-
-function apiResponseContentNode({ content, response, rootContext, generatorContext }: ApiResponseContentArgs): string {
-	const headersBlock = responseHeaders(response, rootContext.dateApproach, generatorContext)
-
-	if (!content) {
-		return ts`
-return {
-	status: response.status,
-	/* No content */
-${headersBlock}
-}`
-	}
-
-	return ts`
-return {
-	status: response.status,
-	contentType: ${stringLiteral(generatorContext, content.mediaType.mimeType)},
-${!content.schema ? '	/* No schema */'
-	: isContentJson(content) ? `	body: await response.json() as ${content.nativeType},`
-	: isBinary(content.schema) ? '	body: Buffer.from(await response.arrayBuffer()),'
-	: isString(content.schema) ? '	body: await response.text(),'
-	: '	/* Unsupported mimeType for parsing */\n	response,'}
-${headersBlock}
-}`
+	apiResponseContent: (args: ApiResponseContentArgs) => apiResponseContentNode({
+		content: args.content,
+		response: args.response,
+		dateApproach: args.rootContext.dateApproach,
+		generatorContext: args.generatorContext,
+	}),
 }

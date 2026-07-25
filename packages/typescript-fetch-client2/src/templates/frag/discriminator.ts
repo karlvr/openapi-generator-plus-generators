@@ -1,17 +1,13 @@
+import { CodegenObjectSchema } from '@openapi-generator-plus/types'
 import { ts, each } from '@openapi-generator-plus/template-utils'
 
-interface DiscriminatorValue {
-	literalValue: string
-	discriminator: { serializedName: string }
-	schemas: Array<{ nativeType: { parentType: string } }>
-}
+/**
+ * The discriminator-bearing fields of an object-like schema. Object and
+ * interface schemas both satisfy this.
+ */
+export type DiscriminatorSchema = Pick<CodegenObjectSchema, 'discriminator' | 'discriminatorValues'>
 
-interface SchemaWithDiscriminator {
-	discriminator?: { serializedName: string; nativeType: { serializedType: string } } | null
-	discriminatorValues?: DiscriminatorValue[] | null
-}
-
-export function discriminator(schema: SchemaWithDiscriminator): string {
+export function discriminator(schema: DiscriminatorSchema): string {
 	const parts: string[] = []
 	if (schema.discriminator) {
 		parts.push(ts`
@@ -28,7 +24,7 @@ export function discriminator(schema: SchemaWithDiscriminator): string {
 	/**
 	 * Value for discriminator in ${schemaList}
 	 */
-	${dv.discriminator.serializedName}: ${dv.literalValue};
+	${dv.discriminator?.serializedName ?? ''}: ${dv.literalValue};
 `)
 		}
 	}

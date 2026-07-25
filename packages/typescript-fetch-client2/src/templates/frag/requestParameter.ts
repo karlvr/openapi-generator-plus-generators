@@ -1,14 +1,24 @@
-import { CodegenSchemaUsage, CodegenObjectSchema, CodegenGeneratorContext, CodegenLogLevel } from '@openapi-generator-plus/types'
+import { CodegenArraySchema, CodegenEncodingStyle, CodegenGeneratorContext, CodegenLogLevel, CodegenObjectSchema, CodegenParameterEncoding, CodegenSchemaUsage } from '@openapi-generator-plus/types'
 import { ts, isArray, isObject, allProperties, each } from '@openapi-generator-plus/template-utils'
+import { DateApproach } from '@openapi-generator-plus/typescript-generator-common'
 import { arrayToString } from './arrayToString'
 import { objectToString } from './objectToString'
 import { schemaToString } from './schemaToString'
 
+/**
+ * The parameter-ish values we can serialize into a request: an operation
+ * parameter, or a request-body property paired with its content encoding.
+ */
+export type EncodableParameter = CodegenSchemaUsage & {
+	serializedName: string
+	encoding?: CodegenParameterEncoding | null
+}
+
 export interface RequestParameterArgs {
-	parameter: CodegenSchemaUsage & { serializedName: string; encoding?: { style?: string; explode?: boolean } | null }
+	parameter: EncodableParameter
 	dest: string
 	var: string
-	dateApproach: string
+	dateApproach: DateApproach
 	generatorContext: CodegenGeneratorContext
 }
 
@@ -18,10 +28,9 @@ export interface RequestParameterArgs {
  * how to flatten arrays/objects.
  */
 export function requestParameter(args: RequestParameterArgs): string {
-	const { parameter, dest, var: varName, dateApproach, generatorContext } = args
-	const encoding = parameter.encoding ?? {}
-	const style = encoding.style ?? 'form'
-	const explode = !!encoding.explode
+	const { parameter, dest, var: varName, dateApproach } = args
+	const style = parameter.encoding?.style ?? CodegenEncodingStyle.FORM
+	const explode = !!parameter.encoding?.explode
 
 	if (isArray(parameter)) {
 		return ts`
@@ -35,59 +44,57 @@ if (${varName} !== undefined) {
 ${objectBranch(args, style, explode)}
 }`
 	}
-	const inner = schemaToString({ value: varName, schema: parameter, dateApproach, indent: '\t\t\t\t\t' })
+	const inner = schemaToString({ value: varName, schema: parameter, dateApproach })
 	return ts`
 if (${varName} !== undefined) {
 	${dest}.append('${parameter.serializedName}', ${inner});
 }`
-	// `generatorContext` is reserved for any future calls that need it.
-	void generatorContext
 }
 
-function arrayBranch(args: RequestParameterArgs, style: string, explode: boolean): string {
+function arrayBranch(args: RequestParameterArgs, style: CodegenEncodingStyle, explode: boolean): string {
 	const { parameter, dest, var: varName, dateApproach, generatorContext } = args
-	const componentSchema = (parameter.schema as { component: CodegenSchemaUsage }).component
+	const componentSchema = (parameter.schema as CodegenArraySchema).component
 	switch (style) {
-		case 'form':
+		case CodegenEncodingStyle.FORM:
 			if (explode) {
 				return ts`
 	/* array form exploded */
 	for (const localVarArrayElement of ${varName}) {
 		if (localVarArrayElement !== undefined) {
-			${dest}.append('${parameter.serializedName}', localVarArrayElement !== null ? ${schemaToString({ value: 'localVarArrayElement', schema: componentSchema, dateApproach, indent: '\t\t\t' })} : '');
+			${dest}.append('${parameter.serializedName}', localVarArrayElement !== null ? ${schemaToString({ value: 'localVarArrayElement', schema: componentSchema, dateApproach })} : '');
 		}
 	}`
 			}
 			return ts`
 	/* array form */
-	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: ',', indent: '\t\t', parameter, dateApproach, generatorContext })});`
-		case 'spaceDelimited':
+	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: ',', parameter, dateApproach, generatorContext })});`
+		case CodegenEncodingStyle.SPACE_DELIMITED:
 			return ts`
 	/* array space delimited */
-	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: ' ', indent: '\t\t', parameter, dateApproach, generatorContext })});`
-		case 'pipeDelimited':
+	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: ' ', parameter, dateApproach, generatorContext })});`
+		case CodegenEncodingStyle.PIPE_DELIMITED:
 			return ts`
 	/* array pipe delimited */
-	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: '|', indent: '\t\t', parameter, dateApproach, generatorContext })});`
-		case 'simple':
+	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: '|', parameter, dateApproach, generatorContext })});`
+		case CodegenEncodingStyle.SIMPLE:
 			return ts`
 	/* array simple */
-	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: ',', indent: '\t\t', parameter, dateApproach, generatorContext })});`
+	${dest}.append('${parameter.serializedName}', ${arrayToString({ value: varName, separator: ',', parameter, dateApproach, generatorContext })});`
 		default:
 			generatorContext.log(CodegenLogLevel.WARN, `Array encoding style ${style} not supported`)
 			return '	throw new Error("Unsupported parameter encoding");'
 	}
 }
 
-function objectBranch(args: RequestParameterArgs, style: string, explode: boolean): string {
+function objectBranch(args: RequestParameterArgs, style: CodegenEncodingStyle, explode: boolean): string {
 	const { parameter, dest, var: varName, dateApproach, generatorContext } = args
 	const props = allProperties(parameter.schema as CodegenObjectSchema)
 	switch (style) {
-		case 'form':
+		case CodegenEncodingStyle.FORM:
 			if (explode) {
 				const lines = each(props, (p) => {
 					const access = `${varName}["${p.serializedName}"]`
-					const stringified = schemaToString({ value: access, schema: p, dateApproach, indent: '\t\t\t' })
+					const stringified = schemaToString({ value: access, schema: p, dateApproach })
 					return ts`
 	if (${access} !== undefined) {
 		${dest}.append('${p.serializedName}', ${access} !== null ? ${stringified} : '');
@@ -98,18 +105,18 @@ function objectBranch(args: RequestParameterArgs, style: string, explode: boolea
 			return ts`
 	/* object form */
 	${dest}.append('${parameter.serializedName}', ${objectToString({ value: varName, separator: ',', keyValueSeparator: ',', indent: '\t\t', parameter, dateApproach, generatorContext })});`
-		case 'spaceDelimited':
+		case CodegenEncodingStyle.SPACE_DELIMITED:
 			return ts`
 	/* object space delimited */
 	${dest}.append('${parameter.serializedName}', ${objectToString({ value: varName, separator: ' ', keyValueSeparator: ' ', indent: '\t\t', parameter, dateApproach, generatorContext })});`
-		case 'pipeDelimited':
+		case CodegenEncodingStyle.PIPE_DELIMITED:
 			return ts`
 	/* object pipe delimited */
 	${dest}.append('${parameter.serializedName}', ${objectToString({ value: varName, separator: '|', keyValueSeparator: '|', indent: '\t\t', parameter, dateApproach, generatorContext })});`
-		case 'deepObject': {
+		case CodegenEncodingStyle.DEEP_OBJECT: {
 			const lines = each(props, (p) => {
 				const access = `${varName}["${p.serializedName}"]`
-				const stringified = schemaToString({ value: access, schema: p, dateApproach, indent: '\t\t\t' })
+				const stringified = schemaToString({ value: access, schema: p, dateApproach })
 				return ts`
 	if (${access} !== undefined) {
 		${dest}.append('${parameter.serializedName}[${p.serializedName}]', ${access} !== null ? ${stringified} : '');
@@ -117,7 +124,7 @@ function objectBranch(args: RequestParameterArgs, style: string, explode: boolea
 			}, '\n')
 			return `	/* object deepObject */\n${lines}`
 		}
-		case 'simple':
+		case CodegenEncodingStyle.SIMPLE:
 			if (explode) {
 				return ts`
 	/* object simple exploded */

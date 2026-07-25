@@ -243,12 +243,13 @@ export function ifElse(condition: unknown, value: string, otherwise: string): st
 /**
  * Filter SKIPs from `items` and join the rest with `separator`. Returns SKIP
  * when every item was SKIP (or the list was empty), so `${join(items, sep)}`
- * alone on a line drops the line.
+ * alone on a line drops the line. An empty string is content — it is kept and
+ * joined like any other item; return SKIP from the producer to drop an item.
  */
 export function join(items: (string | Skip)[], separator: string): string | Skip {
 	const parts: string[] = []
 	for (const item of items) {
-		if (isSkip(item) || item === '') {
+		if (isSkip(item)) {
 			continue
 		}
 		parts.push(item)
@@ -261,7 +262,8 @@ export function join(items: (string | Skip)[], separator: string): string | Skip
 
 /**
  * Render the items in `collection` by calling `render` for each, joining with
- * `separator`. Items that return SKIP are dropped before the join.
+ * `separator`. Items that return SKIP are dropped before the join; an empty
+ * string is content — it is kept and joined like any other item.
  *
  * Returns SKIP when the collection is empty (or every item rendered to SKIP)
  * so that `${each(items, …)}` alone on a line drops the line.
@@ -285,7 +287,7 @@ export function each<T>(
 	const parts: string[] = []
 	for (let i = 0; i < items.length; i++) {
 		const rendered = render(items[i], i, i === 0, i === items.length - 1)
-		if (isSkip(rendered) || rendered === '') {
+		if (isSkip(rendered)) {
 			continue
 		}
 		parts.push(rendered)
