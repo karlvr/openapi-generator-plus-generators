@@ -1,6 +1,7 @@
 import { CodegenObjectSchema, CodegenInterfaceSchema, CodegenSchemaInfo, CodegenProperty } from '@openapi-generator-plus/types'
 import { join, maybe, when, stringLiteral, SKIP } from '@openapi-generator-plus/template-utils'
 import { JavaJaxrsTemplates, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { pom } from './pom'
 
 function pojoPropertyAnnotations(property: CodegenProperty, ctx: JavaModelContext): string {
 	const access = property.readOnly
@@ -38,9 +39,14 @@ function beanValidationAnnotationProperties(target: CodegenSchemaInfo, ctx: Java
 	return `groups = { ${groups.join(', ')} }`
 }
 
-/** This generator's overrides of the model-emission hooks from `java-jaxrs-generator-common`. */
+/**
+ * This generator's overrides of the model-emission hooks from `java-jaxrs-generator-common`,
+ * plus its own `pom.xml` template (`java-jaxrs-generator-common` has no Maven template of
+ * its own; see {@link JavaJaxrsTemplates.pom}).
+ */
 export const hooks: Partial<JavaJaxrsTemplates> = {
 	pojoPropertyAnnotations,
 	pojoHeaderAnnotations,
 	beanValidationAnnotationProperties,
+	pom,
 }

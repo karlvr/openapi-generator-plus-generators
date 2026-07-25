@@ -7,10 +7,22 @@ import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import * as idx from '@openapi-generator-plus/indexed-type'
-import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper } from './templates'
+import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper, validationRequest, validationResponse, noExplodeCollection, noExplodeList, noExplodeSet, noExplodeCollectionParamConverterProvider } from './templates'
 
-export { CodegenOptionsJava } from './types'
-export { JavaJaxrsTemplates, JavaModelContext, RootContext } from './templates'
+export { CodegenOptionsJava, MavenOptions } from './types'
+export { JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, InjectParams, javaJaxrsCommonTemplates } from './templates'
+export {
+	apiParams,
+	imports,
+	operationAnnotations,
+	operationDocumentation,
+	operationVars, OperationVarsOptions, OperationVarsResult, BodyParamRenderer,
+	parameterAnnotations,
+	beanValidationValidateParams,
+	fromString,
+	javax, getter, setter,
+	generatedAnnotation,
+} from './templates'
 
 function escapeString(value: string | number | boolean) {
 	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
@@ -696,7 +708,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			   below, not Handlebars; everything else in this method still uses the hbs
 			   machinery set up above. The effective hook bag merges this package's
 			   defaults underneath whatever the generator chain has overridden. */
-			const modelTemplates: Required<JavaJaxrsTemplates> = { ...javaJaxrsCommonTemplates, ...context.templates }
+			const modelTemplates: EffectiveJavaJaxrsTemplates = { ...javaJaxrsCommonTemplates, ...context.templates }
 			const modelCtx: JavaModelContext = {
 				generatorContext: context,
 				root: rootContext as RootContext,
@@ -718,34 +730,46 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 
 			if (generatorOptions.useBeanValidation) {
 				const validationPackagePath = packageToPath(generatorOptions.validationPackage)
-				await emit('validation/Request', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Request.java'), rootContext, true, hbs)
-				await emit('validation/Response', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Response.java'), rootContext, true, hbs)
+				await emitTemplate(validationRequest(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Request.java'), true)
+				await emitTemplate(validationResponse(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Response.java'), true)
 			}
 
 			const supportPackagePath = packageToPath(generatorOptions.supportPackage)
-			await emit('support/NoExplodeCollection', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeCollection.java'), rootContext, true, hbs)
-			await emit('support/NoExplodeList', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeList.java'), rootContext, true, hbs)
-			await emit('support/NoExplodeSet', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeSet.java'), rootContext, true, hbs)
+			await emitTemplate(noExplodeCollection(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeCollection.java'), true)
+			await emitTemplate(noExplodeList(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeList.java'), true)
+			await emitTemplate(noExplodeSet(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeSet.java'), true)
 
 			const providerPackagePath = generatorOptions.apiProviderPackage ? packageToPath(generatorOptions.apiProviderPackage) : undefined
 			if (providerPackagePath) {
-				await emit('provider/NoExplodeCollectionParamConverterProvider', path.join(outputPath, relativeSourceOutputPath, providerPackagePath, 'NoExplodeCollectionParamConverterProvider.java'), rootContext, true, hbs)
+				await emitTemplate(noExplodeCollectionParamConverterProvider(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, providerPackagePath, 'NoExplodeCollectionParamConverterProvider.java'), true)
 			}
-	
+
+			/* `pom` and `apiTest` are supplied by child generators (this package has
+			   no Maven or test-scaffold template of its own); until a child migrates
+			   one to TypeScript, the hbs partial of the same name keeps rendering it. */
 			const maven = generatorOptions.maven
 			if (maven) {
-				await emit('pom', path.join(outputPath, 'pom.xml'), { ...rootContext, ...maven }, false, hbs)
+				const pomOutputPath = path.join(outputPath, 'pom.xml')
+				if (modelTemplates.pom) {
+					await emitTemplate(modelTemplates.pom(modelCtx), pomOutputPath, false)
+				} else {
+					await emit('pom', pomOutputPath, { ...rootContext, ...maven }, false, hbs)
+				}
 			}
-			
-			if (generatorOptions.includeTests && hbs.partials['tests/apiTest']) {
+
+			if (generatorOptions.includeTests && (modelTemplates.apiTest || hbs.partials['tests/apiTest'])) {
 				const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 				for (const group of doc.groups) {
 					const operations = group.operations
 					if (!operations.length) {
 						continue
 					}
-					await emit('tests/apiTest', path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}ApiTest.java`),
-						{ ...rootContext, ...group }, false, hbs)
+					const apiTestOutputPath = path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}ApiTest.java`)
+					if (modelTemplates.apiTest) {
+						await emitTemplate(modelTemplates.apiTest(group, modelCtx), apiTestOutputPath, false)
+					} else {
+						await emit('tests/apiTest', apiTestOutputPath, { ...rootContext, ...group }, false, hbs)
+					}
 				}
 			}
 	

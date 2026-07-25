@@ -1,4 +1,4 @@
-import { CodegenObjectSchema, CodegenInterfaceSchema, CodegenWrapperSchema, CodegenEnumSchema, CodegenProperty, CodegenSchemaInfo } from '@openapi-generator-plus/types'
+import { CodegenObjectSchema, CodegenInterfaceSchema, CodegenWrapperSchema, CodegenEnumSchema, CodegenProperty, CodegenSchemaInfo, CodegenOperationGroup, CodegenOperation, CodegenResponse } from '@openapi-generator-plus/types'
 import { Skip } from '@openapi-generator-plus/template-utils'
 import { CodegenOptionsJava } from '../types'
 import type { JavaGeneratorContext } from '../index'
@@ -22,10 +22,12 @@ export interface RootContext extends CodegenOptionsJava {
 }
 
 /**
- * Bundles the pieces a model-path template function needs to render: the
- * generator context (for `generator()`, native types and similar), the root
- * options context, and the effective hook bag — this generator's defaults
- * merged with whatever a child generator has overridden.
+ * Bundles the pieces a template function needs to render: the generator
+ * context (for `generator()`, native types and similar), the root options
+ * context, and the effective hook bag — this generator's defaults merged with
+ * whatever a child generator has overridden. Used throughout this generator
+ * family's templates, for both the model-emission path and the API path
+ * (operations, services, invokers and similar).
  *
  * `templates` is fully populated (every hook has a concrete function, even if
  * its default renders nothing) so call sites never need to guard against a
@@ -34,16 +36,29 @@ export interface RootContext extends CodegenOptionsJava {
 export interface JavaModelContext {
 	generatorContext: JavaGeneratorContext
 	root: RootContext
-	templates: Required<JavaJaxrsTemplates>
+	templates: EffectiveJavaJaxrsTemplates
+}
+
+/** The arguments to the {@link JavaJaxrsTemplates.inject} hook. */
+export interface InjectParams {
+	/** The interface type of the dependency. */
+	interface: string
+	/** A concrete class to instantiate inline, if there's no injection framework to supply the dependency. */
+	class?: string
+	/** The name of the instance variable. */
+	name: string
+	/** The field's access modifier; defaults to `private`. */
+	access?: string
 }
 
 /**
- * Hook points that a child generator can override for the model-emission
- * templates (pojo/enum/interface/wrapper and their nested forms). Each hook
- * mirrors a `hooks/*` Handlebars partial that a child package previously
- * overrode by supplying a same-named template file; a child now supplies its
- * replacement via the chained {@link JavaGeneratorContext.templates} bag
- * (see `chainJavaGeneratorContext`).
+ * Hook points that a child generator can override across this generator
+ * family's templates: the model-emission templates (pojo/enum/interface/wrapper
+ * and their nested forms) and the API templates (operations, services,
+ * invokers and similar). Each hook mirrors a `hooks/*` Handlebars partial that
+ * a child package previously overrode by supplying a same-named template
+ * file; a child now supplies its replacement via the chained
+ * {@link JavaGeneratorContext.templates} bag (see `chainJavaGeneratorContext`).
  *
  * Every hook's default (when left unset) renders the same content as the
  * original extension partial's default, which for most of these is nothing.
@@ -75,4 +90,64 @@ export interface JavaJaxrsTemplates {
 	 * the {@link CodegenSchemaInfo} fields this hook needs.
 	 */
 	beanValidationAnnotationProperties?: (target: CodegenSchemaInfo, ctx: JavaModelContext) => string | Skip
+
+	/** Extra annotations on an operation method, in addition to the standard HTTP-method and `@Operation` ones. */
+	apiMethodAnnotations?: (operation: CodegenOperation, ctx: JavaModelContext) => string | Skip
+	/**
+	 * The response built when bean validation finds that a request body required by
+	 * `operation` is missing.
+	 */
+	beanValidationRequestBodyMissing?: (operation: CodegenOperation, ctx: JavaModelContext) => string
+	/**
+	 * The response built when bean validation finds constraint violations in a request
+	 * body of `operation`.
+	 */
+	beanValidationViolation?: (operation: CodegenOperation, ctx: JavaModelContext) => string
+	/** Extra annotations on the generated JAX-RS `Application` subclass. */
+	invokerClassAnnotations?: (ctx: JavaModelContext) => string | Skip
+	/**
+	 * Declares and initialises an injected dependency field, honouring whichever
+	 * dependency-injection approach (or lack of one) the generator uses.
+	 */
+	inject?: (params: InjectParams, ctx: JavaModelContext) => string
+
+	/** Extra annotations on the generated API implementation class for `group`. */
+	apiImplClassAnnotations?: (group: CodegenOperationGroup, ctx: JavaModelContext) => string | Skip
+	/** Extra content in the body of the generated service-exception class for a non-default response of `operation`. */
+	apiServiceException?: (operation: CodegenOperation, ctx: JavaModelContext) => string | Skip
+	/** Extra annotations on the generated API service-implementation class for `group`. */
+	apiServiceImplClassAnnotations?: (group: CodegenOperationGroup, ctx: JavaModelContext) => string | Skip
+	/** The response built when bean validation finds that a required response body is missing. */
+	beanValidationResponseMissing?: (response: CodegenResponse, ctx: JavaModelContext) => string
+	/** The response built when bean validation finds constraint violations in a response body. */
+	beanValidationResponseViolation?: (response: CodegenResponse, ctx: JavaModelContext) => string
+	/** Extra annotations on the generated Jackson JAX-RS JSON provider class. */
+	jaxbJsonProviderAnnotations?: (ctx: JavaModelContext) => string | Skip
+	/** Extra `<properties>` entries in the generated `pom.xml`, one per line. */
+	pomProperties?: (ctx: JavaModelContext) => string | Skip
+
+	/**
+	 * Renders this generator's `pom.xml`. `java-jaxrs-common` has no Maven
+	 * template of its own — every generator in this family supplies its own
+	 * project layout — so this is unset until a child generator migrates its
+	 * `pom.hbs` to TypeScript; while unset, the `pom.hbs` Handlebars partial a
+	 * child generator loads is rendered instead.
+	 */
+	pom?: (ctx: JavaModelContext) => string
+	/**
+	 * Renders the generated (empty-bodied) test class for one operation group,
+	 * when `includeTests` is enabled. Unset until a child generator migrates
+	 * its `tests/apiTest.hbs` to TypeScript; while unset, that Handlebars
+	 * partial is rendered instead, if the generator supplies one.
+	 */
+	apiTest?: (group: CodegenOperationGroup, ctx: JavaModelContext) => string
 }
+
+/**
+ * The effective hook bag passed to model-path templates: every model hook is
+ * concrete (see {@link JavaJaxrsTemplates}), while the whole-file overrides
+ * (`pom`, `apiTest`) stay optional — their absence, rather than a no-op
+ * default, is what an emit call site uses to decide whether to fall back to
+ * rendering the Handlebars template of the same name.
+ */
+export type EffectiveJavaJaxrsTemplates = Required<Omit<JavaJaxrsTemplates, 'pom' | 'apiTest'>> & Pick<JavaJaxrsTemplates, 'pom' | 'apiTest'>

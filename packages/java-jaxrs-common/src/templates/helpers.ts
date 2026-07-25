@@ -1,5 +1,11 @@
-import { CodegenGenerator, CodegenNativeType, CodegenProperty, CodegenSchemaType } from '@openapi-generator-plus/types'
+import { CodegenGenerator, CodegenHeader, CodegenNativeType, CodegenParameter, CodegenProperty, CodegenSchemaType } from '@openapi-generator-plus/types'
 import { capitalize } from '@openapi-generator-plus/template-utils'
+
+/**
+ * A property, parameter or response header — the three kinds of named, schema-typed
+ * value whose accessor method names {@link getter}/{@link setter} compute.
+ */
+export type CodegenPropertyLike = CodegenProperty | CodegenParameter | CodegenHeader
 
 /**
  * Whether `property` is a required, non-nullable boolean, and so should use
@@ -8,7 +14,7 @@ import { capitalize } from '@openapi-generator-plus/template-utils'
  * drops a leading `is` from the property's own field name to avoid a doubled
  * prefix (see {@link lombokPropertyName}).
  */
-export function isPrimitiveBool(property: CodegenProperty): boolean {
+export function isPrimitiveBool(property: CodegenPropertyLike): boolean {
 	return property.schema.schemaType === CodegenSchemaType.BOOLEAN && property.required && !property.nullable
 }
 
@@ -18,7 +24,7 @@ export function isPrimitiveBool(property: CodegenProperty): boolean {
  * instead of `@Getter isIsAdmin()`, `@Setter setIsAdmin()`
  * See https://projectlombok.org/features/GetterSetter
  */
-export function lombokPropertyName(property: CodegenProperty, propertyName: string): string {
+export function lombokPropertyName(property: CodegenPropertyLike, propertyName: string): string {
 	if (isPrimitiveBool(property)) {
 		return propertyName.replace(/^is(?=[A-Z])/, '')
 	} else {
@@ -31,7 +37,7 @@ export function lombokPropertyName(property: CodegenProperty, propertyName: stri
  * prefix for primitive booleans and its field-name adjustment when Lombok is
  * in use.
  */
-export function getter(property: CodegenProperty, generator: CodegenGenerator, useLombok: boolean): string {
+export function getter(property: CodegenPropertyLike, generator: CodegenGenerator, useLombok: boolean): string {
 	let propertyName = generator.toIdentifier(property.name)
 	if (useLombok) {
 		propertyName = lombokPropertyName(property, propertyName)
@@ -47,7 +53,7 @@ export function getter(property: CodegenProperty, generator: CodegenGenerator, u
  * The name of the setter method for `property`, honouring Lombok's
  * field-name adjustment when Lombok is in use.
  */
-export function setter(property: CodegenProperty, generator: CodegenGenerator, useLombok: boolean): string {
+export function setter(property: CodegenPropertyLike, generator: CodegenGenerator, useLombok: boolean): string {
 	let propertyName = generator.toIdentifier(property.name)
 	if (useLombok) {
 		propertyName = lombokPropertyName(property, propertyName)
