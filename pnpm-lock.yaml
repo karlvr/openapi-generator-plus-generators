@@ -435,6 +435,9 @@ importers:
 
   packages/typescript-fetch-rn-client:
     dependencies:
+      '@openapi-generator-plus/generator-common':
+        specifier: workspace:*
+        version: link:../generator-common
       '@openapi-generator-plus/handlebars-templates':
         specifier: workspace:*
         version: link:../handlebars-templates
