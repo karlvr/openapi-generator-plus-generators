@@ -1,4 +1,4 @@
-import { CodegenObjectSchema, CodegenInterfaceSchema, CodegenWrapperSchema, CodegenEnumSchema, CodegenProperty, CodegenSchemaInfo, CodegenOperationGroup, CodegenOperation, CodegenResponse } from '@openapi-generator-plus/types'
+import { CodegenObjectSchema, CodegenInterfaceSchema, CodegenWrapperSchema, CodegenEnumSchema, CodegenProperty, CodegenSchemaInfo, CodegenOperationGroup, CodegenOperation, CodegenResponse, CodegenSecurityScheme } from '@openapi-generator-plus/types'
 import { Skip } from '@openapi-generator-plus/template-utils'
 import { CodegenOptionsJava } from '../types'
 import type { JavaGeneratorContext } from '../index'
@@ -16,6 +16,8 @@ export interface RootContext extends CodegenOptionsJava {
 	serverGenerator: boolean
 	documentationGenerator: boolean
 	generatorClass: string
+	/** Every security scheme declared in the API document, regardless of which operations use it. */
+	securitySchemes: CodegenSecurityScheme[] | null
 
 	/* Allow a child generator's own root-context fields (e.g. its own package options). */
 	[key: string]: unknown
@@ -125,6 +127,21 @@ export interface JavaJaxrsTemplates {
 	jaxbJsonProviderAnnotations?: (ctx: JavaModelContext) => string | Skip
 	/** Extra `<properties>` entries in the generated `pom.xml`, one per line. */
 	pomProperties?: (ctx: JavaModelContext) => string | Skip
+	/** Extra `<dependency>` entries in the generated `pom.xml`, one per line. */
+	pomDependencies?: (ctx: JavaModelContext) => string | Skip
+	/** Extra `<dependency>` entries in the generated `pom.xml`'s `<dependencyManagement>`, one per line. */
+	pomDependencyManagement?: (ctx: JavaModelContext) => string | Skip
+	/** Extra content in the generated `pom.xml`'s `<build>`, after its `<plugins>`. */
+	pomBuild?: (ctx: JavaModelContext) => string | Skip
+
+	/** Extra constants in the generated `ApiConstants` interface, after the declared servers. */
+	apiConstantsBody?: (ctx: JavaModelContext) => string | Skip
+	/** Extra members of the generated `ApiInvoker` base interface. */
+	apiInvokerInterfaceBody?: (ctx: JavaModelContext) => string | Skip
+	/** Extra content before the generated API implementation class's declaration (e.g. its class-level documentation). */
+	apiImplHeader?: (ctx: JavaModelContext) => string | Skip
+	/** Extra members of the generated API implementation class for `group`, after its injected API client and before its operations. */
+	apiImplClassBody?: (group: CodegenOperationGroup, ctx: JavaModelContext) => string | Skip
 
 	/**
 	 * Renders this generator's `pom.xml`. `java-jaxrs-common` has no Maven
@@ -141,13 +158,31 @@ export interface JavaJaxrsTemplates {
 	 * partial is rendered instead, if the generator supplies one.
 	 */
 	apiTest?: (group: CodegenOperationGroup, ctx: JavaModelContext) => string
+	/**
+	 * Renders the JAX-RS client branch's whole `Api.java` interface for one
+	 * operation group (the high-level, exception-throwing client interface a
+	 * caller programs against). Unset until `java-jaxrs-client-generator`
+	 * supplies its default; a descendant generator (e.g. one generating a
+	 * different client library entirely) may override it wholesale.
+	 */
+	api?: (group: CodegenOperationGroup, ctx: JavaModelContext) => string
+	/**
+	 * Declares and initialises the field holding the low-level API client used by
+	 * the generated API implementation class. Unset until
+	 * `java-jaxrs-client-generator` supplies its default (which delegates to
+	 * {@link JavaJaxrsTemplates.inject}); a descendant generator may override
+	 * it to declare the field without delegating to `inject` at all.
+	 */
+	injectApi?: (group: CodegenOperationGroup, name: string, ctx: JavaModelContext) => string
 }
 
 /**
  * The effective hook bag passed to model-path templates: every model hook is
  * concrete (see {@link JavaJaxrsTemplates}), while the whole-file overrides
- * (`pom`, `apiTest`) stay optional — their absence, rather than a no-op
- * default, is what an emit call site uses to decide whether to fall back to
- * rendering the Handlebars template of the same name.
+ * (`pom`, `apiTest`, `api`) and the JAX-RS client branch's `injectApi` stay
+ * optional — their absence, rather than a no-op default, is what a call site
+ * uses to decide whether to fall back to another rendering (or, for `pom`/
+ * `apiTest`, whether to fall back to rendering the Handlebars template of the
+ * same name).
  */
-export type EffectiveJavaJaxrsTemplates = Required<Omit<JavaJaxrsTemplates, 'pom' | 'apiTest'>> & Pick<JavaJaxrsTemplates, 'pom' | 'apiTest'>
+export type EffectiveJavaJaxrsTemplates = Required<Omit<JavaJaxrsTemplates, 'pom' | 'apiTest' | 'api' | 'injectApi'>> & Pick<JavaJaxrsTemplates, 'pom' | 'apiTest' | 'api' | 'injectApi'>

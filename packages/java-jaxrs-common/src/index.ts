@@ -1,18 +1,20 @@
 import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose, CodegenEncodingStyle, CodegenParameter, CodegenHeader } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
+import { existsSync } from 'fs'
 import Handlebars from 'handlebars'
 import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
 import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import * as idx from '@openapi-generator-plus/indexed-type'
-import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper, validationRequest, validationResponse, noExplodeCollection, noExplodeList, noExplodeSet, noExplodeCollectionParamConverterProvider } from './templates'
+import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper, validationRequest, validationResponse, noExplodeCollection, noExplodeList, noExplodeSet, noExplodeCollectionParamConverterProvider, escapeString } from './templates'
 
 export { CodegenOptionsJava, MavenOptions } from './types'
 export { JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, InjectParams, javaJaxrsCommonTemplates } from './templates'
 export {
 	apiParams,
+	nestedModels,
 	imports,
 	operationAnnotations,
 	operationDocumentation,
@@ -23,19 +25,7 @@ export {
 	javax, getter, setter,
 	generatedAnnotation,
 } from './templates'
-
-function escapeString(value: string | number | boolean) {
-	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
-		throw new Error(`escapeString called with unsupported type: ${typeof value} (${value})`)
-	}
-
-	value = String(value)
-	value = value.replace(/\\/g, '\\\\')
-	value = value.replace(/"/g, '\\"')
-	value = value.replace(/\r/g, '\\r')
-	value = value.replace(/\n/g, '\\n')
-	return value
-}
+export { escapeString }
 
 /**
  * Turns a Java package name into a path
@@ -682,7 +672,21 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			})
 	
-			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
+			/*
+			 * This package's own `templates/` directory is gone now that every hbs fragment
+			 * it used to hold has been superseded by the TypeScript model templates (see
+			 * `./templates/pojo.ts` and its siblings) and the TS-only `pom`/`apiTest` hooks
+			 * every current descendant generator supplies — so there's nothing left for a
+			 * child generator's own hbs (if any, via `loadAdditionalTemplates` below or
+			 * `customTemplatesPath`) to override by same-named partial. Guarded rather than
+			 * called unconditionally, since the directory no longer exists to `readdir`;
+			 * left in place (rather than removed outright) pending a future pass that retires
+			 * this generator's Handlebars machinery entirely.
+			 */
+			const ownTemplatesPath = path.resolve(__dirname, '..', 'templates')
+			if (existsSync(ownTemplatesPath)) {
+				await loadTemplates(ownTemplatesPath, hbs)
+			}
 			if (context.loadAdditionalTemplates) {
 				await context.loadAdditionalTemplates(hbs)
 			}
@@ -691,8 +695,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
 			}
 	
-			const rootContext = context.generator().templateRootContext()
-	
+			/* `securitySchemes` is document-wide (not a per-package option), so it's merged in
+			   here rather than contributed by any generator's own `templateRootContext` — every
+			   template in the family can rely on it being present on the root context. */
+			const rootContext = { ...context.generator().templateRootContext(), securitySchemes: doc.securitySchemes }
+
 			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
 

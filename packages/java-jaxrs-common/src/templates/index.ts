@@ -15,6 +15,7 @@ export { noExplodeList } from './support/NoExplodeList'
 export { noExplodeSet } from './support/NoExplodeSet'
 export { noExplodeCollectionParamConverterProvider } from './provider/NoExplodeCollectionParamConverterProvider'
 export { apiParams } from './apiParams'
+export { nestedModels } from './nestedModels'
 export { imports } from './frag/imports'
 export { operationAnnotations } from './frag/operationAnnotations'
 export { operationDocumentation } from './frag/operationDocumentation'
@@ -22,7 +23,7 @@ export { operationVars, OperationVarsOptions, OperationVarsResult, BodyParamRend
 export { parameterAnnotations } from './frag/parameterAnnotations'
 export { beanValidationValidateParams } from './frag/beanValidationValidateParams'
 export { fromString } from './util/fromString'
-export { javax, getter, setter, isNativeArray, isPrimitiveBool } from './helpers'
+export { javax, getter, setter, isNativeArray, isPrimitiveBool, escapeString } from './helpers'
 export { generatedAnnotation } from './generatedAnnotation'
 
 /** The response built when bean validation finds a required response body missing. */
@@ -103,4 +104,12 @@ export const javaJaxrsCommonTemplates: EffectiveJavaJaxrsTemplates = {
 	beanValidationResponseViolation,
 	jaxbJsonProviderAnnotations: () => SKIP,
 	pomProperties: () => SKIP,
+	pomDependencies: () => SKIP,
+	pomDependencyManagement: () => SKIP,
+	pomBuild: () => SKIP,
+
+	apiConstantsBody: () => SKIP,
+	apiInvokerInterfaceBody: () => SKIP,
+	apiImplHeader: () => SKIP,
+	apiImplClassBody: () => SKIP,
 }

@@ -1,19 +1,14 @@
 import { CodegenGeneratorConstructor } from '@openapi-generator-plus/types'
-import path from 'path'
-import { loadTemplates } from '@openapi-generator-plus/handlebars-templates'
 import javaGenerator from '@openapi-generator-plus/java-jaxrs-client-generator'
+import { JavaGeneratorContext, chainJavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { hooks } from './templates/hooks'
 
-export const createGenerator: CodegenGeneratorConstructor = (config, context) => {
-	const base = javaGenerator(config, {
-		...context,
-		loadAdditionalTemplates: async(hbs) => {
-			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
-		},
-		additionalWatchPaths: () => {
-			return [path.resolve(__dirname, '../templates')]
-		},
+export const createGenerator: CodegenGeneratorConstructor<JavaGeneratorContext> = (config, context) => {
+	const myContext: JavaGeneratorContext = chainJavaGeneratorContext(context, {
+		templates: hooks,
 	})
 
+	const base = javaGenerator(config, myContext)
 	return {
 		...base,
 		templateRootContext: () => {

@@ -70,3 +70,17 @@ export function isNativeArray(nativeType: CodegenNativeType): boolean {
 export function javax(useJakarta: boolean): string {
 	return useJakarta ? 'jakarta' : 'javax'
 }
+
+/** Escape `value` for use inside a Java string literal's quotes (backslash, double-quote, CR and LF). */
+export function escapeString(value: string | number | boolean): string {
+	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
+		throw new Error(`escapeString called with unsupported type: ${typeof value} (${value})`)
+	}
+
+	let result = String(value)
+	result = result.replace(/\\/g, '\\\\')
+	result = result.replace(/"/g, '\\"')
+	result = result.replace(/\r/g, '\\r')
+	result = result.replace(/\n/g, '\\n')
+	return result
+}

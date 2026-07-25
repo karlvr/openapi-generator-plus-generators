@@ -1,8 +1,0 @@
-{{#join '_implements' ', '}}
-{{#ifvex 'x-implements-interfaces'}}
-{{{vendorExtensions.x-implements-interfaces}}}
-{{/ifvex}}
-{{>frag/customImplements class=class}}
-{{/join}}
-{{#if _implements}}
-implements {{{_implements}}} {{/if}}
