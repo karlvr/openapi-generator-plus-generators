@@ -1,4 +1,4 @@
-import { ts, when, SKIP, Skip } from '@openapi-generator-plus/template-utils'
+import { ts, when } from '@openapi-generator-plus/template-utils'
 import { MavenOptions, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
 /** The configured Maven dependency version for `key`, or `fallback` if none was configured. */
@@ -21,10 +21,6 @@ export function pom(ctx: JavaModelContext): string {
 	const useJakarta = ctx.root.useJakarta
 	const useBeanValidation = ctx.root.useBeanValidation
 	const useLombok = ctx.root.useLombok
-
-	const validationVersionProperty: string | Skip = when(useBeanValidation, () => useJakarta
-		? `<jakarta.validation.version>${mavenVersion(maven, 'jakarta_validation', '3.0.1')}</jakarta.validation.version> `
-		: `<javax.validation.version>${mavenVersion(maven, 'javax_validation', '2.0.0.Final')}</javax.validation.version>`)
 
 	const jakartaDependencies = when(useJakarta, () => ts`
 <dependency>
@@ -57,7 +53,7 @@ export function pom(ctx: JavaModelContext): string {
 	<artifactId>jackson-jaxrs-json-provider</artifactId>
 </dependency>`
 
-	const validationDependency: string | Skip = when(useBeanValidation, () => ts`
+	const validationDependency = when(useBeanValidation, () => ts`
 
 ${useJakarta
 	? ts`
@@ -73,7 +69,7 @@ ${useJakarta
 	<version>\${javax.validation.version}</version>
 </dependency>`}`)
 
-	const lombokDependency: string | Skip = when(useLombok, () => ts`
+	const lombokDependency = when(useLombok, () => ts`
 
 <dependency>
 	<groupId>org.projectlombok</groupId>
@@ -82,7 +78,7 @@ ${useJakarta
 	<scope>provided</scope>
 </dependency>`)
 
-	const lombokAnnotationProcessor: string | Skip = when(useLombok, () => ts`
+	const lombokAnnotationProcessor = when(useLombok, () => ts`
 <annotationProcessorPaths>
 	<path>
 		<groupId>org.projectlombok</groupId>
@@ -111,7 +107,9 @@ ${useJakarta
 		${when(useJakarta, () => ts`
 <jakarta.annotation.version>${mavenVersion(maven, 'jakarta_annotation', '2.1.0')}</jakarta.annotation.version>
 <jakarta.xml.bind.version>${mavenVersion(maven, 'jakarta_xml_bind', '3.0.1')}</jakarta.xml.bind.version>`)}
-		${validationVersionProperty}
+		${when(useBeanValidation, () => useJakarta
+			? `<jakarta.validation.version>${mavenVersion(maven, 'jakarta_validation', '3.0.1')}</jakarta.validation.version>`
+			: `<javax.validation.version>${mavenVersion(maven, 'javax_validation', '2.0.0.Final')}</javax.validation.version>`)}
 		${when(useLombok, () => `<lombok.version>${mavenVersion(maven, 'lombok', '1.18.46')}</lombok.version>`)}
 		${ctx.templates.pomProperties(ctx)}
 	</properties>
