@@ -127,15 +127,15 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common':
         specifier: workspace:*
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-jaxrs-server-generator':
         specifier: workspace:*
         version: link:../java-jaxrs-server
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -145,15 +145,15 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-client-generator':
         specifier: workspace:*
         version: link:../java-jaxrs-client
       '@openapi-generator-plus/java-jaxrs-generator-common':
         specifier: workspace:*
         version: link:../java-jaxrs-common
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -163,15 +163,15 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/java-jaxrs-generator-common':
         specifier: workspace:*
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-jaxrs-server-generator':
         specifier: workspace:*
         version: link:../java-jaxrs-server
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -181,15 +181,18 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
+      '@openapi-generator-plus/indexed-type':
+        specifier: link:../../../openapi-generator-plus/packages/indexed-type
+        version: link:../../../openapi-generator-plus/packages/indexed-type
       '@openapi-generator-plus/java-jaxrs-generator-common':
         specifier: workspace:*
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -202,39 +205,39 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: link:../../../openapi-generator-plus/packages/indexed-type
         version: link:../../../openapi-generator-plus/packages/indexed-type
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
       change-case:
         specifier: ^4.1.2
         version: 4.1.2
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.9
 
   packages/java-jaxrs-server:
     dependencies:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
+      '@openapi-generator-plus/indexed-type':
+        specifier: link:../../../openapi-generator-plus/packages/indexed-type
+        version: link:../../../openapi-generator-plus/packages/indexed-type
       '@openapi-generator-plus/java-jaxrs-generator-common':
         specifier: workspace:*
         version: link:../java-jaxrs-common
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -256,12 +259,21 @@ importers:
 
   packages/java-retrofit-client:
     dependencies:
-      '@openapi-generator-plus/handlebars-templates':
+      '@openapi-generator-plus/generator-common':
         specifier: workspace:*
-        version: link:../handlebars-templates
+        version: link:../generator-common
+      '@openapi-generator-plus/indexed-type':
+        specifier: link:../../../openapi-generator-plus/packages/indexed-type
+        version: link:../../../openapi-generator-plus/packages/indexed-type
       '@openapi-generator-plus/java-jaxrs-client-generator':
         specifier: workspace:*
         version: link:../java-jaxrs-client
+      '@openapi-generator-plus/java-jaxrs-generator-common':
+        specifier: workspace:*
+        version: link:../java-jaxrs-common
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -271,39 +283,57 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
+      '@openapi-generator-plus/indexed-type':
+        specifier: link:../../../openapi-generator-plus/packages/indexed-type
+        version: link:../../../openapi-generator-plus/packages/indexed-type
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.9
       less:
         specifier: ^4.4.2
         version: 4.6.4
+
+  packages/template-utils:
+    dependencies:
+      '@openapi-generator-plus/generator-common':
+        specifier: workspace:*
+        version: link:../generator-common
+      '@openapi-generator-plus/indexed-type':
+        specifier: link:../../../openapi-generator-plus/packages/indexed-type
+        version: link:../../../openapi-generator-plus/packages/indexed-type
+      '@openapi-generator-plus/types':
+        specifier: link:../../../openapi-generator-plus/packages/types
+        version: link:../../../openapi-generator-plus/packages/types
+      change-case:
+        specifier: ^4.1.2
+        version: 4.1.2
+      marked:
+        specifier: ^12.0.2
+        version: 12.0.2
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
 
   packages/typescript-common:
     dependencies:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/java-like-generator-helper':
         specifier: workspace:*
         version: link:../java-like
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.9
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
@@ -313,9 +343,9 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
+      '@openapi-generator-plus/template-utils':
         specifier: workspace:*
-        version: link:../handlebars-templates
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -328,12 +358,12 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: link:../../../openapi-generator-plus/packages/indexed-type
         version: link:../../../openapi-generator-plus/packages/indexed-type
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -349,12 +379,12 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
-        specifier: workspace:*
-        version: link:../handlebars-templates
       '@openapi-generator-plus/indexed-type':
         specifier: link:../../../openapi-generator-plus/packages/indexed-type
         version: link:../../../openapi-generator-plus/packages/indexed-type
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -370,9 +400,9 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
+      '@openapi-generator-plus/template-utils':
         specifier: workspace:*
-        version: link:../handlebars-templates
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -392,9 +422,9 @@ importers:
       '@openapi-generator-plus/generator-common':
         specifier: workspace:*
         version: link:../generator-common
-      '@openapi-generator-plus/handlebars-templates':
+      '@openapi-generator-plus/template-utils':
         specifier: workspace:*
-        version: link:../handlebars-templates
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
@@ -411,9 +441,12 @@ importers:
 
   packages/typescript-fetch-rn-client:
     dependencies:
-      '@openapi-generator-plus/handlebars-templates':
+      '@openapi-generator-plus/generator-common':
         specifier: workspace:*
-        version: link:../handlebars-templates
+        version: link:../generator-common
+      '@openapi-generator-plus/template-utils':
+        specifier: workspace:*
+        version: link:../template-utils
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types

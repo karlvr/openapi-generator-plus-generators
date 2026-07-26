@@ -7,7 +7,6 @@ export interface CodegenOptionsTypeScript extends JavaLikeOptions {
 	relativeSourceOutputPath: string
 	npm: NpmOptions | null
 	typescript: TypeScriptOptions | null
-	customTemplatesPath: string | null
 	dateApproach: DateApproach
 	blindDate: BlindDateOptions
 	esm: boolean | null

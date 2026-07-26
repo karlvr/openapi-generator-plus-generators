@@ -5,7 +5,7 @@ export interface CodegenOptionsJavaServer extends CommonCodegenOptions {
 	apiServiceImplPackage: string | null
 	invokerPackage: string | null
 	invokerName: string | null
-	
+
 	authenticationRequiredAnnotation: string | null
 }
 

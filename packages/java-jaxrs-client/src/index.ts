@@ -1,11 +1,28 @@
 import { CodegenGeneratorType, CodegenGenerator, CodegenConfig } from '@openapi-generator-plus/types'
 import path from 'path'
-import { emit, loadTemplates } from '@openapi-generator-plus/handlebars-templates'
-import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
+import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext, chainJavaGeneratorContext, javaJaxrsCommonTemplates, EffectiveJavaJaxrsTemplates, apiParams } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaClient } from './types'
 import { configBoolean, configNumber, configString } from '@openapi-generator-plus/generator-common'
+import { hooks } from './templates/hooks'
+import { ClientContext, ClientRootContext } from './templates/types'
+import { api } from './templates/api'
+import { apiImpl } from './templates/apiImpl'
+import { apiSpec } from './templates/apiSpec'
+import { apiConstants } from './templates/ApiConstants'
+import { apiInvoker } from './templates/ApiInvoker'
+import { apiProvidersInterface } from './templates/ApiProviders'
+import { unexpectedApiException } from './templates/UnexpectedApiException'
+import { unexpectedApiProcessingException } from './templates/UnexpectedApiProcessingException'
+import { unexpectedResponseException } from './templates/UnexpectedResponseException'
+import { unprocessableResponseException } from './templates/UnprocessableResponseException'
+import { unexpectedTimeoutException } from './templates/UnexpectedTimeoutException'
+import { apiAuthorizationProvider } from './templates/spi/ApiAuthorizationProvider'
 export { CodegenOptionsJavaClient } from './types'
 export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
+export { ClientContext, ClientRootContext } from './templates/types'
+export { bodyParam } from './templates/frag/bodyParam'
+export { exceptionName } from './templates/api'
 
 export function options(config: CodegenConfig, context: JavaGeneratorContext): CodegenOptionsJavaClient {
 	const parentOptions = javaGeneratorOptions(config, context)
@@ -21,55 +38,42 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 }
 
 export default function createGenerator(config: CodegenConfig, context: JavaGeneratorContext): CodegenGenerator {
-	const myContext: JavaGeneratorContext = {
-		...context,
-		loadAdditionalTemplates: async(hbs) => {
-			await loadTemplates(path.resolve(__dirname, '../templates'), hbs)
-
-			if (context.loadAdditionalTemplates) {
-				await context.loadAdditionalTemplates(hbs)
-			}
-		},
-		additionalWatchPaths: () => {
-			const result = [path.resolve(__dirname, '../templates')]
-			
-			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths())
-			}
-
-			return result
-		},
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		formUrlEncodedImplementation: () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`),
-	}
+	const myContext: JavaGeneratorContext = chainJavaGeneratorContext(context, {
+		templates: hooks,
+	})
+	// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	myContext.formUrlEncodedImplementation = () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`)
 
 	const generatorOptions = options(config, myContext)
 
-	myContext.additionalExportTemplates = async(outputPath, doc, hbs, rootContext) => {
+	myContext.exportFiles = async(outputPath, doc, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 		const relativeApiSourceOutputPath = generatorOptions.relativeApiSourceOutputPath
 		const relativeApiImplSourceOutputPath = generatorOptions.relativeApiImplSourceOutputPath
 
+		const templates: EffectiveJavaJaxrsTemplates = { ...javaJaxrsCommonTemplates, ...myContext.templates }
+		const ctx: ClientContext = {
+			generatorContext: myContext,
+			root: rootContext as ClientRootContext,
+			templates,
+		}
+
 		const apiPackagePath = packageToPath(generatorOptions.apiPackage)
-	
+
 		for (const group of doc.groups) {
-			const operations = group.operations
-			if (!operations.length) {
+			if (!group.operations.length) {
 				continue
 			}
-
-			await emit('api', path.join(outputPath, relativeApiSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), 
-				{ ...rootContext, ...group, operations }, true, hbs)
+			const apiContent = templates.api ? templates.api(group, ctx) : api(group, ctx)
+			await emitTemplate(apiContent, path.join(outputPath, relativeApiSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), true)
 		}
-		
+
 		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
 		for (const group of doc.groups) {
-			const operations = group.operations
-			if (!operations.length) {
+			if (!group.operations.length) {
 				continue
 			}
-			await emit('apiImpl', path.join(outputPath, relativeApiImplSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), 
-				{ ...rootContext, ...doc, ...group, operations }, true, hbs)
+			await emitTemplate(apiImpl(group, ctx), path.join(outputPath, relativeApiImplSourceOutputPath, apiImplPackagePath, `${context.generator().toClassName(group.name)}ApiImpl.java`), true)
 		}
 
 		if (generatorOptions.apiParamsPackage) {
@@ -77,56 +81,35 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			for (const group of doc.groups) {
 				for (const operation of group.operations) {
 					if (operation.useParamsClasses) {
-						await emit('apiParams', path.join(outputPath, relativeApiSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), 
-							{ ...rootContext, group, ...operation }, true, hbs)
+						await emitTemplate(apiParams(operation, ctx), path.join(outputPath, relativeApiSourceOutputPath, apiParamsPackagePath, `${context.generator().toClassName(operation.uniqueName)}Params.java`), true)
 					}
 				}
 			}
 		}
 
-		await emit('ApiConstants', path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), {
-			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : null,
-		}, true, hbs)
-		await emit('ApiInvoker', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), 
-			{ ...rootContext, ...doc }, true, hbs)
-
-		await emit('ApiProviders', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiProviders.java'), {
-			...rootContext, servers: doc.servers, server: doc.servers && doc.servers.length ? doc.servers[0] : undefined,
-		}, true, hbs)
+		await emitTemplate(apiConstants(doc.servers, ctx), path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), true)
+		await emitTemplate(apiInvoker(ctx), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), true)
+		await emitTemplate(apiProvidersInterface(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiProviders.java'), true)
 
 		const apiSpecPackagePath = packageToPath(generatorOptions.apiSpecPackage)
 		for (const group of doc.groups) {
-			const operations = group.operations
-			if (!operations.length) {
+			if (!group.operations.length) {
 				continue
 			}
-			await emit('apiSpec', path.join(outputPath, relativeApiImplSourceOutputPath, apiSpecPackagePath, `${context.generator().toClassName(group.name)}ApiSpec.java`), 
-				{ ...rootContext, ...group, operations }, true, hbs)
+			await emitTemplate(apiSpec(group, ctx), path.join(outputPath, relativeApiImplSourceOutputPath, apiSpecPackagePath, `${context.generator().toClassName(group.name)}ApiSpec.java`), true)
 		}
 
-		await emit('UnexpectedApiException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiException.java'), {
-			...rootContext,
-		}, true, hbs)
-		await emit('UnexpectedApiProcessingException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiProcessingException.java'), {
-			...rootContext,
-		}, true, hbs)
-		await emit('UnexpectedResponseException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedResponseException.java'), {
-			...rootContext,
-		}, true, hbs)
-		await emit('UnprocessableResponseException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnprocessableResponseException.java'), {
-			...rootContext,
-		}, true, hbs)
-		await emit('UnexpectedTimeoutException', path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedTimeoutException.java'), {
-			...rootContext,
-		}, true, hbs)
+		await emitTemplate(unexpectedApiException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiException.java'), true)
+		await emitTemplate(unexpectedApiProcessingException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiProcessingException.java'), true)
+		await emitTemplate(unexpectedResponseException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedResponseException.java'), true)
+		await emitTemplate(unprocessableResponseException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnprocessableResponseException.java'), true)
+		await emitTemplate(unexpectedTimeoutException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedTimeoutException.java'), true)
 
 		const apiSpiPackagePath = packageToPath(generatorOptions.apiSpiPackage)
-		await emit('spi/ApiAuthorizationProvider', path.join(outputPath, relativeApiImplSourceOutputPath, apiSpiPackagePath, 'ApiAuthorizationProvider.java'), {
-			...rootContext,
-		}, true, hbs)
+		await emitTemplate(apiAuthorizationProvider(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiSpiPackagePath, 'ApiAuthorizationProvider.java'), true)
 
-		if (context.additionalExportTemplates) {
-			context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+		if (context.exportFiles) {
+			await context.exportFiles(outputPath, doc, rootContext)
 		}
 	}
 

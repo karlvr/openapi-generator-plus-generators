@@ -1,26 +1,29 @@
 import { CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenDocument, CodegenGenerator, isCodegenObjectSchema, isCodegenEnumSchema, CodegenNativeType, CodegenProperty, CodegenAllOfStrategy, CodegenAnyOfStrategy, CodegenOneOfStrategy, CodegenLogLevel, isCodegenInterfaceSchema, isCodegenWrapperSchema, CodegenSchema, CodegenSchemaPurpose, CodegenEncodingStyle, CodegenParameter, CodegenHeader } from '@openapi-generator-plus/types'
 import { CodegenOptionsJava } from './types'
 import path from 'path'
-import Handlebars from 'handlebars'
-import { loadTemplates, emit, registerStandardHelpers, sourcePosition, ActualHelperOptions } from '@openapi-generator-plus/handlebars-templates'
+import { existsSync } from 'fs'
+import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import * as idx from '@openapi-generator-plus/indexed-type'
+import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper, validationRequest, validationResponse, noExplodeCollection, noExplodeList, noExplodeSet, noExplodeCollectionParamConverterProvider, escapeString } from './templates'
 
-export { CodegenOptionsJava } from './types'
-
-function escapeString(value: string | number | boolean) {
-	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
-		throw new Error(`escapeString called with unsupported type: ${typeof value} (${value})`)
-	}
-
-	value = String(value)
-	value = value.replace(/\\/g, '\\\\')
-	value = value.replace(/"/g, '\\"')
-	value = value.replace(/\r/g, '\\r')
-	value = value.replace(/\n/g, '\\n')
-	return value
-}
+export { CodegenOptionsJava, MavenOptions } from './types'
+export { JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, InjectParams, javaJaxrsCommonTemplates } from './templates'
+export {
+	apiParams,
+	nestedModels,
+	imports,
+	operationAnnotations,
+	operationDocumentation,
+	operationVars, OperationVarsOptions, OperationVarsResult, BodyParamRenderer,
+	parameterAnnotations,
+	beanValidationValidateParams,
+	fromString,
+	javax, getter, setter,
+	generatedAnnotation,
+} from './templates'
+export { escapeString }
 
 /**
  * Turns a Java package name into a path
@@ -28,14 +31,6 @@ function escapeString(value: string | number | boolean) {
  */
 export function packageToPath(packageName: string): string {
 	return packageName.replace(/\./g, path.sep)
-}
-
-function computeCustomTemplatesPath(configPath: string | undefined, customTemplatesPath: string) {
-	if (configPath) {
-		return path.resolve(path.dirname(configPath), customTemplatesPath) 
-	} else {
-		return customTemplatesPath
-	}
 }
 
 function computeRelativeSourceOutputPath(config: CodegenConfig) {
@@ -67,14 +62,39 @@ function computeRelativeTestResourcesOutputPath(config: CodegenConfig) {
 }
 
 export interface JavaGeneratorContext extends CodegenGeneratorContext {
-	loadAdditionalTemplates?: (hbs: typeof Handlebars) => Promise<void>
-	additionalWatchPaths?: () => string[]
-	additionalExportTemplates?: (outputPath: string, doc: CodegenDocument, hbs: typeof Handlebars, rootContext: Record<string, unknown>) => Promise<void>
+	/**
+	 * Emit additional generator-specific files, beyond the model and support
+	 * files this package emits itself.
+	 */
+	exportFiles?: (outputPath: string, doc: CodegenDocument, rootContext: Record<string, unknown>) => Promise<void>
 	additionalCleanPathPatterns?: () => string[]
 	/**
 	 * Override the class used to capture application/x-www-form-urlencoded messages.
 	 */
 	formUrlEncodedImplementation?: () => CodegenNativeType
+	/**
+	 * Typed overrides for the model-emission hooks (see {@link JavaJaxrsTemplates}).
+	 * A child generator sets its own overrides via {@link chainJavaGeneratorContext};
+	 * this package merges its own defaults underneath whatever the effective
+	 * chain supplies.
+	 */
+	templates?: Partial<JavaJaxrsTemplates>
+}
+
+/**
+ * Merge `add` (this generator's own contribution) with `context` (whatever
+ * the calling — and so more specific — generator has already assembled) to
+ * produce the context to pass to this generator's base implementation.
+ *
+ * The more specific generator wins: `context`'s own hook overrides take
+ * precedence over `add`'s for any hook both supply.
+ */
+export function chainJavaGeneratorContext(context: JavaGeneratorContext, add: Partial<JavaGeneratorContext>): JavaGeneratorContext {
+	return {
+		...context,
+		...add,
+		templates: { ...add.templates, ...context.templates },
+	}
 }
 
 interface AugmentedCodegenSchema {
@@ -98,7 +118,9 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 	const apiPackage = configString(config, 'apiPackage', packageName)
 	const maven = configObject(config, 'maven', undefined)
 	const customizations = configObject(config, 'customizations', undefined)
-	const customTemplates = configString(config, 'customTemplates', undefined)
+	if (config.customTemplates !== undefined) {
+		context.log(CodegenLogLevel.WARN, 'The customTemplates config option is no longer supported: templates are TypeScript code and are customized via the generator\'s typed template and hook APIs')
+	}
 	const relativeSourceOutputPath = computeRelativeSourceOutputPath(config)
 
 	const options: CodegenOptionsJava = {
@@ -132,7 +154,6 @@ export function options(config: CodegenConfig, context: JavaGeneratorContext): C
 		relativeResourcesOutputPath: computeRelativeResourcesOutputPath(config),
 		relativeTestOutputPath: computeRelativeTestOutputPath(config),
 		relativeTestResourcesOutputPath: computeRelativeTestResourcesOutputPath(config),
-		customTemplatesPath: customTemplates && computeCustomTemplatesPath(config.configPath, customTemplates),
 		useJakarta: configBoolean(config, 'useJakarta', false),
 		useLombok: configBoolean(config, 'useLombok', false),
 		customizations: {
@@ -562,16 +583,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
 		interfaceCanBeNested: () => true,
 	
-		watchPaths: () => {
-			const result = [path.resolve(__dirname, '..', 'templates')]
-			if (context.additionalWatchPaths) {
-				result.push(...context.additionalWatchPaths())
-			}
-			if (generatorOptions.customTemplatesPath) {
-				result.push(generatorOptions.customTemplatesPath)
-			}
-			return result
-		},
+		watchPaths: () => undefined,
 	
 		cleanPathPatterns: () => {
 			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
@@ -599,59 +611,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		},
 	
 		exportTemplates: async(outputPath, doc) => {
-			const hbs = Handlebars.create()
+			/* `securitySchemes` is document-wide (not a per-package option), so it's merged in
+			   here rather than contributed by any generator's own `templateRootContext` — every
+			   template in the family can rely on it being present on the root context. */
+			const rootContext = { ...context.generator().templateRootContext(), securitySchemes: doc.securitySchemes }
 
-			registerStandardHelpers(hbs, context)
-
-			hbs.registerHelper('getter', function(property: CodegenProperty | CodegenParameter | CodegenHeader) {
-				let propertyName = context.generator().toIdentifier(property.name)
-				if (generatorOptions.useLombok) {
-					propertyName = lombokPropertyName(property, propertyName)
-				}
-				if (isPrimitiveBool(property)) {
-					return `is${capitalize(propertyName)}`
-				} else {
-					return `get${capitalize(propertyName)}`
-				}
-			})
-			hbs.registerHelper('setter', function(property: CodegenProperty | CodegenParameter | CodegenHeader) {
-				let propertyName = context.generator().toIdentifier(property.name)
-				if (generatorOptions.useLombok) {
-					propertyName = lombokPropertyName(property, propertyName)
-				}
-				return `set${capitalize(propertyName)}`
-			})
-			hbs.registerHelper('isNativeArray', function(property: CodegenProperty) {
-				return isNativeArrayType(property.nativeType)
-			})
-			hbs.registerHelper('escapeString', function(value: string) {
-				// eslint-disable-next-line prefer-rest-params
-				const options = arguments[arguments.length - 1] as ActualHelperOptions
-				try {
-					return escapeString(value)
-				} catch (error) {
-					throw new Error(`${error instanceof Error ? error.message : error} @ ${sourcePosition(options)}`)
-				}
-			})
-			hbs.registerHelper('javax', function() {
-				if (generatorOptions.useJakarta) {
-					return 'jakarta'
-				} else {
-					return 'javax'
-				}
-			})
-	
-			await loadTemplates(path.resolve(__dirname, '..', 'templates'), hbs)
-			if (context.loadAdditionalTemplates) {
-				await context.loadAdditionalTemplates(hbs)
-			}
-	
-			if (generatorOptions.customTemplatesPath) {
-				await loadTemplates(generatorOptions.customTemplatesPath, hbs)
-			}
-	
-			const rootContext = context.generator().templateRootContext()
-	
 			const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
 			const relativeTestOutputPath = generatorOptions.relativeTestOutputPath
 
@@ -663,58 +627,68 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 	
+			/* The effective hook bag merges this package's defaults underneath
+			   whatever the generator chain has overridden. */
+			const modelTemplates: EffectiveJavaJaxrsTemplates = { ...javaJaxrsCommonTemplates, ...context.templates }
+			const modelCtx: JavaModelContext = {
+				generatorContext: context,
+				root: rootContext as RootContext,
+				templates: modelTemplates,
+			}
+
 			const modelPackagePath = packageToPath(generatorOptions.modelPackage)
 			for (const schema of context.utils.values(doc.schemas)) {
 				if (isCodegenObjectSchema(schema)) {
-					await emit('pojo', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, pojo: schema }, true, hbs)
+					await emitTemplate(pojo(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				} else if (isCodegenEnumSchema(schema)) {
-					await emit('enum', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, enum: schema }, true, hbs)
+					await emitTemplate(enumTemplate(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				} else if (isCodegenInterfaceSchema(schema)) {
-					await emit('interface', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, interface: schema }, true, hbs)
+					await emitTemplate(interfaceTemplate(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				} else if (isCodegenWrapperSchema(schema)) {
-					await emit('wrapper', path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), 
-						{ ...rootContext, schema }, true, hbs)
+					await emitTemplate(wrapper(schema, modelCtx), path.join(outputPath, relativeSourceOutputPath, modelPackagePath, `${context.generator().toClassName(schema.name)}.java`), true)
 				}
 			}
 
 			if (generatorOptions.useBeanValidation) {
 				const validationPackagePath = packageToPath(generatorOptions.validationPackage)
-				await emit('validation/Request', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Request.java'), rootContext, true, hbs)
-				await emit('validation/Response', path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Response.java'), rootContext, true, hbs)
+				await emitTemplate(validationRequest(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Request.java'), true)
+				await emitTemplate(validationResponse(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, validationPackagePath, 'Response.java'), true)
 			}
 
 			const supportPackagePath = packageToPath(generatorOptions.supportPackage)
-			await emit('support/NoExplodeCollection', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeCollection.java'), rootContext, true, hbs)
-			await emit('support/NoExplodeList', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeList.java'), rootContext, true, hbs)
-			await emit('support/NoExplodeSet', path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeSet.java'), rootContext, true, hbs)
+			await emitTemplate(noExplodeCollection(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeCollection.java'), true)
+			await emitTemplate(noExplodeList(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeList.java'), true)
+			await emitTemplate(noExplodeSet(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, supportPackagePath, 'NoExplodeSet.java'), true)
 
 			const providerPackagePath = generatorOptions.apiProviderPackage ? packageToPath(generatorOptions.apiProviderPackage) : undefined
 			if (providerPackagePath) {
-				await emit('provider/NoExplodeCollectionParamConverterProvider', path.join(outputPath, relativeSourceOutputPath, providerPackagePath, 'NoExplodeCollectionParamConverterProvider.java'), rootContext, true, hbs)
+				await emitTemplate(noExplodeCollectionParamConverterProvider(modelCtx.root), path.join(outputPath, relativeSourceOutputPath, providerPackagePath, 'NoExplodeCollectionParamConverterProvider.java'), true)
 			}
-	
+
+			/* `pom` and `apiTest` are supplied by child generators (this package has
+			   no Maven or test-scaffold template of its own). */
 			const maven = generatorOptions.maven
 			if (maven) {
-				await emit('pom', path.join(outputPath, 'pom.xml'), { ...rootContext, ...maven }, false, hbs)
+				if (!modelTemplates.pom) {
+					throw new Error('The generator did not supply a pom template')
+				}
+				await emitTemplate(modelTemplates.pom(modelCtx), path.join(outputPath, 'pom.xml'), false)
 			}
-			
-			if (generatorOptions.includeTests && hbs.partials['tests/apiTest']) {
+
+			if (generatorOptions.includeTests && modelTemplates.apiTest) {
 				const apiPackagePath = packageToPath(generatorOptions.apiPackage)
 				for (const group of doc.groups) {
 					const operations = group.operations
 					if (!operations.length) {
 						continue
 					}
-					await emit('tests/apiTest', path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}ApiTest.java`),
-						{ ...rootContext, ...group }, false, hbs)
+					const apiTestOutputPath = path.join(outputPath, relativeTestOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}ApiTest.java`)
+					await emitTemplate(modelTemplates.apiTest(group, modelCtx), apiTestOutputPath, false)
 				}
 			}
-	
-			if (context.additionalExportTemplates) {
-				await context.additionalExportTemplates(outputPath, doc, hbs, rootContext)
+
+			if (context.exportFiles) {
+				await context.exportFiles(outputPath, doc, rootContext)
 			}
 		},
 

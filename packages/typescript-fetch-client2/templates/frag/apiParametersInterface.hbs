@@ -1,7 +1,0 @@
-export interface {{{className (concat name '_' 'parameters')}}} {
-{{#each parameters}}
-	{{>frag/propertyDocumentation memberOf=null}}
-	{{name}}{{#unless required}}?{{/unless}}: {{{nativeType}}}
-{{/each}}
-}
-

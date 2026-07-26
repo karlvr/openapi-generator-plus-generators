@@ -1,3 +1,4 @@
+import { CodegenNativeType } from '@openapi-generator-plus/types'
 import { JavaLikeOptions } from '@openapi-generator-plus/java-like-generator-helper'
 
 /**
@@ -33,7 +34,6 @@ export interface CodegenOptionsJava extends JavaLikeOptions {
 	relativeResourcesOutputPath?: string
 	relativeTestOutputPath: string
 	relativeTestResourcesOutputPath?: string
-	customTemplatesPath?: string
 
 	/**
 	 * Use jakarta instead of javax for imports
@@ -67,5 +67,14 @@ export interface JavaClassCustomizations {
 declare module '@openapi-generator-plus/types' {
 	interface CodegenOperation {
 		useParamsClasses: boolean
+	}
+
+	/**
+	 * `CodegenHeader` is missing its `nativeType`, even though the codegen engine
+	 * populates one for every header (the same as it does for properties and
+	 * parameters) — this fills in the gap so templates can use it the same way.
+	 */
+	interface CodegenHeader {
+		nativeType: CodegenNativeType
 	}
 }
