@@ -9,13 +9,7 @@ export const hooks: FetchClientHooks = {
 	apiImports: () => ts`
 import { btoa } from "abab";`,
 
-	/*
-	 * The trailing comma is intentional: the Handlebars original baked it
-	 * into the single-line partial it emitted, so with only one dependency
-	 * here `join()` never gets a chance to add one. Kept to match that
-	 * historical output exactly.
-	 */
 	packageDependencies: () => [
-		'"abab": "^2.0.5",',
+		'"abab": "^2.0.5"',
 	],
 }

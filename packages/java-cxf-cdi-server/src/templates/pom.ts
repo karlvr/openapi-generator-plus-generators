@@ -36,15 +36,8 @@ export function pom(ctx: JavaModelContext): string {
 		? `<jakarta.enterprise.version>${mavenVersion(maven, 'jakarta_enterprise', '3.0.1')}</jakarta.enterprise.version>`
 		: `<javax.enterprise.version>${mavenVersion(maven, 'javax_enterprise', '2.0.SP1')}</javax.enterprise.version>`
 
-	/*
-	 * The original template looked up `junit-jupiter.version` via `{{lookup maven.version
-	 * 'junit_jupiter' '5.7.2'}}` — `maven.version` (singular) is the project's own version
-	 * *string*, not the `maven.versions` lookup table, so that lookup always misses and
-	 * falls back to its default. Preserved verbatim here as a literal, rather than wired up
-	 * to `mavenVersion`, to keep this byte-identical with that (unconfigurable) behaviour.
-	 */
 	const testVersionProperties: string | Skip = when(includeTests, () => ts`
-<junit-jupiter.version>5.7.2</junit-jupiter.version>
+<junit-jupiter.version>${mavenVersion(maven, 'junit_jupiter', '5.7.2')}</junit-jupiter.version>
 ${useJakarta ? '<weld-junit5.version>5.0.3.Final</weld-junit5.version>' : '<weld-junit5.version>2.0.2.Final</weld-junit5.version>'}`)
 
 	const lombokVersionProperty: string | Skip = when(useLombok, () => `<lombok.version>${mavenVersion(maven, 'lombok', '1.18.46')}</lombok.version>`)

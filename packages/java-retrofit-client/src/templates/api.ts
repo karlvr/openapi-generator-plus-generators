@@ -44,31 +44,27 @@ function formParamDeclaration(parameter: CodegenParameter, ctx: JavaModelContext
 }
 
 /**
- * One parameter's declaration within an operation's method signature, followed by `, ` unless
- * it's the last parameter. Exactly one of the query/path/header/form annotations applies to any
- * given parameter — a cookie parameter matches none of them (Retrofit has no cookie-parameter
- * annotation) and so contributes only its trailing separator, producing a stray `", "` (or a
- * trailing one before the closing paren, if it's last) — matching the original template's
- * unconditional separator exactly.
+ * One parameter's declaration within an operation's method signature. Exactly one of the
+ * query/path/header/form annotations applies to any given parameter — a cookie parameter
+ * matches none of them (Retrofit has no cookie-parameter annotation) and renders nothing,
+ * so it is omitted from the signature entirely.
  */
-function parameterDeclaration(parameter: CodegenParameter, isLast: boolean, ctx: JavaModelContext): string {
-	const declaration = queryParamDeclaration(parameter, ctx)
+function parameterDeclaration(parameter: CodegenParameter, ctx: JavaModelContext): string {
+	return queryParamDeclaration(parameter, ctx)
 		|| pathParamDeclaration(parameter)
 		|| headerParamDeclaration(parameter, ctx)
 		|| formParamDeclaration(parameter, ctx)
-	return `${declaration}${isLast ? '' : ', '}`
 }
 
 /** The operation's full parameter list, as it appears within its method signature's parentheses. */
 function operationParameters(operation: CodegenOperation, ctx: JavaModelContext): string {
 	const parameters = operation.parameters ? idx.allValues(operation.parameters) : []
-	const parametersText = parameters.map((parameter, i) => parameterDeclaration(parameter, i === parameters.length - 1, ctx)).join('')
+	const declarations = parameters.map(parameter => parameterDeclaration(parameter, ctx)).filter(declaration => declaration !== '')
 
 	if (operation.requestBody?.nativeType) {
-		const bodySeparator = operation.parameters !== null ? ', ' : ''
-		return `${parametersText}${bodySeparator}@retrofit2.http.Body ${operation.requestBody.nativeType} ${operation.requestBody.name}`
+		declarations.push(`@retrofit2.http.Body ${operation.requestBody.nativeType} ${operation.requestBody.name}`)
 	}
-	return parametersText
+	return declarations.join(', ')
 }
 
 /**

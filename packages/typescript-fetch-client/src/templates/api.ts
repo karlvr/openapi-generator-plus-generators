@@ -144,7 +144,7 @@ function renderInterfaceMethod(generatorContext: CodegenGeneratorContext, op: Co
 	const gen = generatorContext.generator()
 	return ts`
 ${operationDocumentation(generatorContext, op)}
-${identifier(gen, op.name)}(${each(op.parameters, (p) => `${identifier(gen, p.name)}: ${p.nativeType}${p.required ? '' : ' | undefined'}, `)}options?: RequestInit): Promise<${op.returnNativeType ?? '{}'}>;
+${identifier(gen, op.name)}(${each(op.parameters, (p) => `${identifier(gen, p.name)}: ${p.nativeType}${p.required ? '' : ' | undefined'}, `)}${op.requestBody?.nativeType ? `${identifier(gen, op.requestBody.name)}: ${op.requestBody.nativeType}${op.requestBody.required ? '' : ' | undefined'}, ` : ''}options?: RequestInit): Promise<${op.returnNativeType ?? '{}'}>;
 `
 }
 

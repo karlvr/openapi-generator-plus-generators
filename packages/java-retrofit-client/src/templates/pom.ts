@@ -10,12 +10,6 @@ function mavenVersion(maven: MavenOptions, key: string, fallback: string): strin
 /**
  * This client's whole `pom.xml`: Retrofit, Jackson and (when enabled) bean-validation
  * dependencies.
- *
- * Ported faithfully from the original template, including one pre-existing defect: the
- * compiler plugin's `<configuration>` opening tag is written as `<>` (its closing tag is
- * intact), so the emitted `pom.xml` isn't well-formed XML. This generator's test suite only
- * checks generated file content and never runs `mvn test-compile`, so the defect has never
- * surfaced as a build failure; preserved here rather than silently fixed.
  */
 export function pom(ctx: JavaModelContext): string {
 	const maven = ctx.root.maven
@@ -100,6 +94,7 @@ ${useJakarta
 		<jackson.version>${mavenVersion(maven, 'jackson', '2.14.2')}</jackson.version>
 		${jakartaVersionProperties}
 		${validationVersionProperty}
+		${when(useLombok, () => `<lombok.version>${mavenVersion(maven, 'lombok', '1.18.46')}</lombok.version>`)}
 	</properties>
 
 	<dependencies>
@@ -144,7 +139,7 @@ ${useJakarta
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${mavenVersion(maven, 'maven-compiler-plugin', '3.14.1')}</version>
-				<>
+				<configuration>
 					<source>\${java.version}</source>
 					<target>\${java.version}</target>
 					${lombokAnnotationProcessor}

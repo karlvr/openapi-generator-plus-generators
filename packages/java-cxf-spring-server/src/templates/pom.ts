@@ -139,14 +139,9 @@ ${junitDependency}
 	<scope>provided</scope>
 </dependency>`)
 
-	/*
-	 * Unlike the other `includeTests`-gated blocks above, the original template gated this
-	 * purely on `junitVersion === 5` (not also on `includeTests`) — so it renders (referencing
-	 * the `junit-jupiter.version` property from the `includeTests` properties block above,
-	 * left undefined if that block didn't run) whenever `junitVersion` is 5, even without
-	 * tests. Preserved verbatim.
-	 */
-	const junitBomDependency: string | Skip = when(junitVersion === 5, () => ts`
+	/* Gated on `includeTests` as well as the JUnit version, since it references the
+	 * `junit-jupiter.version` property that only the `includeTests` properties block defines. */
+	const junitBomDependency: string | Skip = when(includeTests && junitVersion === 5, () => ts`
 <dependency>
 	<groupId>org.junit</groupId>
 	<artifactId>junit-bom</artifactId>

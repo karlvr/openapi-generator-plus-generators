@@ -34,8 +34,8 @@ package ${ctx.root.apiPackage};
 ${imports(ctx.root)}
 ${generatedAnnotation(ctx.root)}
 @${jx}.ws.rs.Path("")
-${when(group.consumes && group.consumes.length > 0, () => `@${jx}.ws.rs.Consumes({ ${each(group.consumes, c => `"${String(c)}"`, ', ')} })`)}
-${when(group.produces && group.produces.length > 0, () => `@${jx}.ws.rs.Produces({ ${each(group.produces, c => `"${String(c)}"`, ', ')} })`)}
+${when(group.consumes && group.consumes.length > 0, () => `@${jx}.ws.rs.Consumes({ ${each(group.consumes, c => `"${c.mediaType}"`, ', ')} })`)}
+${when(group.produces && group.produces.length > 0, () => `@${jx}.ws.rs.Produces({ ${each(group.produces, p => `"${p.mediaType}"`, ', ')} })`)}
 ${each(group.tags, tag => `@io.swagger.v3.oas.annotations.tags.Tag(name = ${stringLiteral(ctx.generatorContext, tag)})`, '\n')}
 public interface ${name}Api {
 
