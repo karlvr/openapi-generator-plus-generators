@@ -1,0 +1,47 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: 'anyOf members with required properties'
+paths: {}
+components:
+  schemas:
+    # Both members declare required properties, including primitives that a generator may type
+    # differently when required (`int` rather than `java.lang.Integer`, `Int` rather than `Int?`).
+    #
+    # `kind` is a string here and an integer in Circle, so the members are not suitable for
+    # interface conformance and Shape below simply absorbs them. That keeps this spec on the
+    # absorbing behaviour alone.
+    Rectangle:
+      type: object
+      required:
+        - width
+        - height
+        - kind
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+        kind:
+          type: string
+
+    Circle:
+      type: object
+      required:
+        - radius
+        - filled
+      properties:
+        radius:
+          type: integer
+        filled:
+          type: boolean
+        kind:
+          type: integer
+
+    # A single object absorbs both members, which makes every absorbed property optional, as only
+    # one member need match. Each property must therefore be declared with its optional type, not
+    # the type it was given while it was still required.
+    Shape:
+      anyOf:
+        - $ref: '#/components/schemas/Rectangle'
+        - $ref: '#/components/schemas/Circle'
