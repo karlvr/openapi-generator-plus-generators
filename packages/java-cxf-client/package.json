@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/java-cxf-client-generator",
-  "version": "3.3.5",
+  "version": "4.0.0",
   "description": "An OpenAPI Generator Plus template for a Java API client using CXF",
   "keywords": [
     "openapi-generator-plus",

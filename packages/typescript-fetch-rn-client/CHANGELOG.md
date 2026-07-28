@@ -1,5 +1,50 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 2.0.0
+
+### Major Changes
+
+- Replace Handlebars templates with TypeScript templates across every generator.
+
+  Templates are now TypeScript code built on the new
+  `@openapi-generator-plus/template-utils` package (the `ts` tagged template with
+  SKIP/when/maybe/each/join helpers), giving template development type-safety
+  against the codegen document model, ordinary code navigation and refactoring,
+  and testability. Generated output is byte-identical to the previous Handlebars
+  output (trailing whitespace on a line is no longer emitted), verified across
+  every generator's full test-spec corpus during the migration.
+
+  Breaking changes:
+
+  - The `customTemplates` config option is removed. Templates are TypeScript
+    code; generators are customized through their typed template and hook APIs
+    (for example `FetchClientHooks` in the fetch client generators, the
+    `JavaJaxrsTemplates` hook bag in the Java family, and
+    `PlainDocumentationHooks` in plain-documentation). Setting `customTemplates`
+    now logs a warning and has no effect.
+  - The Handlebars-based extension hooks are removed from the shared generator
+    contexts: `loadAdditionalTemplates`, `additionalWatchPaths` and
+    `additionalExportTemplates` in `typescript-generator-common` and
+    `java-jaxrs-generator-common`. Child generators supply typed templates via
+    the context `templates` bag and emit extra files via `exportFiles`.
+  - The `handlebars` and `@openapi-generator-plus/handlebars-templates`
+    dependencies are dropped from all of these packages.
+
+  Fixes:
+
+  - typescript-fetch-rn-client: generated `package.json` no longer contains a
+    trailing comma in `dependencies` (previously invalid JSON unless a
+    `blind-date` dependency followed).
+
+### Patch Changes
+
+- Updated dependencies [ea76fa7]
+- Updated dependencies
+  - @openapi-generator-plus/generator-common@1.8.1
+  - @openapi-generator-plus/template-utils@0.2.0
+  - @openapi-generator-plus/typescript-generator-common@2.0.0
+  - @openapi-generator-plus/typescript-fetch-client-generator@2.0.0
+
 ## 1.5.16
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/template-utils",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Utilities for openapi-generator-plus generators that emit source code from TypeScript template literals",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,5 +1,11 @@
 # @openapi-generator-plus/generator-common
 
+## 1.8.1
+
+### Patch Changes
+
+- ea76fa7: Upgrade core for anyOf property changing fix
+
 ## 1.8.0
 
 ### Minor Changes
