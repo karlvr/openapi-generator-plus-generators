@@ -1,0 +1,53 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: 'anyOf members whose interfaces the absorbing object cannot satisfy'
+paths: {}
+components:
+  schemas:
+    # These two members share no properties, so they are compatible and the object below both
+    # absorbs them and conforms to their interfaces. Both declare required primitives, which is
+    # where the conflict shows: an interface derived from Rectangle declares `width` as required.
+    Rectangle:
+      type: object
+      required:
+        - width
+        - height
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+
+    Circle:
+      type: object
+      required:
+        - radius
+        - filled
+      properties:
+        radius:
+          type: integer
+        filled:
+          type: boolean
+
+    # Absorbing the members makes every absorbed property optional, as only one member need match,
+    # but the object still conforms to the interfaces derived from those members, which declare
+    # those same properties as required.
+    #
+    # A generator where `required` is part of the type cannot satisfy both at once, so this spec
+    # does not currently produce code that compiles:
+    #
+    #   javac:  getWidth() in Shape cannot implement getWidth() in IRectangle
+    #           return type java.lang.Integer is not compatible with int
+    #   swiftc: type 'Shape' does not conform to protocol 'RectangleProtocol'
+    #           note: protocol requires property 'width' with type 'Int'
+    #
+    # Either the object should not claim conformance once absorbing has made its properties
+    # optional, or the interfaces it conforms to need to be derived with the optional types.
+    #
+    # Contrast any-of-required-properties.yml, whose members disagree on a property so that no
+    # conformance is claimed, and which does compile.
+    Shape:
+      anyOf:
+        - $ref: '#/components/schemas/Rectangle'
+        - $ref: '#/components/schemas/Circle'
