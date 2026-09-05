@@ -21,6 +21,13 @@ A binary value is a `string | Buffer`. Use
 The generated client exports a standalone function for each operation, such as `getPetById(id)`.
 Import only the function that you call. A bundler can then remove the rest.
 
+### Groups many parameters into an object
+
+An operation with more than one parameter takes a single object. Each member of the object has a
+name, so the order does not matter. A new parameter in the API specification does not move the other
+arguments. See
+[operation parameters](../typescript-fetch-client2#operation-parameters).
+
 ### Returns strongly-typed responses
 
 Each operation resolves with a discriminated union on the `status` field. The compiler makes you
@@ -49,6 +56,7 @@ generator templates.
 
 The generated client has the same shape as the client of
 [typescript-fetch-client2](../typescript-fetch-client2). See that template's README for
+[operation parameters](../typescript-fetch-client2#operation-parameters),
 [configuring the generated API client](../typescript-fetch-client2#configuring-the-generated-api-client),
 [error handling](../typescript-fetch-client2#error-handling) and
 [tree shaking](../typescript-fetch-client2#tree-shaking).

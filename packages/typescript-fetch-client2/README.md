@@ -14,6 +14,12 @@ The generated client exports a standalone function for each operation, such as `
 Import only the function that you call. A bundler can then remove the rest. See
 [Tree Shaking](#tree-shaking).
 
+### Groups many parameters into an object
+
+An operation with more than one parameter takes a single object. Each member of the object has a
+name, so the order does not matter. A new parameter in the API specification does not move the other
+arguments. See [Operation Parameters](#operation-parameters).
+
 ### Returns strongly-typed responses
 
 Each operation resolves with a discriminated union on the `status` field. The compiler makes you
@@ -53,6 +59,51 @@ a date-time. Use the native `Date`, use a `string`, or use the
 
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
 generator templates.
+
+### Operation Parameters
+
+An operation with more than one parameter takes a single object as its first argument:
+
+```ts
+import { getCompetitions } from './generated-client/api/competitions'
+
+const response = await getCompetitions({ limit: 20, areaId })
+```
+
+The generated client declares an interface for that object in the namespace of the operation group.
+A member is optional if the API specification does not make the parameter required:
+
+```ts
+namespace CompetitionsApi {
+	export interface GetCompetitionsParameters {
+		areaId?: string
+		sportId?: string
+		limit: number
+	}
+}
+```
+
+Import the group to refer to the interface. Use `import type` to keep the group out of your
+JavaScript bundle. See [Tree Shaking](#tree-shaking).
+
+```ts
+import type CompetitionsApi from './generated-client/api/competitions'
+
+function makeParameters(areaId: string): CompetitionsApi.GetCompetitionsParameters {
+	return { limit: 20, areaId }
+}
+```
+
+An operation with one parameter takes that parameter directly, such as `getPetById(petId)`.
+
+A request body is always a separate argument. It comes after the parameters:
+
+```ts
+const response = await createPet({ dryRun: true }, pet)
+```
+
+The optional `RequestInit` and `Configuration` arguments come last. See
+[Configuring the Generated API Client](#configuring-the-generated-api-client).
 
 ### Configuring the Generated API Client
 
