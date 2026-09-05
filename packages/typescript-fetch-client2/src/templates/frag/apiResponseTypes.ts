@@ -3,6 +3,15 @@ import { ts, each, className, stringLiteral, isContentJson, isBinary, isString }
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { AnnotatedOperation } from '../types'
 
+/**
+ * Report whether an operation that has a catch-all response can still produce an undocumented
+ * response. A catch-all response covers every status code, but it covers only the content types
+ * that it documents. A response with any other content type stays undocumented.
+ */
+export function catchAllNeedsUndocumentedResponse(op: CodegenOperation): boolean {
+	return !!op.catchAllResponse?.contents
+}
+
 export function apiResponseTypes(generatorContext: CodegenGeneratorContext, op: AnnotatedOperation): string {
 	const responseTypeName = `${className(generatorContext.generator(), op.name)}Response`
 	const unionMembers = collectUnionMembers(generatorContext, op)
@@ -11,6 +20,8 @@ export function apiResponseTypes(generatorContext: CodegenGeneratorContext, op: 
 		if (op.addUnauthorizedResponseHandling) {
 			trailingMembers.push('UnauthorizedResponse')
 		}
+		trailingMembers.push('UndocumentedResponse')
+	} else if (catchAllNeedsUndocumentedResponse(op)) {
 		trailingMembers.push('UndocumentedResponse')
 	}
 	trailingMembers.push('FetchErrorResponse')

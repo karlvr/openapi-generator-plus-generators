@@ -6,7 +6,7 @@ import { parameter as renderParameter } from './frag/parameter'
 import { validateParameter } from './frag/validateParameter'
 import { apiSecurityRequirements } from './frag/apiSecurityRequirements'
 import { apiParametersInterface } from './frag/apiParametersInterface'
-import { apiResponseTypes } from './frag/apiResponseTypes'
+import { apiResponseTypes, catchAllNeedsUndocumentedResponse } from './frag/apiResponseTypes'
 import { requestParameter, isPresentCondition } from './frag/requestParameter'
 import { multipartProperty, multipartPartCanBeNull } from './frag/multipartProperty'
 import { operationDocumentation } from './frag/operationDocumentation'
@@ -211,6 +211,13 @@ if (mimeType === ${stringLiteral(generatorContext, content.mediaType.mimeType)})
 }`, '\n')
 		: responseFn(null, response)
 
+	const undocumentedReturn = ts`
+return {
+	status: 'undocumented',
+	contentType: mimeType,
+	response,
+}`
+
 	return ts`
 ${each(op.responses, (response: CodegenResponse) => when(!response.isCatchAll, () => ts`
 if (response.status === ${String(response.code)}) {
@@ -218,7 +225,10 @@ if (response.status === ${String(response.code)}) {
 }`), '\n')}
 ${op.catchAllResponse ? ts`
 /* Catch-all response */
-${contentBranches(op.catchAllResponse)}` : ts`
+${contentBranches(op.catchAllResponse)}${when(catchAllNeedsUndocumentedResponse(op), () => ts`
+
+/* The response has a content type that the catch-all response does not document. */
+${undocumentedReturn}`)}` : ts`
 
 ${when(op.addUnauthorizedResponseHandling, () => `if (response.status === 401) {
 	return {
@@ -227,11 +237,7 @@ ${when(op.addUnauthorizedResponseHandling, () => `if (response.status === 401) {
 	}
 }
 `)}
-return {
-	status: 'undocumented',
-	contentType: mimeType,
-	response,
-}`}`
+${undocumentedReturn}`}`
 }
 
 /**
