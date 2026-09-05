@@ -1,0 +1,10 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: Example
+paths: {}
+components:
+  schemas:
+    MyEnum:
+      type: string
+      enum: ["my value", "another value"]

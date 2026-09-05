@@ -46,7 +46,7 @@ The available config file properties are:
 |`timeImplementation`|`string`|Time type class.|`"java.time.LocalTime"`|
 |`dateTimeImplementation`|`string`|Date time type class.|`"java.time.OffsetDateTime"`|
 |`binaryRepresentation`|`string`|Binary data representation.|`"byte[]"`|
-|`constantStyle`|`"allCapsSnake"` \| `"allCaps"` \| `"camelCase"` \| `"pascalCase"`|The style to use for constant naming.|`"allCapsSnake"`|
+|`constantStyle`|`"allCapsSnake"` \| `"allCaps"` \| `"camelCase"` \| `"pascalCase"`|The style to use for constant names, i.e. `MY_CONSTANT`, `MYCONSTANT`, `myConstant` or `MyConstant`. Constant names are used for enum member names, if `enumMemberStyle` is `constant`.|`"allCapsSnake"`|
 |`enumMemberStyle`|`"preserve"` \| `"constant"`|The style to use for enum member names: `preserve` _attempts_ to match the enum member name to the literal enum value from the spec; `constant` uses the `constantStyle` rules.|`"constant"`|
 |`apiClassPrefix`|`string`|Apply a prefix to all API interface and implementation class names.|`undefined`|
 |`modelClassPrefix`|`string`|Apply a prefix to all model class names.|`undefined`|

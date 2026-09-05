@@ -1,5 +1,5 @@
 import { CodegenGenerator, CodegenSchemaType, CodegenConfig, CodegenGeneratorContext, CodegenSchemaPurpose } from '@openapi-generator-plus/types'
-import { pascalCase, camelCase, configString } from '@openapi-generator-plus/generator-common'
+import { pascalCase, camelCase, configEnum, configString } from '@openapi-generator-plus/generator-common'
 import { constantCase } from 'change-case'
 import { commonGenerator } from '@openapi-generator-plus/generator-common'
 
@@ -37,22 +37,43 @@ export function identifierCamelCase(value: string): string {
 	return identifierSafe(camelCase(identifierSafe(value)))
 }
 
-export const enum ConstantStyle {
-	allCapsSnake = 'snake',
+/**
+ * The style to use to name constants, such as `MY_CONSTANT` or `myConstant`.
+ */
+export enum ConstantStyle {
+	/** All capitals, with words separated by underscores, e.g. `MY_CONSTANT` */
+	allCapsSnake = 'allCapsSnake',
+	/** All capitals, with no separator between words, e.g. `MYCONSTANT` */
 	allCaps = 'allCaps',
+	/** Camel case, e.g. `myConstant` */
 	camelCase = 'camelCase',
+	/** Pascal case, e.g. `MyConstant` */
 	pascalCase = 'pascalCase',
+}
+
+/**
+ * Names for `ConstantStyle` values that earlier releases accepted. These names are deprecated.
+ */
+const deprecatedConstantStyles: Record<string, ConstantStyle> = {
+	snake: ConstantStyle.allCapsSnake,
 }
 
 /**
  * The style to use to name enum members. The name of enum members is important in Java languages as the enum member
  * name is used, e.g. `enum.name()` and `EnumType.valueOf(String)`.
  */
-export const enum EnumMemberStyle {
+export enum EnumMemberStyle {
 	/** Try to preserve the enum value from the specification in the enum entry name */
 	preserve = 'preserve',
 	/** Match the constant style */
-	constant = 'contant',
+	constant = 'constant',
+}
+
+/**
+ * Names for `EnumMemberStyle` values that earlier releases accepted. These names are deprecated.
+ */
+const deprecatedEnumMemberStyles: Record<string, EnumMemberStyle> = {
+	contant: EnumMemberStyle.constant,
 }
 
 export interface JavaLikeOptions {
@@ -76,8 +97,8 @@ export function options(config: CodegenConfig, context: JavaLikeContext): JavaLi
 		enumClassSuffix: configString(config, 'enumClassSuffix', undefined),
 		nestedModelClassPrefix: configString(config, 'nestedModelClassPrefix', undefined),
 		nestedEnumClassPrefix: configString(config, 'nestedEnumClassPrefix', undefined),
-		constantStyle: configString(config, 'constantStyle', context.defaultConstantStyle) as ConstantStyle,
-		enumMemberStyle: configString(config, 'enumMemberStyle', context.defaultEnumMemberStyle) as EnumMemberStyle,
+		constantStyle: configEnum(config, 'constantStyle', ConstantStyle, context.defaultConstantStyle, deprecatedConstantStyles),
+		enumMemberStyle: configEnum(config, 'enumMemberStyle', EnumMemberStyle, context.defaultEnumMemberStyle, deprecatedEnumMemberStyles),
 	}
 	return result
 }
@@ -134,7 +155,7 @@ export function javaLikeGenerator(config: CodegenConfig, context: JavaLikeContex
 				case ConstantStyle.pascalCase:
 					return applyReservedWords(name, input => identifierSafe(pascalCase(identifierSafe(input))))
 				default:
-					throw new Error(`Invalid valid for constantStyle: ${constantStyle}`)
+					throw new Error(`Unsupported constantStyle: ${constantStyle}`)
 			}
 		},
 		toSchemaName: (name, options) => {

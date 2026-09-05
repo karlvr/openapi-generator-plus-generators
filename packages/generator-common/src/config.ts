@@ -76,3 +76,32 @@ export function configObject<T extends Record<string, unknown> | null | undefine
 	}
 	return value as Record<string, unknown>
 }
+
+/**
+ * Extract a config value that must be one of a fixed set of names.
+ *
+ * Use this for an option that accepts a fixed set of names, such as a style or a mode. If the
+ * config contains a name that is not valid, this function throws an error that names the valid
+ * values.
+ * @param values an object that contains the valid values, such as a string enum
+ * @param aliases additional accepted names, each mapped to the value that it means. Use this to
+ *   continue to accept a deprecated name.
+ */
+export function configEnum<T extends string, D extends T | null | undefined>(config: { [name: string]: unknown }, key: string, values: Record<string, T>, defaultValue: D, aliases: Record<string, T> = {}, path = ''): T | D {
+	const value = configString(config, key, undefined, path)
+	if (value === undefined) {
+		return defaultValue
+	}
+
+	const validValues = Object.values(values)
+	if (validValues.indexOf(value as T) !== -1) {
+		return value as T
+	}
+
+	const alias = aliases[value]
+	if (alias !== undefined) {
+		return alias
+	}
+
+	throw new Error(`Invalid value "${value}" for config key "${path}${key}". Valid values are: ${validValues.join(', ')}`)
+}
