@@ -67,6 +67,15 @@ export function isContentMultipart(content: CodegenContent): boolean {
 	return !!content && /^multipart\//.test(content.mediaType.mimeType)
 }
 
+/**
+ * Whether the content is multipart form data, exactly. Use this when the distinction
+ * from the other multipart media types matters, as it does when a `FormData` body
+ * makes the runtime choose the `Content-Type` header.
+ */
+export function isContentMultipartFormData(content: CodegenContent): boolean {
+	return !!content && content.mediaType.mimeType === 'multipart/form-data'
+}
+
 /** Whether the content is form-url-encoded. */
 export function isContentFormUrlEncoded(content: CodegenContent): boolean {
 	return !!content && content.mediaType.mimeType === 'application/x-www-form-urlencoded'

@@ -1,5 +1,5 @@
 import { CodegenArraySchema, CodegenGeneratorContext, CodegenObjectSchema, CodegenOperationGroup, CodegenParameter, CodegenRequestBody, CodegenResponse, CodegenContent } from '@openapi-generator-plus/types'
-import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip, when, maybe, indent } from '@openapi-generator-plus/template-utils'
+import { ts, each, identifier, className, stringLiteral, isContentJson, isContentMultipart, isContentMultipartFormData, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip, when, maybe, indent } from '@openapi-generator-plus/template-utils'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { header } from './header'
 import { parameter as renderParameter } from './frag/parameter'
@@ -157,7 +157,7 @@ ${when(parameterCount(op.cookieParams) > 0, () => `${each(op.cookieParams, (p) =
 	/* NB: setting Cookies does not work in a browser, see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name */
 	localVarHeaderParameter.set("Cookie", localVarCookieParams.toString().replace(/&/g, "; "));
 `)}
-${maybe(op.requestBody, rb => `${renderRequestBodyContentTypeBlock(rb)}\n`)}
+${renderRequestBodyContentTypeBlock(op.requestBody)}
 	localVarRequestOptions.headers = localVarHeaderParameter;
 ${when(parameterCount(op.formParams) > 0, '\tlocalVarRequestOptions.body = localVarFormParams.toString();')}
 ${renderRequestBodyEncodingBlock(generatorContext, ctx, op)}
@@ -257,12 +257,25 @@ if (!localVarHeaderParameter.has('Accept')) {
 }`
 }
 
-function renderRequestBodyContentTypeBlock(rb: CodegenRequestBody): string {
+/**
+ * Render the Content-Type header for an operation's request body.
+ *
+ * Renders nothing when the operation has no request body, and nothing for a
+ * `multipart/form-data` request body. That body is a `FormData`, and the runtime derives
+ * the header from it, including the `boundary` parameter that a multipart parser needs.
+ * An explicit header would suppress that and lose the boundary.
+ *
+ * The block ends with a blank line, which separates it from the statements that follow.
+ */
+function renderRequestBodyContentTypeBlock(rb: CodegenRequestBody | null | undefined): string | Skip {
+	if (!rb || isContentMultipartFormData(rb.defaultContent)) {
+		return SKIP
+	}
 	const consumes = rb.consumes
 	if (consumes && consumes.length > 0) {
-		return `\tlocalVarHeaderParameter.set('Content-Type', '${consumes[0].mediaType}');`
+		return `\tlocalVarHeaderParameter.set('Content-Type', '${consumes[0].mediaType}');\n`
 	}
-	return '\tlocalVarHeaderParameter.set(\'Content-Type\', \'application/json\');'
+	return '\tlocalVarHeaderParameter.set(\'Content-Type\', \'application/json\');\n'
 }
 
 function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateContext, op: AnnotatedOperation): string | Skip {
