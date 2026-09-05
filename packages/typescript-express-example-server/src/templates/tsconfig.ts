@@ -10,7 +10,7 @@ export function tsconfig(ctx: TemplateRootContext & TypeScriptOptions): string {
 		"target": "${ctx.target}",
 		"module": "commonjs",
 		"esModuleInterop": true,
-		"noImplicitAny": true,
+		"strict": true,
 		"outDir": "dist",
 		"lib": [
 ${libsBlock}

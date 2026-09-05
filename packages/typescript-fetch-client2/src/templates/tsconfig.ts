@@ -9,7 +9,7 @@ export function tsconfig(ctx: TemplateRootContext & TypeScriptOptions): string {
 		"declaration": true,
 		"target": "${ctx.target}",
 		"module": "commonjs",
-		"noImplicitAny": true,
+		"strict": true,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"outDir": "dist",
