@@ -60,6 +60,18 @@ const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 		tsconfig,
 	}
 
+	const chainedCleanPathPatterns = myContext.additionalCleanPathPatterns
+	myContext.additionalCleanPathPatterns = () => {
+		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
+		return [
+			...(chainedCleanPathPatterns ? chainedCleanPathPatterns() : []),
+			/* We emit one file per operation group, so the clean step must delete the file of a group that no longer exists */
+			path.join(relativeSourceOutputPath, 'api', '*.ts'),
+			/* Delete the directory too, if the API has no operation groups */
+			path.join(relativeSourceOutputPath, 'api'),
+		]
+	}
+
 	myContext.exportFiles = async(outputPath, doc, rootContext) => {
 		const root = rootContext as RootContext
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath

@@ -47,6 +47,17 @@ export interface TypeScriptGeneratorContext extends CodegenGeneratorContext {
 	 * emitted from {@link templates}.
 	 */
 	exportFiles?: (outputPath: string, doc: CodegenDocument, rootContext: TemplateRootContext) => Promise<void>
+	/**
+	 * Return file patterns, relative to the output path, for the generator-specific files
+	 * emitted from {@link exportFiles}. The patterns must only match files that every
+	 * generation replaces, because the clean step deletes a matched file that the current
+	 * generation did not write.
+	 *
+	 * Use this when {@link exportFiles} emits a file per document element, such as a file
+	 * per operation group. The clean step then removes the file of an element that the API
+	 * specification no longer contains.
+	 */
+	additionalCleanPathPatterns?: () => string[]
 }
 
 export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext, add: Partial<TypeScriptGeneratorContext>): TypeScriptGeneratorContext {
@@ -62,6 +73,13 @@ export function chainTypeScriptGeneratorContext(base: TypeScriptGeneratorContext
 			if (add.exportFiles) {
 				await add.exportFiles(outputPath, doc, rootContext)
 			}
+		},
+		/* Every generator in the chain contributes its own patterns, as each one emits its own files. */
+		additionalCleanPathPatterns: function() {
+			return [
+				...(base.additionalCleanPathPatterns ? base.additionalCleanPathPatterns() : []),
+				...(add.additionalCleanPathPatterns ? add.additionalCleanPathPatterns() : []),
+			]
 		},
 		defaultNpmOptions: function(config, defaultOptions) {
 			let result: NpmOptions = defaultOptions
@@ -459,7 +477,10 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 
 		watchPaths: () => undefined,
 
-		cleanPathPatterns: () => undefined,
+		cleanPathPatterns: () => {
+			const result = context.additionalCleanPathPatterns ? context.additionalCleanPathPatterns() : []
+			return result.length ? result : undefined
+		},
 
 		templateRootContext: () => {
 			return {
