@@ -3,9 +3,51 @@
 An [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) template for a TypeScript API client using Fetch in a Browser
 with support for multiple strongly-typed responses.
 
-This client generator supercedes the [typescript-fetch-client-generator](../typescript-fetch-client)
+This template supersedes [typescript-fetch-client](../typescript-fetch-client). The generated code
+is not backwards compatible with the code of the earlier template.
 
-For an API client to use in Node applications, see [typescript-fetch-node-client-generator](../typescript-fetch-node-client).
+## Features
+
+### Exports one function per operation
+
+The generated client exports a standalone function for each operation, such as `getPetById(id)`.
+Import only the function that you call. A bundler can then remove the rest. See
+[Tree Shaking](#tree-shaking).
+
+### Returns strongly-typed responses
+
+Each operation resolves with a discriminated union on the `status` field. The compiler makes you
+handle every response that the API specification documents. It also makes you handle an
+undocumented response, and an error. The operation does not throw. See
+[Error Handling](#error-handling).
+
+### Accepts configuration at three levels
+
+A `Configuration` holds the base URI, the `fetch` function and the authentication. Set a
+configuration at one of three levels:
+
+1. A default configuration for the whole client.
+2. A configuration for one group of operations.
+3. A configuration for a single call.
+
+See [Configuring the Generated API Client](#configuring-the-generated-api-client).
+
+### Accepts your own `fetch`
+
+The generated client calls the `fetch` function from its `Configuration`. Supply your own
+implementation for a request-scoped `fetch`. Supply one also to add a retry, a timeout or a request
+log. See [Supplying your own `fetch`](#supplying-your-own-fetch).
+
+### Puts the models in a namespace
+
+The generated models use a TypeScript namespace. The `apiNamespace` config file property sets its
+name. A nested model keeps the shape of the API specification.
+
+### Represents dates and times in three ways
+
+The `dateApproach` config file property sets how the generated client represents a date, a time and
+a date-time. Use the native `Date`, use a `string`, or use the
+[`blind-date`](https://npmjs.com/blind-date) library.
 
 ## Using
 
@@ -39,6 +81,56 @@ the default configuration for specific groups of endpoints:
 3. Overriding configuration on a per-endpoint basis can be done by passing a configuration object as
 the final parameter to an endpoint functions. This configuration is used instead of the default 
 configuration.
+
+### Supplying your own `fetch`
+
+The generated client calls the `fetch` function from its `Configuration`. Set the `fetch` property
+to supply your own implementation. The function must match the generated `FetchAPI` type:
+
+```ts
+export type FetchAPI = (url: string, init?: RequestInit) => Promise<Response>;
+```
+
+Set your `fetch` as the default for every call:
+
+```ts
+import { Configuration, setDefaultConfiguration } from './generated-client'
+
+setDefaultConfiguration(new Configuration({ fetch: myFetch }))
+```
+
+Pass a `Configuration` as the last argument to set the `fetch` function for a single call. This
+suits a request-scoped `fetch`, such as one that a server framework gives to a request handler:
+
+```ts
+import { Configuration, getDefaultConfiguration } from './generated-client'
+import { getPetById } from './generated-client/api/pet'
+
+const configuration = new Configuration({ ...getDefaultConfiguration(), fetch: myFetch })
+const response = await getPetById(petId, undefined, configuration)
+```
+
+The `undefined` argument is the optional `RequestInit`.
+
+> [!NOTE]
+> A new `Configuration` does not inherit the default configuration. The example above spreads
+> `getDefaultConfiguration()` to keep the base URI and the authentication of the default
+> configuration.
+
+Use `withConfiguration(...)` to set the `fetch` function for a group of operations. See
+[Configuring the Generated API Client](#configuring-the-generated-api-client) above.
+
+A custom `fetch` can also add behaviour that the generated client does not provide. Add a retry, a
+timeout or a request log:
+
+```ts
+import type { FetchAPI } from './generated-client'
+
+const loggingFetch: FetchAPI = async (url, init) => {
+	console.log(`${init?.method ?? 'GET'} ${url}`)
+	return fetch(url, init)
+}
+```
 
 ### Error Handling
 
@@ -110,8 +202,7 @@ The available config file properties are:
 |`constantStyle`|`"allCapsSnake"` \| `"allCaps"` \| `"camelCase"` \| `"pascalCase"`|The style to use for constant names, i.e. `MY_CONSTANT`, `MYCONSTANT`, `myConstant` or `MyConstant`. Constant names are used for enum member names, if `enumMemberStyle` is `constant`.|`"pascalCase"`|
 |`enumMemberStyle`|`"preserve"` \| `"constant"`|The style to use for enum member names: `preserve` _attempts_ to match the enum member name to the literal enum value from the spec; `constant` uses the `constantStyle` rules.|`"constant"`|
 |`dateApproach`|`"native"\|"string"\|"blind-date"`|Whether to use `string` for date and time and `Date` for date-time, or just `string`, or whether to use [`blind-date`](https://npmjs.com/blind-date) for dates and times.|`native`|
-|`legacyUnnamespacedModelSupport`|`boolean`|Generate unnamespaced versions of the models.|`false`|
-|`includePolyfills`|`boolean`|Include polyfills for features that browsers might not support or support well.|`true`|
+|`includePolyfills`|`boolean`|Include polyfills for features that browsers might not support or support well. The `fetch` polyfill is [`whatwg-fetch`](https://npmjs.com/whatwg-fetch), and it replaces the global `fetch`. Set this to `false` if your environment already provides `fetch`.|`true`|
 |`esm`|`boolean`|Whether to output ESM-style code.|`false`|
 |`apiNamespace`|`string`|The name of the TypeScript namespace used to export all models.|`"Api"`|
 
@@ -143,7 +234,7 @@ A `tsconfig.json` file will be output if you specify any of the TypeScript confi
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`target`|`string`|The ECMAScript target version.|`ES5`|
-|`lib`|`string[]`|An array of `libs` to use in `tsconfig.json`|The appropriate lib for the `target` + `'DOM'`|
+|`libs`|`string[]`|The `lib` entries to use in `tsconfig.json`. The value `$target` expands to the `target`.|The `target`, plus `DOM` and `ES2021.String`.|
 
 ### Packaging
 

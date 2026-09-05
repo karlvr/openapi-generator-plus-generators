@@ -28,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
   },
-  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-client#readme",
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-client2#readme",
   "dependencies": {
     "@openapi-generator-plus/generator-common": "workspace:*",
     "@openapi-generator-plus/template-utils": "workspace:*",

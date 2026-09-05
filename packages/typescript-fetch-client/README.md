@@ -1,12 +1,99 @@
 # TypeScript Fetch Browser API generator for OpenAPI Generator Plus
 
 An [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) template for a TypeScript API client using Fetch in a Browser.
-For an API client to use in Node applications, see [typescript-fetch-node-client-generator](https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/typescript-fetch-node-client).
+
+> [!NOTE]
+> [typescript-fetch-client2](../typescript-fetch-client2) supersedes this template. Use that
+> template for a new project. This template stays available. An existing project does not have to
+> migrate.
+
+## Features
+
+### Exports one API class per operation group
+
+The generated client exports an API class for each group of operations, such as
+`new PetApi(configuration)`. It also exports a factory function and a functional form of each group.
+Use one of those if you prefer a function to a class.
+
+### Parses the response body
+
+Each operation resolves with the parsed body of the default response. The generated client reads a
+JSON body, a text body and a binary body. It throws the `Response` for every other documented
+response.
+
+### Accepts your own `fetch`
+
+Each API class takes a `fetch` function. Supply your own implementation for a request-scoped
+`fetch`. Supply one also to add a retry, a timeout or a request log. See
+[Supplying your own `fetch`](#supplying-your-own-fetch).
+
+### Generates an optional interface per API class
+
+Set the `withInterfaces` config file property to generate an interface for each API class. Each
+class implements its interface. Use the interface for a test double.
+
+### Puts the models in a namespace
+
+The generated models use a TypeScript namespace. The `apiNamespace` config file property sets its
+name. A nested model keeps the shape of the API specification.
+
+### Represents dates and times in three ways
+
+The `dateApproach` config file property sets how the generated client represents a date, a time and
+a date-time. Use the native `Date`, use a `string`, or use the
+[`blind-date`](https://npmjs.com/blind-date) library.
 
 ## Using
 
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
 generator templates.
+
+### Supplying your own `fetch`
+
+Each generated API class takes a `fetch` function as its third constructor argument. The function
+must match the generated `FetchAPI` type:
+
+```ts
+export type FetchAPI = (url: string, init?: RequestInit) => Promise<Response>;
+```
+
+```ts
+import { PetApi, Configuration } from './generated-client'
+
+const api = new PetApi(new Configuration({ /* ... */ }), undefined, myFetch)
+```
+
+The second argument is the base path. Pass `undefined` to keep the base path from the API
+specification, or from the `Configuration`.
+
+The generated factory function takes the same three arguments:
+
+```ts
+import { PetApiFactory } from './generated-client'
+
+const api = PetApiFactory(configuration, undefined, myFetch)
+```
+
+The generated functional form takes the `fetch` function in the returned function. This suits a
+request-scoped `fetch`, such as one that a server framework gives to a request handler:
+
+```ts
+import { PetApiFp } from './generated-client'
+
+const pet = await PetApiFp(configuration).getPetById(petId)(myFetch)
+```
+
+A custom `fetch` can also add behaviour that the generated client does not provide. Add a retry, a
+timeout or a request log:
+
+```ts
+import type { FetchAPI } from './generated-client'
+
+const loggingFetch: FetchAPI = async (url, init) => {
+	console.log(`${init?.method ?? 'GET'} ${url}`)
+	return fetch(url, init)
+}
+```
 
 ## Config file
 
@@ -26,7 +113,8 @@ The available config file properties are:
 |`enumMemberStyle`|`"preserve"` \| `"constant"`|The style to use for enum member names: `preserve` _attempts_ to match the enum member name to the literal enum value from the spec; `constant` uses the `constantStyle` rules.|`"constant"`|
 |`dateApproach`|`"native"\|"string"\|"blind-date"`|Whether to use `string` for date and time and `Date` for date-time, or just `string`, or whether to use [`blind-date`](https://npmjs.com/blind-date) for dates and times.|`native`|
 |`legacyUnnamespacedModelSupport`|`boolean`|Generate unnamespaced versions of the models.|`false`|
-|`includePolyfills`|`boolean`|Include polyfills for features that browsers might not support or support well.|`true`|
+|`withInterfaces`|`boolean`|Generate an interface for each API class, which the class implements.|`false`|
+|`includePolyfills`|`boolean`|Include polyfills for features that browsers might not support or support well. The `fetch` polyfill is [`whatwg-fetch`](https://npmjs.com/whatwg-fetch), and it replaces the global `fetch`. Set this to `false` if your environment already provides `fetch`.|`true`|
 |`esm`|`boolean`|Whether to output ESM-style code.|`false`|
 |`apiNamespace`|`string`|The name of the TypeScript namespace used to export all models.|`"Api"`|
 
@@ -58,7 +146,7 @@ A `tsconfig.json` file will be output if you specify any of the TypeScript confi
 |Property|Type|Description|Default|
 |--------|----|-----------|-------|
 |`target`|`string`|The ECMAScript target version.|`ES5`|
-|`lib`|`string[]`|An array of `libs` to use in `tsconfig.json`|The appropriate lib for the `target` + `'DOM'`|
+|`libs`|`string[]`|The `lib` entries to use in `tsconfig.json`. The value `$target` expands to the `target`.|The `target`, plus `DOM` and `ES2021.String`.|
 
 ### Packaging
 
