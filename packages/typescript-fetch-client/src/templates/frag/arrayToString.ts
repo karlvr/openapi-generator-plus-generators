@@ -15,5 +15,7 @@ export function arrayToString(args: ArrayToStringArgs): string {
 	const { value, separator, parameter, dateApproach, generatorContext } = args
 	const component = (parameter.schema as CodegenArraySchema).component
 	const inner = schemaToString({ value: 'localVarArrayMapElement', schema: component, dateApproach })
-	return `${value}.map(localVarArrayMapElement => escape(${inner})).join(${stringLiteral(generatorContext, separator)})`
+	/* A null element has no serialized form, so it becomes an empty string, as elsewhere. */
+	const element = component.nullable ? `localVarArrayMapElement !== null ? ${inner} : ''` : inner
+	return `${value}.map(localVarArrayMapElement => escape(${element})).join(${stringLiteral(generatorContext, separator)})`
 }

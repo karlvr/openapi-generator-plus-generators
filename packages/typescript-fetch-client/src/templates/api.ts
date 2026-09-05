@@ -1,11 +1,11 @@
-import { CodegenGeneratorContext, CodegenObjectSchema, CodegenOperation, CodegenOperationGroup, CodegenParameter, CodegenRequestBody, CodegenResponse, CodegenContent, CodegenSecurityScheme, CodegenAuthScope } from '@openapi-generator-plus/types'
+import { CodegenArraySchema, CodegenGeneratorContext, CodegenObjectSchema, CodegenOperation, CodegenOperationGroup, CodegenParameter, CodegenRequestBody, CodegenResponse, CodegenContent, CodegenSecurityScheme, CodegenAuthScope } from '@openapi-generator-plus/types'
 import { ts, each, identifier, className, stringLiteral, capitalize, isContentJson, isContentMultipart, isContentFormUrlEncoded, isArray, allProperties, SKIP, Skip, when, maybe, indent } from '@openapi-generator-plus/template-utils'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { header } from './header'
 import { parameter as renderParameter } from './frag/parameter'
 import { validateParameter } from './frag/validateParameter'
-import { requestParameter } from './frag/requestParameter'
-import { multipartProperty } from './frag/multipartProperty'
+import { requestParameter, isPresentCondition } from './frag/requestParameter'
+import { multipartProperty, multipartPartCanBeNull } from './frag/multipartProperty'
 import { operationDocumentation } from './frag/operationDocumentation'
 import { apiResponseContent as defaultApiResponseContent, canParseContent } from './frag/apiResponseContent'
 import { DateApproach, acceptMediaTypes } from '@openapi-generator-plus/typescript-generator-common'
@@ -359,12 +359,12 @@ function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContex
 		inner = ts`
 const localVarFormParams = new URLSearchParams();
 ${each(allProperties(rb.schema as CodegenObjectSchema), (p) => requestParameter({
-			parameter: { ...p, encoding: dc.encoding ? idx.get(dc.encoding.properties, p.name) ?? null : null },
-			dest: 'localVarFormParams',
-			var: `${id}["${p.serializedName}"]`,
-			dateApproach: ctx.dateApproach,
-			generatorContext,
-		}), '\n')}
+	parameter: { ...p, encoding: dc.encoding ? idx.get(dc.encoding.properties, p.name) ?? null : null },
+	dest: 'localVarFormParams',
+	var: `${id}["${p.serializedName}"]`,
+	dateApproach: ctx.dateApproach,
+	generatorContext,
+}), '\n')}
 localVarRequestOptions.body = localVarFormParams;`
 	} else if (isContentJson(dc)) {
 		inner = `localVarRequestOptions.body = JSON.stringify(${id} || {});`
@@ -372,20 +372,31 @@ localVarRequestOptions.body = localVarFormParams;`
 		inner = ts`
 const localVarFormData = new FormData();
 ${each(dc.encoding?.properties, (encProp) => {
-			const propName = encProp.property.serializedName
-			if (isArray(encProp.property)) {
-				return ts`
-if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
-	for (const __anObject of ${id}.${identifier(gen, encProp.property.name)}${encProp.property.nullable ? ' || []' : ''}) {
-		${multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext })}
+	const propName = encProp.property.serializedName
+	const access = `${id}[${stringLiteral(generatorContext, propName)}]`
+	/* A null array has no parts to iterate, and a binary part has no null form. Every other part
+	   encodes null itself, so it keeps the weaker guard and stays distinct from an absent part. */
+	const present = isArray(encProp.property) || !multipartPartCanBeNull(encProp)
+		? isPresentCondition(encProp.property, access)
+		: `${access} !== undefined`
+	if (isArray(encProp.property)) {
+		const component = (encProp.property.schema as CodegenArraySchema).component
+		const part = multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext })
+		return ts`
+if (${present}) {
+	for (const __anObject of ${id}.${identifier(gen, encProp.property.name)}) {
+		${component.nullable ? ts`
+if (__anObject !== null) {
+	${part}
+}` : part}
 	}
 }`
-			}
-			return ts`
-if (${id}[${stringLiteral(generatorContext, propName)}] !== undefined) {
-	${multipartProperty({ encoding: encProp, propertyVar: `${id}[${stringLiteral(generatorContext, propName)}]`, bodyPartsVar: 'localVarFormData', generatorContext })}
+	}
+	return ts`
+if (${present}) {
+	${multipartProperty({ encoding: encProp, propertyVar: access, bodyPartsVar: 'localVarFormData', generatorContext })}
 }`
-		}, '\n')}
+}, '\n')}
 localVarRequestOptions.body = localVarFormData;`
 	} else {
 		inner = `localVarRequestOptions.body = ${id};`

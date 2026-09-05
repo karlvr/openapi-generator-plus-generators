@@ -8,6 +8,15 @@ export interface MultipartPropertyArgs {
 	generatorContext: CodegenGeneratorContext
 }
 
+/**
+ * Report whether a multipart part can carry a null value. A JSON part encodes null directly. A
+ * text part encodes it as an empty string. A binary part has no null form, so the caller must
+ * omit it.
+ */
+export function multipartPartCanBeNull(encoding: CodegenContentPropertyEncoding): boolean {
+	return encoding.contentType !== 'application/octet-stream'
+}
+
 export function multipartProperty({ encoding, propertyVar, bodyPartsVar, generatorContext }: MultipartPropertyArgs): string {
 	const propLiteral = stringLiteral(generatorContext, encoding.property.serializedName)
 	const valueAccess = encoding.valueProperty

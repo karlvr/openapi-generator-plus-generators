@@ -1,0 +1,111 @@
+openapi: 3.0.1
+info:
+  title: Nullable parameters
+  description: Parameters that a spec marks as nullable, in each encoding style
+  version: "1.0"
+paths:
+  /scalar:
+    get:
+      parameters:
+        - name: nullableString
+          in: query
+          schema:
+            type: string
+            nullable: true
+        - name: nullableDateTime
+          in: query
+          schema:
+            type: string
+            format: date-time
+            nullable: true
+        - name: nullableRefDateTime
+          in: query
+          schema:
+            nullable: true
+            $ref: '#/components/schemas/ADateTime'
+        - name: requiredNullableString
+          in: query
+          required: true
+          schema:
+            type: string
+            nullable: true
+        - name: nullableHeader
+          in: header
+          schema:
+            type: string
+            nullable: true
+        - name: plainString
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+  /array:
+    get:
+      parameters:
+        - name: nullableArray
+          in: query
+          schema:
+            type: array
+            nullable: true
+            items:
+              type: string
+              format: date-time
+        - name: nullableArrayExplode
+          in: query
+          explode: true
+          schema:
+            type: array
+            nullable: true
+            items:
+              type: string
+        - name: nullableArrayPipe
+          in: query
+          style: pipeDelimited
+          schema:
+            type: array
+            nullable: true
+            items:
+              type: string
+      responses:
+        "200":
+          description: OK
+  /object:
+    get:
+      parameters:
+        - name: nullableObject
+          in: query
+          explode: false
+          schema:
+            nullable: true
+            $ref: '#/components/schemas/AnObject'
+        - name: nullableObjectExplode
+          in: query
+          explode: true
+          schema:
+            nullable: true
+            $ref: '#/components/schemas/AnObject'
+        - name: nullableObjectDeep
+          in: query
+          style: deepObject
+          schema:
+            nullable: true
+            $ref: '#/components/schemas/AnObject'
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    ADateTime:
+      type: string
+      format: date-time
+    AnObject:
+      type: object
+      properties:
+        name:
+          type: string
+        when:
+          type: string
+          format: date-time
+          nullable: true
