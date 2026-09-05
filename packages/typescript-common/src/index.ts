@@ -231,8 +231,9 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 	const createdSchemas = new Set()
 
 	const aCommonGenerator = commonGenerator(config, context)
+	const aBaseGenerator = context.baseGenerator(config, context)
 	return {
-		...context.baseGenerator(config, context),
+		...aBaseGenerator,
 		...aCommonGenerator,
 		...javaLikeGenerator(config, createJavaLikeContext(context)),
 		toLiteral: (value, options) => {
@@ -474,6 +475,21 @@ export default function createGenerator(config: CodegenConfig, context: TypeScri
 		nativeComposedSchemaRequiresName: () => false,
 		nativeComposedSchemaRequiresObjectLikeOrWrapper: () => false,
 		interfaceCanBeNested: () => true,
+
+		checkPropertyCompatibility: (parentProp, childProp) => {
+			if (!aBaseGenerator.checkPropertyCompatibility(parentProp, childProp)) {
+				return false
+			}
+
+			/* Because in TypeScript a nullable property adds `null` to the property's type union, a child
+			   property that is nullable is not assignable to a non-nullable parent property. A child that
+			   drops the nullability narrows the parent property, which stays compatible.
+			 */
+			if (childProp.nullable && !parentProp.nullable) {
+				return false
+			}
+			return true
+		},
 
 		watchPaths: () => undefined,
 
