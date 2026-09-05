@@ -10,7 +10,8 @@ import { apiResponseTypes } from './frag/apiResponseTypes'
 import { requestParameter } from './frag/requestParameter'
 import { multipartProperty } from './frag/multipartProperty'
 import { operationDocumentation } from './frag/operationDocumentation'
-import { apiResponseContent as defaultApiResponseContent } from './frag/apiResponseContent'
+import { apiResponseContent as defaultApiResponseContent, canParseContent } from './frag/apiResponseContent'
+import { acceptMediaTypes } from '@openapi-generator-plus/typescript-generator-common'
 import { AnnotatedOperation, DocumentContext, FetchClient2Hooks, RootContext } from './types'
 
 function parameterCount(coll: Record<string, unknown> | null | undefined): number {
@@ -148,6 +149,7 @@ ${when(parameterCount(op.cookieParams) > 0, '\tconst localVarCookieParams = new 
 	${apiSecurityRequirements(generatorContext, op)}
 ${each(op.queryParams, (p) => `${indent(appendParameter(p, 'localVarQueryParameter'), '\t')}\n`, '\n')}
 ${each(op.headerParams, (p) => `${indent(appendParameter(p, 'localVarHeaderParameter'), '\t')}\n`, '\n')}
+	${renderAcceptHeaderBlock(generatorContext, op)}
 ${when(parameterCount(op.formParams) > 0, () => `${each(op.formParams, (p) => `${indent(appendParameter(p, 'localVarFormParams'), '\t')}\n`, '\n')}
 	localVarHeaderParameter.set('Content-Type', 'application/x-www-form-urlencoded');
 `)}
@@ -230,6 +232,23 @@ return {
 	contentType: mimeType,
 	response,
 }`}`
+}
+
+/**
+ * Render the Accept header for an operation. The header lists the media types of the
+ * operation's default response that the client can parse, in spec order. A caller-supplied
+ * Accept header takes precedence. Renders nothing when the client can parse none of them.
+ */
+function renderAcceptHeaderBlock(generatorContext: CodegenGeneratorContext, op: AnnotatedOperation): string | Skip {
+	const mediaTypes = acceptMediaTypes(op, canParseContent)
+	if (mediaTypes.length === 0) {
+		return SKIP
+	}
+	const accept = mediaTypes.join(', ')
+	return ts`
+if (!localVarHeaderParameter.has('Accept')) {
+	localVarHeaderParameter.set('Accept', ${stringLiteral(generatorContext, accept)});
+}`
 }
 
 function renderRequestBodyContentTypeBlock(rb: CodegenRequestBody): string {

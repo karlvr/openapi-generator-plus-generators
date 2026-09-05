@@ -1,6 +1,6 @@
 import { CodegenOperation, CodegenOperationGroup, CodegenParameter } from '@openapi-generator-plus/types'
 import * as idx from '@openapi-generator-plus/indexed-type'
-import { ts, each, when, identifier, className } from '@openapi-generator-plus/template-utils'
+import { ts, each, when, identifier, className, stringLiteral, SKIP, Skip } from '@openapi-generator-plus/template-utils'
 import { JavaModelContext, imports, generatedAnnotation } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
 /** One query parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a query parameter. */
@@ -68,6 +68,46 @@ function operationParameters(operation: CodegenOperation, ctx: JavaModelContext)
 }
 
 /**
+ * Whether the operation declares an `Accept` header parameter. Header names are
+ * case-insensitive, so the comparison ignores case.
+ */
+function hasAcceptHeaderParameter(operation: CodegenOperation): boolean {
+	const parameters = operation.parameters ? idx.allValues(operation.parameters) : []
+	return parameters.some(parameter => parameter.isHeaderParam && parameter.name.toLowerCase() === 'accept')
+}
+
+/**
+ * The operation's Accept header annotation. The header lists the media types of the
+ * operation's default response, in spec order and without duplicates.
+ *
+ * The list is not filtered by what the client can parse. Retrofit parses through a converter
+ * factory that the caller supplies, so the generator cannot know what will succeed.
+ *
+ * SKIP when the default response declares no content. SKIP also when the operation declares
+ * an `Accept` header parameter: the caller then owns the header. Retrofit adds header
+ * parameters rather than replacing them, so both values would otherwise reach the server.
+ */
+function acceptHeaderAnnotation(operation: CodegenOperation, ctx: JavaModelContext): string | Skip {
+	if (hasAcceptHeaderParameter(operation)) {
+		return SKIP
+	}
+
+	const contents = operation.defaultResponse?.contents
+	if (!contents || contents.length === 0) {
+		return SKIP
+	}
+
+	const mimeTypes: string[] = []
+	for (const content of contents) {
+		const mimeType = content.mediaType.mimeType
+		if (!mimeTypes.includes(mimeType)) {
+			mimeTypes.push(mimeType)
+		}
+	}
+	return `@retrofit2.http.Headers({ ${stringLiteral(ctx.generatorContext, `Accept: ${mimeTypes.join(', ')}`)} })`
+}
+
+/**
  * One operation's Retrofit method declaration.
  *
  * The original template also rendered any nested models declared directly on the operation
@@ -84,6 +124,7 @@ function operationMethod(operation: CodegenOperation, ctx: JavaModelContext): st
 
 	return ts`
 	${methodAnnotation}
+	${acceptHeaderAnnotation(operation, ctx)}
 	${when(operation.deprecated, '@java.lang.Deprecated')}
 	${returnType} ${identifier(generator, operation.name)}(${operationParameters(operation, ctx)});
 

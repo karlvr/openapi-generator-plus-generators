@@ -9,6 +9,7 @@ import { gitignore as gitignoreTemplate, TemplateRootContext, TypeScriptCommonTe
 
 export { CodegenOptionsTypeScript, NpmOptions, TypeScriptOptions, DateApproach } from './types'
 export { TemplateRootContext, TypeScriptCommonTemplates } from './templates'
+export { CanParseContent, acceptMediaTypes } from './responses'
 
 function escapeString(value: string | number | boolean) {
 	if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
