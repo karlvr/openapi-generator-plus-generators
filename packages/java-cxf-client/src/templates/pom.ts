@@ -14,16 +14,9 @@ export function pomProperties(ctx: JavaModelContext): string {
 		throw new Error('pomProperties requires maven options to be set')
 	}
 
-	/*
-	 * The original template looked up `junit-jupiter.version` via `{{lookup maven.version
-	 * 'junit_jupiter' '5.7.2'}}` — `maven.version` (singular) is the project's own version
-	 * *string*, not the `maven.versions` lookup table, so that lookup always misses and
-	 * falls back to its default. Preserved verbatim here as a literal, rather than wired up
-	 * to `mavenVersion`, to keep this byte-identical with that (unconfigurable) behaviour.
-	 */
 	return ts`
 <cxf.version>${mavenVersion(maven, 'cxf', '3.6.9')}</cxf.version>
-${when(ctx.root.includeTests, () => '<junit-jupiter.version>5.7.2</junit-jupiter.version>')}`
+${when(ctx.root.includeTests, () => `<junit-jupiter.version>${mavenVersion(maven, 'junit_jupiter', '5.7.2')}</junit-jupiter.version>`)}`
 }
 
 /** This client's extra `<dependency>` entries: the CXF client, and (when tests are included) JUnit. */
@@ -55,7 +48,13 @@ export function pomDependencyManagement(ctx: JavaModelContext): string | Skip {
 </dependency>`)
 }
 
-/** This client's extra `<build>` content: Surefire's JUnit engine dependency, when tests are included. */
+/**
+ * This client's extra `<build>` content: the Surefire plugin, when tests are included.
+ *
+ * Surefire supplies its own JUnit platform launcher, and aligns it with the JUnit that the
+ * project declares. So the plugin must not name a JUnit artifact of its own. A plugin
+ * dependency pins the platform on one side only, and Surefire then refuses to start.
+ */
 export function pomBuild(ctx: JavaModelContext): string | Skip {
 	const maven = ctx.root.maven
 	if (!maven) {
@@ -69,13 +68,6 @@ export function pomBuild(ctx: JavaModelContext): string | Skip {
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-surefire-plugin</artifactId>
 			<version>${mavenVersion(maven, 'maven-surefire-plugin', '3.5.4')}</version>
-			<dependencies>
-				<dependency>
-					<groupId>org.junit.jupiter</groupId>
-					<artifactId>junit-jupiter-engine</artifactId>
-					<version>\${junit-jupiter.version}</version>
-				</dependency>
-			</dependencies>
 		</plugin>
 	</plugins>
 </pluginManagement>`)
