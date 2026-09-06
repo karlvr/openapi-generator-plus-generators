@@ -290,9 +290,6 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'multipart-values',
 		description: 'writes one multipart part for each part type',
-		knownDefects: {
-			'java-cxf': 'the client names every part \'null\', because it sets the name on the disposition and not on the attachment',
-		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
 			/*
@@ -311,9 +308,6 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'multipart-json-content-type',
 		description: 'declares the content type that the spec gives a multipart part',
-		knownDefects: {
-			'java-cxf': 'the client names every part \'null\', because it sets the name on the disposition and not on the attachment',
-		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
 			const parts = multipartParts(requests[0])

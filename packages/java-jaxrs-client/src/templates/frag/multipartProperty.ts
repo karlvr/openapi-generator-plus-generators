@@ -34,8 +34,13 @@ export function multipartProperty(entry: CodegenContentPropertyEncoding, opts: M
 		? `.${getter(valueProperty, generator, useLombok)}()${valueProperty.nullable ? '.orElse(null)' : ''}`
 		: ''
 
+	/*
+	 * A form data part needs both. The builder takes the name from the id, and writes it into
+	 * the disposition that it sends. A part with no id arrives named `null`.
+	 */
 	const idOrDisposition = opts.content.mediaType.mimeType === 'multipart/form-data'
-		? `.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\\"${escapeString(property.serializedName)}\\""))`
+		? `.id(${stringLiteral(ctx.generatorContext, property.serializedName)})\n`
+			+ `\t.contentDisposition(new org.apache.cxf.jaxrs.ext.multipart.ContentDisposition("form-data; name=\\"${escapeString(property.serializedName)}\\""))`
 		: `.id(${stringLiteral(ctx.generatorContext, property.serializedName)})`
 
 	const headerLines = headerProperties
