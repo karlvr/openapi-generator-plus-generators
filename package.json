@@ -20,6 +20,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
     "@eslint/js": "^9.39.2",
+    "@openapi-generator-plus/client-conformance": "workspace:*",
     "@stylistic/eslint-plugin": "^5.6.1",
     "@types/jest": "^30.0.0",
     "@types/less": "^3.0.8",

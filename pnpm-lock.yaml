@@ -25,6 +25,9 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.4
+      '@openapi-generator-plus/client-conformance':
+        specifier: workspace:*
+        version: link:packages/client-conformance
       '@stylistic/eslint-plugin':
         specifier: ^5.6.1
         version: 5.10.0(eslint@9.39.4)
@@ -79,6 +82,21 @@ importers:
       typescript-eslint:
         specifier: ^8.59.2
         version: 8.59.2(eslint@9.39.4)(typescript@5.9.3)
+
+  packages/client-conformance:
+    dependencies:
+      '@openapi-generator-plus/generator-common':
+        specifier: workspace:*
+        version: link:../generator-common
+      '@openapi-generator-plus/testing':
+        specifier: link:../../../openapi-generator-plus/packages/testing
+        version: link:../../../openapi-generator-plus/packages/testing
+      '@openapi-generator-plus/types':
+        specifier: link:../../../openapi-generator-plus/packages/types
+        version: link:../../../openapi-generator-plus/packages/types
+      maven:
+        specifier: github:karlvr/node-maven
+        version: https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2
 
   packages/generator-common:
     dependencies:

@@ -1,0 +1,447 @@
+openapi: 3.0.3
+info:
+  title: Client conformance
+  description: >-
+    The operations that the client conformance suite calls. Each operation
+    exists to show what a generated client puts on the wire, or what it makes
+    of a response. The suite calls these operations through a generated
+    client, and a recording server captures the result.
+
+    Keep the parameter order stable. Each driver passes its arguments by
+    position.
+  version: '1.0'
+servers:
+  - url: http://localhost/unused
+paths:
+
+  #
+  # Query parameters
+  #
+
+  /query/scalars:
+    get:
+      operationId: queryScalars
+      description: One parameter for each scalar type, so we can see how the client writes each one.
+      parameters:
+        - name: str
+          in: query
+          schema:
+            type: string
+        - name: num
+          in: query
+          schema:
+            type: integer
+        - name: dbl
+          in: query
+          schema:
+            type: number
+            format: double
+        - name: flag
+          in: query
+          schema:
+            type: boolean
+        - name: when
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: day
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: OK
+
+  /query/arrays:
+    get:
+      operationId: queryArrays
+      description: One array parameter for each collection style.
+      parameters:
+        - name: formExplode
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: formNoExplode
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: pipe
+          in: query
+          style: pipeDelimited
+          schema:
+            type: array
+            items:
+              type: string
+        - name: space
+          in: query
+          style: spaceDelimited
+          schema:
+            type: array
+            items:
+              type: string
+        - name: dateTimes
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
+      responses:
+        "200":
+          description: OK
+
+  /query/objects:
+    get:
+      operationId: queryObjects
+      description: One object parameter for each object style.
+      parameters:
+        - name: explode
+          in: query
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/QueryObject'
+        - name: noExplode
+          in: query
+          style: form
+          explode: false
+          schema:
+            $ref: '#/components/schemas/QueryObject'
+        - name: deep
+          in: query
+          style: deepObject
+          schema:
+            $ref: '#/components/schemas/QueryObject'
+      responses:
+        "200":
+          description: OK
+
+  /query/headers:
+    get:
+      operationId: queryHeaders
+      description: Header parameters, which a client writes differently from query parameters.
+      parameters:
+        - name: X-Text
+          in: header
+          schema:
+            type: string
+        - name: X-Numbers
+          in: header
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        "200":
+          description: OK
+
+  /query/path/{value}/end:
+    get:
+      operationId: queryPathSegment
+      description: A path parameter, so we can see which characters the client encodes.
+      parameters:
+        - name: value
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
+  #
+  # Form request bodies
+  #
+
+  /form/scalars:
+    post:
+      operationId: formScalars
+      description: A form body with a nullable and a plain property for each scalar type.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                str:
+                  type: string
+                nullableStr:
+                  type: string
+                  nullable: true
+                num:
+                  type: integer
+                nullableNum:
+                  type: integer
+                  nullable: true
+                flag:
+                  type: boolean
+                nullableFlag:
+                  type: boolean
+                  nullable: true
+                when:
+                  type: string
+                  format: date-time
+                nullableWhen:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        "200":
+          description: OK
+
+  /form/arrays:
+    post:
+      operationId: formArrays
+      description: A form body with a nullable and a plain array property, in two styles.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                strs:
+                  type: array
+                  items:
+                    type: string
+                nullableStrs:
+                  type: array
+                  nullable: true
+                  items:
+                    type: string
+                pipeStrs:
+                  type: array
+                  items:
+                    type: string
+                nullablePipeStrs:
+                  type: array
+                  nullable: true
+                  items:
+                    type: string
+            encoding:
+              pipeStrs:
+                style: pipeDelimited
+              nullablePipeStrs:
+                style: pipeDelimited
+      responses:
+        "200":
+          description: OK
+
+  /form/objects:
+    post:
+      operationId: formObjects
+      description: A form body with a nullable and a plain object property, in three styles.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                obj:
+                  $ref: '#/components/schemas/QueryObject'
+                nullableObj:
+                  nullable: true
+                  $ref: '#/components/schemas/QueryObject'
+                explodeObj:
+                  $ref: '#/components/schemas/QueryObject'
+                nullableExplodeObj:
+                  nullable: true
+                  $ref: '#/components/schemas/QueryObject'
+                deepObj:
+                  $ref: '#/components/schemas/QueryObject'
+                nullableDeepObj:
+                  nullable: true
+                  $ref: '#/components/schemas/QueryObject'
+            encoding:
+              obj:
+                style: form
+                explode: false
+              nullableObj:
+                style: form
+                explode: false
+              explodeObj:
+                style: form
+                explode: true
+              nullableExplodeObj:
+                style: form
+                explode: true
+              deepObj:
+                style: deepObject
+              nullableDeepObj:
+                style: deepObject
+      responses:
+        "200":
+          description: OK
+
+  #
+  # Multipart request bodies
+  #
+
+  /multipart/parts:
+    post:
+      operationId: multipartParts
+      description: A multipart body with a nullable and a plain part, for text, JSON and binary.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                nullableText:
+                  type: string
+                  nullable: true
+                json:
+                  $ref: '#/components/schemas/QueryObject'
+                nullableJson:
+                  nullable: true
+                  $ref: '#/components/schemas/QueryObject'
+                file:
+                  type: string
+                  format: binary
+                nullableFile:
+                  type: string
+                  format: binary
+                  nullable: true
+            encoding:
+              json:
+                contentType: application/json
+              nullableJson:
+                contentType: application/json
+      responses:
+        "200":
+          description: OK
+
+  #
+  # JSON request bodies
+  #
+
+  /json/body:
+    post:
+      operationId: jsonBody
+      description: A JSON body with a nullable property of each shape.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonBody'
+      responses:
+        "200":
+          description: OK
+
+  #
+  # Responses
+  #
+
+  /response/json:
+    get:
+      operationId: responseJson
+      description: A response that the client parses into a model.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+
+  /response/none:
+    get:
+      operationId: responseNone
+      description: A response with no content.
+      responses:
+        "204":
+          description: No content
+
+  /response/error:
+    get:
+      operationId: responseError
+      description: An operation with a success response and an error response.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+components:
+  schemas:
+    QueryObject:
+      type: object
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+        when:
+          type: string
+          format: date-time
+
+    JsonBody:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        nullableName:
+          type: string
+          nullable: true
+        nullableCount:
+          type: integer
+          nullable: true
+        nullableWhen:
+          type: string
+          format: date-time
+          nullable: true
+        nullableChild:
+          nullable: true
+          $ref: '#/components/schemas/QueryObject'
+        nullableList:
+          type: array
+          nullable: true
+          items:
+            type: string
+
+    ResponseObject:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+        when:
+          type: string
+          format: date-time
+
+    ErrorObject:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string

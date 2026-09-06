@@ -1,0 +1,25 @@
+{
+  "name": "@openapi-generator-plus/client-conformance",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A shared conformance test suite that runs generated API clients against a recording HTTP server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
+    "clean": "../../node_modules/.bin/rimraf dist",
+    "watch": "../../node_modules/.bin/tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlvr/openapi-generator-plus-generators.git"
+  },
+  "author": "Karl von Randow",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@openapi-generator-plus/generator-common": "workspace:*",
+    "@openapi-generator-plus/testing": "^2.31.3",
+    "@openapi-generator-plus/types": "^2.22.2",
+    "maven": "github:karlvr/node-maven"
+  }
+}
