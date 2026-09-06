@@ -6,7 +6,12 @@ import { hooks as rnHooks } from './templates/hooks'
 const createGenerator: CodegenGeneratorConstructor = (config, context) => {
 	const myContext: FetchClientContext = chainTypeScriptGeneratorContext(context, {})
 	myContext.fetchClientHooks = rnHooks
-	const base = typescriptGenerator(config, myContext)
+
+	/*
+	 * React Native provides `fetch`, so the polyfill is off by default here. A
+	 * caller who turns it on gets both the import and the dependency.
+	 */
+	const base = typescriptGenerator({ includePolyfills: false, ...config }, myContext)
 
 	return {
 		...base,

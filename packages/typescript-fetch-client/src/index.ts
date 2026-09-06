@@ -124,6 +124,6 @@ function isForbiddenHeaderName(name: string): boolean {
 	].map(h => h.toLowerCase()).includes(name.toLowerCase())
 }
 
-export { FetchClientHooks, MultipartTypedPartArgs, RootContext, DocumentContext, makeApiResponseContent, ApiResponseContentOptions, defaultMultipartTypedPart } from './templates'
+export { FetchClientHooks, MultipartTypedPartArgs, RootContext, DocumentContext, makeApiResponseContent, ApiResponseContentOptions, defaultMultipartTypedPart, defaultPackageDependencies } from './templates'
 export default createGenerator
 

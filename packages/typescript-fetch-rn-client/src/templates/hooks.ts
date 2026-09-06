@@ -1,5 +1,5 @@
 import { ts } from '@openapi-generator-plus/template-utils'
-import { FetchClientHooks } from '@openapi-generator-plus/typescript-fetch-client-generator'
+import { defaultPackageDependencies, FetchClientHooks } from '@openapi-generator-plus/typescript-fetch-client-generator'
 
 /**
  * Hook overrides for fetch-rn-client: add the `abab` `btoa` polyfill that
@@ -9,7 +9,8 @@ export const hooks: FetchClientHooks = {
 	apiImports: () => ts`
 import { btoa } from "abab";`,
 
-	packageDependencies: () => [
+	packageDependencies: (ctx) => [
+		...defaultPackageDependencies(ctx),
 		'"abab": "^2.0.5"',
 	],
 }

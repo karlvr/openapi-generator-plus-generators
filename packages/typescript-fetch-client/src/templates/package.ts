@@ -4,10 +4,13 @@ import { FetchClientHooks, RootContext } from './types'
 
 /**
  * Default body for the `packageDependencies` hook: a polyfill dependency
- * line if `includePolyfills` is set. Child generators that override this hook
- * typically replace it entirely with their own dependency list.
+ * line if `includePolyfills` is set.
+ *
+ * A child generator that overrides the hook should still call this, and add its
+ * own lines to the result. Otherwise the dependency and the runtime import of
+ * the polyfill disagree.
  */
-function defaultPackageDependencies(ctx: RootContext): string[] {
+export function defaultPackageDependencies(ctx: RootContext): string[] {
 	return ctx.includePolyfills ? ['"whatwg-fetch": "^3.6.2"'] : []
 }
 
