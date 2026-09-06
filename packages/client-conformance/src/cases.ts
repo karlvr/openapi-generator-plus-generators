@@ -313,8 +313,6 @@ export const CASES: ConformanceCase[] = [
 		description: 'declares the content type that the spec gives a multipart part',
 		knownDefects: {
 			'java-cxf': 'the client names every part \'null\', because it sets the name on the disposition and not on the attachment',
-			'fetch-client': 'the client appends the JSON part as text, so the part declares no Content-Type',
-			'fetch-client2': 'the client appends the JSON part as text, so the part declares no Content-Type',
 		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
@@ -324,6 +322,12 @@ export const CASES: ConformanceCase[] = [
 			 * reads the part by its declared type needs the header.
 			 */
 			expect(partNamed(parts, 'json')!.contentType).toBe('application/json')
+
+			/*
+			 * The suite does not check the filename here. Each multipart implementation
+			 * declares a content type in its own way, and a browser form can only do it
+			 * through a Blob, which it names `blob`.
+			 */
 		},
 	},
 	{

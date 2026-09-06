@@ -47,4 +47,12 @@ import type { RequestInit } from "node-fetch";`,
 		dateApproach: args.rootContext.dateApproach,
 		generatorContext: args.generatorContext,
 	}),
+
+	/*
+	 * The `form-data` package takes a content type as an option, so a typed part
+	 * stays a plain field. The browser default has to wrap the value in a `Blob`,
+	 * which also gives the part a filename.
+	 */
+	multipartTypedPart: ({ bodyPartsVar, name, value, contentType }) =>
+		`${bodyPartsVar}.append(${name}, ${value}, { contentType: ${contentType} });`,
 }

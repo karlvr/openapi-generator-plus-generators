@@ -46,7 +46,7 @@ namespace ${groupName}Api {
 	${each(ctx.group.operations, (op: AnnotatedOperation) => `${when(parameterCount(op.parameters) > 1, () => `${apiParametersInterface(generatorContext, op)}\n\n`)}${apiResponseTypes(generatorContext, op)}\n`, '\n')}
 }
 
-${each(ctx.group.operations, (op: AnnotatedOperation) => renderParamCreatorFunction(generatorContext, ctx, op), '\n')}
+${each(ctx.group.operations, (op: AnnotatedOperation) => renderParamCreatorFunction(generatorContext, ctx, op, hooks), '\n')}
 
 /**
  * ${groupName}Api - parameter creator
@@ -112,7 +112,7 @@ function argumentList(generatorContext: CodegenGeneratorContext, op: AnnotatedOp
 	return `${each(op.parameters, (p) => `${identifier(gen, p.name)}, `)}${requestBodyArg}`
 }
 
-function renderParamCreatorFunction(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateContext, op: AnnotatedOperation): string {
+function renderParamCreatorFunction(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateContext, op: AnnotatedOperation, hooks: FetchClient2Hooks): string {
 	const gen = generatorContext.generator()
 	const useInterface = parameterCount(op.parameters) > 1
 	const parameterPrefix = useInterface ? '__params.' : ''
@@ -160,7 +160,7 @@ ${when(parameterCount(op.cookieParams) > 0, () => `${each(op.cookieParams, (p) =
 ${renderRequestBodyContentTypeBlock(op.requestBody)}
 	localVarRequestOptions.headers = localVarHeaderParameter;
 ${when(parameterCount(op.formParams) > 0, '\tlocalVarRequestOptions.body = localVarFormParams.toString();')}
-${renderRequestBodyEncodingBlock(generatorContext, ctx, op)}
+${renderRequestBodyEncodingBlock(generatorContext, ctx, op, hooks)}
 
 	const localVarQueryParameterString = localVarQueryParameter.toString();
 	if (localVarQueryParameterString) {
@@ -278,7 +278,7 @@ function renderRequestBodyContentTypeBlock(rb: CodegenRequestBody | null | undef
 	return '\tlocalVarHeaderParameter.set(\'Content-Type\', \'application/json\');\n'
 }
 
-function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateContext, op: AnnotatedOperation): string | Skip {
+function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, ctx: ApiTemplateContext, op: AnnotatedOperation, hooks: FetchClient2Hooks): string | Skip {
 	const rb = op.requestBody
 	if (!rb || !rb.nativeType) {
 		return SKIP
@@ -316,7 +316,7 @@ ${each(dc.encoding?.properties, (encProp) => {
 		: `${access} !== undefined`
 	if (isArray(encProp.property)) {
 		const component = (encProp.property.schema as CodegenArraySchema).component
-		const part = multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext })
+		const part = multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext, hooks })
 		return ts`
 if (${present}) {
 	for (const __anObject of ${id}.${identifier(gen, encProp.property.name)}) {
@@ -329,7 +329,7 @@ if (__anObject !== null) {
 	}
 	return ts`
 if (${present}) {
-	${multipartProperty({ encoding: encProp, propertyVar: access, bodyPartsVar: 'localVarFormData', generatorContext })}
+	${multipartProperty({ encoding: encProp, propertyVar: access, bodyPartsVar: 'localVarFormData', generatorContext, hooks })}
 }`
 }, '\n')}
 localVarRequestOptions.body = localVarFormData;`

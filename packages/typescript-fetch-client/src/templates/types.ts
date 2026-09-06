@@ -15,6 +15,23 @@ export type RootContext = BaseRootContext & CodegenOptionsTypeScriptFetchClient 
 export type DocumentContext = CodegenDocument & RootContext
 
 /**
+ * A multipart part that declares its own content type.
+ *
+ * Each field holds rendered TypeScript, ready to splice into the output. `name`,
+ * `value` and `contentType` are expressions, so a hook must not quote them again.
+ */
+export interface MultipartTypedPartArgs {
+	/** The variable that holds the multipart body under construction. */
+	bodyPartsVar: string
+	/** The name of the part. */
+	name: string
+	/** The content of the part. */
+	value: string
+	/** The content type that the specification gives the part. */
+	contentType: string
+}
+
+/**
  * Hook points that a child generator can override. Each hook returns a
  * source-code fragment to splice into the corresponding place. A child wires
  * them up via the chained {@link TypeScriptGeneratorContext.templates} bag.
@@ -37,4 +54,11 @@ export interface FetchClientHooks {
 	 * the response declares.
 	 */
 	apiResponseContent?: (content: CodegenContent) => string
+	/**
+	 * Override for a multipart part that declares a content type.
+	 *
+	 * Each multipart implementation attaches a content type in its own way, and
+	 * some cannot take a `Blob` at all.
+	 */
+	multipartTypedPart?: (args: MultipartTypedPartArgs) => string
 }

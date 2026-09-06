@@ -86,7 +86,7 @@ export interface ${groupName}ApiInterface {
  */
 export const ${groupName}ApiFetchParamCreator = function (configuration?: Configuration) {
 	return {
-		${each(group.operations, (op) => renderParamCreatorMethod(generatorContext, ctx, group, op), '\n')}
+		${each(group.operations, (op) => renderParamCreatorMethod(generatorContext, ctx, group, op, hooks), '\n')}
 	}
 };
 
@@ -159,7 +159,7 @@ public ${identifier(gen, op.name)}(${parameterList(generatorContext, op)}options
 `
 }
 
-function renderParamCreatorMethod(generatorContext: CodegenGeneratorContext, ctx: DocumentContext, group: CodegenOperationGroup, op: CodegenOperation): string {
+function renderParamCreatorMethod(generatorContext: CodegenGeneratorContext, ctx: DocumentContext, group: CodegenOperationGroup, op: CodegenOperation, hooks: FetchClientHooks): string {
 	const gen = generatorContext.generator()
 
 	/* Renders the code that appends a parameter value to the given destination collection. */
@@ -201,7 +201,7 @@ ${when(parameterCount(op.cookieParams) > 0, () => `${each(op.cookieParams, (p) =
 	${renderRequestBodyContentTypeBlock(op.requestBody)}
 	localVarRequestOptions.headers = localVarHeaderParameter;
 ${when(parameterCount(op.formParams) > 0, '\tlocalVarRequestOptions.body = localVarFormParams.toString();')}
-${renderRequestBodyEncodingBlock(generatorContext, ctx, op)}
+${renderRequestBodyEncodingBlock(generatorContext, ctx, op, hooks)}
 
 	const localVarQueryParameterString = localVarQueryParameter.toString();
 	if (localVarQueryParameterString) {
@@ -356,7 +356,7 @@ function renderRequestBodyContentTypeBlock(rb: CodegenRequestBody | null | undef
 	return 'localVarHeaderParameter.set(\'Content-Type\', \'application/json\');\n'
 }
 
-function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, ctx: DocumentContext, op: CodegenOperation): string | Skip {
+function renderRequestBodyEncodingBlock(generatorContext: CodegenGeneratorContext, ctx: DocumentContext, op: CodegenOperation, hooks: FetchClientHooks): string | Skip {
 	const rb = op.requestBody
 	if (!rb || !rb.nativeType) {
 		return SKIP
@@ -394,7 +394,7 @@ ${each(dc.encoding?.properties, (encProp) => {
 		: `${access} !== undefined`
 	if (isArray(encProp.property)) {
 		const component = (encProp.property.schema as CodegenArraySchema).component
-		const part = multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext })
+		const part = multipartProperty({ encoding: encProp, propertyVar: '__anObject', bodyPartsVar: 'localVarFormData', generatorContext, hooks })
 		return ts`
 if (${present}) {
 	for (const __anObject of ${id}.${identifier(gen, encProp.property.name)}) {
@@ -407,7 +407,7 @@ if (__anObject !== null) {
 	}
 	return ts`
 if (${present}) {
-	${multipartProperty({ encoding: encProp, propertyVar: access, bodyPartsVar: 'localVarFormData', generatorContext })}
+	${multipartProperty({ encoding: encProp, propertyVar: access, bodyPartsVar: 'localVarFormData', generatorContext, hooks })}
 }`
 }, '\n')}
 localVarRequestOptions.body = localVarFormData;`
