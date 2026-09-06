@@ -12,6 +12,7 @@ import { apiSpec } from './templates/apiSpec'
 import { apiConstants } from './templates/ApiConstants'
 import { apiInvoker } from './templates/ApiInvoker'
 import { apiProvidersInterface } from './templates/ApiProviders'
+import { pathParamConverterProvider } from './templates/provider/PathParamConverterProvider'
 import { unexpectedApiException } from './templates/UnexpectedApiException'
 import { unexpectedApiProcessingException } from './templates/UnexpectedApiProcessingException'
 import { unexpectedResponseException } from './templates/UnexpectedResponseException'
@@ -90,6 +91,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		await emitTemplate(apiConstants(doc.servers, ctx), path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), true)
 		await emitTemplate(apiInvoker(ctx), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), true)
 		await emitTemplate(apiProvidersInterface(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiProviders.java'), true)
+
+		/* Only a client encodes a path parameter, so this provider is not in the shared templates */
+		if (ctx.root.apiProviderPackage) {
+			const apiProviderPackagePath = ctx.root.apiProviderPackage.replace(/\./g, path.sep)
+			await emitTemplate(pathParamConverterProvider(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiProviderPackagePath, 'PathParamConverterProvider.java'), true)
+		}
 
 		const apiSpecPackagePath = packageToPath(generatorOptions.apiSpecPackage)
 		for (const group of doc.groups) {

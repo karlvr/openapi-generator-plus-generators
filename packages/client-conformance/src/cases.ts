@@ -156,17 +156,19 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'query-path-segment',
 		description: 'encodes only the characters that a path segment cannot carry',
-		knownDefects: {
-			'java-cxf': 'the client does not encode a \'/\' in a path parameter, so the value adds a path segment',
-		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
+
 			/*
-			 * A path segment may carry the sub-delims and ":" and "@" unencoded. It may not
-			 * carry "/", "?", "#", "%" or a space.
+			 * A path segment may carry the sub-delims and ":" and "@" unencoded, and a client
+			 * may encode them anyway. So the suite checks the value that arrives, not the
+			 * exact encoding. One decode must give back the value.
 			 */
-			expect(requests[0].path).toBe('/query/path/a%20b%2Fc%3Fd%23e&f+g%25h:i@j/end')
 			expect(decodeURIComponent(requests[0].path)).toBe(`/query/path/${PATH_SEGMENT}/end`)
+
+			/* The value must stay inside its own segment, and must not start a query */
+			expect(requests[0].path.split('/')).toHaveLength(5)
+			expect(requests[0].query).toBe('')
 		},
 	},
 
