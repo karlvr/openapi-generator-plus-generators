@@ -327,9 +327,6 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'multipart-null',
 		description: 'writes a null part in the form that the part type can carry',
-		knownDefects: {
-			'java-cxf': 'the client passes a null attachment object, which CXF cannot write',
-		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
 			const parts = multipartParts(requests[0])

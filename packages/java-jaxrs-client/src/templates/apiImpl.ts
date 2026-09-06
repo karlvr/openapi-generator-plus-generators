@@ -4,7 +4,7 @@ import { indent, isArray, isContentMultipart, identifier, className, stringLiter
 import { imports, operationVars, generatedAnnotation, javax, getter } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { ClientContext } from './types'
 import { bodyParam } from './frag/bodyParam'
-import { multipartProperty } from './frag/multipartProperty'
+import { multipartPartCanBeNull, multipartProperty } from './frag/multipartProperty'
 import { exceptionName } from './api'
 
 const HTML_ESCAPE_CHARS: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#x27;', '`': '&#x60;', '=': '&#x3D;' }
@@ -48,7 +48,15 @@ function multipartPropertyBlock(entry: CodegenContentPropertyEncoding, requestBo
 		? arrayMultipartBody(entry, propertyVar, content, ctx)
 		: multipartProperty(entry, { propertyVar, bodyPartsVar: '__multipartBodyParts', content, schemaUsage: property }, ctx)
 
-	return `if (${propertyVar} != null) {\n${indent(body, '\t')}\n}\n`
+	/*
+	 * A binary part has no null form, so a null value omits the part. Every other part
+	 * encodes null itself, and stays distinct from an absent part.
+	 */
+	const present = property.nullable && !isArray(property) && !multipartPartCanBeNull(entry)
+		? `${propertyVar} != null && ${propertyVar}.isPresent()`
+		: `${propertyVar} != null`
+
+	return `if (${present}) {\n${indent(body, '\t')}\n}\n`
 }
 
 /**

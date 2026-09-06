@@ -3,6 +3,29 @@ import * as idx from '@openapi-generator-plus/indexed-type'
 import { isArray, stringLiteral } from '@openapi-generator-plus/template-utils'
 import { JavaModelContext, escapeString, getter } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
+/**
+ * Report whether a multipart part can carry a null value.
+ *
+ * A JSON part encodes null directly. A text part encodes it as an empty string. A binary
+ * part has no null form, so the caller must omit it.
+ */
+export function multipartPartCanBeNull(entry: CodegenContentPropertyEncoding): boolean {
+	return entry.contentType !== 'application/octet-stream'
+}
+
+/**
+ * The Java expression that a part of `contentType` sends for a null value.
+ *
+ * An attachment must hold an object, because the writer needs a type to serialize. So a
+ * null becomes the value that the part's own encoding uses for nothing.
+ */
+function nullForm(contentType: string): string {
+	if (contentType === 'application/json') {
+		return 'com.fasterxml.jackson.databind.node.NullNode.getInstance()'
+	}
+	return '""'
+}
+
 /** The arguments to {@link multipartProperty} beyond the property encoding itself. */
 export interface MultipartPropertyOptions {
 	/** The variable name (or expression) containing the property's value. */
@@ -28,7 +51,7 @@ export function multipartProperty(entry: CodegenContentPropertyEncoding, opts: M
 	/* We don't make array components into Optionals. */
 	const nullable = opts.schemaUsage.nullable && !isArray(property)
 	const objectArg = nullable
-		? `!${opts.propertyVar}.isPresent() ? null : ${opts.propertyVar}.get()`
+		? `!${opts.propertyVar}.isPresent() ? ${nullForm(entry.contentType)} : ${opts.propertyVar}.get()`
 		: opts.propertyVar
 	const valueAccessor = valueProperty
 		? `.${getter(valueProperty, generator, useLombok)}()${valueProperty.nullable ? '.orElse(null)' : ''}`
