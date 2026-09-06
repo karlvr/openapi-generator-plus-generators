@@ -17,5 +17,5 @@ export function arrayToString(args: ArrayToStringArgs): string {
 	const inner = schemaToString({ value: 'localVarArrayMapElement', schema: component, dateApproach })
 	/* A null element has no serialized form, so it becomes an empty string, as elsewhere. */
 	const element = component.nullable ? `localVarArrayMapElement !== null ? ${inner} : ''` : inner
-	return `${value}.map(localVarArrayMapElement => escape(${element})).join(${stringLiteral(generatorContext, separator)})`
+	return `${value}.map(localVarArrayMapElement => ${element}).join(${stringLiteral(generatorContext, separator)})`
 }

@@ -20,7 +20,7 @@ export function objectToString(args: ObjectToStringArgs): string {
 	const entries = each(props, (p, _i, _f, isLast) => {
 		const elementValue = `${value}["${p.serializedName}"]`
 		const stringified = schemaToString({ value: elementValue, schema: p, dateApproach })
-		return `${ind}${elementValue} !== undefined ? ${elementValue} !== null ? \`${p.serializedName}${keyValueSeparator}\${escape(${stringified})}\` : '${p.serializedName}${keyValueSeparator}' : undefined${isLast ? '' : ','}`
+		return `${ind}${elementValue} !== undefined ? ${elementValue} !== null ? \`${p.serializedName}${keyValueSeparator}\${${stringified}}\` : '${p.serializedName}${keyValueSeparator}' : undefined${isLast ? '' : ','}`
 	}, '\n')
 	/* The result ends with a newline and the indent so that the caller's closing
 	 * text continues at the same indent level, mirroring the layout of the

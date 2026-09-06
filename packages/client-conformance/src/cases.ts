@@ -124,8 +124,6 @@ export const CASES: ConformanceCase[] = [
 		description: 'percent encodes a joined value once, whichever style joins it',
 		knownDefects: {
 			'java-cxf': 'the client declares the model as a query parameter, so JAX-RS writes its toString()',
-			'fetch-client': 'the client calls escape() on each element, then the URL encoder encodes the "%" again',
-			'fetch-client2': 'the client calls escape() on each element, then the URL encoder encodes the "%" again',
 		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(2)
