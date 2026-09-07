@@ -10,7 +10,8 @@ function injectedApi(group: CodegenOperationGroup, ctx: ServerContext): string {
 	const params: InjectParams = {
 		access: 'protected',
 		interface: `${ctx.root.apiPackage}.${name}Api`,
-		class: `${ctx.root.apiPackage}.${name}ApiImpl`,
+		/* The implementation goes in its own package, which the caller may configure */
+		class: `${ctx.root.apiImplPackage}.${name}ApiImpl`,
 		name: `${identifier(generator, group.name)}Api`,
 	}
 	return `\t${ctx.templates.inject(params, ctx)}\n\n`

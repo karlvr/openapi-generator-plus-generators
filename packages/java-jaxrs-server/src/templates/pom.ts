@@ -17,7 +17,13 @@ export function pom(ctx: JavaModelContext): string {
 	const useBeanValidation = ctx.root.useBeanValidation
 	const useLombok = ctx.root.useLombok
 
-	const jakartaDependencies = when(useJakarta, () => ts`
+	/*
+	 * Every generated file carries a `@Generated` annotation, and a model carries the XML
+	 * binding annotations. Java 11 removed both packages from the JDK, so the project has to
+	 * declare them itself.
+	 */
+	const annotationDependencies = useJakarta
+		? ts`
 <dependency>
 	<groupId>jakarta.annotation</groupId>
 	<artifactId>jakarta.annotation-api</artifactId>
@@ -27,7 +33,18 @@ export function pom(ctx: JavaModelContext): string {
 	<groupId>jakarta.xml.bind</groupId>
 	<artifactId>jakarta.xml.bind-api</artifactId>
 	<version>\${jakarta.xml.bind.version}</version>
-</dependency>`)
+</dependency>`
+		: ts`
+<dependency>
+	<groupId>javax.annotation</groupId>
+	<artifactId>javax.annotation-api</artifactId>
+	<version>\${javax.annotation.version}</version>
+</dependency>
+<dependency>
+	<groupId>javax.xml.bind</groupId>
+	<artifactId>jaxb-api</artifactId>
+	<version>\${javax.xml.bind.version}</version>
+</dependency>`
 
 	const jaxrsApiDependency = when(useJakarta, () => ts`
 <dependency>
@@ -99,9 +116,13 @@ ${useJakarta
 		${when(useJakarta, () => `<jakarta.ws.version>${mavenVersion(maven, 'jakarta_ws', '3.1.0')}</jakarta.ws.version>`)}
 		<jaxrs.version>${mavenVersion(maven, 'jaxrs', '2.1.1')}</jaxrs.version>
 		<jackson.version>${mavenVersion(maven, 'jackson', '2.14.2')}</jackson.version>
-		${when(useJakarta, () => ts`
+		${useJakarta
+			? ts`
 <jakarta.annotation.version>${mavenVersion(maven, 'jakarta_annotation', '2.1.0')}</jakarta.annotation.version>
-<jakarta.xml.bind.version>${mavenVersion(maven, 'jakarta_xml_bind', '3.0.1')}</jakarta.xml.bind.version>`)}
+<jakarta.xml.bind.version>${mavenVersion(maven, 'jakarta_xml_bind', '3.0.1')}</jakarta.xml.bind.version>`
+			: ts`
+<javax.annotation.version>${mavenVersion(maven, 'javax_annotation', '1.3.2')}</javax.annotation.version>
+<javax.xml.bind.version>${mavenVersion(maven, 'javax_xml_bind', '2.3.1')}</javax.xml.bind.version>`}
 		${when(useBeanValidation, () => useJakarta
 			? `<jakarta.validation.version>${mavenVersion(maven, 'jakarta_validation', '3.0.1')}</jakarta.validation.version>`
 			: `<javax.validation.version>${mavenVersion(maven, 'javax_validation', '2.0.0.Final')}</javax.validation.version>`)}
@@ -110,7 +131,7 @@ ${useJakarta
 	</properties>
 
 	<dependencies>
-		${jakartaDependencies}
+		${annotationDependencies}
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
