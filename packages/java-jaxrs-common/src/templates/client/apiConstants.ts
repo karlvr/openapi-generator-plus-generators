@@ -1,10 +1,10 @@
 import { CodegenServer } from '@openapi-generator-plus/types'
 import { ts, each, indent, maybe, constantName, stringLiteral, md, indentTail, SKIP, Skip } from '@openapi-generator-plus/template-utils'
-import { generatedAnnotation } from '@openapi-generator-plus/java-jaxrs-generator-common'
-import { ClientContext } from './types'
+import { generatedAnnotation } from '../generatedAnnotation'
+import { JavaModelContext } from '../types'
 
 /** One configured server's constant declaration, preceded by its documentation comment if it has one. */
-function serverConstant(server: CodegenServer, index: number, ctx: ClientContext): string {
+function serverConstant(server: CodegenServer, index: number, ctx: JavaModelContext): string {
 	const generator = ctx.generatorContext.generator()
 	const nameSource = server.vendorExtensions?.['x-name'] !== undefined ? `${String(server.vendorExtensions['x-name'])}Server` : `Server_${String(index)}`
 
@@ -22,8 +22,11 @@ java.lang.String ${constantName(generator, nameSource)} = ${stringLiteral(ctx.ge
  * The generated `ApiConstants` interface: the default server URL, one constant per configured
  * server, and the `apiConstantsBody` extension point (e.g. a CXF-based client's connection and
  * receive timeout defaults).
+ *
+ * Every client in this family tells its caller where to send a request, so this belongs to the
+ * family rather than to one client. A server generator emits no such file.
  */
-export function apiConstants(servers: CodegenServer[] | null, ctx: ClientContext): string {
+export function apiConstants(servers: CodegenServer[] | null, ctx: JavaModelContext): string {
 	const server = servers && servers.length > 0 ? servers[0] : null
 
 	const serverDoc: string | Skip = server?.description ? ts`

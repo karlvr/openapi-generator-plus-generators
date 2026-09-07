@@ -28,6 +28,8 @@ export { beanValidationValidateParams } from './frag/beanValidationValidateParam
 export { fromString } from './util/fromString'
 export { javax, getter, setter, isNativeArray, isPrimitiveBool, escapeString } from './helpers'
 export { generatedAnnotation } from './generatedAnnotation'
+export { apiConstants } from './client/apiConstants'
+export { clientPojoPropertyAnnotations } from './client/pojoPropertyAnnotations'
 
 /** The response built when bean validation finds a required response body missing. */
 function beanValidationResponseMissing(response: CodegenResponse, ctx: JavaModelContext): string {

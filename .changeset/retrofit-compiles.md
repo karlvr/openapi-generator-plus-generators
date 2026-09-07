@@ -1,5 +1,4 @@
 ---
-"@openapi-generator-plus/java-jaxrs-client-generator": minor
 "@openapi-generator-plus/java-retrofit-client-generator": major
 ---
 
@@ -17,9 +16,6 @@ The `pom.xml` gains the pieces the remaining code needs, and loses one it does n
 declares `swagger-annotations`, which the models carry, and the annotation packages that
 Java 11 removed from the JDK. It declares Retrofit's own Jackson converter in place of the
 JAX-RS Jackson provider, which had nothing to register with.
-
-java-jaxrs-client gains an `emitJaxrsClient` flag on its generator context. A generator that
-renders its own client through the `api` template sets it to false.
 
 The generator also refuses a multipart or form request body now. Retrofit encodes each with its
 own annotations, one per property, and this generator writes neither. It rendered a plain

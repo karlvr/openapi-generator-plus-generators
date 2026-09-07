@@ -24,6 +24,8 @@ export {
 	generatedAnnotation,
 	cxfMultipartTemplates,
 	multipartPartCanBeNull, NO_MULTIPART_MESSAGE,
+	apiConstants,
+	clientPojoPropertyAnnotations,
 } from './templates'
 export { escapeString }
 
@@ -72,8 +74,11 @@ export interface JavaGeneratorContext extends CodegenGeneratorContext {
 	additionalCleanPathPatterns?: () => string[]
 	/**
 	 * Override the class used to capture application/x-www-form-urlencoded messages.
+	 *
+	 * Return null to keep the type that the request body's own schema gives. A generator
+	 * that encodes the body itself needs that type, because it reads each property.
 	 */
-	formUrlEncodedImplementation?: () => CodegenNativeType
+	formUrlEncodedImplementation?: () => CodegenNativeType | null
 	/**
 	 * Typed overrides for the model-emission hooks (see {@link JavaJaxrsTemplates}).
 	 * A child generator sets its own overrides via {@link chainJavaGeneratorContext};
@@ -701,9 +706,12 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 					   https://docs.oracle.com/javaee/7/api/javax/ws/rs/BeanParam.html yet
 					 */
 					if (op.requestBody && op.consumes && op.consumes[0].mimeType === 'application/x-www-form-urlencoded') {
-						op.requestBody.nativeType = context.formUrlEncodedImplementation
+						const replacement = context.formUrlEncodedImplementation
 							? context.formUrlEncodedImplementation()
 							: new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.MultivaluedHashMap<java.lang.String, java.lang.String>`)
+						if (replacement) {
+							op.requestBody.nativeType = replacement
+						}
 					}
 				}
 			}

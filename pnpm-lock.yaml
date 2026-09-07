@@ -283,9 +283,6 @@ importers:
       '@openapi-generator-plus/indexed-type':
         specifier: link:../../../openapi-generator-plus/packages/indexed-type
         version: link:../../../openapi-generator-plus/packages/indexed-type
-      '@openapi-generator-plus/java-jaxrs-client-generator':
-        specifier: workspace:*
-        version: link:../java-jaxrs-client
       '@openapi-generator-plus/java-jaxrs-generator-common':
         specifier: workspace:*
         version: link:../java-jaxrs-common
