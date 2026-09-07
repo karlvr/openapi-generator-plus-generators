@@ -86,6 +86,7 @@ export const DRIVERS: Record<string, ConformanceDriver> = {
 	'fetch-client': typeScriptDriver('fetch-client'),
 	'fetch-client2': typeScriptDriver('fetch-client2'),
 	'java-cxf': mavenDriver('java-cxf', 'ConformanceDriver'),
+	'java-retrofit': mavenDriver('java-retrofit', 'ConformanceDriver'),
 }
 
 /** Run a command, and fail with its output when it exits with an error. */

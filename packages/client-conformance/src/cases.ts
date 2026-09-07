@@ -81,6 +81,7 @@ export const CASES: ConformanceCase[] = [
 		description: 'writes an array in the pipe and space delimited styles',
 		knownDefects: {
 			'java-cxf': 'the client declares a plain List, so JAX-RS repeats the parameter instead of joining it',
+			'java-retrofit': 'the client declares a plain List, so Retrofit repeats the parameter instead of joining it',
 		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
@@ -104,6 +105,7 @@ export const CASES: ConformanceCase[] = [
 		description: 'writes an object in each object style',
 		knownDefects: {
 			'java-cxf': 'the client declares the model as a query parameter, so JAX-RS writes its toString()',
+			'java-retrofit': 'the client declares the model as a query parameter, so Retrofit writes its toString()',
 		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
@@ -124,6 +126,7 @@ export const CASES: ConformanceCase[] = [
 		description: 'percent encodes a joined value once, whichever style joins it',
 		knownDefects: {
 			'java-cxf': 'the client declares the model as a query parameter, so JAX-RS writes its toString()',
+			'java-retrofit': 'the client declares the model as a query parameter, so Retrofit writes its toString()',
 		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(2)
@@ -146,6 +149,7 @@ export const CASES: ConformanceCase[] = [
 		description: 'writes a header parameter, and joins a header array with a comma',
 		knownDefects: {
 			'java-cxf': 'the client declares a plain List as a header, so JAX-RS writes its toString()',
+			'java-retrofit': 'the client declares a plain List as a header, so Retrofit repeats the header instead of joining it',
 		},
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
@@ -350,7 +354,8 @@ export const CASES: ConformanceCase[] = [
 		description: 'writes a null JSON property as a null',
 		expectRequests(requests) {
 			expect(requests).toHaveLength(1)
-			expect(requests[0].headers['content-type']).toEqual(['application/json'])
+			/* A media type may carry a charset, which says nothing about the shape of the body */
+			expect(requests[0].headers['content-type'][0]).toMatch(/^application\/json(;|$)/)
 			const body = JSON.parse(requests[0].body)
 			expect(body).toEqual({
 				name: 'n',
