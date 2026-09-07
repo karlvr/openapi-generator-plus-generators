@@ -20,7 +20,13 @@ export function pom(ctx: JavaModelContext): string {
 	const useBeanValidation = ctx.root.useBeanValidation
 	const useLombok = ctx.root.useLombok
 
-	const jakartaDependencies = when(useJakarta, () => ts`
+	/*
+	 * Every generated file carries a `@Generated` annotation, and a model carries the XML
+	 * binding annotations. Java 11 removed both packages from the JDK, so the project has to
+	 * declare them itself.
+	 */
+	const annotationDependencies = useJakarta
+		? ts`
 <dependency>
 	<groupId>jakarta.annotation</groupId>
 	<artifactId>jakarta.annotation-api</artifactId>
@@ -30,18 +36,17 @@ export function pom(ctx: JavaModelContext): string {
 	<groupId>jakarta.xml.bind</groupId>
 	<artifactId>jakarta.xml.bind-api</artifactId>
 	<version>\${jakarta.xml.bind.version}</version>
-</dependency>`)
-
-	const jacksonProviderDependency = useJakarta
-		? ts`
-<dependency>
-	<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
-	<artifactId>jackson-jakarta-rs-json-provider</artifactId>
 </dependency>`
 		: ts`
 <dependency>
-	<groupId>com.fasterxml.jackson.jaxrs</groupId>
-	<artifactId>jackson-jaxrs-json-provider</artifactId>
+	<groupId>javax.annotation</groupId>
+	<artifactId>javax.annotation-api</artifactId>
+	<version>\${javax.annotation.version}</version>
+</dependency>
+<dependency>
+	<groupId>javax.xml.bind</groupId>
+	<artifactId>jaxb-api</artifactId>
+	<version>\${javax.xml.bind.version}</version>
 </dependency>`
 
 	const validationDependency = when(useBeanValidation, () => ts`
@@ -83,10 +88,16 @@ ${useJakarta
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>${mavenVersion(maven, 'java', '1.8')}</java.version>
 		<retrofit.version>${mavenVersion(maven, 'retrofit', '2.9.0')}</retrofit.version>
+		<retrofit.converter.version>${mavenVersion(maven, 'retrofit_converter', '2.9.0')}</retrofit.converter.version>
 		<jackson.version>${mavenVersion(maven, 'jackson', '2.14.2')}</jackson.version>
-		${when(useJakarta, () => ts`
+		<swagger.version>${mavenVersion(maven, 'swagger', '2.2.5')}</swagger.version>
+		${useJakarta
+			? ts`
 <jakarta.annotation.version>${mavenVersion(maven, 'jakarta_annotation', '2.1.0')}</jakarta.annotation.version>
-<jakarta.xml.bind.version>${mavenVersion(maven, 'jakarta_xml_bind', '3.0.1')}</jakarta.xml.bind.version>`)}
+<jakarta.xml.bind.version>${mavenVersion(maven, 'jakarta_xml_bind', '3.0.1')}</jakarta.xml.bind.version>`
+			: ts`
+<javax.annotation.version>${mavenVersion(maven, 'javax_annotation', '1.3.2')}</javax.annotation.version>
+<javax.xml.bind.version>${mavenVersion(maven, 'javax_xml_bind', '2.3.1')}</javax.xml.bind.version>`}
 		${when(useBeanValidation, () => useJakarta
 			? `<jakarta.validation.version>${mavenVersion(maven, 'jakarta_validation', '3.0.1')}</jakarta.validation.version>`
 			: `<javax.validation.version>${mavenVersion(maven, 'javax_validation', '2.0.0.Final')}</javax.validation.version>`)}
@@ -94,14 +105,24 @@ ${useJakarta
 	</properties>
 
 	<dependencies>
-		${jakartaDependencies}
+		${annotationDependencies}
 		<dependency>
 			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>retrofit</artifactId>
 			<version>\${retrofit.version}</version>
 		</dependency>
+		<!-- Retrofit reads and writes the models with Jackson, which the models are annotated for -->
+		<dependency>
+			<groupId>com.squareup.retrofit2</groupId>
+			<artifactId>converter-jackson</artifactId>
+			<version>\${retrofit.converter.version}</version>
+		</dependency>
 
-		${jacksonProviderDependency}
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>\${swagger.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>

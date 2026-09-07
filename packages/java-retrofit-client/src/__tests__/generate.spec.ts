@@ -1,5 +1,5 @@
 import { testGenerate } from '@openapi-generator-plus/generator-common/dist/testing'
-import { NO_MULTIPART_MESSAGE } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { RETROFIT_UNSUPPORTED_BODY_MESSAGE } from '..'
 import { prepare, DEFAULT_CONFIG } from './common'
 import fs from 'fs'
 import path from 'path'
@@ -16,19 +16,21 @@ const VARIANTS: { name: string; config: Record<string, unknown> }[] = [
 ]
 
 /**
- * Report whether a specification declares a multipart request body.
+ * Report whether a specification declares a request body encoding that this generator does
+ * not render.
  *
- * This generator builds on the JAX-RS client, which declares no multipart API for JAX-RS
- * 2.1. So it refuses such a specification unless the `useJakarta` option is set.
+ * Retrofit encodes a multipart body and a form body with its own annotations, one per
+ * property. This generator writes neither, so it refuses such a specification.
  */
-function declaresMultipart(file: string): boolean {
-	return fs.readFileSync(path.join(basePath, file), 'utf-8').includes('multipart/form-data')
+function declaresUnsupportedBody(file: string): boolean {
+	const content = fs.readFileSync(path.join(basePath, file), 'utf-8')
+	return content.includes('multipart/form-data') || content.includes('application/x-www-form-urlencoded')
 }
 
 for (const variant of VARIANTS) {
 	describe(`generate test cases (${variant.name})`, () => {
 		for (const file of files) {
-			const refused = declaresMultipart(file) && !variant.config.useJakarta
+			const refused = declaresUnsupportedBody(file)
 
 			test(file, async() => {
 				const generate = async() => {
@@ -41,7 +43,7 @@ for (const variant of VARIANTS) {
 				}
 
 				if (refused) {
-					await expect(generate()).rejects.toThrow(NO_MULTIPART_MESSAGE)
+					await expect(generate()).rejects.toThrow(RETROFIT_UNSUPPORTED_BODY_MESSAGE)
 				} else {
 					await generate()
 				}

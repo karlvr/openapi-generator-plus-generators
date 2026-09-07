@@ -19,6 +19,23 @@ import { unexpectedResponseException } from './templates/UnexpectedResponseExcep
 import { unprocessableResponseException } from './templates/UnprocessableResponseException'
 import { unexpectedTimeoutException } from './templates/UnexpectedTimeoutException'
 import { apiAuthorizationProvider } from './templates/spi/ApiAuthorizationProvider'
+/**
+ * Extension to {@link JavaGeneratorContext} for a generator that builds on this one.
+ *
+ * Set the fields before calling this generator's `createGenerator`.
+ */
+export interface JaxrsClientContext extends JavaGeneratorContext {
+	/**
+	 * Whether to emit the JAX-RS client itself: the JAX-RS interface, its implementation, the
+	 * invoker, the providers, the parameter classes and the exceptions.
+	 *
+	 * A generator that renders its own client through the `api` template sets this to false.
+	 * It then gets only that interface, the models and the support classes, and its project
+	 * needs no JAX-RS implementation. Defaults to true.
+	 */
+	emitJaxrsClient?: boolean
+}
+
 export { CodegenOptionsJavaClient } from './types'
 export { packageToPath } from '@openapi-generator-plus/java-jaxrs-generator-common'
 export { ClientContext, ClientRootContext } from './templates/types'
@@ -46,6 +63,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	myContext.formUrlEncodedImplementation = () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`)
 
 	const generatorOptions = options(config, myContext)
+	const emitJaxrsClient = (context as JaxrsClientContext).emitJaxrsClient !== false
 
 	myContext.exportFiles = async(outputPath, doc, rootContext) => {
 		const relativeSourceOutputPath = generatorOptions.relativeSourceOutputPath
@@ -67,6 +85,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			}
 			const apiContent = templates.api ? templates.api(group, ctx) : api(group, ctx)
 			await emitTemplate(apiContent, path.join(outputPath, relativeApiSourceOutputPath, apiPackagePath, `${context.generator().toClassName(group.name)}Api.java`), true)
+		}
+
+		if (!emitJaxrsClient) {
+			await emitTemplate(apiConstants(doc.servers, ctx), path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), true)
+			if (context.exportFiles) {
+				await context.exportFiles(outputPath, doc, rootContext)
+			}
+			return
 		}
 
 		const apiImplPackagePath = packageToPath(generatorOptions.apiImplPackage)
@@ -130,10 +156,14 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		const apiSpecPackagePath = packageToPath(generatorOptions.apiSpecPackage)
 		const result = [
 			path.join(relativeApiSourceOutputPath, apiPackagePath, '*Api.java'),
-			path.join(relativeApiImplSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
-			path.join(relativeApiImplSourceOutputPath, apiSpecPackagePath, '*ApiSpec.java'),
 		]
-		if (generatorOptions.apiParamsPackage) {
+		if (emitJaxrsClient) {
+			result.push(
+				path.join(relativeApiImplSourceOutputPath, apiImplPackagePath, '*ApiImpl.java'),
+				path.join(relativeApiImplSourceOutputPath, apiSpecPackagePath, '*ApiSpec.java'),
+			)
+		}
+		if (emitJaxrsClient && generatorOptions.apiParamsPackage) {
 			const apiParamsPackagePath = packageToPath(generatorOptions.apiParamsPackage)
 			result.push(path.join(relativeApiSourceOutputPath, apiParamsPackagePath, '*Params.java'))
 		}
