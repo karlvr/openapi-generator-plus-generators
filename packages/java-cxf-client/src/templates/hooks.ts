@@ -1,4 +1,4 @@
-import { JavaJaxrsTemplates } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { cxfMultipartTemplates, JavaJaxrsTemplates } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { apiConstantsBody } from './apiConstants'
 import { apiInvokerInterfaceBody } from './apiInvoker'
 import { apiImplHeader, apiImplClassBody } from './apiImpl'
@@ -14,6 +14,9 @@ import { apiTest } from './apiTest'
  * client), the CXF-specific `pom.xml` dependencies, and the generated test scaffold.
  */
 export const hooks: Partial<JavaJaxrsTemplates> = {
+	/* This project depends on CXF, so it uses CXF's multipart API rather than the standard one */
+	...cxfMultipartTemplates,
+
 	apiConstantsBody,
 	apiInvokerInterfaceBody,
 	apiImplHeader,

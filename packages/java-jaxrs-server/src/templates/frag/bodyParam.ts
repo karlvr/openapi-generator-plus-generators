@@ -4,8 +4,9 @@ import { OperationVarsOptions, JavaModelContext } from '@openapi-generator-plus/
 
 /**
  * A request body's own parameter declaration: its Swagger `@Parameter` annotation (if
- * `jaxrs`), then either the CXF multipart-body parameter (for a multipart request body,
- * on the JAX-RS implementation method) or its own native type and name.
+ * `jaxrs`), then either the multipart body parameter that the generator's templates choose
+ * (for a multipart request body, on the JAX-RS implementation method) or its own native type
+ * and name.
  */
 export function bodyParam(requestBody: CodegenRequestBody, opts: OperationVarsOptions, ctx: JavaModelContext): string {
 	const annotation = opts.jaxrs
@@ -17,7 +18,7 @@ export function bodyParam(requestBody: CodegenRequestBody, opts: OperationVarsOp
 		: ''
 
 	const declaration = isContentMultipart(requestBody.defaultContent) && ctx.root.serverGenerator && !opts.service
-		? 'org.apache.cxf.jaxrs.ext.multipart.MultipartBody __multipartBody'
+		? `${ctx.templates.multipartBodyType(ctx)} __multipartBody`
 		: `${requestBody.nativeType} ${identifier(ctx.generatorContext.generator(), requestBody.name)}`
 
 	return `${annotation}${declaration}`

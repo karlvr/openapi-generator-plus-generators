@@ -2,6 +2,7 @@ import { CodegenOperation, CodegenResponse } from '@openapi-generator-plus/types
 import { SKIP, ts, stringLiteral } from '@openapi-generator-plus/template-utils'
 import { JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, InjectParams, JavaModelContext } from './types'
 import { javax } from './helpers'
+import { multipartBodyBuilding, multipartBodyParsing, multipartBodyType } from './multipart/standard'
 
 export { RootContext, JavaModelContext, JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, InjectParams } from './types'
 export { pojo } from './pojo'
@@ -14,6 +15,8 @@ export { noExplodeCollection } from './support/NoExplodeCollection'
 export { noExplodeList } from './support/NoExplodeList'
 export { noExplodeSet } from './support/NoExplodeSet'
 export { noExplodeCollectionParamConverterProvider } from './provider/NoExplodeCollectionParamConverterProvider'
+export { cxfMultipartTemplates } from './multipart/cxf'
+export { multipartPartCanBeNull, NO_MULTIPART_MESSAGE } from './multipart/helpers'
 export { apiParams } from './apiParams'
 export { nestedModels } from './nestedModels'
 export { imports } from './frag/imports'
@@ -112,4 +115,8 @@ export const javaJaxrsCommonTemplates: EffectiveJavaJaxrsTemplates = {
 	apiInvokerInterfaceBody: () => SKIP,
 	apiImplHeader: () => SKIP,
 	apiImplClassBody: () => SKIP,
+
+	multipartBodyType,
+	multipartBodyBuilding,
+	multipartBodyParsing,
 }

@@ -1,6 +1,6 @@
 import { CodegenOperationGroup } from '@openapi-generator-plus/types'
 import { className } from '@openapi-generator-plus/template-utils'
-import { JavaJaxrsTemplates, JavaModelContext, InjectParams } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { cxfMultipartTemplates, InjectParams, JavaJaxrsTemplates, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { pom } from './pom'
 import { apiTest } from './apiTest'
 
@@ -26,6 +26,9 @@ function apiImplClassAnnotations(group: CodegenOperationGroup, ctx: JavaModelCon
  * classes into Spring.
  */
 export const hooks: Partial<JavaJaxrsTemplates> = {
+	/* This project depends on CXF, so it uses CXF's multipart API rather than the standard one */
+	...cxfMultipartTemplates,
+
 	inject,
 	apiImplClassAnnotations,
 	apiServiceImplClassAnnotations: () => '@org.springframework.stereotype.Service',

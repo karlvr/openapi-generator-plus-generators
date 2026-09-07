@@ -1,4 +1,4 @@
-import { CodegenObjectSchema, CodegenInterfaceSchema, CodegenWrapperSchema, CodegenEnumSchema, CodegenProperty, CodegenSchemaInfo, CodegenOperationGroup, CodegenOperation, CodegenResponse, CodegenSecurityScheme } from '@openapi-generator-plus/types'
+import { CodegenObjectSchema, CodegenInterfaceSchema, CodegenWrapperSchema, CodegenEnumSchema, CodegenProperty, CodegenRequestBody, CodegenSchemaInfo, CodegenOperationGroup, CodegenOperation, CodegenResponse, CodegenSecurityScheme } from '@openapi-generator-plus/types'
 import { Skip } from '@openapi-generator-plus/template-utils'
 import { CodegenOptionsJava } from '../types'
 import type { JavaGeneratorContext } from '../index'
@@ -125,6 +125,28 @@ export interface JavaJaxrsTemplates {
 	beanValidationResponseViolation?: (response: CodegenResponse, ctx: JavaModelContext) => string
 	/** Extra annotations on the generated Jackson JAX-RS JSON provider class. */
 	jaxbJsonProviderAnnotations?: (ctx: JavaModelContext) => string | Skip
+	/**
+	 * The Java type that carries a multipart request body on a JAX-RS interface method.
+	 *
+	 * JAX-RS 2.1 declares no multipart API, so this varies with the implementation. The
+	 * default uses the Jakarta REST 3.1 `EntityPart`, and fails for JAX-RS 2.1.
+	 */
+	multipartBodyType?: (ctx: JavaModelContext) => string
+	/**
+	 * Statements that build `__multipartBody` from the request model, for a client.
+	 *
+	 * The last statement must leave a variable named `__multipartBody`, of the type that
+	 * {@link JavaJaxrsTemplates.multipartBodyType} gives. The two go together.
+	 */
+	multipartBodyBuilding?: (requestBody: CodegenRequestBody, ctx: JavaModelContext) => string
+	/**
+	 * Statements that read `__multipartBody` into the request model, for a server.
+	 *
+	 * The parameter holds the type that {@link JavaJaxrsTemplates.multipartBodyType} gives.
+	 * The statements must declare the request model under its own name.
+	 */
+	multipartBodyParsing?: (requestBody: CodegenRequestBody, ctx: JavaModelContext) => string
+
 	/** Extra `<properties>` entries in the generated `pom.xml`, one per line. */
 	pomProperties?: (ctx: JavaModelContext) => string | Skip
 	/** Extra `<dependency>` entries in the generated `pom.xml`, one per line. */

@@ -1,4 +1,4 @@
-import { JavaJaxrsTemplates, JavaModelContext, InjectParams, javax } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { cxfMultipartTemplates, InjectParams, JavaJaxrsTemplates, JavaModelContext, javax } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { pom } from './pom'
 import { apiTest } from './apiTest'
 
@@ -24,6 +24,9 @@ function dependentAnnotation(ctx: JavaModelContext): string {
  * classes into CDI.
  */
 export const hooks: Partial<JavaJaxrsTemplates> = {
+	/* This project depends on CXF, so it uses CXF's multipart API rather than the standard one */
+	...cxfMultipartTemplates,
+
 	inject,
 	apiImplClassAnnotations: (_group, ctx) => dependentAnnotation(ctx),
 	apiServiceImplClassAnnotations: (_group, ctx) => dependentAnnotation(ctx),

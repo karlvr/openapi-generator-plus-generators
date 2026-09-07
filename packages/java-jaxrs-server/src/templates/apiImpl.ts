@@ -17,69 +17,6 @@ import { bodyParam } from './frag/bodyParam'
 import { beanValidationValidateResponse } from './frag/beanValidationValidateResponse'
 import { MyResponse } from '../internal-types'
 
-/** One header's value assignment on a parsed multipart part, converting the attachment header's string value to the header property's type. */
-function multipartHeaderAssignments(entry: CodegenContentPropertyEncoding, ctx: ServerContext): string {
-	if (!entry.headerProperties) {
-		return ''
-	}
-	const generator = ctx.generatorContext.generator()
-	const useLombok = ctx.root.useLombok
-	return idx.allKeys(entry.headerProperties).map(key => {
-		const headerProp = idx.get(entry.headerProperties!, key)!
-		const headerValue = `__attachment.getHeader(${stringLiteral(ctx.generatorContext, key)})`
-		return `\t\t\t\t__part.${setter(headerProp, generator, useLombok)}(${fromString(headerProp, headerValue)});\n`
-	}).join('')
-}
-
-/** One multipart part's assignment into the request body, for an array-valued (repeated) multipart property. */
-function multipartArrayProperty(entry: CodegenContentPropertyEncoding, requestBodyName: string, ctx: ServerContext): string {
-	const generator = ctx.generatorContext.generator()
-	const useLombok = ctx.root.useLombok
-	const { property, valueProperty } = entry
-	const serializedNameLit = stringLiteral(ctx.generatorContext, property.serializedName)
-	const requestBodyIdentifier = identifier(generator, requestBodyName)
-	const componentConcreteType = (property.schema as CodegenArraySchema).component.nativeType.concreteType
-	const addMethodName = `add${capitalize(singular(identifier(generator, property.name)))}`
-
-	const body = valueProperty
-		? `\t\t\t\t${componentConcreteType} __part = new ${componentConcreteType}();\n`
-			+ multipartHeaderAssignments(entry, ctx)
-			+ `\t\t\t\t__part.${setter(valueProperty, generator, useLombok)}(__multipartBody.getAttachmentObject(${stringLiteral(ctx.generatorContext, property.name)}, ${valueProperty.nativeType.concreteType}.class));\n`
-			+ `\t\t\t\t${requestBodyIdentifier}.${addMethodName}(__part);\n`
-		: `\t\t\t\t${requestBodyIdentifier}.${addMethodName}(__multipartBody.getAttachmentObject(${serializedNameLit}, ${componentConcreteType}.class));\n`
-
-	return '\t\tfor (org.apache.cxf.jaxrs.ext.multipart.Attachment __attachment : __multipartBody.getAllAttachments()) {\n'
-		+ `\t\t\tif (${serializedNameLit}.equals(__attachment.getContentId()) || (__attachment.getContentDisposition() != null && ${serializedNameLit}.equals(__attachment.getContentDisposition().getParameter("name")))) {\n`
-		+ body
-		+ '\t\t\t}\n'
-		+ '\t\t}\n'
-}
-
-/** One multipart part's assignment into the request body, for a single-valued multipart property. */
-function multipartSingleProperty(entry: CodegenContentPropertyEncoding, requestBodyName: string, ctx: ServerContext): string {
-	const generator = ctx.generatorContext.generator()
-	const useLombok = ctx.root.useLombok
-	const { property, valueProperty } = entry
-	const serializedNameLit = stringLiteral(ctx.generatorContext, property.serializedName)
-	const requestBodyIdentifier = identifier(generator, requestBodyName)
-	const optionalOpen = property.nullable ? 'java.util.Optional.of(' : ''
-	const optionalClose = property.nullable ? ')' : ''
-
-	const body = valueProperty
-		? `\t\t\t\t${property.nativeType.concreteType} __part = new ${property.nativeType.concreteType}();\n`
-			+ `\t\t\t\t__part.${setter(valueProperty, generator, useLombok)}(__attachment.getObject(${valueProperty.nativeType.concreteType}.class));\n`
-			+ multipartHeaderAssignments(entry, ctx)
-			+ `\t\t\t\t${requestBodyIdentifier}.${setter(property, generator, useLombok)}(${optionalOpen}__part${optionalClose});\n`
-		: `\t\t\t\t${requestBodyIdentifier}.${setter(property, generator, useLombok)}(${optionalOpen}__attachment.getObject(${property.nativeType.concreteType}.class)${optionalClose});\n`
-
-	return '\t\t{\n'
-		+ `\t\t\torg.apache.cxf.jaxrs.ext.multipart.Attachment __attachment = __multipartBody.getAttachment(${serializedNameLit});\n`
-		+ '\t\t\tif (__attachment != null) {\n'
-		+ body
-		+ '\t\t\t}\n'
-		+ '\t\t}\n'
-}
-
 /**
  * Parses the request body's multipart parts into the generated multipart container class,
  * when the operation's request body is multipart. Renders `''` (nothing) otherwise.
@@ -89,19 +26,7 @@ function multipartParsing(operation: CodegenOperation, ctx: ServerContext): stri
 	if (!requestBody?.nativeType || !isContentMultipart(requestBody.defaultContent)) {
 		return ''
 	}
-	const generator = ctx.generatorContext.generator()
-	const properties = requestBody.defaultContent.encoding?.properties ? idx.allValues(requestBody.defaultContent.encoding.properties) : []
-
-	const varDecl = `\t\t${requestBody.nativeType} ${identifier(generator, requestBody.name)} = new ${requestBody.nativeType.concreteType}();\n`
-	const propertyBlocks = properties.map(entry => {
-		const comment = `\t\t/* Multipart: ${entry.property.name} */\n`
-		const assignment = isArray(entry.property)
-			? multipartArrayProperty(entry, requestBody.name, ctx)
-			: multipartSingleProperty(entry, requestBody.name, ctx)
-		return comment + assignment
-	}).join('')
-
-	return `${varDecl}${propertyBlocks}\n`
+	return indent(ctx.templates.multipartBodyParsing(requestBody, ctx), '\t\t')
 }
 
 /** The `final Response.ResponseBuilder __response = ...` declaration, seeded with the default response's status and cache-control header. */

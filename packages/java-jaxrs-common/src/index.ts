@@ -22,6 +22,8 @@ export {
 	fromString,
 	javax, getter, setter,
 	generatedAnnotation,
+	cxfMultipartTemplates,
+	multipartPartCanBeNull, NO_MULTIPART_MESSAGE,
 } from './templates'
 export { escapeString }
 

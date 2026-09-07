@@ -4,7 +4,6 @@ import { indent, isArray, isContentMultipart, identifier, className, stringLiter
 import { imports, operationVars, generatedAnnotation, javax, getter } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { ClientContext } from './types'
 import { bodyParam } from './frag/bodyParam'
-import { multipartPartCanBeNull, multipartProperty } from './frag/multipartProperty'
 import { exceptionName } from './api'
 
 const HTML_ESCAPE_CHARS: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#x27;', '`': '&#x60;', '=': '&#x3D;' }
@@ -19,48 +18,8 @@ function htmlEscape(value: string): string {
 	return value.replace(/[&<>"'`=]/g, char => HTML_ESCAPE_CHARS[char])
 }
 
-/** One array-valued multipart property's `for` loop over its elements, each added as its own attachment. */
-function arrayMultipartBody(entry: CodegenContentPropertyEncoding, propertyVar: string, content: CodegenContent, ctx: ClientContext): string {
-	const { property } = entry
-	const componentSchema = (property.schema as CodegenArraySchema).component
-	const componentType = componentSchema.nativeType.componentType
-	const componentTypeStr = componentType ? String(componentType) : ''
-
-	const comment = `// property ${property.name}, nullable ${String(property.nullable)}, native type ${String(property.nativeType)}\n`
-		+ `// component nullable ${String(componentSchema.nullable)}, native type ${htmlEscape(componentTypeStr)}\n`
-
-	const attachmentCall = multipartProperty(entry, { propertyVar: '__anObject', bodyPartsVar: '__multipartBodyParts', content, schemaUsage: componentSchema }, ctx)
-	const forLoop = (iterable: string) => `for (${componentTypeStr} __anObject : ${iterable}) {\n${indent(attachmentCall, '\t')}\n}`
-
-	if (property.nullable) {
-		return `${comment}if (${propertyVar}.isPresent()) {\n${indent(forLoop(`${propertyVar}.get()`), '\t')}\n}`
-	}
-	return `${comment}${forLoop(propertyVar)}`
-}
-
-/** One multipart property's contribution to the request body being built, guarded by a null check. */
-function multipartPropertyBlock(entry: CodegenContentPropertyEncoding, requestBodyName: string, content: CodegenContent, ctx: ClientContext): string {
-	const generator = ctx.generatorContext.generator()
-	const { property } = entry
-	const propertyVar = `${identifier(generator, requestBodyName)}.${getter(property, generator, ctx.root.useLombok)}()`
-
-	const body = isArray(property)
-		? arrayMultipartBody(entry, propertyVar, content, ctx)
-		: multipartProperty(entry, { propertyVar, bodyPartsVar: '__multipartBodyParts', content, schemaUsage: property }, ctx)
-
-	/*
-	 * A binary part has no null form, so a null value omits the part. Every other part
-	 * encodes null itself, and stays distinct from an absent part.
-	 */
-	const present = property.nullable && !isArray(property) && !multipartPartCanBeNull(entry)
-		? `${propertyVar} != null && ${propertyVar}.isPresent()`
-		: `${propertyVar} != null`
-
-	return `if (${present}) {\n${indent(body, '\t')}\n}\n`
-}
-
 /**
- * The multipart request body this operation sends, built into `__multipartBodyParts`. SKIP
+ * The multipart request body this operation sends, built into `__multipartBody`. SKIP
  * (rendering nothing) when the operation's request body isn't multipart.
  */
 function multipartBuilding(operation: CodegenOperation, ctx: ClientContext): string | Skip {
@@ -68,18 +27,7 @@ function multipartBuilding(operation: CodegenOperation, ctx: ClientContext): str
 	if (!requestBody || !isContentMultipart(requestBody.defaultContent)) {
 		return SKIP
 	}
-
-	const properties = requestBody.defaultContent.encoding?.properties ? idx.allValues(requestBody.defaultContent.encoding.properties) : []
-	const propertyBlocks = properties.map(entry => multipartPropertyBlock(entry, requestBody.name, requestBody.defaultContent, ctx)).join('')
-
-	/* CXF's multipart support is javax-only, so this is hardcoded regardless of `useJakarta` — matching the original template. */
-	return 'java.util.ArrayList<org.apache.cxf.jaxrs.ext.multipart.Attachment> __multipartBodyParts = new java.util.ArrayList<>();\n'
-		+ propertyBlocks
-		+ 'org.apache.cxf.jaxrs.ext.multipart.MultipartBody __multipartBody = new org.apache.cxf.jaxrs.ext.multipart.MultipartBody(\n'
-		+ '\t__multipartBodyParts,\n'
-		+ `\tjavax.ws.rs.core.MediaType.valueOf(${stringLiteral(ctx.generatorContext, requestBody.defaultContent.mediaType.mediaType)}),\n`
-		+ '\ttrue\n'
-		+ ');\n'
+	return ctx.templates.multipartBodyBuilding(requestBody, ctx)
 }
 
 /** The response's contents, dispatched on the response's media type, each throwing its own exception class. */
