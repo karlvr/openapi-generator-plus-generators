@@ -89,6 +89,7 @@ ${useJakarta
 		<java.version>${mavenVersion(maven, 'java', '1.8')}</java.version>
 		<retrofit.version>${mavenVersion(maven, 'retrofit', '2.9.0')}</retrofit.version>
 		<retrofit.converter.version>${mavenVersion(maven, 'retrofit_converter', '2.9.0')}</retrofit.converter.version>
+		<okhttp.version>${mavenVersion(maven, 'okhttp', '3.14.9')}</okhttp.version>
 		<jackson.version>${mavenVersion(maven, 'jackson', '2.14.2')}</jackson.version>
 		<swagger.version>${mavenVersion(maven, 'swagger', '2.2.5')}</swagger.version>
 		${useJakarta
@@ -116,6 +117,12 @@ ${useJakarta
 			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>converter-jackson</artifactId>
 			<version>\${retrofit.converter.version}</version>
+		</dependency>
+		<!-- The generated converter factory builds a form body and a multipart body with OkHttp -->
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>\${okhttp.version}</version>
 		</dependency>
 
 		<dependency>

@@ -26,10 +26,11 @@ export { operationVars, OperationVarsOptions, OperationVarsResult, BodyParamRend
 export { parameterAnnotations } from './frag/parameterAnnotations'
 export { beanValidationValidateParams } from './frag/beanValidationValidateParams'
 export { fromString } from './util/fromString'
-export { javax, getter, setter, isNativeArray, isPrimitiveBool, escapeString } from './helpers'
+export { javax, getter, setter, isNativeArray, isPrimitive, isPrimitiveBool, JAVA_PRIMITIVE_TYPES, escapeString } from './helpers'
 export { generatedAnnotation } from './generatedAnnotation'
 export { apiConstants } from './client/apiConstants'
 export { clientPojoPropertyAnnotations } from './client/pojoPropertyAnnotations'
+export { clientObjectMapperConfiguration } from './client/objectMapper'
 
 /** The response built when bean validation finds a required response body missing. */
 function beanValidationResponseMissing(response: CodegenResponse, ctx: JavaModelContext): string {

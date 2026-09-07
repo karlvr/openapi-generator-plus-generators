@@ -19,6 +19,32 @@ export function isPrimitiveBool(property: CodegenPropertyLike): boolean {
 }
 
 /**
+ * The Java primitive that this generator writes in place of each boxed type, for a value that
+ * is always present.
+ *
+ * A boxed type carries null, and a value that is required and not nullable never is. So the
+ * primitive says more about the value, and costs less.
+ */
+export const JAVA_PRIMITIVE_TYPES: Readonly<Record<string, string>> = {
+	'java.lang.Integer': 'int',
+	'java.lang.Boolean': 'boolean',
+	'java.lang.Long': 'long',
+	'java.lang.Float': 'float',
+	'java.lang.Double': 'double',
+	'java.lang.Byte': 'byte',
+}
+
+/**
+ * Whether this generator writes `property` as a Java primitive.
+ *
+ * A primitive always holds a value, so a comparison with null does not compile. Use this before
+ * writing code that tests whether a value is present.
+ */
+export function isPrimitive(property: CodegenProperty | CodegenParameter): boolean {
+	return Object.values(JAVA_PRIMITIVE_TYPES).includes(property.nativeType.nativeType)
+}
+
+/**
  * Lombok has special treatment for boolean properties that have a prefix of "is".
  * e.g. isAdmin would have `@Getter isAdmin()`, `@Setter setAdmin()`
  * instead of `@Getter isIsAdmin()`, `@Setter setIsAdmin()`

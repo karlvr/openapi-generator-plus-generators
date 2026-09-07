@@ -15,8 +15,8 @@ import javaGenerator, {
 } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { hooks } from './templates/hooks'
 import { api } from './templates/api'
-
-export { RETROFIT_UNSUPPORTED_BODY_MESSAGE } from './templates/api'
+import { apiConverterFactory, encodedRequestBodies } from './templates/ApiConverterFactory'
+import { apiObjectMapper } from './templates/ApiObjectMapper'
 
 /**
  * The configuration to build on, which is the caller's configuration over this generator's
@@ -76,7 +76,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 			await emitTemplate(content, path.join(outputPath, generatorOptions.relativeApiSourceOutputPath, apiPackagePath, name), true)
 		}
 
-		await emitTemplate(apiConstants(doc.servers, ctx), path.join(outputPath, generatorOptions.relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), true)
+		const sourcePath = path.join(outputPath, generatorOptions.relativeSourceOutputPath, apiPackagePath)
+		await emitTemplate(apiConstants(doc.servers, ctx), path.join(sourcePath, 'ApiConstants.java'), true)
+		await emitTemplate(apiObjectMapper(ctx.root), path.join(sourcePath, 'ApiObjectMapper.java'), true)
+		await emitTemplate(apiConverterFactory(encodedRequestBodies(doc.groups), ctx), path.join(sourcePath, 'ApiConverterFactory.java'), true)
 
 		if (context.exportFiles) {
 			await context.exportFiles(outputPath, doc, rootContext)

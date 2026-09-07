@@ -1,4 +1,4 @@
-import { CodegenContentEncodingType, CodegenOperation, CodegenOperationGroup, CodegenParameter, CodegenRequestBody } from '@openapi-generator-plus/types'
+import { CodegenOperation, CodegenOperationGroup, CodegenParameter } from '@openapi-generator-plus/types'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { ts, each, when, identifier, className, stringLiteral, SKIP, Skip } from '@openapi-generator-plus/template-utils'
 import { JavaModelContext, imports, generatedAnnotation } from '@openapi-generator-plus/java-jaxrs-generator-common'
@@ -48,32 +48,18 @@ function parameterDeclaration(parameter: CodegenParameter, ctx: JavaModelContext
 }
 
 /**
- * The message that this generator reports for a request body encoding that it cannot render.
+ * The operation's full parameter list, as it appears within its method signature's parentheses.
  *
- * Retrofit encodes a multipart body with `@Multipart` and one `@Part` per property, and a form
- * body with `@FormUrlEncoded` and one `@Field` per property. This generator renders neither, so
- * it refuses rather than sending the body as JSON, which is what a plain `@Body` would do.
+ * A form body and a multipart body reach the request as a whole model, under `@Body`, the same
+ * as a JSON body does. Retrofit's own `@Field` and `@Part` annotations describe one property
+ * each, and neither carries the encoding styles that OpenAPI declares. The generated
+ * `ApiConverterFactory` encodes the model instead.
  */
-export const RETROFIT_UNSUPPORTED_BODY_MESSAGE =
-	'The Retrofit generator does not render a multipart or form request body. Retrofit encodes '
-	+ 'each with its own annotations, one per property, which this generator does not write. Use '
-	+ 'a generator that renders them, such as java-cxf-client.'
-
-/** Fail generation for a request body whose encoding this generator does not render. */
-function checkRequestBody(requestBody: CodegenRequestBody): void {
-	const encoding = requestBody.defaultContent.encoding?.type
-	if (encoding === CodegenContentEncodingType.MULTIPART || encoding === CodegenContentEncodingType.WWW_FORM_URLENCODED) {
-		throw new Error(RETROFIT_UNSUPPORTED_BODY_MESSAGE)
-	}
-}
-
-/** The operation's full parameter list, as it appears within its method signature's parentheses. */
 function operationParameters(operation: CodegenOperation, ctx: JavaModelContext): string {
 	const parameters = operation.parameters ? idx.allValues(operation.parameters) : []
 	const declarations = parameters.map(parameter => parameterDeclaration(parameter, ctx)).filter(declaration => declaration !== '')
 
 	if (operation.requestBody?.nativeType) {
-		checkRequestBody(operation.requestBody)
 		declarations.push(`@retrofit2.http.Body ${operation.requestBody.nativeType} ${operation.requestBody.name}`)
 	}
 	return declarations.join(', ')

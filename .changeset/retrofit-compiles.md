@@ -17,10 +17,5 @@ declares `swagger-annotations`, which the models carry, and the annotation packa
 Java 11 removed from the JDK. It declares Retrofit's own Jackson converter in place of the
 JAX-RS Jackson provider, which had nothing to register with.
 
-The generator also refuses a multipart or form request body now. Retrofit encodes each with its
-own annotations, one per property, and this generator writes neither. It rendered a plain
-`@Body` instead, which sends the body as JSON, and a form body reached the signature as
-`javax.ws.rs.core.Form`, which no longer resolves.
-
-**Breaking:** a generated project no longer holds the JAX-RS classes, and an API with a
-multipart or form request body no longer generates. Use java-cxf-client for either.
+**Breaking:** a generated project no longer holds the JAX-RS classes. Use java-cxf-client for a
+JAX-RS client.

@@ -6,7 +6,7 @@ import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
 import { javaLikeGenerator, ConstantStyle, options as javaLikeOptions, JavaLikeContext, EnumMemberStyle } from '@openapi-generator-plus/java-like-generator-helper'
 import { capitalize, commonGenerator, configBoolean, configNumber, configObject, configString, configStringArray, debugStringify, nullableConfigString } from '@openapi-generator-plus/generator-common'
 import * as idx from '@openapi-generator-plus/indexed-type'
-import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper, validationRequest, validationResponse, noExplodeCollection, noExplodeList, noExplodeSet, noExplodeCollectionParamConverterProvider, escapeString } from './templates'
+import { javaJaxrsCommonTemplates, JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, pojo, enumTemplate, interfaceTemplate, wrapper, validationRequest, validationResponse, noExplodeCollection, noExplodeList, noExplodeSet, noExplodeCollectionParamConverterProvider, escapeString, JAVA_PRIMITIVE_TYPES } from './templates'
 
 export { CodegenOptionsJava, MavenOptions } from './types'
 export { JavaJaxrsTemplates, EffectiveJavaJaxrsTemplates, JavaModelContext, RootContext, InjectParams, javaJaxrsCommonTemplates } from './templates'
@@ -20,12 +20,13 @@ export {
 	parameterAnnotations,
 	beanValidationValidateParams,
 	fromString,
-	javax, getter, setter,
+	javax, getter, setter, isPrimitive, JAVA_PRIMITIVE_TYPES,
 	generatedAnnotation,
 	cxfMultipartTemplates,
 	multipartPartCanBeNull, NO_MULTIPART_MESSAGE,
 	apiConstants,
 	clientPojoPropertyAnnotations,
+	clientObjectMapperConfiguration,
 } from './templates'
 export { escapeString }
 
@@ -460,20 +461,10 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		},
 		nativeTypeUsageTransformer: ({ required, nullable }) => ({
 			nativeType: function(nativeType, nativeTypeString) {
-				const primitive = required && !nullable
-				if (primitive) {
-					if (nativeTypeString === 'java.lang.Integer') {
-						return 'int'
-					} else if (nativeTypeString === 'java.lang.Boolean') {
-						return 'boolean'
-					} else if (nativeTypeString === 'java.lang.Long') {
-						return 'long'
-					} else if (nativeTypeString === 'java.lang.Float') {
-						return 'float'
-					} else if (nativeTypeString === 'java.lang.Double') {
-						return 'double'
-					} else if (nativeTypeString === 'java.lang.Byte') {
-						return 'byte'
+				if (required && !nullable) {
+					const primitive = JAVA_PRIMITIVE_TYPES[nativeTypeString]
+					if (primitive) {
+						return primitive
 					}
 				}
 				return nativeTypeString

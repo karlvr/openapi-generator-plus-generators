@@ -2,7 +2,6 @@
 "@openapi-generator-plus/java-jaxrs-generator-common": minor
 "@openapi-generator-plus/java-jaxrs-client-generator": major
 "@openapi-generator-plus/java-jaxrs-server-generator": major
-"@openapi-generator-plus/java-retrofit-client-generator": major
 "@openapi-generator-plus/java-cxf-client-generator": patch
 "@openapi-generator-plus/java-cxf-cdi-server-generator": patch
 "@openapi-generator-plus/java-cxf-spring-server-generator": patch
@@ -27,5 +26,5 @@ The CXF generators are unchanged. They now select CXF's multipart API through th
 `multipartBodyType`, `multipartBodyBuilding` and `multipartBodyParsing` hooks, which
 `cxfMultipartTemplates` supplies. A generator for another implementation can supply its own.
 
-**Breaking:** generating a multipart request body with java-jaxrs-client, java-jaxrs-server or
-java-retrofit-client, without `useJakarta`, now fails rather than emitting CXF types.
+**Breaking:** generating a multipart request body with java-jaxrs-client or java-jaxrs-server,
+without `useJakarta`, now fails rather than emitting CXF types.
