@@ -23,9 +23,46 @@ function anObject(): Api.QueryObject {
 	return { name: 'x', count: 1, when: WHEN }
 }
 
+/**
+ * A second object, so a case that sends more than one object can tell them apart.
+ * The driver passes its arguments by position, so two equal objects would hide a
+ * call that passes them in the wrong order.
+ */
+function anotherObject(): Api.QueryObject {
+	return { name: 'y', count: 2, when: WHEN }
+}
+
 /** A joined style writes every property into one value, so it needs values that no style has to encode. */
 function aPlainObject(): Api.QueryObject {
 	return { name: 'x', count: 1 }
+}
+
+/**
+ * How the driver reports one property of a response model: "absent" when the
+ * model carries no value, "null" when it carries a null, and the value as text
+ * otherwise.
+ *
+ * A model holds a null and an absent property differently in each language, and
+ * neither survives a plain serialisation. So the driver names the state itself.
+ */
+function state(model: object, name: string): string {
+	const value = (model as unknown as Record<string, unknown>)[name]
+	if (value === undefined) {
+		return 'absent'
+	}
+	return value === null ? 'null' : String(value)
+}
+
+/** The state of every property of a nullable response model. */
+function statesOf(model: Api.JsonBody): Record<string, string> {
+	return {
+		name: state(model, 'name'),
+		nullableName: state(model, 'nullableName'),
+		nullableCount: state(model, 'nullableCount'),
+		nullableWhen: state(model, 'nullableWhen'),
+		nullableChild: state(model, 'nullableChild'),
+		nullableList: state(model, 'nullableList'),
+	}
 }
 
 interface DriverCall {
@@ -52,6 +89,8 @@ interface AnyResponse {
 	body?: unknown
 	error?: unknown
 	contentType?: string | undefined
+	/** The raw response, which an undocumented response carries so that a caller can read its status. */
+	response?: { status: number }
 }
 
 const baseUrl = process.argv[2]
@@ -73,13 +112,16 @@ async function call(operation: () => Promise<AnyResponse>): Promise<void> {
 		const response = await operation()
 		if (typeof response.status === 'number') {
 			if (response.status >= 400) {
-				calls.push({ outcome: 'error', httpStatus: response.status })
+				calls.push({ outcome: 'error', httpStatus: response.status, value: response.body })
 			} else {
 				calls.push({ outcome: 'success', httpStatus: response.status, value: response.body })
 			}
 		} else if (response.status === 'error') {
 			const error = response.error
 			calls.push({ outcome: 'exception', error: error instanceof Error ? error.message : String(error) })
+		} else if (response.status === 'undocumented' && response.response) {
+			/* The client reports an undeclared status through the raw response, which carries the code */
+			calls.push({ outcome: 'error', httpStatus: response.response.status })
 		} else {
 			calls.push({ outcome: 'exception', error: `The client reported a ${response.status} response of type ${response.contentType}` })
 		}
@@ -103,18 +145,18 @@ async function main(): Promise<void> {
 	await startCase('query-arrays-form')
 	await call(() => QueryApi.queryArrays({
 		formExplode: ['a', 'b'],
-		formNoExplode: ['a', 'b'],
+		formNoExplode: ['c', 'd'],
 		dateTimes: [new Date(WHEN), new Date(WHEN)],
 	}))
 
 	await startCase('query-arrays-delimited')
-	await call(() => QueryApi.queryArrays({ pipe: ['a', 'b'], space: ['a', 'b'] }))
+	await call(() => QueryApi.queryArrays({ pipe: ['a', 'b'], space: ['c', 'd'] }))
 
 	await startCase('query-arrays-empty')
 	await call(() => QueryApi.queryArrays({ formExplode: [], formNoExplode: [], dateTimes: [] }))
 
 	await startCase('query-objects-values')
-	await call(() => QueryApi.queryObjects({ explode: anObject(), noExplode: aPlainObject(), deep: anObject() }))
+	await call(() => QueryApi.queryObjects({ explode: anObject(), noExplode: aPlainObject(), deep: anotherObject() }))
 
 	await startCase('joined-values-encoded-once')
 	await call(() => QueryApi.queryArrays({ formExplode: ['a b'], formNoExplode: ['a b'] }))
@@ -122,6 +164,9 @@ async function main(): Promise<void> {
 
 	await startCase('query-headers-values')
 	await call(() => QueryApi.queryHeaders({ xText: 'hello', xNumbers: [1, 2] }))
+
+	await startCase('query-cookies-values')
+	await call(() => QueryApi.queryCookies({ sessionId: 'abc', theme: 'dark' }))
 
 	await startCase('query-path-segment')
 	await call(() => QueryApi.queryPathSegment(PATH_SEGMENT))
@@ -136,13 +181,13 @@ async function main(): Promise<void> {
 	await call(() => FormApi.formScalars({}))
 
 	await startCase('form-arrays-values')
-	await call(() => FormApi.formArrays({ strs: ['a', 'b'], pipeStrs: ['a', 'b'] }))
+	await call(() => FormApi.formArrays({ strs: ['a', 'b'], pipeStrs: ['c', 'd'] }))
 
 	await startCase('form-arrays-null')
 	await call(() => FormApi.formArrays({ nullableStrs: null, nullablePipeStrs: null }))
 
 	await startCase('form-objects-values')
-	await call(() => FormApi.formObjects({ obj: aPlainObject(), explodeObj: anObject(), deepObj: anObject() }))
+	await call(() => FormApi.formObjects({ obj: aPlainObject(), explodeObj: anObject(), deepObj: anotherObject() }))
 
 	await startCase('form-objects-null')
 	await call(() => FormApi.formObjects({ nullableObj: null, nullableExplodeObj: null, nullableDeepObj: null }))
@@ -172,11 +217,32 @@ async function main(): Promise<void> {
 	await startCase('response-json')
 	await call(() => ResponseApi.responseJson())
 
+	await startCase('response-content-type-charset')
+	await call(() => ResponseApi.responseJson())
+
+	await startCase('response-unknown-property')
+	await call(() => ResponseApi.responseJson())
+
+	await startCase('response-array')
+	await call(() => ResponseApi.responseArray())
+
+	await startCase('response-null-properties')
+	await call(async() => {
+		const result = await ResponseApi.responseNullable()
+		return result.status === 200 ? { status: 200, body: statesOf(result.body) } : result
+	})
+
 	await startCase('response-none')
 	await call(() => ResponseApi.responseNone())
 
 	await startCase('response-error')
 	await call(() => ResponseApi.responseError())
+
+	await startCase('response-error-body')
+	await call(() => ResponseApi.responseError())
+
+	await startCase('response-undocumented-status')
+	await call(() => ResponseApi.responseJson())
 }
 
 main().then(() => {

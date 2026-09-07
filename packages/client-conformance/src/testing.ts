@@ -6,14 +6,39 @@ import * as os from 'os'
 import * as path from 'path'
 import { CASES } from './cases'
 import { DRIVERS } from './drivers'
-import { CannedResponse, ConformanceServer, startConformanceServer } from './server'
-import { DriverResults } from './types'
+import { CannedResponse, ConformanceServer, CONFORMANCE_BASE_PATH, RecordedRequest, startConformanceServer } from './server'
+import { DriverResults, ExpectedRequest } from './types'
 
 /** The spec that every conformance case calls. */
 export const CONFORMANCE_SPEC = path.join(__dirname, '..', 'specs', 'conformance.yml')
 
 /** Generating, installing and building a client takes a while. */
 const TIMEOUT = 600000
+
+/** The text of `value`, escaped so that a regular expression matches it exactly. */
+function escapeForRegExp(value: string): string {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/** The pattern that a request line must match to satisfy `expected`. */
+function requestLinePattern(expected: ExpectedRequest): RegExp {
+	const path = typeof expected.path === 'string' ? escapeForRegExp(expected.path) : `(?:${expected.path.source})`
+	return new RegExp(`^${escapeForRegExp(`${expected.method} ${CONFORMANCE_BASE_PATH}`)}${path}$`)
+}
+
+/**
+ * Check the method and the path of each request, in the order that they arrived.
+ *
+ * A request line holds the method and the path together, so a failure names the
+ * request that arrived rather than one field of it.
+ */
+function expectRequestLines(requests: RecordedRequest[], expected: ExpectedRequest[]): void {
+	expect(requests.map(request => `${request.method} ${request.path}`)).toHaveLength(expected.length)
+
+	expected.forEach((one, index) => {
+		expect(`${requests[index].method} ${requests[index].path}`).toMatch(requestLinePattern(one))
+	})
+}
 
 /** How to run the conformance suite against one generator. */
 export interface ConformanceOptions {
@@ -79,6 +104,22 @@ export function runConformanceTests(options: ConformanceOptions): void {
 			}
 		})
 
+		/*
+		 * The suite matches a driver's report to a case by its id. So a report that
+		 * carries an id that no case declares would otherwise go unnoticed, and a
+		 * mistyped id would only show as a case that reported nothing.
+		 */
+		test('the driver reports every case that it runs, and no other', () => {
+			const expected = CASES
+				.filter(one => !(one.skipDrivers && one.skipDrivers[options.driver]))
+				.map(one => one.id)
+			expect(results.cases.map(one => one.id)).toEqual(expected)
+		})
+
+		test('the driver announces a case before it calls', () => {
+			expect(server!.unattributedRequests()).toEqual([])
+		})
+
 		for (const conformanceCase of CASES) {
 			const skipReason = conformanceCase.skipDrivers && conformanceCase.skipDrivers[options.driver]
 			const defectReason = conformanceCase.knownDefects && conformanceCase.knownDefects[options.driver]
@@ -96,18 +137,26 @@ export function runConformanceTests(options: ConformanceOptions): void {
 				const reported = results.cases.filter(one => one.id === conformanceCase.id)
 				expect(reported).toHaveLength(1)
 
+				/*
+				 * A call that threw says more than any assertion that follows it, because
+				 * a client that threw may have sent nothing at all. A case that asserts on
+				 * the calls itself decides what an exception means.
+				 */
+				if (!conformanceCase.expectCalls) {
+					for (const call of reported[0].calls) {
+						if (call.outcome === 'exception') {
+							throw new Error(`The client threw an unexpected error: ${call.error}`)
+						}
+					}
+				}
+
+				const requests = server!.requests(conformanceCase.id)
+				expectRequestLines(requests, conformanceCase.requests)
 				if (conformanceCase.expectRequests) {
-					conformanceCase.expectRequests(server!.requests(conformanceCase.id))
+					conformanceCase.expectRequests(requests)
 				}
 				if (conformanceCase.expectCalls) {
 					conformanceCase.expectCalls(reported[0].calls)
-				}
-
-				/* A call that threw an unexpected error means the client failed, not the server */
-				for (const call of reported[0].calls) {
-					if (call.outcome === 'exception' && !conformanceCase.expectCalls) {
-						throw new Error(`The client threw an unexpected error: ${call.error}`)
-					}
 				}
 			})
 		}

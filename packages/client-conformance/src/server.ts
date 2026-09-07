@@ -36,8 +36,20 @@ export interface CannedResponse {
 	body?: string
 }
 
-/** The path that a driver posts to, to say which case it is about to run. */
+/** The path that a driver posts to, to say which case it is about to run. Relative to the base path. */
 export const CASE_CONTROL_PATH = '/__conformance/case'
+
+/**
+ * The path that the conformance server serves under.
+ *
+ * A real server URL usually carries a path, and a client must keep that path in
+ * front of every operation path. A client that drops it still reaches this
+ * server, so the server serves under a base path to make the mistake visible.
+ *
+ * A recorded request holds the path exactly as it arrived, so it includes this
+ * prefix.
+ */
+export const CONFORMANCE_BASE_PATH = '/api/v1'
 
 const DEFAULT_RESPONSE: Required<Pick<CannedResponse, 'status' | 'body'>> = {
 	status: 200,
@@ -55,7 +67,10 @@ const DEFAULT_RESPONSE: Required<Pick<CannedResponse, 'status' | 'body'>> = {
  * Start one with {@link startConformanceServer}. Close it when the suite ends.
  */
 export interface ConformanceServer {
-	/** The base URL to give to the generated client. It has no trailing slash. */
+	/**
+	 * The base URL to give to the generated client. It carries a path, and it has
+	 * no trailing slash.
+	 */
 	readonly baseUrl: string
 	/** The requests that arrived during `caseId`, in the order that they arrived. */
 	requests(caseId: string): RecordedRequest[]
@@ -76,7 +91,7 @@ export function startConformanceServer(responses: Record<string, CannedResponse>
 
 	const server = http.createServer((req, res) => {
 		readBody(req).then((body) => {
-			if (req.url === CASE_CONTROL_PATH && req.method === 'POST') {
+			if (req.url === `${CONFORMANCE_BASE_PATH}${CASE_CONTROL_PATH}` && req.method === 'POST') {
 				currentCase = body.toString('utf-8')
 				if (!recorded[currentCase]) {
 					recorded[currentCase] = []
@@ -145,7 +160,7 @@ export function startConformanceServer(responses: Record<string, CannedResponse>
 		server.listen(0, '127.0.0.1', () => {
 			const address = server.address() as AddressInfo
 			resolve({
-				baseUrl: `http://127.0.0.1:${address.port}`,
+				baseUrl: `http://127.0.0.1:${address.port}${CONFORMANCE_BASE_PATH}`,
 				requests: (caseId) => recorded[caseId] || [],
 				unattributedRequests: () => unattributed,
 				close: () => new Promise((resolveClose, rejectClose) => {

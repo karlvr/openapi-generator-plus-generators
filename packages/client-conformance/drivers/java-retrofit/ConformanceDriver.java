@@ -49,6 +49,11 @@ public class ConformanceDriver {
 		retrofit2.Response<?> run() throws Exception;
 	}
 
+	/** Turns a successful response body into the value that the driver reports. */
+	private interface Report {
+		Object of(Object body);
+	}
+
 	private final ObjectMapper mapper = ApiObjectMapper.create();
 	private final List<Map<String, Object>> results = new ArrayList<>();
 	private List<Map<String, Object>> calls = new ArrayList<>();
@@ -60,9 +65,47 @@ public class ConformanceDriver {
 			.when(OffsetDateTime.parse(WHEN));
 	}
 
+	/**
+	 * A second object, so a case that sends more than one object can tell them apart.
+	 * The driver passes its arguments by position, so two equal objects would hide a
+	 * call that passes them in the wrong order.
+	 */
+	private com.example.model.QueryObject anotherObject() {
+		return new com.example.model.QueryObject()
+			.name("y")
+			.count(2)
+			.when(OffsetDateTime.parse(WHEN));
+	}
+
 	/** A joined style writes every property into one value, so it needs values that no style has to encode. */
 	private com.example.model.QueryObject aPlainObject() {
 		return new com.example.model.QueryObject().name("x").count(1);
+	}
+
+	/**
+	 * How the driver reports one nullable property: "absent" when the model carries
+	 * no value, "null" when it carries a null, and the value as text otherwise.
+	 *
+	 * A model holds a null and an absent property differently in each language, and
+	 * neither survives a plain serialisation. So the driver names the state itself.
+	 */
+	private static String state(Optional<?> value) {
+		if (value == null) {
+			return "absent";
+		}
+		return value.isPresent() ? String.valueOf(value.get()) : "null";
+	}
+
+	/** The state of every property of a nullable response model. */
+	private Map<String, Object> statesOf(com.example.model.JsonBody body) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("name", body.getName());
+		states.put("nullableName", state(body.getNullableName()));
+		states.put("nullableCount", state(body.getNullableCount()));
+		states.put("nullableWhen", state(body.getNullableWhen()));
+		states.put("nullableChild", state(body.getNullableChild()));
+		states.put("nullableList", state(body.getNullableList()));
+		return states;
 	}
 
 	private void run() throws Exception {
@@ -91,13 +134,13 @@ public class ConformanceDriver {
 		startCase("query-arrays-form");
 		call(() -> query.queryArrays(
 			Arrays.asList("a", "b"),
-			new com.example.support.NoExplodeList<>(Arrays.asList("a", "b")),
+			new com.example.support.NoExplodeList<>(Arrays.asList("c", "d")),
 			null,
 			null,
 			Arrays.asList(OffsetDateTime.parse(WHEN), OffsetDateTime.parse(WHEN))).execute());
 
 		startCase("query-arrays-delimited");
-		call(() -> query.queryArrays(null, null, Arrays.asList("a", "b"), Arrays.asList("a", "b"), null).execute());
+		call(() -> query.queryArrays(null, null, Arrays.asList("a", "b"), Arrays.asList("c", "d"), null).execute());
 
 		startCase("query-arrays-empty");
 		call(() -> query.queryArrays(
@@ -108,7 +151,7 @@ public class ConformanceDriver {
 			new ArrayList<>()).execute());
 
 		startCase("query-objects-values");
-		call(() -> query.queryObjects(anObject(), aPlainObject(), anObject()).execute());
+		call(() -> query.queryObjects(anObject(), aPlainObject(), anotherObject()).execute());
 
 		startCase("joined-values-encoded-once");
 		call(() -> query.queryArrays(
@@ -124,6 +167,10 @@ public class ConformanceDriver {
 
 		startCase("query-headers-values");
 		call(() -> query.queryHeaders("hello", Arrays.asList(1, 2)).execute());
+
+		startCase("query-cookies-values");
+		/* Retrofit has no cookie parameter annotation, so the generated method takes none */
+		call(() -> query.queryCookies().execute());
 
 		startCase("query-path-segment");
 		call(() -> query.queryPathSegment(PATH_SEGMENT).execute());
@@ -151,7 +198,7 @@ public class ConformanceDriver {
 		startCase("form-arrays-values");
 		call(() -> form.formArrays(new com.example.model.FormArraysRequest()
 			.strs(Arrays.asList("a", "b"))
-			.pipeStrs(Arrays.asList("a", "b"))).execute());
+			.pipeStrs(Arrays.asList("c", "d"))).execute());
 
 		startCase("form-arrays-null");
 		call(() -> {
@@ -165,7 +212,7 @@ public class ConformanceDriver {
 		call(() -> form.formObjects(new com.example.model.FormObjectsRequest()
 			.obj(aPlainObject())
 			.explodeObj(anObject())
-			.deepObj(anObject())).execute());
+			.deepObj(anotherObject())).execute());
 
 		startCase("form-objects-null");
 		call(() -> {
@@ -214,11 +261,29 @@ public class ConformanceDriver {
 		startCase("response-json");
 		call(() -> response.responseJson().execute());
 
+		startCase("response-content-type-charset");
+		call(() -> response.responseJson().execute());
+
+		startCase("response-unknown-property");
+		call(() -> response.responseJson().execute());
+
+		startCase("response-array");
+		call(() -> response.responseArray().execute());
+
+		startCase("response-null-properties");
+		call(() -> response.responseNullable().execute(), body -> statesOf((com.example.model.JsonBody) body));
+
 		startCase("response-none");
 		call(() -> response.responseNone().execute());
 
 		startCase("response-error");
 		call(() -> response.responseError().execute());
+
+		startCase("response-error-body");
+		call(() -> response.responseError().execute());
+
+		startCase("response-undocumented-status");
+		call(() -> response.responseJson().execute());
 
 		writeResults();
 	}
@@ -244,19 +309,24 @@ public class ConformanceDriver {
 		connection.disconnect();
 	}
 
+	/** Make one call, and record the response body that the client produced. */
+	private void call(Operation operation) {
+		call(operation, body -> body);
+	}
+
 	/**
-	 * Make one call, and record what the client produced.
+	 * Make one call, and record the value that `report` makes of the response body.
 	 *
 	 * Retrofit reports a failure response as a response, not as an exception, so the driver
 	 * reads the status itself. Only a fault in the client itself throws.
 	 */
-	private void call(Operation operation) {
+	private void call(Operation operation, Report report) {
 		Map<String, Object> call = new LinkedHashMap<>();
 		try {
 			retrofit2.Response<?> response = operation.run();
 			if (response.isSuccessful()) {
 				call.put("outcome", "success");
-				call.put("value", response.body());
+				call.put("value", report.of(response.body()));
 			} else {
 				call.put("outcome", "error");
 				call.put("httpStatus", response.code());

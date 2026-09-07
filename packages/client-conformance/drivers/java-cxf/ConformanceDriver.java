@@ -61,9 +61,47 @@ public class ConformanceDriver {
 			.when(OffsetDateTime.parse(WHEN));
 	}
 
+	/**
+	 * A second object, so a case that sends more than one object can tell them apart.
+	 * The driver passes its arguments by position, so two equal objects would hide a
+	 * call that passes them in the wrong order.
+	 */
+	private com.example.model.QueryObject anotherObject() {
+		return new com.example.model.QueryObject()
+			.name("y")
+			.count(2)
+			.when(OffsetDateTime.parse(WHEN));
+	}
+
 	/** A joined style writes every property into one value, so it needs values that no style has to encode. */
 	private com.example.model.QueryObject aPlainObject() {
 		return new com.example.model.QueryObject().name("x").count(1);
+	}
+
+	/**
+	 * How the driver reports one nullable property: "absent" when the model carries
+	 * no value, "null" when it carries a null, and the value as text otherwise.
+	 *
+	 * A model holds a null and an absent property differently in each language, and
+	 * neither survives a plain serialisation. So the driver names the state itself.
+	 */
+	private static String state(Optional<?> value) {
+		if (value == null) {
+			return "absent";
+		}
+		return value.isPresent() ? String.valueOf(value.get()) : "null";
+	}
+
+	/** The state of every property of a nullable response model. */
+	private Map<String, Object> statesOf(com.example.model.JsonBody body) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("name", body.getName());
+		states.put("nullableName", state(body.getNullableName()));
+		states.put("nullableCount", state(body.getNullableCount()));
+		states.put("nullableWhen", state(body.getNullableWhen()));
+		states.put("nullableChild", state(body.getNullableChild()));
+		states.put("nullableList", state(body.getNullableList()));
+		return states;
 	}
 
 	private void run() throws Exception {
@@ -100,7 +138,7 @@ public class ConformanceDriver {
 		call(() -> {
 			query.queryArrays(new com.example.params.QueryArraysParams()
 				.formExplode(Arrays.asList("a", "b"))
-				.formNoExplode(new com.example.support.NoExplodeList<>(Arrays.asList("a", "b")))
+				.formNoExplode(new com.example.support.NoExplodeList<>(Arrays.asList("c", "d")))
 				.dateTimes(Arrays.asList(OffsetDateTime.parse(WHEN), OffsetDateTime.parse(WHEN))));
 			return null;
 		});
@@ -109,7 +147,7 @@ public class ConformanceDriver {
 		call(() -> {
 			query.queryArrays(new com.example.params.QueryArraysParams()
 				.pipe(Arrays.asList("a", "b"))
-				.space(Arrays.asList("a", "b")));
+				.space(Arrays.asList("c", "d")));
 			return null;
 		});
 
@@ -127,7 +165,7 @@ public class ConformanceDriver {
 			query.queryObjects(new com.example.params.QueryObjectsParams()
 				.explode(anObject())
 				.noExplode(aPlainObject())
-				.deep(anObject()));
+				.deep(anotherObject()));
 			return null;
 		});
 
@@ -149,6 +187,14 @@ public class ConformanceDriver {
 			query.queryHeaders(new com.example.params.QueryHeadersParams()
 				.xText("hello")
 				.xNumbers(Arrays.asList(1, 2)));
+			return null;
+		});
+
+		startCase("query-cookies-values");
+		call(() -> {
+			query.queryCookies(new com.example.params.QueryCookiesParams()
+				.sessionId("abc")
+				.theme("dark"));
 			return null;
 		});
 
@@ -207,6 +253,18 @@ public class ConformanceDriver {
 		startCase("response-json");
 		call(() -> response.responseJson());
 
+		startCase("response-content-type-charset");
+		call(() -> response.responseJson());
+
+		startCase("response-unknown-property");
+		call(() -> response.responseJson());
+
+		startCase("response-array");
+		call(() -> response.responseArray());
+
+		startCase("response-null-properties");
+		call(() -> statesOf(response.responseNullable()));
+
 		startCase("response-none");
 		call(() -> {
 			response.responseNone();
@@ -215,6 +273,12 @@ public class ConformanceDriver {
 
 		startCase("response-error");
 		call(() -> response.responseError());
+
+		startCase("response-error-body");
+		call(() -> response.responseError());
+
+		startCase("response-undocumented-status");
+		call(() -> response.responseJson());
 
 		writeResults();
 	}

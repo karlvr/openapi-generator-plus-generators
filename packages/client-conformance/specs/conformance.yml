@@ -145,6 +145,23 @@ paths:
         "200":
           description: OK
 
+  /query/cookies:
+    get:
+      operationId: queryCookies
+      description: Cookie parameters, which a client writes into one Cookie header.
+      parameters:
+        - name: sessionId
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
   /query/path/{value}/end:
     get:
       operationId: queryPathSegment
@@ -368,6 +385,32 @@ paths:
         "204":
           description: No content
 
+  /response/nullable:
+    get:
+      operationId: responseNullable
+      description: A response whose properties show a null apart from an absent property.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonBody'
+
+  /response/array:
+    get:
+      operationId: responseArray
+      description: A response that is an array of models.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResponseObject'
+
   /response/error:
     get:
       operationId: responseError
@@ -437,6 +480,9 @@ components:
         when:
           type: string
           format: date-time
+        day:
+          type: string
+          format: date
 
     ErrorObject:
       type: object

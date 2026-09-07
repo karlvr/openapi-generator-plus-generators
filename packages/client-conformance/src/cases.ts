@@ -1,4 +1,5 @@
 import { formPairs, multipartParts, partNamed, queryPairs, valueOf, valuesOf } from './parse'
+import { CONFORMANCE_BASE_PATH } from './server'
 import { ConformanceCase } from './types'
 
 /** The date-time that every case sends, and the text that a client must produce for it. */
@@ -7,8 +8,14 @@ export const WHEN = '2020-01-02T03:04:05.678Z'
 /** The date that every case sends. A date has no time, so a client sends the text unchanged. */
 export const DAY = '2020-01-02'
 
-/** The object that the object cases send. */
+/** The object that a case sends where the style names each property. */
 export const OBJECT = { name: 'x', count: 1, when: WHEN }
+
+/** The model that the response cases send, and the value that a client must make of it. */
+export const RESPONSE_OBJECT = { name: 'n', count: 2, when: WHEN, day: DAY }
+
+/** A second model, so the array case can show the order that a client keeps. */
+export const OTHER_RESPONSE_OBJECT = { name: 'm', count: 3, when: WHEN, day: DAY }
 
 /**
  * The path segment that the path case sends.
@@ -18,6 +25,20 @@ export const OBJECT = { name: 'x', count: 1, when: WHEN }
  * and leave the rest alone.
  */
 export const PATH_SEGMENT = 'a b/c?d#e&f+g%h:i@j'
+
+/**
+ * The text of a percent encoded path, decoded once.
+ *
+ * An invalid escape gives back the text unchanged. So a client that left a "%"
+ * alone fails the comparison that follows, rather than the decoder.
+ */
+function decodeOnce(text: string): string {
+	try {
+		return decodeURIComponent(text)
+	} catch {
+		return text
+	}
+}
 
 /**
  * Every conformance case, in the order that a driver runs them.
@@ -34,10 +55,9 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'query-scalars-values',
 		description: 'writes one query parameter for each scalar type',
+		requests: [{ method: 'GET', path: '/query/scalars' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = queryPairs(requests[0])
-			expect(requests[0].path).toBe('/query/scalars')
 			expect(valueOf(pairs, 'str')).toBe('hello world')
 			expect(valueOf(pairs, 'num')).toBe('42')
 			expect(valueOf(pairs, 'dbl')).toBe('1.5')
@@ -50,16 +70,16 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'query-scalars-absent',
 		description: 'omits an absent query parameter, and sends no query string',
+		requests: [{ method: 'GET', path: '/query/scalars' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			expect(requests[0].query).toBe('')
 		},
 	},
 	{
 		id: 'query-scalars-empty-string',
 		description: 'sends an empty string, which is not the same as an absent value',
+		requests: [{ method: 'GET', path: '/query/scalars' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = queryPairs(requests[0])
 			expect(valueOf(pairs, 'str')).toBe('')
 			expect(valueOf(pairs, 'num')).toBeUndefined()
@@ -68,33 +88,33 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'query-arrays-form',
 		description: 'writes an array in the form style, exploded and joined',
+		requests: [{ method: 'GET', path: '/query/arrays' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = queryPairs(requests[0])
 			expect(valuesOf(pairs, 'formExplode')).toEqual(['a', 'b'])
-			expect(valueOf(pairs, 'formNoExplode')).toBe('a,b')
+			expect(valueOf(pairs, 'formNoExplode')).toBe('c,d')
 			expect(valuesOf(pairs, 'dateTimes')).toEqual([WHEN, WHEN])
 		},
 	},
 	{
 		id: 'query-arrays-delimited',
 		description: 'writes an array in the pipe and space delimited styles',
+		requests: [{ method: 'GET', path: '/query/arrays' }],
 		knownDefects: {
 			'java-cxf': 'the client declares a plain List, so JAX-RS repeats the parameter instead of joining it',
 			'java-retrofit': 'the client declares a plain List, so Retrofit repeats the parameter instead of joining it',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = queryPairs(requests[0])
 			expect(valueOf(pairs, 'pipe')).toBe('a|b')
-			expect(valueOf(pairs, 'space')).toBe('a b')
+			expect(valueOf(pairs, 'space')).toBe('c d')
 		},
 	},
 	{
 		id: 'query-arrays-empty',
 		description: 'writes an empty array as no value when it explodes, and as an empty value when it joins',
+		requests: [{ method: 'GET', path: '/query/arrays' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = queryPairs(requests[0])
 			expect(valuesOf(pairs, 'formExplode')).toEqual([])
 			expect(valueOf(pairs, 'formNoExplode')).toBe('')
@@ -103,12 +123,12 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'query-objects-values',
 		description: 'writes an object in each object style',
+		requests: [{ method: 'GET', path: '/query/objects' }],
 		knownDefects: {
 			'java-cxf': 'the client declares the model as a query parameter, so JAX-RS writes its toString()',
 			'java-retrofit': 'the client declares the model as a query parameter, so Retrofit writes its toString()',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = queryPairs(requests[0])
 			/* An exploded object names each property, so it writes bare names */
 			expect(valueOf(pairs, 'name')).toBe('x')
@@ -116,21 +136,23 @@ export const CASES: ConformanceCase[] = [
 			expect(valueOf(pairs, 'when')).toBe(WHEN)
 			/* A joined object writes one value that names each property in turn */
 			expect(valueOf(pairs, 'noExplode')).toBe('name,x,count,1')
-			expect(valueOf(pairs, 'deep[name]')).toBe('x')
-			expect(valueOf(pairs, 'deep[count]')).toBe('1')
+			expect(valueOf(pairs, 'deep[name]')).toBe('y')
+			expect(valueOf(pairs, 'deep[count]')).toBe('2')
 			expect(valueOf(pairs, 'deep[when]')).toBe(WHEN)
 		},
 	},
 	{
 		id: 'joined-values-encoded-once',
 		description: 'percent encodes a joined value once, whichever style joins it',
+		requests: [
+			{ method: 'GET', path: '/query/arrays' },
+			{ method: 'GET', path: '/query/objects' },
+		],
 		knownDefects: {
 			'java-cxf': 'the client declares the model as a query parameter, so JAX-RS writes its toString()',
 			'java-retrofit': 'the client declares the model as a query parameter, so Retrofit writes its toString()',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(2)
-
 			/*
 			 * One decode must give back the value. A value that still holds a percent
 			 * escape after one decode went through two encoders.
@@ -147,31 +169,47 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'query-headers-values',
 		description: 'writes a header parameter, and joins a header array with a comma',
+		requests: [{ method: 'GET', path: '/query/headers' }],
 		knownDefects: {
 			'java-cxf': 'the client declares a plain List as a header, so JAX-RS writes its toString()',
 			'java-retrofit': 'the client declares a plain List as a header, so Retrofit repeats the header instead of joining it',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			expect(requests[0].headers['x-text']).toEqual(['hello'])
 			expect(requests[0].headers['x-numbers']).toEqual(['1,2'])
 		},
 	},
 	{
+		id: 'query-cookies-values',
+		description: 'writes a cookie parameter into the Cookie header',
+		requests: [{ method: 'GET', path: '/query/cookies' }],
+		knownDefects: {
+			'java-retrofit': 'Retrofit has no cookie parameter annotation, so the client drops the parameter',
+		},
+		expectRequests(requests) {
+			/*
+			 * RFC 6265 lets a client send one Cookie header or several, and lets it
+			 * choose the space after each ";". The order of the cookies carries no
+			 * meaning either. So the suite checks the pairs, sorted.
+			 */
+			const cookies = (requests[0].headers['cookie'] || []).join('; ')
+			expect(cookies.split(/;\s*/).sort()).toEqual(['sessionId=abc', 'theme=dark'])
+		},
+	},
+	{
 		id: 'query-path-segment',
 		description: 'encodes only the characters that a path segment cannot carry',
+		/* The declared path shows that the value stayed inside one segment */
+		requests: [{ method: 'GET', path: /\/query\/path\/[^/?]+\/end/ }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
-
 			/*
 			 * A path segment may carry the sub-delims and ":" and "@" unencoded, and a client
 			 * may encode them anyway. So the suite checks the value that arrives, not the
 			 * exact encoding. One decode must give back the value.
 			 */
-			expect(decodeURIComponent(requests[0].path)).toBe(`/query/path/${PATH_SEGMENT}/end`)
+			expect(decodeOnce(requests[0].path)).toBe(`${CONFORMANCE_BASE_PATH}/query/path/${PATH_SEGMENT}/end`)
 
-			/* The value must stay inside its own segment, and must not start a query */
-			expect(requests[0].path.split('/')).toHaveLength(5)
+			/* The value must not start a query */
 			expect(requests[0].query).toBe('')
 		},
 	},
@@ -183,11 +221,11 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'form-scalars-values',
 		description: 'writes one form property for each scalar type',
+		requests: [{ method: 'POST', path: '/form/scalars' }],
 		skipDrivers: {
 			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			expect(requests[0].headers['content-type']).toEqual(['application/x-www-form-urlencoded'])
 			const pairs = formPairs(requests[0])
 			expect(valueOf(pairs, 'str')).toBe('a')
@@ -199,11 +237,11 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'form-scalars-null',
 		description: 'writes a null form property as an empty value',
+		requests: [{ method: 'POST', path: '/form/scalars' }],
 		skipDrivers: {
 			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = formPairs(requests[0])
 			/* A form encoding carries text, so it has no null. An empty value stands for it. */
 			expect(valueOf(pairs, 'nullableStr')).toBe('')
@@ -215,35 +253,35 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'form-scalars-absent',
 		description: 'omits an absent form property, so null and absent stay distinct',
+		requests: [{ method: 'POST', path: '/form/scalars' }],
 		skipDrivers: {
 			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			expect(formPairs(requests[0])).toEqual([])
 		},
 	},
 	{
 		id: 'form-arrays-values',
 		description: 'writes a form array in each collection style',
+		requests: [{ method: 'POST', path: '/form/arrays' }],
 		skipDrivers: {
 			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = formPairs(requests[0])
 			expect(valuesOf(pairs, 'strs')).toEqual(['a', 'b'])
-			expect(valueOf(pairs, 'pipeStrs')).toBe('a|b')
+			expect(valueOf(pairs, 'pipeStrs')).toBe('c|d')
 		},
 	},
 	{
 		id: 'form-arrays-null',
 		description: 'writes a null form array as an empty value',
+		requests: [{ method: 'POST', path: '/form/arrays' }],
 		skipDrivers: {
 			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = formPairs(requests[0])
 			expect(valueOf(pairs, 'nullableStrs')).toBe('')
 			expect(valueOf(pairs, 'nullablePipeStrs')).toBe('')
@@ -252,29 +290,29 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'form-objects-values',
 		description: 'writes a form object in each object style',
+		requests: [{ method: 'POST', path: '/form/objects' }],
 		skipDrivers: {
 			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = formPairs(requests[0])
 			expect(valueOf(pairs, 'obj')).toBe('name,x,count,1')
 			expect(valueOf(pairs, 'name')).toBe('x')
 			expect(valueOf(pairs, 'count')).toBe('1')
 			expect(valueOf(pairs, 'when')).toBe(WHEN)
-			expect(valueOf(pairs, 'deepObj[name]')).toBe('x')
-			expect(valueOf(pairs, 'deepObj[count]')).toBe('1')
+			expect(valueOf(pairs, 'deepObj[name]')).toBe('y')
+			expect(valueOf(pairs, 'deepObj[count]')).toBe('2')
 			expect(valueOf(pairs, 'deepObj[when]')).toBe(WHEN)
 		},
 	},
 	{
 		id: 'form-objects-null',
 		description: 'writes a null form object as an empty value, unless the style names each property',
+		requests: [{ method: 'POST', path: '/form/objects' }],
 		skipDrivers: {
 			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const pairs = formPairs(requests[0])
 			/* A joined object has a place to put an empty value */
 			expect(valueOf(pairs, 'nullableObj')).toBe('')
@@ -296,8 +334,8 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'multipart-values',
 		description: 'writes one multipart part for each part type',
+		requests: [{ method: 'POST', path: '/multipart/parts' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			/*
 			 * The client must not set Content-Type itself. Only the HTTP layer knows the
 			 * boundary that it wrote into the body.
@@ -314,8 +352,8 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'multipart-json-content-type',
 		description: 'declares the content type that the spec gives a multipart part',
+		requests: [{ method: 'POST', path: '/multipart/parts' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const parts = multipartParts(requests[0])
 			/*
 			 * The spec gives this part an encoding with a contentType. A server that
@@ -333,8 +371,8 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'multipart-null',
 		description: 'writes a null part in the form that the part type can carry',
+		requests: [{ method: 'POST', path: '/multipart/parts' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			const parts = multipartParts(requests[0])
 			/* A text part carries an empty string */
 			expect(partNamed(parts, 'nullableText')!.value).toBe('')
@@ -352,8 +390,8 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'json-null-properties',
 		description: 'writes a null JSON property as a null',
+		requests: [{ method: 'POST', path: '/json/body' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			/* A media type may carry a charset, which says nothing about the shape of the body */
 			expect(requests[0].headers['content-type'][0]).toMatch(/^application\/json(;|$)/)
 			const body = JSON.parse(requests[0].body)
@@ -370,8 +408,8 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'json-absent-properties',
 		description: 'omits an absent JSON property, so null and absent stay distinct',
+		requests: [{ method: 'POST', path: '/json/body' }],
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			expect(JSON.parse(requests[0].body)).toEqual({ name: 'n' })
 		},
 	},
@@ -383,25 +421,103 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'response-json',
 		description: 'parses a JSON response into a model',
+		requests: [{ method: 'GET', path: '/response/json' }],
 		response: {
 			status: 200,
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: 'n', count: 2, when: WHEN }),
+			body: JSON.stringify(RESPONSE_OBJECT),
 		},
 		expectRequests(requests) {
-			expect(requests).toHaveLength(1)
 			/* The client asks for what it can parse */
 			expect(requests[0].headers['accept']).toEqual(['application/json'])
 		},
 		expectCalls(calls) {
 			expect(calls).toHaveLength(1)
 			expect(calls[0].outcome).toBe('success')
-			expect(calls[0].value).toEqual({ name: 'n', count: 2, when: WHEN })
+			/* A date and a date-time must come back as the text that the server sent */
+			expect(calls[0].value).toEqual(RESPONSE_OBJECT)
+		},
+	},
+	{
+		id: 'response-content-type-charset',
+		description: 'parses a JSON response whose media type carries a charset',
+		requests: [{ method: 'GET', path: '/response/json' }],
+		response: {
+			status: 200,
+			headers: { 'Content-Type': 'application/json; charset=utf-8' },
+			body: JSON.stringify(RESPONSE_OBJECT),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('success')
+			expect(calls[0].value).toEqual(RESPONSE_OBJECT)
+		},
+	},
+	{
+		id: 'response-unknown-property',
+		description: 'parses a JSON response that carries a property the spec does not declare',
+		requests: [{ method: 'GET', path: '/response/json' }],
+		response: {
+			status: 200,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ ...RESPONSE_OBJECT, undeclared: 'ignored' }),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('success')
+			/*
+			 * A client may keep the undeclared property or drop it. Either way it must
+			 * still parse the properties that the spec declares.
+			 */
+			expect(calls[0].value).toMatchObject(RESPONSE_OBJECT)
+		},
+	},
+	{
+		id: 'response-array',
+		description: 'parses a JSON array response, and keeps its order',
+		requests: [{ method: 'GET', path: '/response/array' }],
+		response: {
+			status: 200,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify([RESPONSE_OBJECT, OTHER_RESPONSE_OBJECT]),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('success')
+			expect(calls[0].value).toEqual([RESPONSE_OBJECT, OTHER_RESPONSE_OBJECT])
+		},
+	},
+	{
+		id: 'response-null-properties',
+		description: 'tells a null response property apart from an absent one',
+		requests: [{ method: 'GET', path: '/response/nullable' }],
+		response: {
+			status: 200,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name: 'n', nullableName: null, nullableCount: 7, nullableList: null }),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('success')
+			/*
+			 * A model holds a null and an absent property differently in each language,
+			 * and neither survives a plain serialisation. So a driver reports one word
+			 * for each property: "absent", "null", or the value as text.
+			 */
+			expect(calls[0].value).toEqual({
+				name: 'n',
+				nullableName: 'null',
+				nullableCount: '7',
+				nullableWhen: 'absent',
+				nullableChild: 'absent',
+				nullableList: 'null',
+			})
 		},
 	},
 	{
 		id: 'response-none',
 		description: 'reports success for a response with no content',
+		requests: [{ method: 'GET', path: '/response/none' }],
 		response: { status: 204 },
 		expectCalls(calls) {
 			expect(calls).toHaveLength(1)
@@ -411,6 +527,7 @@ export const CASES: ConformanceCase[] = [
 	{
 		id: 'response-error',
 		description: 'reports an error for a documented failure response',
+		requests: [{ method: 'GET', path: '/response/error' }],
 		response: {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
@@ -420,6 +537,40 @@ export const CASES: ConformanceCase[] = [
 			expect(calls).toHaveLength(1)
 			expect(calls[0].outcome).toBe('error')
 			expect(calls[0].httpStatus).toBe(400)
+		},
+	},
+	{
+		id: 'response-error-body',
+		description: 'parses the body of a documented failure response into its model',
+		requests: [{ method: 'GET', path: '/response/error' }],
+		response: {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ message: 'bad' }),
+		},
+		knownDefects: {
+			'fetch-client': 'the client throws the raw response for a failure, so the caller parses the body itself',
+			'java-retrofit': 'the operation returns one body type, so the client leaves a failure body unparsed',
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('error')
+			expect(calls[0].value).toEqual({ message: 'bad' })
+		},
+	},
+	{
+		id: 'response-undocumented-status',
+		description: 'reports an error for a status that the spec does not declare',
+		requests: [{ method: 'GET', path: '/response/json' }],
+		response: {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ message: 'boom' }),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('error')
+			expect(calls[0].httpStatus).toBe(500)
 		},
 	},
 ]

@@ -17,7 +17,11 @@ export interface DriverCall {
 	outcome: 'success' | 'error' | 'exception'
 	/** The status code, when the client exposes one. */
 	httpStatus?: number
-	/** The value that the client produced, as JSON. A `Date` appears as its ISO text. */
+	/**
+	 * The value that the client produced, as JSON. A `Date` appears as its ISO
+	 * text. A documented failure reports the value that the client made of the
+	 * failure body, when the client exposes one.
+	 */
 	value?: unknown
 	/** The message of an exception. */
 	error?: string
@@ -35,6 +39,26 @@ export interface DriverResults {
 }
 
 /**
+ * The request line that a case expects.
+ *
+ * A case declares one of these for each request that it makes, in order. So
+ * every case checks that the client reached the right resource, which an
+ * assertion on the query string alone cannot show.
+ */
+export interface ExpectedRequest {
+	/** The request method, in upper case. */
+	method: string
+	/**
+	 * The operation path, without the server's base path.
+	 *
+	 * Give a regular expression for a path that carries a value, because each
+	 * client may encode that value differently. The suite anchors the expression
+	 * to the whole path, so it needs no `^` and no `$`.
+	 */
+	path: string | RegExp
+}
+
+/**
  * One conformance case: a set of calls that a driver makes, and what the suite
  * expects to see.
  *
@@ -49,6 +73,16 @@ export interface ConformanceCase {
 	description: string
 	/** The response that the server sends during this case. */
 	response?: CannedResponse
+	/**
+	 * The requests that the case expects, in the order that they arrive.
+	 *
+	 * The suite checks the number of requests, and the method and the path of
+	 * each. So {@link ConformanceCase.expectRequests} only has to assert on what
+	 * the request carries.
+	 *
+	 * A case that expects no request declares an empty list.
+	 */
+	requests: ExpectedRequest[]
 	/** Assert on what the client sent. */
 	expectRequests?(requests: RecordedRequest[]): void
 	/** Assert on what the client made of each response. */

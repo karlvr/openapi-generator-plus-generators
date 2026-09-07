@@ -23,9 +23,46 @@ function anObject(): Api.QueryObject {
 	return { name: 'x', count: 1, when: WHEN }
 }
 
+/**
+ * A second object, so a case that sends more than one object can tell them apart.
+ * The driver passes its arguments by position, so two equal objects would hide a
+ * call that passes them in the wrong order.
+ */
+function anotherObject(): Api.QueryObject {
+	return { name: 'y', count: 2, when: WHEN }
+}
+
 /** A joined style writes every property into one value, so it needs values that no style has to encode. */
 function aPlainObject(): Api.QueryObject {
 	return { name: 'x', count: 1 }
+}
+
+/**
+ * How the driver reports one property of a response model: "absent" when the
+ * model carries no value, "null" when it carries a null, and the value as text
+ * otherwise.
+ *
+ * A model holds a null and an absent property differently in each language, and
+ * neither survives a plain serialisation. So the driver names the state itself.
+ */
+function state(model: object, name: string): string {
+	const value = (model as unknown as Record<string, unknown>)[name]
+	if (value === undefined) {
+		return 'absent'
+	}
+	return value === null ? 'null' : String(value)
+}
+
+/** The state of every property of a nullable response model. */
+function statesOf(model: Api.JsonBody): Record<string, string> {
+	return {
+		name: state(model, 'name'),
+		nullableName: state(model, 'nullableName'),
+		nullableCount: state(model, 'nullableCount'),
+		nullableWhen: state(model, 'nullableWhen'),
+		nullableChild: state(model, 'nullableChild'),
+		nullableList: state(model, 'nullableList'),
+	}
 }
 
 interface DriverCall {
@@ -107,16 +144,16 @@ async function main(): Promise<void> {
 	await call(() => query.queryScalars('', undefined, undefined, undefined, undefined, undefined))
 
 	await startCase('query-arrays-form')
-	await call(() => query.queryArrays(['a', 'b'], ['a', 'b'], undefined, undefined, [new Date(WHEN), new Date(WHEN)]))
+	await call(() => query.queryArrays(['a', 'b'], ['c', 'd'], undefined, undefined, [new Date(WHEN), new Date(WHEN)]))
 
 	await startCase('query-arrays-delimited')
-	await call(() => query.queryArrays(undefined, undefined, ['a', 'b'], ['a', 'b'], undefined))
+	await call(() => query.queryArrays(undefined, undefined, ['a', 'b'], ['c', 'd'], undefined))
 
 	await startCase('query-arrays-empty')
 	await call(() => query.queryArrays([], [], undefined, undefined, []))
 
 	await startCase('query-objects-values')
-	await call(() => query.queryObjects(anObject(), aPlainObject(), anObject()))
+	await call(() => query.queryObjects(anObject(), aPlainObject(), anotherObject()))
 
 	await startCase('joined-values-encoded-once')
 	await call(() => query.queryArrays(['a b'], ['a b'], undefined, undefined, undefined))
@@ -124,6 +161,9 @@ async function main(): Promise<void> {
 
 	await startCase('query-headers-values')
 	await call(() => query.queryHeaders('hello', [1, 2]))
+
+	await startCase('query-cookies-values')
+	await call(() => query.queryCookies('abc', 'dark'))
 
 	await startCase('query-path-segment')
 	await call(() => query.queryPathSegment(PATH_SEGMENT))
@@ -138,13 +178,13 @@ async function main(): Promise<void> {
 	await call(() => form.formScalars({}))
 
 	await startCase('form-arrays-values')
-	await call(() => form.formArrays({ strs: ['a', 'b'], pipeStrs: ['a', 'b'] }))
+	await call(() => form.formArrays({ strs: ['a', 'b'], pipeStrs: ['c', 'd'] }))
 
 	await startCase('form-arrays-null')
 	await call(() => form.formArrays({ nullableStrs: null, nullablePipeStrs: null }))
 
 	await startCase('form-objects-values')
-	await call(() => form.formObjects({ obj: aPlainObject(), explodeObj: anObject(), deepObj: anObject() }))
+	await call(() => form.formObjects({ obj: aPlainObject(), explodeObj: anObject(), deepObj: anotherObject() }))
 
 	await startCase('form-objects-null')
 	await call(() => form.formObjects({ nullableObj: null, nullableExplodeObj: null, nullableDeepObj: null }))
@@ -174,11 +214,29 @@ async function main(): Promise<void> {
 	await startCase('response-json')
 	await call(() => response.responseJson())
 
+	await startCase('response-content-type-charset')
+	await call(() => response.responseJson())
+
+	await startCase('response-unknown-property')
+	await call(() => response.responseJson())
+
+	await startCase('response-array')
+	await call(() => response.responseArray())
+
+	await startCase('response-null-properties')
+	await call(async() => statesOf(await response.responseNullable()))
+
 	await startCase('response-none')
 	await call(() => response.responseNone())
 
 	await startCase('response-error')
 	await call(() => response.responseError())
+
+	await startCase('response-error-body')
+	await call(() => response.responseError())
+
+	await startCase('response-undocumented-status')
+	await call(() => response.responseJson())
 }
 
 main().then(() => {
