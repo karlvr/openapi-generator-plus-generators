@@ -3,44 +3,35 @@ import * as idx from '@openapi-generator-plus/indexed-type'
 import { ts, each, when, identifier, className, stringLiteral, SKIP, Skip } from '@openapi-generator-plus/template-utils'
 import { JavaModelContext, imports, generatedAnnotation } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
-/** One query parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a query parameter. */
-function queryParamDeclaration(parameter: CodegenParameter, ctx: JavaModelContext): string {
-	if (!parameter.isQueryParam) {
-		return ''
-	}
-	return `@retrofit2.http.Query("${parameter.name}") ${parameter.nativeType} ${identifier(ctx.generatorContext.generator(), parameter.name)}`
+/**
+ * One parameter's declaration, under the Retrofit annotation that `annotation` names.
+ *
+ * The annotation carries the name that the API declares, because that is the name that the
+ * request carries. The Java variable carries the name that the generator made safe.
+ */
+function annotatedDeclaration(annotation: string, parameter: CodegenParameter, ctx: JavaModelContext): string {
+	const name = stringLiteral(ctx.generatorContext, parameter.serializedName)
+	return `@retrofit2.http.${annotation}(${name}) ${parameter.nativeType} ${identifier(ctx.generatorContext.generator(), parameter.name)}`
 }
 
-/**
- * One path parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a path
- * parameter. Uses the parameter's raw name for the Java variable, not an escaped identifier —
- * matching the original template exactly.
- */
-function pathParamDeclaration(parameter: CodegenParameter): string {
-	if (!parameter.isPathParam) {
-		return ''
-	}
-	return `@retrofit2.http.Path("${parameter.name}") ${parameter.nativeType} ${parameter.name}`
+/** One query parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a query parameter. */
+function queryParamDeclaration(parameter: CodegenParameter, ctx: JavaModelContext): string {
+	return parameter.isQueryParam ? annotatedDeclaration('Query', parameter, ctx) : ''
+}
+
+/** One path parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a path parameter. */
+function pathParamDeclaration(parameter: CodegenParameter, ctx: JavaModelContext): string {
+	return parameter.isPathParam ? annotatedDeclaration('Path', parameter, ctx) : ''
 }
 
 /** One header parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a header parameter. */
 function headerParamDeclaration(parameter: CodegenParameter, ctx: JavaModelContext): string {
-	if (!parameter.isHeaderParam) {
-		return ''
-	}
-	return `@retrofit2.http.Header("${parameter.name}") ${parameter.nativeType} ${identifier(ctx.generatorContext.generator(), parameter.name)}`
+	return parameter.isHeaderParam ? annotatedDeclaration('Header', parameter, ctx) : ''
 }
 
-/**
- * One form parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a form
- * parameter. `@FormUrlEncoded` isn't Retrofit's usual per-field form annotation (`@Field` is) —
- * preserved as-is, matching the original (untested) template.
- */
+/** One form parameter's Retrofit annotation and declaration, or `''` if `parameter` isn't a form parameter. */
 function formParamDeclaration(parameter: CodegenParameter, ctx: JavaModelContext): string {
-	if (!parameter.isFormParam) {
-		return ''
-	}
-	return `@retrofit2.http.FormUrlEncoded("${parameter.name}") ${parameter.nativeType} ${identifier(ctx.generatorContext.generator(), parameter.name)}`
+	return parameter.isFormParam ? annotatedDeclaration('Field', parameter, ctx) : ''
 }
 
 /**
@@ -51,7 +42,7 @@ function formParamDeclaration(parameter: CodegenParameter, ctx: JavaModelContext
  */
 function parameterDeclaration(parameter: CodegenParameter, ctx: JavaModelContext): string {
 	return queryParamDeclaration(parameter, ctx)
-		|| pathParamDeclaration(parameter)
+		|| pathParamDeclaration(parameter, ctx)
 		|| headerParamDeclaration(parameter, ctx)
 		|| formParamDeclaration(parameter, ctx)
 }
@@ -129,6 +120,31 @@ function acceptHeaderAnnotation(operation: CodegenOperation, ctx: JavaModelConte
 }
 
 /**
+ * The annotation that makes Retrofit encode the operation's `@Field` parameters into a form
+ * body. SKIP when the operation declares no form parameter.
+ */
+function formUrlEncodedAnnotation(operation: CodegenOperation): string | Skip {
+	const parameters = operation.parameters ? idx.allValues(operation.parameters) : []
+	return parameters.some(parameter => parameter.isFormParam) ? '@retrofit2.http.FormUrlEncoded' : SKIP
+}
+
+/**
+ * The operation's path, in the form that Retrofit resolves against the base URL.
+ *
+ * Retrofit resolves a path that starts with "/" against the root of the host, which discards
+ * any path that the base URL carries. A relative path keeps it, so a server URL such as
+ * `https://example.com/api/v1/` reaches the operation.
+ *
+ * The base URL must end with "/" for this to work, which Retrofit itself requires.
+ *
+ * Retrofit takes an empty path to mean that the method has none, so the root of the base URL
+ * is ".".
+ */
+function relativePath(operation: CodegenOperation): string {
+	return operation.fullPath.replace(/^\//, '') || '.'
+}
+
+/**
  * One operation's Retrofit method declaration.
  *
  * The original template also rendered any nested models declared directly on the operation
@@ -138,13 +154,12 @@ function acceptHeaderAnnotation(operation: CodegenOperation, ctx: JavaModelConte
  */
 function operationMethod(operation: CodegenOperation, ctx: JavaModelContext): string {
 	const generator = ctx.generatorContext.generator()
-	const methodAnnotation = operation.path
-		? `@retrofit2.http.${operation.httpMethod}("${operation.path}")`
-		: `@retrofit2.http.${operation.httpMethod}`
+	const methodAnnotation = `@retrofit2.http.${operation.httpMethod}(${stringLiteral(ctx.generatorContext, relativePath(operation))})`
 	const returnType = operation.returnNativeType ? `retrofit2.Call<${operation.returnNativeType}>` : 'retrofit2.Call<Void>'
 
 	return ts`
 	${methodAnnotation}
+	${formUrlEncodedAnnotation(operation)}
 	${acceptHeaderAnnotation(operation, ctx)}
 	${when(operation.deprecated, '@java.lang.Deprecated')}
 	${returnType} ${identifier(generator, operation.name)}(${operationParameters(operation, ctx)});
