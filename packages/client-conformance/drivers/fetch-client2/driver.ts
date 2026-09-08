@@ -13,11 +13,18 @@
  */
 
 import * as fs from 'fs'
-import { Api, Configuration, FormApi, JsonApi, MultipartApi, QueryApi, ResponseApi, setDefaultConfiguration } from './index'
+import { Api, BodyApi, Configuration, FormApi, JsonApi, MultipartApi, QueryApi, ResponseApi, SecurityApi, setDefaultConfiguration } from './index'
 
 const WHEN = '2020-01-02T03:04:05.678Z'
 const DAY = '2020-01-02'
 const PATH_SEGMENT = 'a b/c?d#e&f+g%h:i@j'
+const TEXT_BODY = 'plain "text" body'
+const BINARY_BODY = 'binary content'
+const API_KEY_HEADER = 'header-key'
+const API_KEY_QUERY = 'query-key'
+const BEARER_TOKEN = 'bearer-token'
+const BASIC_USERNAME = 'basic-user'
+const BASIC_PASSWORD = 'basic-secret'
 
 function anObject(): Api.QueryObject {
 	return { name: 'x', count: 1, when: WHEN }
@@ -62,6 +69,21 @@ function statesOf(model: Api.JsonBody): Record<string, string> {
 		nullableWhen: state(model, 'nullableWhen'),
 		nullableChild: state(model, 'nullableChild'),
 		nullableList: state(model, 'nullableList'),
+	}
+}
+
+/**
+ * How the driver reports the documented headers of a response: each value as
+ * text, or "absent" where the client exposes none.
+ *
+ * The report carries the name of the model too, so a case can also see that the
+ * body still arrived.
+ */
+function headerStates(name: string, totalCount: number | undefined, note: string | undefined): Record<string, string> {
+	return {
+		name,
+		totalCount: totalCount !== undefined ? String(totalCount) : 'absent',
+		note: note !== undefined ? note : 'absent',
 	}
 }
 
@@ -131,7 +153,18 @@ async function call(operation: () => Promise<AnyResponse>): Promise<void> {
 }
 
 async function main(): Promise<void> {
-	setDefaultConfiguration(new Configuration({ baseUri: baseUrl }))
+	/*
+	 * The client asks for the credential of one scheme at a time, and names the
+	 * scheme. Each scheme has its own value, so a client that reads the credential
+	 * of another scheme shows it.
+	 */
+	setDefaultConfiguration(new Configuration({
+		baseUri: baseUrl,
+		apiKey: (name: string) => name === 'apiKeyHeader' ? API_KEY_HEADER : API_KEY_QUERY,
+		authorization: (name: string) => name === 'bearerAuth' ? BEARER_TOKEN : null,
+		username: BASIC_USERNAME,
+		password: BASIC_PASSWORD,
+	}))
 
 	await startCase('query-scalars-values')
 	await call(() => QueryApi.queryScalars({ str: 'hello world', num: 42, dbl: 1.5, flag: false, when: new Date(WHEN), day: DAY }))
@@ -167,6 +200,9 @@ async function main(): Promise<void> {
 
 	await startCase('query-cookies-values')
 	await call(() => QueryApi.queryCookies({ sessionId: 'abc', theme: 'dark' }))
+
+	await startCase('query-required-values')
+	await call(() => QueryApi.queryRequired({ needed: 'needed value', xNeeded: 'needed header' }))
 
 	await startCase('query-path-segment')
 	await call(() => QueryApi.queryPathSegment(PATH_SEGMENT))
@@ -214,6 +250,15 @@ async function main(): Promise<void> {
 	await startCase('json-absent-properties')
 	await call(() => JsonApi.jsonBody({ name: 'n' }))
 
+	await startCase('body-array')
+	await call(() => BodyApi.bodyArray([anObject(), anotherObject()]))
+
+	await startCase('body-text')
+	await call(() => BodyApi.bodyText(TEXT_BODY))
+
+	await startCase('body-binary')
+	await call(() => BodyApi.bodyBinary(BINARY_BODY))
+
 	await startCase('response-json')
 	await call(() => ResponseApi.responseJson())
 
@@ -232,6 +277,21 @@ async function main(): Promise<void> {
 		return result.status === 200 ? { status: 200, body: statesOf(result.body) } : result
 	})
 
+	await startCase('response-headers')
+	await call(async() => {
+		const result = await ResponseApi.responseHeaders()
+		if (result.status !== 200) {
+			return result
+		}
+		return { status: 200, body: headerStates(result.body.name, result.headers.xTotalCount, result.headers.xNote) }
+	})
+
+	await startCase('response-empty-body')
+	await call(() => ResponseApi.responseJson())
+
+	await startCase('response-no-content-type')
+	await call(() => ResponseApi.responseJson())
+
 	await startCase('response-none')
 	await call(() => ResponseApi.responseNone())
 
@@ -243,6 +303,18 @@ async function main(): Promise<void> {
 
 	await startCase('response-undocumented-status')
 	await call(() => ResponseApi.responseJson())
+
+	await startCase('security-api-key-header')
+	await call(() => SecurityApi.securityApiKeyHeader())
+
+	await startCase('security-api-key-query')
+	await call(() => SecurityApi.securityApiKeyQuery())
+
+	await startCase('security-bearer')
+	await call(() => SecurityApi.securityBearer())
+
+	await startCase('security-basic')
+	await call(() => SecurityApi.securityBasic())
 }
 
 main().then(() => {

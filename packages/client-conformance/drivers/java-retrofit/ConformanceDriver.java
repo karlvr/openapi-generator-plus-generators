@@ -37,6 +37,8 @@ public class ConformanceDriver {
 	private static final String WHEN = "2020-01-02T03:04:05.678Z";
 	private static final String DAY = "2020-01-02";
 	private static final String PATH_SEGMENT = "a b/c?d#e&f+g%h:i@j";
+	private static final String TEXT_BODY = "plain \"text\" body";
+	private static final String BINARY_BODY = "binary content";
 
 	public static void main(String[] args) throws Exception {
 		BASE_URL = args[0];
@@ -49,9 +51,9 @@ public class ConformanceDriver {
 		retrofit2.Response<?> run() throws Exception;
 	}
 
-	/** Turns a successful response body into the value that the driver reports. */
+	/** Turns a successful response into the value that the driver reports. */
 	private interface Report {
-		Object of(Object body);
+		Object of(retrofit2.Response<?> response);
 	}
 
 	private final ObjectMapper mapper = ApiObjectMapper.create();
@@ -96,6 +98,21 @@ public class ConformanceDriver {
 		return value.isPresent() ? String.valueOf(value.get()) : "null";
 	}
 
+	/**
+	 * How the driver reports the documented headers of a response: each value as text,
+	 * or "absent" where the client exposes none.
+	 *
+	 * The report carries the name of the model too, so a case can also see that the body
+	 * still arrived.
+	 */
+	private Map<String, Object> headerStates(String name, String totalCount, String note) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("name", name);
+		states.put("totalCount", totalCount != null ? totalCount : "absent");
+		states.put("note", note != null ? note : "absent");
+		return states;
+	}
+
 	/** The state of every property of a nullable response model. */
 	private Map<String, Object> statesOf(com.example.model.JsonBody body) {
 		Map<String, Object> states = new LinkedHashMap<>();
@@ -121,6 +138,8 @@ public class ConformanceDriver {
 		MultipartApi multipart = retrofit.create(MultipartApi.class);
 		JsonApi json = retrofit.create(JsonApi.class);
 		ResponseApi response = retrofit.create(ResponseApi.class);
+		BodyApi bodyApi = retrofit.create(BodyApi.class);
+		SecurityApi security = retrofit.create(SecurityApi.class);
 
 		startCase("query-scalars-values");
 		call(() -> query.queryScalars("hello world", 42, 1.5, false, OffsetDateTime.parse(WHEN), LocalDate.parse(DAY)).execute());
@@ -171,6 +190,9 @@ public class ConformanceDriver {
 		startCase("query-cookies-values");
 		/* Retrofit has no cookie parameter annotation, so the generated method takes none */
 		call(() -> query.queryCookies().execute());
+
+		startCase("query-required-values");
+		call(() -> query.queryRequired("needed value", null, "needed header").execute());
 
 		startCase("query-path-segment");
 		call(() -> query.queryPathSegment(PATH_SEGMENT).execute());
@@ -258,6 +280,15 @@ public class ConformanceDriver {
 		startCase("json-absent-properties");
 		call(() -> json.jsonBody(new com.example.model.JsonBody().name("n")).execute());
 
+		startCase("body-array");
+		call(() -> bodyApi.bodyArray(Arrays.asList(anObject(), anotherObject())).execute());
+
+		startCase("body-text");
+		call(() -> bodyApi.bodyText(TEXT_BODY).execute());
+
+		startCase("body-binary");
+		call(() -> bodyApi.bodyBinary(BINARY_BODY.getBytes(Charset.forName("UTF-8"))).execute());
+
 		startCase("response-json");
 		call(() -> response.responseJson().execute());
 
@@ -271,7 +302,20 @@ public class ConformanceDriver {
 		call(() -> response.responseArray().execute());
 
 		startCase("response-null-properties");
-		call(() -> response.responseNullable().execute(), body -> statesOf((com.example.model.JsonBody) body));
+		call(() -> response.responseNullable().execute(), httpResponse -> statesOf((com.example.model.JsonBody) httpResponse.body()));
+
+		startCase("response-headers");
+		/* Retrofit gives the whole response, so a caller can read a header that the spec declares */
+		call(() -> response.responseHeaders().execute(), httpResponse -> headerStates(
+			((com.example.model.ResponseObject) httpResponse.body()).getName(),
+			httpResponse.headers().get("X-Total-Count"),
+			httpResponse.headers().get("X-Note")));
+
+		startCase("response-empty-body");
+		call(() -> response.responseJson().execute());
+
+		startCase("response-no-content-type");
+		call(() -> response.responseJson().execute());
 
 		startCase("response-none");
 		call(() -> response.responseNone().execute());
@@ -284,6 +328,19 @@ public class ConformanceDriver {
 
 		startCase("response-undocumented-status");
 		call(() -> response.responseJson().execute());
+
+		/* Retrofit has no security annotation, so the generated client takes no credential */
+		startCase("security-api-key-header");
+		call(() -> security.securityApiKeyHeader().execute());
+
+		startCase("security-api-key-query");
+		call(() -> security.securityApiKeyQuery().execute());
+
+		startCase("security-bearer");
+		call(() -> security.securityBearer().execute());
+
+		startCase("security-basic");
+		call(() -> security.securityBasic().execute());
 
 		writeResults();
 	}
@@ -311,11 +368,11 @@ public class ConformanceDriver {
 
 	/** Make one call, and record the response body that the client produced. */
 	private void call(Operation operation) {
-		call(operation, body -> body);
+		call(operation, response -> response.body());
 	}
 
 	/**
-	 * Make one call, and record the value that `report` makes of the response body.
+	 * Make one call, and record the value that `report` makes of the response.
 	 *
 	 * Retrofit reports a failure response as a response, not as an exception, so the driver
 	 * reads the status itself. Only a fault in the client itself throws.
@@ -326,12 +383,17 @@ public class ConformanceDriver {
 			retrofit2.Response<?> response = operation.run();
 			if (response.isSuccessful()) {
 				call.put("outcome", "success");
-				call.put("value", report.of(response.body()));
+				call.put("value", report.of(response));
 			} else {
 				call.put("outcome", "error");
 				call.put("httpStatus", response.code());
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			/*
+			 * An Error, such as a missing class or method, says that the generated client
+			 * cannot run at all. Catching it keeps that in the report of one case, rather
+			 * than losing every case that follows.
+			 */
 			call.put("outcome", "exception");
 			call.put("error", e.getClass().getName() + ": " + e.getMessage());
 		}

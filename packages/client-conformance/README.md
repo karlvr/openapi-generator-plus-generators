@@ -88,7 +88,13 @@ that passes them in the wrong order.
 A case that must tell a null response property apart from an absent one cannot
 compare a serialised model. Each language holds the two differently, and neither
 survives serialisation. Such a case has the driver report one word for each
-property instead: `absent`, `null`, or the value as text.
+property instead: `absent`, `null`, or the value as text. A case that reads a
+response header reports the same way, because each client names a header in its
+own way.
+
+Give a case an assertion that every client can meet, or record the difference. A
+case that asks for behaviour the spec leaves open states its reasoning in a
+comment, so a reader can see which policy the case chose.
 
 ## Known defects
 

@@ -39,6 +39,13 @@ public class ConformanceDriver {
 	private static final String WHEN = "2020-01-02T03:04:05.678Z";
 	private static final String DAY = "2020-01-02";
 	private static final String PATH_SEGMENT = "a b/c?d#e&f+g%h:i@j";
+	private static final String TEXT_BODY = "plain \"text\" body";
+	private static final String BINARY_BODY = "binary content";
+	private static final String API_KEY_HEADER = "header-key";
+	private static final String API_KEY_QUERY = "query-key";
+	private static final String BEARER_TOKEN = "bearer-token";
+	private static final String BASIC_USERNAME = "basic-user";
+	private static final String BASIC_PASSWORD = "basic-secret";
 
 	public static void main(String[] args) throws Exception {
 		BASE_URL = args[0];
@@ -104,11 +111,28 @@ public class ConformanceDriver {
 		return states;
 	}
 
+	/**
+	 * How the driver reports the documented headers of a response: each value as text,
+	 * or "absent" where the client exposes none.
+	 *
+	 * The report carries the name of the model too, so a case can also see that the body
+	 * still arrived.
+	 */
+	private Map<String, Object> headerStates(String name, String totalCount, String note) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("name", name);
+		states.put("totalCount", totalCount != null ? totalCount : "absent");
+		states.put("note", note != null ? note : "absent");
+		return states;
+	}
+
 	private void run() throws Exception {
 		QueryApi query = new com.example.impl.QueryApiImpl(BASE_URL);
 		MultipartApi multipart = new com.example.impl.MultipartApiImpl(BASE_URL);
 		JsonApi json = new com.example.impl.JsonApiImpl(BASE_URL);
 		ResponseApi response = new com.example.impl.ResponseApiImpl(BASE_URL);
+		BodyApi bodyApi = new com.example.impl.BodyApiImpl(BASE_URL);
+		com.example.impl.SecurityApiImpl security = new com.example.impl.SecurityApiImpl(BASE_URL);
 
 		startCase("query-scalars-values");
 		call(() -> {
@@ -198,6 +222,14 @@ public class ConformanceDriver {
 			return null;
 		});
 
+		startCase("query-required-values");
+		call(() -> {
+			query.queryRequired(new com.example.params.QueryRequiredParams()
+				.needed("needed value")
+				.xNeeded("needed header"));
+			return null;
+		});
+
 		startCase("query-path-segment");
 		call(() -> {
 			query.queryPathSegment(PATH_SEGMENT);
@@ -250,6 +282,24 @@ public class ConformanceDriver {
 			return null;
 		});
 
+		startCase("body-array");
+		call(() -> {
+			bodyApi.bodyArray(Arrays.asList(anObject(), anotherObject()));
+			return null;
+		});
+
+		startCase("body-text");
+		call(() -> {
+			bodyApi.bodyText(TEXT_BODY);
+			return null;
+		});
+
+		startCase("body-binary");
+		call(() -> {
+			bodyApi.bodyBinary(BINARY_BODY.getBytes(Charset.forName("UTF-8")));
+			return null;
+		});
+
 		startCase("response-json");
 		call(() -> response.responseJson());
 
@@ -265,6 +315,22 @@ public class ConformanceDriver {
 		startCase("response-null-properties");
 		call(() -> statesOf(response.responseNullable()));
 
+		startCase("response-headers");
+		call(() -> {
+			/*
+			 * The operation returns the model alone, so the client exposes no header. The
+			 * declared type stops compiling if that ever changes.
+			 */
+			com.example.model.ResponseObject model = response.responseHeaders();
+			return headerStates(model.getName(), null, null);
+		});
+
+		startCase("response-empty-body");
+		call(() -> response.responseJson());
+
+		startCase("response-no-content-type");
+		call(() -> response.responseJson());
+
 		startCase("response-none");
 		call(() -> {
 			response.responseNone();
@@ -279,6 +345,39 @@ public class ConformanceDriver {
 
 		startCase("response-undocumented-status");
 		call(() -> response.responseJson());
+
+		/*
+		 * The client takes the credential of one scheme at a time, through the method that
+		 * the scheme names. Each scheme has its own value, so a client that reads the
+		 * credential of another scheme shows it.
+		 */
+		startCase("security-api-key-header");
+		security.authorizeApiKeyHeader(API_KEY_HEADER);
+		call(() -> {
+			security.securityApiKeyHeader();
+			return null;
+		});
+
+		startCase("security-api-key-query");
+		security.authorizeApiKeyQuery(API_KEY_QUERY);
+		call(() -> {
+			security.securityApiKeyQuery();
+			return null;
+		});
+
+		startCase("security-bearer");
+		security.authorizeBearerAuth(BEARER_TOKEN);
+		call(() -> {
+			security.securityBearer();
+			return null;
+		});
+
+		startCase("security-basic");
+		security.authorizeBasicAuth(BASIC_USERNAME, BASIC_PASSWORD);
+		call(() -> {
+			security.securityBasic();
+			return null;
+		});
 
 		writeResults();
 	}
@@ -319,7 +418,12 @@ public class ConformanceDriver {
 		} catch (UnexpectedResponseException e) {
 			call.put("outcome", "error");
 			call.put("httpStatus", e.getStatus());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			/*
+			 * An Error, such as a missing class or method, says that the generated client
+			 * cannot run at all. Catching it keeps that in the report of one case, rather
+			 * than losing every case that follows.
+			 */
 			call.put("outcome", "exception");
 			call.put("error", e.getClass().getName() + ": " + e.getMessage());
 		}

@@ -28,6 +28,23 @@ export interface ConformanceDriver {
 	run(basePath: string, baseUrl: string, resultsPath: string): Promise<void>
 }
 
+/**
+ * `value` as one argument of a POSIX shell command.
+ *
+ * A shell splits a command on whitespace, and expands several characters inside
+ * it. Single quotes stop both, so the shell passes the text through unchanged.
+ *
+ * Use this for every value that a command line carries, because a path or a URL
+ * may hold a space or a character that the shell reads.
+ */
+function shellArgument(value: string): string {
+	/*
+	 * A single quote inside the text ends the quoting. So each one leaves the
+	 * quoting, escapes itself, then starts the quoting again.
+	 */
+	return `'${value.split('\'').join('\'\\\'\'')}'`
+}
+
 /** The directory that holds the driver sources of each family. */
 const DRIVERS_PATH = path.join(__dirname, '..', 'drivers')
 
@@ -45,7 +62,7 @@ function typeScriptDriver(name: string): ConformanceDriver {
 		},
 		async run(basePath, baseUrl, resultsPath) {
 			await run('pnpm install', basePath)
-			await run(`node dist/driver.js ${JSON.stringify(baseUrl)} ${JSON.stringify(resultsPath)}`, basePath)
+			await run(`node dist/driver.js ${shellArgument(baseUrl)} ${shellArgument(resultsPath)}`, basePath)
 		},
 	}
 }
@@ -72,11 +89,11 @@ function mavenDriver(name: string, driverClass: string): ConformanceDriver {
 			await fs.copyFile(source, path.join(target, `${driverClass}.java`))
 		},
 		async run(basePath, baseUrl, resultsPath) {
-			await run(`mvn -B -q compile dependency:build-classpath -Dmdep.outputFile=${CLASSPATH_FILE} -DincludeScope=runtime`, basePath)
+			await run(`mvn -B -q compile dependency:build-classpath -Dmdep.outputFile=${shellArgument(CLASSPATH_FILE)} -DincludeScope=runtime`, basePath)
 
 			const dependencies = (await fs.readFile(path.join(basePath, CLASSPATH_FILE), 'utf-8')).trim()
 			const classpath = `target/classes${path.delimiter}${dependencies}`
-			await run(`java -cp ${JSON.stringify(classpath)} com.example.${driverClass} ${JSON.stringify(baseUrl)} ${JSON.stringify(resultsPath)}`, basePath)
+			await run(`java -cp ${shellArgument(classpath)} com.example.${driverClass} ${shellArgument(baseUrl)} ${shellArgument(resultsPath)}`, basePath)
 		},
 	}
 }

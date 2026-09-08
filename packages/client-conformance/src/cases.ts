@@ -11,6 +11,9 @@ export const DAY = '2020-01-02'
 /** The object that a case sends where the style names each property. */
 export const OBJECT = { name: 'x', count: 1, when: WHEN }
 
+/** A second object, so a case that sends more than one can show the order that a client keeps. */
+export const OTHER_OBJECT = { name: 'y', count: 2, when: WHEN }
+
 /** The model that the response cases send, and the value that a client must make of it. */
 export const RESPONSE_OBJECT = { name: 'n', count: 2, when: WHEN, day: DAY }
 
@@ -25,6 +28,45 @@ export const OTHER_RESPONSE_OBJECT = { name: 'm', count: 3, when: WHEN, day: DAY
  * and leave the rest alone.
  */
 export const PATH_SEGMENT = 'a b/c?d#e&f+g%h:i@j'
+
+/** The text that the plain text body case sends. A quote shows a client that wrote JSON instead. */
+export const TEXT_BODY = 'plain "text" body'
+
+/**
+ * The content that the binary body case sends.
+ *
+ * The value is text, because every client can express text bytes. A client that
+ * wrote JSON or base64 still gives a different body.
+ */
+export const BINARY_BODY = 'binary content'
+
+/**
+ * The credentials that the security cases give a client.
+ *
+ * Each scheme has its own value, so a client that reads the credential of
+ * another scheme shows it.
+ */
+export const CREDENTIALS = {
+	apiKeyHeader: 'header-key',
+	apiKeyQuery: 'query-key',
+	bearerToken: 'bearer-token',
+	basicUsername: 'basic-user',
+	basicPassword: 'basic-secret',
+}
+
+/**
+ * The headers that the response header case sends.
+ *
+ * A driver reports each one as text, under the name that this map gives, because
+ * each client names a header in its own way.
+ */
+export const RESPONSE_HEADERS = {
+	totalCount: { name: 'X-Total-Count', value: '42' },
+	note: { name: 'X-Note', value: 'a note' },
+}
+
+/** The `Authorization` credential that HTTP basic authentication builds from {@link CREDENTIALS}. */
+const BASIC_CREDENTIAL = Buffer.from(`${CREDENTIALS.basicUsername}:${CREDENTIALS.basicPassword}`).toString('base64')
 
 /**
  * The text of a percent encoded path, decoded once.
@@ -194,6 +236,18 @@ export const CASES: ConformanceCase[] = [
 			 */
 			const cookies = (requests[0].headers['cookie'] || []).join('; ')
 			expect(cookies.split(/;\s*/).sort()).toEqual(['sessionId=abc', 'theme=dark'])
+		},
+	},
+	{
+		id: 'query-required-values',
+		description: 'sends a required parameter, and still omits an absent optional one',
+		requests: [{ method: 'GET', path: '/query/required' }],
+		expectRequests(requests) {
+			const pairs = queryPairs(requests[0])
+			expect(valueOf(pairs, 'needed')).toBe('needed value')
+			/* An absent optional parameter must not become an empty value */
+			expect(valueOf(pairs, 'optional')).toBeUndefined()
+			expect(requests[0].headers['x-needed']).toEqual(['needed header'])
 		},
 	},
 	{
@@ -415,6 +469,45 @@ export const CASES: ConformanceCase[] = [
 	},
 
 	/*
+	 * Request bodies that are not an object
+	 */
+
+	{
+		id: 'body-array',
+		description: 'sends a JSON request body that is an array',
+		requests: [{ method: 'POST', path: '/body/array' }],
+		expectRequests(requests) {
+			expect(requests[0].headers['content-type'][0]).toMatch(/^application\/json(;|$)/)
+			/* The order of an array carries meaning, so the client must keep it */
+			expect(JSON.parse(requests[0].body)).toEqual([OBJECT, OTHER_OBJECT])
+		},
+	},
+	{
+		id: 'body-text',
+		description: 'sends a plain text request body as text, not as JSON',
+		requests: [{ method: 'POST', path: '/body/text' }],
+		knownDefects: {
+			'java-retrofit': 'the client has no converter for a text body, so it sends the body as application/json',
+		},
+		expectRequests(requests) {
+			expect(requests[0].headers['content-type'][0]).toMatch(/^text\/plain(;|$)/)
+			expect(requests[0].body).toBe(TEXT_BODY)
+		},
+	},
+	{
+		id: 'body-binary',
+		description: 'sends a binary request body as bytes, not as JSON',
+		requests: [{ method: 'POST', path: '/body/binary' }],
+		knownDefects: {
+			'java-retrofit': 'the client has no converter for a binary body, so it sends the body as application/json',
+		},
+		expectRequests(requests) {
+			expect(requests[0].headers['content-type'][0]).toMatch(/^application\/octet-stream(;|$)/)
+			expect(requests[0].body).toBe(BINARY_BODY)
+		},
+	},
+
+	/*
 	 * Responses
 	 */
 
@@ -515,6 +608,75 @@ export const CASES: ConformanceCase[] = [
 		},
 	},
 	{
+		id: 'response-headers',
+		description: 'gives a caller the value of a documented response header',
+		requests: [{ method: 'GET', path: '/response/headers' }],
+		response: {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				[RESPONSE_HEADERS.totalCount.name]: RESPONSE_HEADERS.totalCount.value,
+				[RESPONSE_HEADERS.note.name]: RESPONSE_HEADERS.note.value,
+			},
+			body: JSON.stringify(RESPONSE_OBJECT),
+		},
+		knownDefects: {
+			'fetch-client': 'the operation resolves with the model alone, so a caller cannot reach the headers',
+			'java-cxf': 'the operation returns the model alone, so a caller cannot reach the headers',
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('success')
+			/*
+			 * The case asks whether a caller can read the header at all. Each client
+			 * names a header in its own way, so a driver reports each value as text,
+			 * or "absent" where the client exposes none. It reports the name of the
+			 * model too, so the case also shows that the body still arrived.
+			 */
+			expect(calls[0].value).toEqual({
+				name: RESPONSE_OBJECT.name,
+				totalCount: RESPONSE_HEADERS.totalCount.value,
+				note: RESPONSE_HEADERS.note.value,
+			})
+		},
+	},
+	{
+		id: 'response-empty-body',
+		description: 'reports a failure when a response that declares content carries none',
+		requests: [{ method: 'GET', path: '/response/json' }],
+		response: { status: 200, headers: { 'Content-Type': 'application/json' }, body: '' },
+		knownDefects: {
+			'java-cxf': 'the client reports success for an empty body, and gives no model',
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			/*
+			 * The server broke its own contract, so no client can make the declared
+			 * model. A client may report that as an error or as an exception. It must
+			 * not report success, because it has no model to give.
+			 */
+			expect(calls[0].outcome).not.toBe('success')
+		},
+	},
+	{
+		id: 'response-no-content-type',
+		description: 'refuses a response body that arrives with no Content-Type',
+		requests: [{ method: 'GET', path: '/response/json' }],
+		response: { status: 200, headers: { 'Content-Type': null }, body: JSON.stringify(RESPONSE_OBJECT) },
+		knownDefects: {
+			'java-retrofit': 'the client parses a body of any media type, so it does not see the absent header',
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			/*
+			 * The server did not say what the body holds. So the client must not guess,
+			 * even though the spec declares one content type for this response. A client
+			 * may report that as an error or as an exception. It must not report success.
+			 */
+			expect(calls[0].outcome).not.toBe('success')
+		},
+	},
+	{
 		id: 'response-none',
 		description: 'reports success for a response with no content',
 		requests: [{ method: 'GET', path: '/response/none' }],
@@ -571,6 +733,56 @@ export const CASES: ConformanceCase[] = [
 			expect(calls).toHaveLength(1)
 			expect(calls[0].outcome).toBe('error')
 			expect(calls[0].httpStatus).toBe(500)
+		},
+	},
+
+	/*
+	 * Security
+	 */
+
+	{
+		id: 'security-api-key-header',
+		description: 'sends an API key in the header that the scheme names',
+		requests: [{ method: 'GET', path: '/security/api-key-header' }],
+		knownDefects: {
+			'java-retrofit': 'the client gives a caller no way to supply a credential, so it sends none',
+		},
+		expectRequests(requests) {
+			expect(requests[0].headers['x-api-key']).toEqual([CREDENTIALS.apiKeyHeader])
+		},
+	},
+	{
+		id: 'security-api-key-query',
+		description: 'sends an API key in the query parameter that the scheme names',
+		requests: [{ method: 'GET', path: '/security/api-key-query' }],
+		knownDefects: {
+			'java-retrofit': 'the client gives a caller no way to supply a credential, so it sends none',
+		},
+		expectRequests(requests) {
+			expect(valueOf(queryPairs(requests[0]), 'api_key')).toBe(CREDENTIALS.apiKeyQuery)
+		},
+	},
+	{
+		id: 'security-bearer',
+		description: 'sends a bearer token in the Authorization header',
+		requests: [{ method: 'GET', path: '/security/bearer' }],
+		knownDefects: {
+			'java-retrofit': 'the client gives a caller no way to supply a credential, so it sends none',
+		},
+		expectRequests(requests) {
+			expect(requests[0].headers['authorization']).toEqual([`Bearer ${CREDENTIALS.bearerToken}`])
+		},
+	},
+	{
+		id: 'security-basic',
+		description: 'sends a basic credential in the Authorization header',
+		requests: [{ method: 'GET', path: '/security/basic' }],
+		knownDefects: {
+			'java-retrofit': 'the client gives a caller no way to supply a credential, so it sends none',
+		},
+		expectRequests(requests) {
+			/* RFC 7617 joins the user and the password with a ":", then encodes the pair as base64 */
+			expect(requests[0].headers['authorization']).toEqual([`Basic ${BASIC_CREDENTIAL}`])
 		},
 	},
 ]

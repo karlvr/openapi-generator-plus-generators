@@ -1,4 +1,4 @@
-export { CASES, DAY, OBJECT, OTHER_RESPONSE_OBJECT, PATH_SEGMENT, RESPONSE_OBJECT, WHEN } from './cases'
+export { BINARY_BODY, CASES, CREDENTIALS, DAY, OBJECT, OTHER_OBJECT, OTHER_RESPONSE_OBJECT, PATH_SEGMENT, RESPONSE_HEADERS, RESPONSE_OBJECT, TEXT_BODY, WHEN } from './cases'
 export { ConformanceDriver, DRIVERS } from './drivers'
 export { formPairs, multipartParts, partNamed, queryPairs, valueOf, valuesOf } from './parse'
 export type { MultipartPart, Pair } from './parse'
