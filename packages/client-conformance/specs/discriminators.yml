@@ -1,0 +1,292 @@
+openapi: 3.0.3
+info:
+  title: Client conformance - discriminators
+  description: >-
+    The operations that the discriminator conformance suite calls. Each operation
+    sends or receives a model that takes part in a discriminator, so the suite can
+    see how a generated client writes the discriminator property on the wire, and
+    what it makes of one in a response.
+
+    A schema that declares the discriminator property must keep it. A caller may
+    reach that schema on its own, as a request body or a response, so the property
+    must stay available in the generated model.
+  version: '1.0'
+servers:
+  - url: http://localhost/unused
+paths:
+
+  #
+  # A boolean discriminator. One member declares the property itself, and the
+  # other takes it from a base schema. Jackson writes a type id as a string unless
+  # the generated pojo gives it the field, so a boolean shows that mistake.
+  #
+
+  /discriminator/boolean:
+    post:
+      operationId: discriminatorBooleanSend
+      description: Send a member whose discriminator property is a boolean.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BooleanUnion'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanUnion'
+    get:
+      operationId: discriminatorBooleanReceive
+      description: Receive a member whose discriminator property is a boolean.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanUnion'
+
+  #
+  # The base schema that a member takes its discriminator property from, reached
+  # on its own. The property must be in the generated model, in both directions.
+  #
+
+  /discriminator/base:
+    post:
+      operationId: discriminatorBase
+      description: Send and receive the base schema that declares a discriminator property.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndependentObject'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndependentObject'
+
+  #
+  # A string discriminator without a mapping, so the value is the schema name.
+  # This is the common shape, so the suite guards it too.
+  #
+
+  /discriminator/pet:
+    post:
+      operationId: discriminatorPet
+      description: Send and receive a member whose discriminator property is a string.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+
+  #
+  # An enum discriminator, declared as a reference to an enum schema. A client
+  # must write the enum value, not the enum name.
+  #
+
+  /discriminator/shape:
+    post:
+      operationId: discriminatorShape
+      description: Send and receive a member whose discriminator property is an enum.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shape'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shape'
+
+  #
+  # A member of two discriminators that disagree on its value. No one value names
+  # the member, so a client leaves the value for the caller to set, and the caller
+  # sets the value of the discriminator that it sends the member through.
+  #
+
+  /discriminator/feline:
+    post:
+      operationId: discriminatorFeline
+      description: Send and receive a member through the discriminator that names it "lion".
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Feline'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feline'
+
+  /discriminator/legacy-feline:
+    post:
+      operationId: discriminatorLegacyFeline
+      description: Send and receive the same member through the discriminator that names it "LION".
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegacyFeline'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegacyFeline'
+
+components:
+  schemas:
+
+    BooleanUnion:
+      oneOf:
+        - $ref: '#/components/schemas/SubObject1'
+        - $ref: '#/components/schemas/SubObject2'
+      discriminator:
+        propertyName: thisProperty
+        mapping:
+          'true': '#/components/schemas/SubObject1'
+          'false': '#/components/schemas/SubObject2'
+    SubObject1:
+      type: object
+      required: [thisProperty, otherProperty1]
+      properties:
+        thisProperty:
+          type: boolean
+        otherProperty1:
+          type: string
+    SubObject2:
+      allOf:
+        - $ref: '#/components/schemas/IndependentObject'
+    IndependentObject:
+      type: object
+      required: [thisProperty, otherProperty2]
+      properties:
+        thisProperty:
+          type: boolean
+        otherProperty2:
+          type: string
+
+    Pet:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+      discriminator:
+        propertyName: petType
+    Animal:
+      type: object
+      required: [petType]
+      properties:
+        petType:
+          type: string
+    Cat:
+      allOf:
+        - $ref: '#/components/schemas/Animal'
+        - type: object
+          required: [name]
+          properties:
+            name:
+              type: string
+    Dog:
+      allOf:
+        - $ref: '#/components/schemas/Animal'
+        - type: object
+          required: [bark]
+          properties:
+            bark:
+              type: string
+
+    Shape:
+      oneOf:
+        - $ref: '#/components/schemas/Circle'
+        - $ref: '#/components/schemas/Square'
+      discriminator:
+        propertyName: kind
+        mapping:
+          circle: '#/components/schemas/Circle'
+          square: '#/components/schemas/Square'
+    ShapeKind:
+      type: string
+      enum: [circle, square]
+    ShapeBase:
+      type: object
+      required: [kind, label]
+      properties:
+        kind:
+          $ref: '#/components/schemas/ShapeKind'
+        label:
+          type: string
+    Circle:
+      allOf:
+        - $ref: '#/components/schemas/ShapeBase'
+        - type: object
+          required: [radius]
+          properties:
+            radius:
+              type: number
+    Square:
+      allOf:
+        - $ref: '#/components/schemas/ShapeBase'
+        - type: object
+          required: [side]
+          properties:
+            side:
+              type: number
+
+    Feline:
+      oneOf:
+        - $ref: '#/components/schemas/Lion'
+        - $ref: '#/components/schemas/Tiger'
+      discriminator:
+        propertyName: species
+        mapping:
+          lion: '#/components/schemas/Lion'
+          tiger: '#/components/schemas/Tiger'
+    LegacyFeline:
+      oneOf:
+        - $ref: '#/components/schemas/Lion'
+      discriminator:
+        propertyName: species
+        mapping:
+          LION: '#/components/schemas/Lion'
+    Lion:
+      type: object
+      required: [species, name]
+      properties:
+        species:
+          type: string
+        name:
+          type: string
+    Tiger:
+      type: object
+      required: [species, stripes]
+      properties:
+        species:
+          type: string
+        stripes:
+          type: integer

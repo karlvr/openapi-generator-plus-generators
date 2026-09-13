@@ -23,6 +23,7 @@ and one driver entry file per client family. `src/suites/index.ts` lists them.
 | Suite | Spec | Cases | What it checks |
 |---|---|---|---|
 | `conformance` | `specs/conformance.yml` | `src/suites/conformance.ts` | parameters, bodies, responses, security |
+| `discriminators` | `specs/discriminators.yml` | `src/suites/discriminators.ts` | a discriminator property on the wire, in both directions |
 
 1. A suite's specification holds one operation for each thing that the suite
    checks.

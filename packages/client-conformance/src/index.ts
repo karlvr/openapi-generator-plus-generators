@@ -1,4 +1,5 @@
 export { BINARY_BODY, CASES, CONFORMANCE, CREDENTIALS, DAY, OBJECT, OTHER_OBJECT, OTHER_RESPONSE_OBJECT, PATH_SEGMENT, RESPONSE_HEADERS, RESPONSE_OBJECT, TEXT_BODY, WHEN } from './suites/conformance'
+export { DISCRIMINATOR_CASES, DISCRIMINATORS } from './suites/discriminators'
 export { SUITES } from './suites'
 export { ConformanceDriver, DRIVERS } from './drivers'
 export { formPairs, multipartParts, partNamed, queryPairs, valueOf, valuesOf } from './parse'
