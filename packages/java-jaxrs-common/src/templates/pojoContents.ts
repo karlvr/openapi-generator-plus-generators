@@ -9,6 +9,7 @@ import { pojoPropertyAnnotations } from './frag/pojoPropertyAnnotations'
 import { pojoPropertyType } from './frag/pojoPropertyType'
 import { pojoProperty } from './frag/pojoProperty'
 import { pojoUtilities } from './frag/pojoUtilities'
+import { DiscriminatorConstant, discriminatorConstants, discriminatorConstructorLines } from './frag/discriminatorConstants'
 
 /** One property field declaration, followed by a blank line. */
 function propertyField(property: CodegenProperty, ctx: JavaModelContext): string {
@@ -95,6 +96,15 @@ function ownProperties(schema: CodegenObjectSchema, name: string, ctx: JavaModel
 }
 
 /**
+ * The no-args constructor. A member of a discriminator sets its discriminator
+ * constants here, so a caller need not.
+ */
+function constructor(name: string, constants: DiscriminatorConstant[], ctx: JavaModelContext): string {
+	const body = discriminatorConstructorLines(constants, ctx)
+	return `public ${name}() {\n${body.length > 0 ? body.join('\n') + '\n' : '\n'}}\n\n`
+}
+
+/**
  * The body of a pojo class: its nested models, property fields, no-args
  * constructor, additional-properties support, covariant overrides for
  * inherited chaining setters, and the properties' own chaining setters,
@@ -103,6 +113,7 @@ function ownProperties(schema: CodegenObjectSchema, name: string, ctx: JavaModel
 export function pojoContents(schema: CodegenObjectSchema, ctx: JavaModelContext): string {
 	const name = className(ctx.generatorContext.generator(), schema.name)
 	const properties = schema.properties ? idx.allValues(schema.properties) : []
+	const constants = discriminatorConstants(schema)
 
 	const header = ctx.templates.pojoHeader(schema, ctx)
 	const nested = nestedModels(schema, ctx)
@@ -113,7 +124,7 @@ export function pojoContents(schema: CodegenObjectSchema, ctx: JavaModelContext)
 		+ (nested !== SKIP ? nested : '')
 		+ additionalPropertiesFieldDeclaration(schema)
 		+ properties.map(property => propertyField(property, ctx)).join('')
-		+ `public ${name}() {\n\n}\n\n`
+		+ constructor(name, constants, ctx)
 		+ additionalPropertiesSupport(schema, name)
 		+ inheritedPropertyOverrides(schema, ctx)
 		+ ownProperties(schema, name, ctx)

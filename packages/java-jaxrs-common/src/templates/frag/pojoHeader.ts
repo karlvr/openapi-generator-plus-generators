@@ -30,7 +30,11 @@ export function pojoHeader(schema: CodegenObjectSchema | CodegenInterfaceSchema,
 
 	if (schema.discriminator) {
 		const discriminator = schema.discriminator
-		lines.push(`@com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY, property = ${stringLiteral(ctx.generatorContext, discriminator.serializedName)})`)
+		/* The schema that declares the discriminator property keeps it, so the pojo has a real field for it.
+		   EXISTING_PROPERTY tells Jackson to read and write that field, rather than add a property of its own.
+		   As.PROPERTY would write the field twice, and would write the type id as a string, which is wrong for
+		   a discriminator that the spec gives another type, such as a boolean or an integer. */
+		lines.push(`@com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = com.fasterxml.jackson.annotation.JsonTypeInfo.As.EXISTING_PROPERTY, property = ${stringLiteral(ctx.generatorContext, discriminator.serializedName)}, visible = true)`)
 		if (discriminator.references.length > 0) {
 			lines.push('@com.fasterxml.jackson.annotation.JsonSubTypes({')
 			for (const ref of discriminator.references) {
