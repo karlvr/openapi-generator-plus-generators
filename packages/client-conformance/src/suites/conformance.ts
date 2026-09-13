@@ -1,6 +1,7 @@
-import { formPairs, multipartParts, partNamed, queryPairs, valueOf, valuesOf } from './parse'
-import { CONFORMANCE_BASE_PATH } from './server'
-import { ConformanceCase } from './types'
+import { formPairs, multipartParts, partNamed, queryPairs, valueOf, valuesOf } from '../parse'
+import { CONFORMANCE_BASE_PATH } from '../server'
+import { ConformanceCase, ConformanceSuite } from '../types'
+import * as path from 'path'
 
 /** The date-time that every case sends, and the text that a client must produce for it. */
 export const WHEN = '2020-01-02T03:04:05.678Z'
@@ -786,3 +787,15 @@ export const CASES: ConformanceCase[] = [
 		},
 	},
 ]
+
+/**
+ * The general conformance suite: parameters, bodies, responses and security.
+ *
+ * A case that needs a schema of its own belongs in a suite of its own, so that
+ * this spec stays a list of plain operations.
+ */
+export const CONFORMANCE: ConformanceSuite = {
+	id: 'conformance',
+	spec: path.join(__dirname, '..', '..', 'specs', 'conformance.yml'),
+	cases: CASES,
+}

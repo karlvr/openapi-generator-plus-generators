@@ -102,3 +102,23 @@ export interface ConformanceCase {
 	 */
 	knownDefects?: Record<string, string>
 }
+
+/**
+ * A family of conformance cases, with the spec that they call.
+ *
+ * Each suite generates its own client project, so a suite can hold whatever
+ * schemas its cases need without those schemas reaching another suite. A driver
+ * family provides one entry file per suite, named after the suite id.
+ */
+export interface ConformanceSuite {
+	/**
+	 * The suite id. It names the spec, the driver entry file of each family, and
+	 * the output directory. So it must be a valid file name, and must not change
+	 * once a driver knows it.
+	 */
+	id: string
+	/** The path of the spec that every case in the suite calls. */
+	spec: string
+	/** Every case in the suite, in the order that a driver runs them. */
+	cases: ConformanceCase[]
+}

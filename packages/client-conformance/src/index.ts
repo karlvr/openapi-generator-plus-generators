@@ -1,4 +1,5 @@
-export { BINARY_BODY, CASES, CREDENTIALS, DAY, OBJECT, OTHER_OBJECT, OTHER_RESPONSE_OBJECT, PATH_SEGMENT, RESPONSE_HEADERS, RESPONSE_OBJECT, TEXT_BODY, WHEN } from './cases'
+export { BINARY_BODY, CASES, CONFORMANCE, CREDENTIALS, DAY, OBJECT, OTHER_OBJECT, OTHER_RESPONSE_OBJECT, PATH_SEGMENT, RESPONSE_HEADERS, RESPONSE_OBJECT, TEXT_BODY, WHEN } from './suites/conformance'
+export { SUITES } from './suites'
 export { ConformanceDriver, DRIVERS } from './drivers'
 export { formPairs, multipartParts, partNamed, queryPairs, valueOf, valuesOf } from './parse'
 export type { MultipartPart, Pair } from './parse'
@@ -6,4 +7,4 @@ export { CASE_CONTROL_PATH, CONFORMANCE_BASE_PATH, startConformanceServer } from
 export type { CannedResponse, ConformanceServer, RecordedRequest } from './server'
 export { CONFORMANCE_SPEC, runConformanceTests } from './testing'
 export type { ConformanceOptions } from './testing'
-export type { ConformanceCase, DriverCall, DriverCaseResult, DriverResults, ExpectedRequest } from './types'
+export type { ConformanceCase, ConformanceSuite, DriverCall, DriverCaseResult, DriverResults, ExpectedRequest } from './types'

@@ -17,16 +17,26 @@ parses a `204`.
 
 ## How it works
 
-1. One OpenAPI specification, `specs/conformance.yml`, holds one operation for
-   each thing that the suite checks.
-2. `src/cases.ts` holds the cases. A case names the calls that a driver makes,
-   the response that the server sends, and what the suite expects.
+The cases come in **suites**. A suite is one specification, one file of cases,
+and one driver entry file per client family. `src/suites/index.ts` lists them.
+
+| Suite | Spec | Cases | What it checks |
+|---|---|---|---|
+| `conformance` | `specs/conformance.yml` | `src/suites/conformance.ts` | parameters, bodies, responses, security |
+
+1. A suite's specification holds one operation for each thing that the suite
+   checks.
+2. A suite's cases file holds the cases. A case names the calls that a driver
+   makes, the response that the server sends, and what the suite expects.
 3. A **driver** calls the operations. Each client family needs one, because each
    generated API looks different. A driver only makes calls. It reports what each
    call produced.
 4. `src/server.ts` records every request against the case that the driver
    announced, and answers with that case's canned response.
 5. The suite asserts on the recorded requests and on the driver's report.
+
+Each suite generates its own client project. So a suite can hold whatever schemas
+its cases need, and those schemas never reach another suite.
 
 The server serves under a base path, `/api/v1`. A real server URL usually carries
 a path, and a client must keep it in front of every operation path. A client that
@@ -36,6 +46,11 @@ visible.
 The suite copies the driver into the generated project, so the project's own
 compiler checks the driver against the generated types. A signature that a
 caller cannot write then fails the build.
+
+A family's drivers share a **harness**, which announces a case, makes a call and
+writes the report. A TypeScript family keeps it in `drivers/<family>/harness.ts`.
+A Java family keeps it in `drivers/<family>/ConformanceHarness.java`. The entry
+file of each suite builds on the harness, so it holds only the calls.
 
 ## Running it
 
@@ -51,30 +66,49 @@ The Java drivers need `mvn` and a JDK on the `PATH`.
 
 ## Adding a generator
 
-Add a line to `src/__tests__`-style spec file in the generator package:
+Add a spec file in the generator package that runs every suite:
 
 ```ts
 import { runConformanceTests } from '@openapi-generator-plus/client-conformance/dist/testing'
+import { SUITES } from '@openapi-generator-plus/client-conformance/dist/suites'
 import createGenerator from '..'
 import { DEFAULT_CONFIG } from './common'
 
-runConformanceTests({
-	createGenerator,
-	driver: 'fetch-client',
-	config: DEFAULT_CONFIG,
-})
+for (const suite of SUITES) {
+	runConformanceTests({
+		createGenerator,
+		driver: 'fetch-client',
+		config: DEFAULT_CONFIG,
+		suite,
+	})
+}
 ```
 
 A generator that shares an API shape with an existing driver needs nothing else.
-A generator with a new shape needs a driver in `drivers/`, and an entry in
-`DRIVERS` in `src/drivers.ts`.
+A generator with a new shape needs a harness and one entry file per suite in
+`drivers/<family>/`, and an entry in `DRIVERS` in `src/drivers.ts`.
 
 ## Adding a case
 
-Add the operation to `specs/conformance.yml`, add the case to `src/cases.ts`,
-then add the calls to every driver. A driver matches a case by its id, so an id
-must not change once a driver knows it. Each driver runs the cases in the order
-that `CASES` declares them, and the suite checks that.
+Add the operation to the suite's specification, add the case to the suite's
+cases file, then add the calls to the suite's entry file in every driver family.
+A driver matches a case by its id, so an id must not change once a driver knows
+it. Each driver runs the cases in the order that the suite declares them, and
+the suite checks that.
+
+## Adding a suite
+
+Give a new family of cases a suite of its own when the cases need schemas of
+their own, or when they would swamp the list that they join. A suite is:
+
+1. A specification in `specs/<id>.yml`.
+2. A cases file in `src/suites/<id>.ts`, which exports a `ConformanceSuite`.
+3. An entry in `SUITES` in `src/suites/index.ts`.
+4. An entry file in each driver family: `drivers/<family>/<id>.ts` for a
+   TypeScript family, or `drivers/<family>/<Id>Driver.java` for a Java family,
+   where `<Id>` is the id in upper camel case.
+
+The suite id names all of these, so keep it a plain lower-case word.
 
 Give every case a `requests` list, with the method and the path of each request
 that it expects. The suite checks those, so `expectRequests` only has to assert

@@ -9,11 +9,11 @@
  * The driver only makes calls. It reports what each call produced, and the suite
  * asserts on that, and on what a recording server received.
  *
- * Run it as: node dist/driver.js <baseUrl> <resultsPath>
+ * Run it as: node dist/conformance.js <baseUrl> <resultsPath>
  */
 
-import * as fs from 'fs'
 import { Api, BodyApi, Configuration, FormApi, JsonApi, MultipartApi, QueryApi, ResponseApi, SecurityApi, setDefaultConfiguration } from './index'
+import { baseUrl, call, drive, startCase } from './harness'
 
 const WHEN = '2020-01-02T03:04:05.678Z'
 const DAY = '2020-01-02'
@@ -84,71 +84,6 @@ function headerStates(name: string, totalCount: number | undefined, note: string
 		name,
 		totalCount: totalCount !== undefined ? String(totalCount) : 'absent',
 		note: note !== undefined ? note : 'absent',
-	}
-}
-
-interface DriverCall {
-	outcome: 'success' | 'error' | 'exception'
-	httpStatus?: number
-	value?: unknown
-	error?: string
-}
-
-interface DriverCaseResult {
-	id: string
-	calls: DriverCall[]
-}
-
-/**
- * The part of every operation response that the driver reads.
- *
- * Each operation declares its own response union. They all carry a `status`,
- * which is the status code for a documented response, and a word for anything
- * else.
- */
-interface AnyResponse {
-	status: number | 'undocumented' | 'error' | 'unauthorized'
-	body?: unknown
-	error?: unknown
-	contentType?: string | undefined
-	/** The raw response, which an undocumented response carries so that a caller can read its status. */
-	response?: { status: number }
-}
-
-const baseUrl = process.argv[2]
-const resultsPath = process.argv[3]
-
-const results: DriverCaseResult[] = []
-let calls: DriverCall[] = []
-
-/** Tell the server which case is starting, so it records and answers for that case. */
-async function startCase(id: string): Promise<void> {
-	calls = []
-	results.push({ id, calls })
-	await fetch(`${baseUrl}/__conformance/case`, { method: 'POST', body: id })
-}
-
-/** Make one call, and record what the client produced. */
-async function call(operation: () => Promise<AnyResponse>): Promise<void> {
-	try {
-		const response = await operation()
-		if (typeof response.status === 'number') {
-			if (response.status >= 400) {
-				calls.push({ outcome: 'error', httpStatus: response.status, value: response.body })
-			} else {
-				calls.push({ outcome: 'success', httpStatus: response.status, value: response.body })
-			}
-		} else if (response.status === 'error') {
-			const error = response.error
-			calls.push({ outcome: 'exception', error: error instanceof Error ? error.message : String(error) })
-		} else if (response.status === 'undocumented' && response.response) {
-			/* The client reports an undeclared status through the raw response, which carries the code */
-			calls.push({ outcome: 'error', httpStatus: response.response.status })
-		} else {
-			calls.push({ outcome: 'exception', error: `The client reported a ${response.status} response of type ${response.contentType}` })
-		}
-	} catch (error) {
-		calls.push({ outcome: 'exception', error: error instanceof Error ? error.message : String(error) })
 	}
 }
 
@@ -317,10 +252,4 @@ async function main(): Promise<void> {
 	await call(() => SecurityApi.securityBasic())
 }
 
-main().then(() => {
-	fs.writeFileSync(resultsPath, JSON.stringify({ cases: results }, null, 2))
-}, (error) => {
-	console.error(error)
-	fs.writeFileSync(resultsPath, JSON.stringify({ cases: results }, null, 2))
-	process.exit(1)
-})
+drive(main)

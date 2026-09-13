@@ -4,13 +4,19 @@ import { CodegenConfig, CodegenGeneratorConstructor } from '@openapi-generator-p
 import { promises as fs } from 'fs'
 import * as os from 'os'
 import * as path from 'path'
-import { CASES } from './cases'
 import { DRIVERS } from './drivers'
 import { CannedResponse, ConformanceServer, CONFORMANCE_BASE_PATH, RecordedRequest, startConformanceServer } from './server'
-import { DriverResults, ExpectedRequest } from './types'
+import { CONFORMANCE } from './suites/conformance'
+import { ConformanceSuite, DriverResults, ExpectedRequest } from './types'
 
-/** The spec that every conformance case calls. */
-export const CONFORMANCE_SPEC = path.join(__dirname, '..', 'specs', 'conformance.yml')
+/**
+ * The spec of the general conformance suite.
+ *
+ * It declares an operation for every kind of parameter, body and response, so it
+ * is the widest spec in this package. Use it where a test wants to compile a
+ * generated project that exercises all of a generator's templates.
+ */
+export const CONFORMANCE_SPEC = CONFORMANCE.spec
 
 /** Generating, installing and building a client takes a while. */
 const TIMEOUT = 600000
@@ -48,16 +54,21 @@ export interface ConformanceOptions {
 	driver: string
 	/** The config to generate with. The suite adds nothing to it. */
 	config: CodegenConfig
-	/** The name of the output directory. Give one when a package runs the suite more than once. */
+	/** The suite to run. See `SUITES`. */
+	suite: ConformanceSuite
+	/**
+	 * The name of the output directory. The default is the suite id. Give one when
+	 * a package runs a suite more than once.
+	 */
 	testName?: string
 }
 
 /**
- * Declare the client conformance tests for one generator.
+ * Declare the tests of one conformance suite for one generator.
  *
- * Call this at the top level of a spec file in a generator package. It generates
- * the conformance API, builds it, and calls every operation against a recording
- * server. One test then reports each case.
+ * Call this at the top level of a spec file in a generator package, once for each
+ * suite. It generates the suite's API, builds it, and calls every operation
+ * against a recording server. One test then reports each case.
  *
  * The suite needs a built `client-conformance` package, because it reads the
  * driver sources and the spec from the package directory.
@@ -68,7 +79,10 @@ export function runConformanceTests(options: ConformanceOptions): void {
 		throw new Error(`Unknown conformance driver "${options.driver}". Known drivers: ${Object.keys(DRIVERS).join(', ')}`)
 	}
 
-	describe(`client conformance (${options.driver})`, () => {
+	const { suite } = options
+	const CASES = suite.cases
+
+	describe(`client conformance: ${suite.id} (${options.driver})`, () => {
 		let server: ConformanceServer | undefined
 		let results: DriverResults = { cases: [] }
 
@@ -83,14 +97,14 @@ export function runConformanceTests(options: ConformanceOptions): void {
 			server = await startConformanceServer(responses)
 			const startedServer = server
 
-			const result = await createCodegenResult(CONFORMANCE_SPEC, options.config, options.createGenerator)
-			const resultsPath = path.join(os.tmpdir(), `conformance-results-${process.pid}-${Date.now()}.json`)
+			const result = await createCodegenResult(suite.spec, options.config, options.createGenerator)
+			const resultsPath = path.join(os.tmpdir(), `conformance-results-${suite.id}-${process.pid}-${Date.now()}.json`)
 
 			await testGenerate(result, {
-				testName: options.testName || 'conformance',
+				testName: options.testName || suite.id,
 				postProcess: async(basePath) => {
-					await driver.install(basePath)
-					await driver.run(basePath, startedServer.baseUrl, resultsPath)
+					await driver.install(basePath, suite)
+					await driver.run(basePath, suite, startedServer.baseUrl, resultsPath)
 				},
 			})
 

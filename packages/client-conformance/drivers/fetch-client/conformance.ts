@@ -9,11 +9,11 @@
  * The driver only makes calls. It reports what each call produced, and the suite
  * asserts on that, and on what a recording server received.
  *
- * Run it as: node dist/driver.js <baseUrl> <resultsPath>
+ * Run it as: node dist/conformance.js <baseUrl> <resultsPath>
  */
 
-import * as fs from 'fs'
 import { Api, BodyApi, Configuration, FormApi, JsonApi, MultipartApi, QueryApi, ResponseApi, SecurityApi } from './index'
+import { baseUrl, call, drive, startCase } from './harness'
 
 const WHEN = '2020-01-02T03:04:05.678Z'
 const DAY = '2020-01-02'
@@ -101,68 +101,6 @@ function credentials(): Configuration {
 		username: BASIC_USERNAME,
 		password: BASIC_PASSWORD,
 	})
-}
-
-interface DriverCall {
-	outcome: 'success' | 'error' | 'exception'
-	httpStatus?: number
-	value?: unknown
-	error?: string
-}
-
-interface DriverCaseResult {
-	id: string
-	calls: DriverCall[]
-}
-
-const baseUrl = process.argv[2]
-const resultsPath = process.argv[3]
-
-const results: DriverCaseResult[] = []
-let calls: DriverCall[] = []
-
-/** Tell the server which case is starting, so it records and answers for that case. */
-async function startCase(id: string): Promise<void> {
-	calls = []
-	results.push({ id, calls })
-	await fetch(`${baseUrl}/__conformance/case`, { method: 'POST', body: id })
-}
-
-/**
- * The status of a value that is an HTTP response, or `undefined` for any other
- * value.
- *
- * Each client in this family carries its own response class. One uses the
- * platform class, and another uses the class of a fetch library. So the driver
- * recognises a response by its shape rather than by its class.
- */
-function statusOf(value: unknown): number | undefined {
-	if (typeof value === 'object' && value !== null) {
-		const candidate = value as { status?: unknown; headers?: { get?: unknown } }
-		if (typeof candidate.status === 'number' && candidate.headers && typeof candidate.headers.get === 'function') {
-			return candidate.status
-		}
-	}
-	return undefined
-}
-
-/** Make one call, and record what the client produced. */
-async function call(operation: () => Promise<unknown>): Promise<void> {
-	try {
-		const value = await operation()
-		/*
-		 * An operation whose response declares no content resolves with the raw
-		 * response. That has nothing to assert, so report no value.
-		 */
-		calls.push({ outcome: 'success', value: statusOf(value) !== undefined ? undefined : value })
-	} catch (error) {
-		const status = statusOf(error)
-		if (status !== undefined) {
-			calls.push({ outcome: 'error', httpStatus: status })
-		} else {
-			calls.push({ outcome: 'exception', error: error instanceof Error ? error.message : String(error) })
-		}
-	}
 }
 
 async function main(): Promise<void> {
@@ -319,10 +257,4 @@ async function main(): Promise<void> {
 	await call(() => security.securityBasic())
 }
 
-main().then(() => {
-	fs.writeFileSync(resultsPath, JSON.stringify({ cases: results }, null, 2))
-}, (error) => {
-	console.error(error)
-	fs.writeFileSync(resultsPath, JSON.stringify({ cases: results }, null, 2))
-	process.exit(1)
-})
+drive(main)
