@@ -1,0 +1,165 @@
+openapi: '3.0.3'
+info:
+  title: 'Issue 48: a schema keeps a discriminator property that it declares'
+  version: '1.0'
+paths:
+  # IndependentObject declares the discriminator property, and a caller reaches it
+  # on its own, so the generated model must keep the property.
+  /independent:
+    post:
+      operationId: createIndependent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/IndependentObject' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IndependentObject' }
+  /thing:
+    get:
+      operationId: getThing
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ObjectWithDiscriminator' }
+  # A base two levels above a member, also reached on its own.
+  /deep-base:
+    get:
+      operationId: getDeepBase
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DeepBase' }
+  /animal:
+    get:
+      operationId: getAnimal
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Animal' }
+  # A base that never declares the discriminator property, because each member
+  # declares its own. The base must not gain a property that the spec never gave it.
+  /shared-base:
+    get:
+      operationId: getSharedBase
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SharedBase' }
+  /event:
+    get:
+      operationId: getEvent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Event' }
+components:
+  schemas:
+    # A boolean discriminator, whose member inherits the property from IndependentObject.
+    ObjectWithDiscriminator:
+      oneOf:
+        - $ref: '#/components/schemas/SubObject1'
+        - $ref: '#/components/schemas/SubObject2'
+      discriminator:
+        propertyName: thisProperty
+        mapping:
+          'true': '#/components/schemas/SubObject1'
+          'false': '#/components/schemas/SubObject2'
+    SubObject1:
+      type: object
+      required: [thisProperty, otherProperty1]
+      properties:
+        thisProperty: { type: boolean }
+        otherProperty1: { type: string }
+    SubObject2:
+      allOf:
+        - $ref: '#/components/schemas/IndependentObject'
+    IndependentObject:
+      type: object
+      required: [thisProperty]
+      properties:
+        thisProperty: { type: boolean }
+        otherProperty2: { type: string }
+
+    # An enum discriminator, whose members inherit the property from a base two levels up.
+    Animal:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+      discriminator:
+        propertyName: kind
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
+    AnimalKind:
+      type: string
+      enum: [cat, dog]
+    DeepBase:
+      type: object
+      required: [kind]
+      properties:
+        kind: { $ref: '#/components/schemas/AnimalKind' }
+        deepProperty: { type: string }
+    MiddleBase:
+      allOf:
+        - $ref: '#/components/schemas/DeepBase'
+        - type: object
+          properties:
+            middleProperty: { type: string }
+    Cat:
+      allOf:
+        - $ref: '#/components/schemas/MiddleBase'
+        - type: object
+          properties:
+            name: { type: string }
+    Dog:
+      allOf:
+        - $ref: '#/components/schemas/MiddleBase'
+        - type: object
+          properties:
+            bark: { type: string }
+
+    # Each member declares its own discriminator property, so SharedBase has none.
+    Event:
+      oneOf:
+        - $ref: '#/components/schemas/EventItemAdded'
+        - $ref: '#/components/schemas/EventItemRemoved'
+      discriminator:
+        propertyName: action
+        mapping:
+          item_added: '#/components/schemas/EventItemAdded'
+          item_removed: '#/components/schemas/EventItemRemoved'
+    SharedBase:
+      type: object
+      properties:
+        common: { type: string }
+    EventItemAdded:
+      allOf:
+        - $ref: '#/components/schemas/SharedBase'
+        - type: object
+          required: [action]
+          properties:
+            action: { type: string, enum: [item_added] }
+            item: { type: string }
+    EventItemRemoved:
+      allOf:
+        - $ref: '#/components/schemas/SharedBase'
+        - type: object
+          required: [action]
+          properties:
+            action: { type: string, enum: [item_removed] }
+            reason: { type: string }

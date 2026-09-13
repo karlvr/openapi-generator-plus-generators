@@ -1,0 +1,59 @@
+openapi: '3.0.3'
+info:
+  title: A member whose discriminators disagree on its value
+  version: '1.0'
+paths:
+  /pet:
+    get:
+      operationId: getPet
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Pet' }
+  /legacy-pet:
+    get:
+      operationId: getLegacyPet
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LegacyPet' }
+components:
+  schemas:
+    # Cat is a member of both discriminators, with a different value of petType in each, so the
+    # generator can't fix petType to one value and must leave it for the caller to set.
+    Pet:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+      discriminator:
+        propertyName: petType
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
+    LegacyPet:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+      discriminator:
+        propertyName: petType
+        mapping:
+          CAT: '#/components/schemas/Cat'
+    Cat:
+      type: object
+      required: [petType, name]
+      properties:
+        petType:
+          type: string
+        name:
+          type: string
+    Dog:
+      type: object
+      required: [petType, bark]
+      properties:
+        petType:
+          type: string
+        bark:
+          type: string
