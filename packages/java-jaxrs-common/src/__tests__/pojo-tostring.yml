@@ -1,0 +1,31 @@
+openapi: '3.0.3'
+info:
+  title: POJO toString test
+  version: '1.0'
+paths:
+  /credentials:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        200:
+          description: OK
+components:
+  schemas:
+    Credentials:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        secretKey:
+          # A write-only property is one the client sends and the server never sends back, which is
+          # what a secret looks like in an API definition. The generated toString() must not print
+          # it, or a debug log or an exception message will disclose it.
+          type: string
+          writeOnly: true

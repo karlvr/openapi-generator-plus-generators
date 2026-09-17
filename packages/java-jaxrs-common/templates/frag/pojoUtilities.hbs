@@ -41,7 +41,11 @@ public java.lang.String toString() {
 	sb.append("    {{identifier property.name}}: ").append(java.util.Objects.toString(this.{{identifier property.name}}, "null").replace("\n", "\n    ")).append("\n");
 	{{else}}
 	{{#each properties}}
+	{{#if writeOnly}}
+	sb.append("    {{identifier name}}: [redacted]\n");
+	{{else}}
 	sb.append("    {{identifier name}}: ").append(java.util.Objects.toString(this.{{identifier name}}, "null").replace("\n", "\n    ")).append("\n");
+	{{/if}}
 	{{/each}}
 	{{#if additionalProperties}}
 	for (java.lang.String key : additionalProperties.keySet()) {
