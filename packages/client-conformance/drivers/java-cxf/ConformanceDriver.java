@@ -312,12 +312,11 @@ public class ConformanceDriver extends ConformanceHarness {
 
 		startCase("response-headers");
 		call(() -> {
-			/*
-			 * The operation returns the model alone, so the client exposes no header. The
-			 * declared type stops compiling if that ever changes.
-			 */
-			com.example.model.ResponseObject model = response.responseHeaders();
-			return headerStates(model.getName(), null, null);
+			/* The operation returns a wrapper that carries the model and each declared header */
+			ResponseApi.ResponseHeaders200 result = response.responseHeaders();
+			return headerStates(result.getBody().getName(),
+				result.getXTotalCount() != null ? String.valueOf(result.getXTotalCount()) : null,
+				result.getXNote());
 		});
 
 		startCase("response-empty-body");

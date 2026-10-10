@@ -623,7 +623,6 @@ export const CASES: ConformanceCase[] = [
 		},
 		knownDefects: {
 			'fetch-client': 'the operation resolves with the model alone, so a caller cannot reach the headers',
-			'java-cxf': 'the operation returns the model alone, so a caller cannot reach the headers',
 		},
 		expectCalls(calls) {
 			expect(calls).toHaveLength(1)

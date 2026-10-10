@@ -5,6 +5,7 @@ import { imports, operationVars, generatedAnnotation, javax, getter } from '@ope
 import { ClientContext } from './types'
 import { bodyParam } from './frag/bodyParam'
 import { exceptionName } from './api'
+import { operationReturnType, responseClassBuilding, responseMembers, responseWrapper, ResponseWrapper, RESPONSE_VAR } from './frag/responseClass'
 
 const HTML_ESCAPE_CHARS: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#x27;', '`': '&#x60;', '=': '&#x3D;' }
 
@@ -30,38 +31,127 @@ function multipartBuilding(operation: CodegenOperation, ctx: ClientContext): str
 	return ctx.templates.multipartBodyBuilding(requestBody, ctx)
 }
 
-/** The response's contents, dispatched on the response's media type, each throwing its own exception class. */
+/**
+ * The response's contents, dispatched on the media type that the response carries, each
+ * throwing its own exception class.
+ *
+ * Use this where the response is in scope under the name that `RESPONSE_VAR` gives.
+ */
 function mediaTypeDispatchBlock(operation: CodegenOperation, response: CodegenResponse, ctx: ClientContext): string {
 	const jx = javax(ctx.root.useJakarta)
 	const contents = response.contents ?? []
 
-	const throwLines = contents.map((content, i) => {
-		const name = exceptionName(operation, response, content.mediaType.mediaType, i === 0, ctx)
-		const arg = content.nativeType ? `__e.getResponse().readEntity(${content.nativeType.literalType}.class)` : ''
-		return `if (__e.getResponse().getMediaType().isCompatible(${jx}.ws.rs.core.MediaType.valueOf(${stringLiteral(ctx.generatorContext, content.mediaType.mediaType)}))) {\n\tthrow new ${name}(${arg});\n}\n`
+	const throwLines = responseContentAndNone(response).map((entry, i) => {
+		const name = exceptionName(operation, response, entry.content?.mediaType.mediaType ?? null, i === 0, ctx)
+		const members = responseMembers(response, entry.content, 'entity', 'getEntity', operation, ctx)
+		const building = responseClassBuilding(name, members)
+		if (!entry.content) {
+			/* Nothing reads a body, so the response is closed once its headers are read */
+			return `${building.statements}${RESPONSE_VAR}.close();\nthrow ${building.expression};\n`
+		}
+		const thrown = `${building.statements}throw ${building.expression};\n`
+		return `if (${RESPONSE_VAR}.getMediaType() != null && ${RESPONSE_VAR}.getMediaType().isCompatible(${jx}.ws.rs.core.MediaType.valueOf(${stringLiteral(ctx.generatorContext, entry.content.mediaType.mediaType)}))) {\n${indent(thrown, '\t')}}\n`
 	}).join('')
 
-	const unsupportedMediaType = `throw new ${ctx.root.apiPackage}.UnprocessableResponseException(__e.getResponse(), new ${jx}.ws.rs.ProcessingException("Unsupported media type for response status " + __e.getResponse().getStatus() + ": " + __e.getResponse().getMediaType()));\n`
+	/* A response that declares no content throws unconditionally above, so nothing follows it */
+	if (contents.length === 0) {
+		return throwLines
+	}
+
+	const unsupportedMediaType = `throw new ${ctx.root.apiPackage}.UnprocessableResponseException(${RESPONSE_VAR}, new ${jx}.ws.rs.ProcessingException("Unsupported media type for response status " + ${RESPONSE_VAR}.getStatus() + ": " + ${RESPONSE_VAR}.getMediaType()));\n`
 
 	return 'try {\n'
 		+ indent(`${throwLines}\n${unsupportedMediaType}`, '\t')
 		+ `} catch (${jx}.ws.rs.ProcessingException __processingException) {\n`
-		+ `\tthrow new ${ctx.root.apiPackage}.UnprocessableResponseException(__e.getResponse(), __processingException);\n`
+		+ `\tthrow new ${ctx.root.apiPackage}.UnprocessableResponseException(${RESPONSE_VAR}, __processingException);\n`
 		+ '}\n'
 }
 
-/** One non-default, non-catch-all response's `catch` gate: matches its status code, then dispatches on media type. */
-function nonDefaultCatchBlock(operation: CodegenOperation, response: CodegenResponse, ctx: ClientContext): string {
-	return `if (__e.getResponse().getStatus() == ${String(response.code)}) {\n${indent(mediaTypeDispatchBlock(operation, response, ctx), '\t')}}\n`
+/** One non-default, non-catch-all response's gate: matches its status code, then dispatches on media type. */
+function nonDefaultStatusBlock(operation: CodegenOperation, response: CodegenResponse, ctx: ClientContext): string {
+	return `if (__status == ${String(response.code)}) {\n${indent(mediaTypeDispatchBlock(operation, response, ctx), '\t')}}\n`
 }
 
-/** The catch-all response's dispatch, ungated by status code (it applies to every status the other `catch` gates didn't match). */
-function catchAllCatchBlock(operation: CodegenOperation, response: CodegenResponse, ctx: ClientContext): string {
-	return `/* Catch-all response */\n${mediaTypeDispatchBlock(operation, response, ctx)}`
+/**
+ * What the operation gives a caller for its default response: the body, the wrapper that
+ * carries the body and the declared headers, or nothing.
+ */
+function defaultResponseBlock(operation: CodegenOperation, wrapper: ResponseWrapper | null, ctx: ClientContext): string {
+	const jx = javax(ctx.root.useJakarta)
+
+	const building = wrapper ? responseClassBuilding(wrapper.nativeType, wrapper.members) : null
+	/* A wrapper without a body reads nothing from the response after its headers, so it closes the response first */
+	const closeBeforeWrapper = operation.defaultResponse?.defaultContent?.nativeType ? '' : `${RESPONSE_VAR}.close();\n`
+	const body = building
+		? `${building.statements}${closeBeforeWrapper}return ${building.expression};\n`
+		: operation.returnNativeType && operation.defaultResponse?.defaultContent?.nativeType
+			? `return ${RESPONSE_VAR}.readEntity(${operation.defaultResponse.defaultContent.nativeType.literalType}.class);\n`
+			: `${RESPONSE_VAR}.close();\n`
+
+	/* A body that the client cannot parse is a failure of this response, not of another one */
+	const guarded = 'try {\n'
+		+ indent(body, '\t')
+		+ `} catch (${jx}.ws.rs.ProcessingException __processingException) {\n`
+		+ `\tthrow new ${ctx.root.apiPackage}.UnprocessableResponseException(${RESPONSE_VAR}, __processingException);\n`
+		+ '}\n'
+
+	return guarded
+}
+
+/**
+ * `block`, gated so that it runs for every status apart from the one that the operation's
+ * default response documents. Returns `block` unchanged when the operation documents no
+ * default response, because every status then belongs to `block`.
+ */
+function gatedByOtherThanDefault(operation: CodegenOperation, block: string): string {
+	const code = operation.defaultResponse?.code
+	if (typeof code !== 'number') {
+		return block
+	}
+	return `if (__status != ${String(code)}) {\n${indent(block, '\t')}}\n`
+}
+
+/**
+ * The private method that turns the JAX-RS `Response` of a call into what the operation
+ * gives a caller, throwing the exception of whichever response the status names.
+ *
+ * A status that no response documents, and that is not a success, becomes an
+ * `UnexpectedResponseException` carrying the response, so a caller can still read it.
+ */
+function responseHandlerMethod(operation: CodegenOperation, wrapper: ResponseWrapper | null, returnType: string, throwsClause: string, ctx: ClientContext): string {
+	const generator = ctx.generatorContext.generator()
+	const jx = javax(ctx.root.useJakarta)
+
+	const statusBlocks = nonDefaultAndCatchAllResponses(operation).map(response => nonDefaultStatusBlock(operation, response, ctx)).join('')
+
+	/*
+	 * A catch-all response covers every status that no other response documents, so it
+	 * covers everything the blocks above left, apart from the default response's own status.
+	 * A catch-all that is itself the default response documents no other status, so it gets
+	 * no block of its own.
+	 */
+	const catchAll = operation.catchAllResponse && operation.catchAllResponse !== operation.defaultResponse
+		? `/* Catch-all response */\n${gatedByOtherThanDefault(operation, mediaTypeDispatchBlock(operation, operation.catchAllResponse, ctx))}`
+		: `if (__status >= 300) {\n\tthrow new ${ctx.root.apiPackage}.UnexpectedResponseException(${RESPONSE_VAR}, new ${jx}.ws.rs.WebApplicationException(${RESPONSE_VAR}));\n}\n`
+
+	const body = `int __status = ${RESPONSE_VAR}.getStatus();\n`
+		+ statusBlocks
+		+ catchAll
+		+ defaultResponseBlock(operation, wrapper, ctx)
+
+	return `\t/** What {@code ${identifier(generator, operation.name)}} gives a caller for {@code ${RESPONSE_VAR}}, by the status that it carries. */\n`
+		+ `\tprivate ${returnType} ${responseHandlerName(operation, ctx)}(${jx}.ws.rs.core.Response ${RESPONSE_VAR}) throws ${throwsClause} {\n`
+		+ indent(body, '\t\t')
+		+ '\t}\n\n'
+}
+
+/** The name of the private method that turns one operation's `Response` into what it gives a caller. */
+function responseHandlerName(operation: CodegenOperation, ctx: ClientContext): string {
+	return `__handle${className(ctx.generatorContext.generator(), operation.name)}`
 }
 
 /** One operation's JAX-RS implementation method, invoking the low-level `ApiSpec` and translating its responses into this API's exceptions. */
-function operationMethod(operation: CodegenOperation, ctx: ClientContext): string {
+function operationMethod(operation: CodegenOperation, group: CodegenOperationGroup, ctx: ClientContext): string {
 	const generator = ctx.generatorContext.generator()
 	const jx = javax(ctx.root.useJakarta)
 	const { parameters, arguments: baseArgs } = operationVars(operation, { jaxrs: false, service: false }, bodyParam, ctx)
@@ -71,35 +161,32 @@ function operationMethod(operation: CodegenOperation, ctx: ClientContext): strin
 		? operationVars(operation, { jaxrs: false, service: false, requestBodyVar: '__multipartBody' }, bodyParam, ctx).arguments
 		: baseArgs
 
-	const returnType = operation.returnNativeType ? `${operation.returnNativeType}` : 'void'
+	const wrapper = responseWrapper(operation, group, ctx)
+	const returnType = operationReturnType(operation, group, ctx)
 	const exceptionNames = nonDefaultResponses(operation).flatMap(response =>
 		responseContentAndNone(response).map((entry, i) => exceptionName(operation, response, entry.content?.mediaType.mediaType ?? null, i === 0, ctx)))
 	const throwsClause = `${ctx.root.apiPackage}.UnexpectedApiException${exceptionNames.map(name => `, ${name}`).join('')}`
 
-	const returnPrefix = operation.returnNativeType ? 'return ' : ''
-	const call = `${returnPrefix}api.${identifier(generator, operation.name)}(${callArgs});`
+	const invocation = `api.${identifier(generator, operation.name)}(${callArgs})`
 
 	const authorizeBlock = operation.securityRequirements ? 'if (authorizationProvider != null) {\n\tauthorizationProvider.authorize(this);\n}\n\n' : ''
 
 	const multipart = multipartBuilding(operation, ctx)
 	const multipartText = typeof multipart === 'string' ? `${multipart}\n` : ''
 
-	const tryBody = operation.securityRequirements ? `try {
-	${call}
-} catch (${jx}.ws.rs.WebApplicationException __e) {
-	if (__e.getResponse().getStatus() == 401 && authorizationProvider != null) {
-		if (authorizationProvider.reauthorize(this, __e.getResponse())) {
-			${call}
-		}
-	}
-	throw __e;
-}
-` : `${call}\n`
+	/* An unauthorized response asks the provider for a new credential, then repeats the call once */
+	const reauthorizeBlock = operation.securityRequirements
+		? `if (${RESPONSE_VAR}.getStatus() == 401 && authorizationProvider != null) {\n`
+			+ `\tif (authorizationProvider.reauthorize(this, ${RESPONSE_VAR})) {\n`
+			+ `\t\t${RESPONSE_VAR}.close();\n`
+			+ `\t\t${RESPONSE_VAR} = ${invocation};\n`
+			+ '\t}\n'
+			+ '}\n'
+		: ''
 
-	const catchBlocks = nonDefaultAndCatchAllResponses(operation).map(response => nonDefaultCatchBlock(operation, response, ctx)).join('')
-	const catchAllOrFallback = operation.catchAllResponse
-		? catchAllCatchBlock(operation, operation.catchAllResponse, ctx)
-		: `throw new ${ctx.root.apiPackage}.UnexpectedResponseException(__e.getResponse(), __e);\n`
+	const tryBody = `${jx}.ws.rs.core.Response ${RESPONSE_VAR} = ${invocation};\n`
+		+ reauthorizeBlock
+		+ `${operation.returnNativeType || wrapper ? 'return ' : ''}${responseHandlerName(operation, ctx)}(${RESPONSE_VAR});\n`
 
 	const deprecatedLine = operation.deprecated ? '\t@java.lang.SuppressWarnings("deprecation")\n' : ''
 
@@ -107,8 +194,6 @@ function operationMethod(operation: CodegenOperation, ctx: ClientContext): strin
 		+ indent(authorizeBlock + multipartText, '\t\t')
 		+ '\t\ttry {\n'
 		+ indent(tryBody, '\t\t\t')
-		+ `\t\t} catch (${jx}.ws.rs.WebApplicationException __e) {\n`
-		+ indent(catchBlocks + catchAllOrFallback, '\t\t\t')
 		+ `\t\t} catch (${jx}.ws.rs.client.ResponseProcessingException __e) {\n`
 		+ `\t\t\tthrow new ${ctx.root.apiPackage}.UnprocessableResponseException(__e.getResponse(), __e);\n`
 		+ `\t\t} catch (${jx}.ws.rs.ProcessingException __e) {\n`
@@ -118,6 +203,7 @@ function operationMethod(operation: CodegenOperation, ctx: ClientContext): strin
 		+ `\t\t\tthrow new ${ctx.root.apiPackage}.UnexpectedApiProcessingException(__e);\n`
 		+ '\t\t}\n'
 		+ '\t}\n\n'
+		+ responseHandlerMethod(operation, wrapper, returnType, throwsClause, ctx)
 }
 
 /**
@@ -144,7 +230,7 @@ export function apiImpl(group: CodegenOperationGroup, ctx: ClientContext): strin
 		+ `\tprivate ${ctx.root.apiSpiPackage}.ApiAuthorizationProvider authorizationProvider;\n\n`
 		+ apiImplClassBodyText(group, ctx)
 
-	const operations = group.operations.map(operation => operationMethod(operation, ctx)).join('')
+	const operations = group.operations.map(operation => operationMethod(operation, group, ctx)).join('')
 
 	return `${header}${operations}`
 		+ `\tpublic ${ctx.root.apiSpiPackage}.ApiAuthorizationProvider getAuthorizationProvider() {\n`

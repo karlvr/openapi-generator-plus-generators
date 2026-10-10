@@ -16,6 +16,7 @@ import { unexpectedApiException } from './templates/UnexpectedApiException'
 import { unexpectedApiProcessingException } from './templates/UnexpectedApiProcessingException'
 import { unexpectedResponseException } from './templates/UnexpectedResponseException'
 import { unprocessableResponseException } from './templates/UnprocessableResponseException'
+import { responseHeadersClass } from './templates/ResponseHeaders'
 import { unexpectedTimeoutException } from './templates/UnexpectedTimeoutException'
 import { apiAuthorizationProvider } from './templates/spi/ApiAuthorizationProvider'
 
@@ -110,6 +111,7 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		await emitTemplate(unexpectedApiProcessingException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedApiProcessingException.java'), true)
 		await emitTemplate(unexpectedResponseException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedResponseException.java'), true)
 		await emitTemplate(unprocessableResponseException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnprocessableResponseException.java'), true)
+		await emitTemplate(responseHeadersClass(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, packageToPath(generatorOptions.apiImplPackage), 'ResponseHeaders.java'), true)
 		await emitTemplate(unexpectedTimeoutException(ctx.root), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'UnexpectedTimeoutException.java'), true)
 
 		const apiSpiPackagePath = packageToPath(generatorOptions.apiSpiPackage)

@@ -8,6 +8,59 @@ The generated code has useful features:
 
 * Model objects and enums will be nested in the API service if they are inlined in the specification.
 
+## Responses
+
+### What an operation returns
+
+An operation returns the body of its default response, which is the response carrying the best
+status code that the API documents. It returns `void` when that response declares no content.
+
+An operation whose default response declares headers returns a response class instead. The class
+nests in the `Api` interface of the operation's group, under the name `<Operation><Code>`. It has a
+getter for the body, when the response declares content, and one for each declared header.
+
+```java
+ItemsApi.ListItems200 response = api.listItems();
+List<Item> items = response.getBody();
+Integer total = response.getXTotalCount();
+```
+
+### What an operation throws
+
+An operation throws a generated exception for every response other than its default response,
+whatever its status code. So an API that documents both a 200 and a 201 returns the 200 and throws
+for the 201. Each exception nests in the `Api` interface, under the name
+`<Operation><Code>Exception`. It has a getter for the body and one for each declared header. A
+catch-all response uses `Default`, because `default` is the code that the API gives it.
+
+```java
+try {
+    api.getItem(id);
+} catch (ItemsApi.GetItem429Exception e) {
+    Integer retryAfter = e.getRetryAfter();
+} catch (ItemsApi.GetItem404Exception e) {
+    Error body = e.getEntity();
+}
+```
+
+A status code that no response documents throws `UnexpectedResponseException`, which carries the whole
+JAX-RS `Response`. An API that declares a `default` response documents every status code, so its own
+exception covers them instead. A body that the client cannot read throws
+`UnprocessableResponseException`.
+
+### How the client reads a header
+
+An optional header reads as null when the response did not carry it. A required header that the
+response did not carry throws `UnprocessableResponseException`, so a required header is never null.
+
+The client reads each header as text, so it gives a string, a number, a boolean, a date, a time, a
+date-time, a UUID, an enum, or an array of one of those. An array separates its elements with
+commas, which may have whitespace around them. A value that does not parse as its type throws
+`UnprocessableResponseException`.
+
+The client cannot read an object or a URL from a header. It warns at generation time, and leaves
+that header null.
+
 ## Using
 
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
