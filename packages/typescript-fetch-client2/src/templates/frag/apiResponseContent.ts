@@ -66,7 +66,7 @@ export function responseHeaders(response: CodegenResponse, dateApproach: DateApp
 	headers: {
 ${each(headers, (h: CodegenHeader) => {
 	const value = `response.headers.get(${stringLiteral(generatorContext, h.serializedName)})`
-	return `		${identifier(generatorContext.generator(), h.name)}: ${value} ? ${stringToSchema(h, value, dateApproach)} ?? undefined : undefined,`
+	return `		${identifier(generatorContext.generator(), h.name)}: ${value} ? ${stringToSchema(h.schema, value, dateApproach)} ?? undefined : undefined,`
 }, '\n')}
 	},`)
 }
