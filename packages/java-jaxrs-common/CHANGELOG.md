@@ -1,5 +1,137 @@
 # @openapi-generator-plus/java-jaxrs-generator-common
 
+## 4.1.0
+
+### Minor Changes
+
+- fe2deb5: Send a discriminator value with the type that the spec gives it
+
+  The pojo for a discriminator previously used `@JsonTypeInfo(include = As.PROPERTY)` which Jackson always writes as a JSON string. A spec with another discriminator property type, such as a boolean or an integer, got the wrong type on the wire.
+
+  The pojo now keeps a real field for the discriminator property, and uses
+  `@JsonTypeInfo(include = As.EXISTING_PROPERTY, visible = true)`. Jackson reads and writes that field,
+  so the value keeps the type that the spec gives it, and a caller can read the value from a pojo.
+
+  A member of a discriminator sets the correct value in its constructor. A member of discriminators
+  that disagree on its value sets none, because no one value names it, so the caller sets the value of
+  the discriminator that it sends the member through.
+
+  This changes the JSON that a client sends, and that a server answers with, for a discriminator that
+  is not a string. The other side of the API may need to accept the correct form as well.
+
+- ca8ee30: Encode a form request body in the styles that the API declares.
+
+  An operation with an `application/x-www-form-urlencoded` body took a `javax.ws.rs.core.Form`, so the
+  caller named every field and encoded every value itself. JAX-RS applies none of the declared styles
+  to a `Form`, so no style reached the wire.
+
+  An operation now takes the model of its request body, as it already did for every other media type,
+  and the client builds the body. The joined, exploded and `deepObject` styles all reach the wire, and
+  a null property writes an empty value rather than being left out. An optional body that the caller
+  passes as null sends an empty form.
+
+  The Retrofit client encodes a form body the same way. The encoder lives in the shared package, so
+  both clients apply one set of style rules, and both emit a `FormEncoding` support class, which holds
+  the rules that turn a value into text.
+
+  A `spaceDelimited` or `pipeDelimited` value that explodes now writes one pair for each part, as
+  OpenAPI 3.1 defines. Both clients joined it.
+
+- f067660: Stop the JAX-RS generators emitting CXF types for a multipart body.
+
+  The JAX-RS client and server rendered a multipart request body with
+  `org.apache.cxf.jaxrs.ext.multipart.MultipartBody`, and neither `pom.xml` declared CXF. So a
+  generated project did not compile unless its author added CXF themselves, and a project that
+  used another JAX-RS implementation could not use the code at all.
+
+  JAX-RS 2.1 declares no multipart API. Each implementation invented its own, so a generator
+  that names no implementation cannot express a multipart body. Jakarta REST 3.1 added
+  `EntityPart`, which every implementation of that version supplies.
+
+  The JAX-RS generators now render `List<EntityPart>` when the `useJakarta` option is set. Without
+  it they refuse to generate a multipart request body, and report why. Use a generator that names
+  one implementation for a `javax` project, such as java-cxf-client.
+
+  The CXF generators are unchanged. They now select CXF's multipart API through the new
+  `multipartBodyType`, `multipartBodyBuilding` and `multipartBodyParsing` hooks, which
+  `cxfMultipartTemplates` supplies. A generator for another implementation can supply its own.
+
+  **Breaking:** generating a multipart request body with java-jaxrs-client or java-jaxrs-server,
+  without `useJakarta`, now fails rather than emitting CXF types.
+
+- 6cabb5d: Build the Retrofit client on the shared Java generator, not on the JAX-RS client.
+
+  The Retrofit generator extended `java-jaxrs-client`, which emits a JAX-RS interface, an
+  implementation of it, an invoker, providers, parameter classes and exceptions. A Retrofit
+  project can use none of those. What it did use was the model layer, which
+  `java-jaxrs-generator-common` supplies, and two client templates that `java-jaxrs-client` held.
+
+  The Retrofit generator now extends `java-jaxrs-generator-common` directly, and declares its own
+  options, its own emitted files and its own generator type.
+
+  The two templates now belong to `java-jaxrs-generator-common`, where every client in the family
+  can reach them. `apiConstants` renders the `ApiConstants` interface, and
+  `clientPojoPropertyAnnotations` renders the `@JsonProperty` annotation in the direction that a
+  client needs. Neither is emitted by that package, so a server generator is unaffected.
+
+  `formUrlEncodedImplementation` may now return null, which keeps the type that the request
+  body's own schema gives. A generator that encodes a form body itself needs that type, because
+  it reads each property.
+
+- f0d2fd9: Send a form request body and a multipart request body from the Retrofit client.
+
+  The generator refused an API that declared either. Retrofit describes a request with annotations
+  alone, and it has no annotation for the encoding styles that OpenAPI declares: `@Field` and
+  `@Part` each describe one property, and neither carries a style.
+
+  The body now reaches the interface as a whole request model, under `@Body`, the same as a JSON
+  body does. A new generated class, `ApiConverterFactory`, encodes the model. It is a Retrofit
+  `Converter.Factory`, which is where Retrofit expects a caller to put an encoding that its own
+  annotations cannot express. The generated `README` shows how to register it.
+
+  The factory writes each style that the API declares: an array joined, or exploded; an object
+  joined, exploded, or as a `deepObject`; and a multipart part that declares its own media type or
+  its own headers. A null value writes the form that its own encoding carries, and an absent value
+  is left out, so the two stay distinct.
+
+  Each operation declares its own encoding, even for a request model that another operation also
+  sends, possibly as JSON. So the `@Body` parameter of an encoded body carries
+  `@ApiConverterFactory.Encoding`, which names its operation, and the factory selects the encoder by
+  that name. A body without it goes to the next converter factory.
+
+  The factory also joins an `explode: false` query array, which Retrofit would otherwise repeat.
+
+  A second generated class, `ApiObjectMapper`, holds the Jackson configuration that the models
+  expect. A caller passes it to the factory that reads and writes JSON. Retrofit leaves that
+  configuration to the caller, and a mapper without it sends every unset value as null.
+
+  The generated `pom.xml` now declares OkHttp, which the converter factory uses to build a form
+  body and a multipart body.
+
+  `java-jaxrs-generator-common` now exports `clientObjectMapperConfiguration`, `isPrimitive` and
+  `JAVA_PRIMITIVE_TYPES`. The first is the Jackson configuration that both clients share, and the
+  other two report which values this family writes as a Java primitive, which has no null to test
+  for.
+
+### Patch Changes
+
+- 850cbdc: Use CXF 4 when `useJakarta` is set.
+
+  CXF 3 uses the `javax` packages and CXF 4 uses the `jakarta` packages, but the generated project
+  got CXF 3 either way. A `javax` CXF cannot read the `jakarta` annotations that the generator emits,
+  so the client could not work at all. The multipart body and the cookie API key also named the
+  `javax` types.
+
+  The default is now 4.1.4 when `useJakarta` is set. Set `maven.versions.cxf` to choose another.
+
+- Updated dependencies [446f067]
+- Updated dependencies [189ecc2]
+- Updated dependencies [c438203]
+- Updated dependencies [f4e0291]
+  - @openapi-generator-plus/java-like-generator-helper@2.6.8
+  - @openapi-generator-plus/generator-common@1.9.0
+  - @openapi-generator-plus/template-utils@0.3.0
+
 ## 4.0.0
 
 ### Major Changes

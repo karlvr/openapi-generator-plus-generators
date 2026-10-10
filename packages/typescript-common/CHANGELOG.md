@@ -1,5 +1,47 @@
 # @openapi-generator-plus/typescript-generator-common
 
+## 2.1.0
+
+### Minor Changes
+
+- e95a3b6: Send an `Accept` header for each operation. The header lists the media types of the operation's default response. It lists only the media types that the client can parse.
+
+  A caller can override the header.
+
+  The header describes the whole request, not one status code. So it never lists a media type that only an error response declares.
+
+- 23723e6: Delete the API files of removed operation groups when you generate with the `--clean` flag.
+
+  The generator emits one file per operation group in the `api` directory. Before this change the clean step did not remove the file of a group that the API specification no longer contains.
+
+  The clean step also removes the `api` directory, if the API has no operation groups.
+
+- 3f090fc: Generate a `tsconfig.json` that sets `strict`.
+
+  The generated `tsconfig.json` set only `noImplicitAny`. So the test suite compiled the generated
+  code with `strictNullChecks` off, and it could not find null-safety defects. A consumer who sets
+  `strict` found them instead. See https://github.com/karlvr/openapi-generator-plus-generators/issues/59
+
+### Patch Changes
+
+- 9efc0f6: Treat a nullability difference as a property conflict.
+
+  An `allOf` child that made an inherited property nullable still extended its parent. TypeScript
+  rejects the result, because `string | null` is not assignable to `string`.
+
+  The generator now reports the difference through `checkPropertyCompatibility`, as the Java
+  generators already do. The child drops the `extends`, which is what a type conflict or a required
+  conflict already produced. A child that removes nullability narrows the parent property, so it
+  keeps the `extends`.
+
+- Updated dependencies [446f067]
+- Updated dependencies [189ecc2]
+- Updated dependencies [c438203]
+- Updated dependencies [f4e0291]
+  - @openapi-generator-plus/java-like-generator-helper@2.6.8
+  - @openapi-generator-plus/generator-common@1.9.0
+  - @openapi-generator-plus/template-utils@0.3.0
+
 ## 2.0.0
 
 ### Major Changes

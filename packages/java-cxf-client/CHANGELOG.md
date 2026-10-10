@@ -1,5 +1,199 @@
 # @openapi-generator-plus/java-cxf-client-generator
 
+## 5.0.0
+
+### Major Changes
+
+- 850cbdc: Use CXF 4 when `useJakarta` is set.
+
+  CXF 3 uses the `javax` packages and CXF 4 uses the `jakarta` packages, but the generated project
+  got CXF 3 either way. A `javax` CXF cannot read the `jakarta` annotations that the generator emits,
+  so the client could not work at all. The multipart body and the cookie API key also named the
+  `javax` types.
+
+  The default is now 4.1.4 when `useJakarta` is set. Set `maven.versions.cxf` to choose another.
+
+- 68802bd: Throw the documented exception for a non-default response that has a 2xx status.
+
+  The client throws for every response other than the default one, whatever its status. But a JAX-RS
+  client only throws at 300 and above, so the exception generated for a documented 201 or 204 could
+  never be thrown, and that response was reported as if it were the default response.
+
+  Each `ApiSpec` method now returns a JAX-RS `Response`, and the implementation reads the status
+  itself. Catch the exceptions that now arrive, and update any code that implements or mocks
+  `ApiSpec`.
+
+- ca8ee30: Encode a form request body in the styles that the API declares.
+
+  An operation with an `application/x-www-form-urlencoded` body took a `javax.ws.rs.core.Form`, so the
+  caller named every field and encoded every value itself. JAX-RS applies none of the declared styles
+  to a `Form`, so no style reached the wire.
+
+  An operation now takes the model of its request body, as it already did for every other media type,
+  and the client builds the body. The joined, exploded and `deepObject` styles all reach the wire, and
+  a null property writes an empty value rather than being left out. An optional body that the caller
+  passes as null sends an empty form.
+
+  The Retrofit client encodes a form body the same way. The encoder lives in the shared package, so
+  both clients apply one set of style rules, and both emit a `FormEncoding` support class, which holds
+  the rules that turn a value into text.
+
+  A `spaceDelimited` or `pipeDelimited` value that explodes now writes one pair for each part, as
+  OpenAPI 3.1 defines. Both clients joined it.
+
+- 68802bd: Give a caller the headers that a response declares.
+
+  An operation whose default response declares headers now returns an `<Operation><Code>` class
+  carrying the body and each header, rather than the body alone. Each generated exception now carries
+  the headers of its response beside `getEntity()`.
+
+  A required header that is absent, or a header that does not parse as its declared type, makes the
+  call throw `UnprocessableResponseException`, as a body that does not parse already does. A list
+  header may carry whitespace around its commas. A required header has a primitive type, so it is
+  never null.
+
+  This changes the return type of an affected operation, and the constructor of an affected exception.
+
+### Minor Changes
+
+- fe2deb5: Send a discriminator value with the type that the spec gives it
+
+  The pojo for a discriminator previously used `@JsonTypeInfo(include = As.PROPERTY)` which Jackson always writes as a JSON string. A spec with another discriminator property type, such as a boolean or an integer, got the wrong type on the wire.
+
+  The pojo now keeps a real field for the discriminator property, and uses
+  `@JsonTypeInfo(include = As.EXISTING_PROPERTY, visible = true)`. Jackson reads and writes that field,
+  so the value keeps the type that the spec gives it, and a caller can read the value from a pojo.
+
+  A member of a discriminator sets the correct value in its constructor. A member of discriminators
+  that disagree on its value sets none, because no one value names it, so the caller sets the value of
+  the discriminator that it sends the member through.
+
+  This changes the JSON that a client sends, and that a server answers with, for a discriminator that
+  is not a string. The other side of the API may need to accept the correct form as well.
+
+- 51947b1: Report a failure when a response that declares content carries no body.
+
+  The client returned null, so a caller could not tell an empty body from a model whose every property
+  was absent. An operation now throws `UnprocessableResponseException`, which carries the response.
+
+- 0a59712: Percent encode a string path parameter.
+
+  The JAX-RS client builds its URI from values that it takes as already encoded. It escapes
+  only what a URI cannot carry at all, and a `/` needs no escape there. So a value with a `/`
+  added a path segment, and the request reached a different resource. A `?` in a value started
+  a query in the same way.
+
+  The generated project now registers a `PathParamConverterProvider`, which percent encodes a
+  string path parameter before the client builds the URI. The value then stays inside its own
+  segment.
+
+  The provider encodes more than a path segment strictly needs, such as `:` and `@`. A server
+  decodes the segment either way, so the value that arrives is the same.
+
+### Patch Changes
+
+- 58a1121: Call an operation at the root of the server URL with its "/".
+
+  An operation whose path is `/` called the server URL itself. A server URL of
+  `https://example.com/api/v1` should give `https://example.com/api/v1/`, but the client called
+  `https://example.com/api/v1`, because the CXF client proxy leaves out a path of "/".
+
+  The client now adds a "/" to a base address that does not end with one. Every other path reaches
+  the same URL as before.
+
+- 3e0c514: Let the generated project run its own tests.
+
+  With `includeTests`, the generated `pom.xml` gave the Surefire plugin a JUnit engine
+  dependency of its own. Surefire supplies its own JUnit platform launcher, and aligns it
+  with the JUnit that the project declares. The plugin dependency pinned the platform on one
+  side only, so the two disagreed and Surefire refused to start. `mvn test` then failed with
+  a `NoSuchMethodError` before it ran a test.
+
+  The plugin now names no JUnit artifact, and Surefire aligns the whole platform itself.
+
+  The `junit_jupiter` Maven version option also had no effect, because the template held the
+  version as a literal. It now reads the option, as the other generators do.
+
+- d7c36ad: Declare the annotation packages that the generated code uses.
+
+  Every generated file carries a `@javax.annotation.Generated` annotation, and a model carries
+  `@javax.xml.bind.annotation.XmlRootElement`. Java 11 removed both packages from the JDK, and
+  the generated `pom.xml` declared neither. So the project did not compile on a current JDK,
+  unless another dependency happened to bring them in.
+
+  The `pom.xml` now declares `javax.annotation-api` and `jaxb-api`, as it already did for the
+  Jakarta equivalents. Set the `javax_annotation` and `javax_xml_bind` Maven version options to
+  choose the versions.
+
+  The java-jaxrs-client suite now compiles a generated project, rather than only rendering it.
+
+- e7289aa: Send a null multipart part in the form that its part type can carry.
+
+  A nullable multipart part gave the attachment a null object when its value was null. CXF
+  needs an object to choose a writer, so the whole request failed with a processing
+  exception. A caller could not send null for such a part at all.
+
+  Each part type now has its own null form, which matches what the TypeScript clients send. A
+  JSON part sends the JSON literal `null`. A text part sends an empty string. A binary part
+  has no null form, so the client omits it, and null and absent stay distinct for the parts
+  that can tell them apart.
+
+- 9421aaa: Give each multipart part its own name.
+
+  The client built each `multipart/form-data` part with a content disposition that named the
+  part, but it gave the attachment no id. CXF takes the name from the id when it writes the
+  part, so every part arrived as `Content-Disposition: form-data; name="null"`.
+
+  A server could not tell the parts apart. It saw several parts with the same name, and none
+  with the name that the specification declares.
+
+  The client now sets the id as well as the disposition.
+
+- f067660: Stop the JAX-RS generators emitting CXF types for a multipart body.
+
+  The JAX-RS client and server rendered a multipart request body with
+  `org.apache.cxf.jaxrs.ext.multipart.MultipartBody`, and neither `pom.xml` declared CXF. So a
+  generated project did not compile unless its author added CXF themselves, and a project that
+  used another JAX-RS implementation could not use the code at all.
+
+  JAX-RS 2.1 declares no multipart API. Each implementation invented its own, so a generator
+  that names no implementation cannot express a multipart body. Jakarta REST 3.1 added
+  `EntityPart`, which every implementation of that version supplies.
+
+  The JAX-RS generators now render `List<EntityPart>` when the `useJakarta` option is set. Without
+  it they refuse to generate a multipart request body, and report why. Use a generator that names
+  one implementation for a `javax` project, such as java-cxf-client.
+
+  The CXF generators are unchanged. They now select CXF's multipart API through the new
+  `multipartBodyType`, `multipartBodyBuilding` and `multipartBodyParsing` hooks, which
+  `cxfMultipartTemplates` supplies. A generator for another implementation can supply its own.
+
+  **Breaking:** generating a multipart request body with java-jaxrs-client or java-jaxrs-server,
+  without `useJakarta`, now fails rather than emitting CXF types.
+
+- Updated dependencies [446f067]
+- Updated dependencies [446f067]
+- Updated dependencies [189ecc2]
+- Updated dependencies [850cbdc]
+- Updated dependencies [c438203]
+- Updated dependencies [fe2deb5]
+- Updated dependencies [d7c36ad]
+- Updated dependencies [68802bd]
+- Updated dependencies [51947b1]
+- Updated dependencies [ca8ee30]
+- Updated dependencies [68802bd]
+- Updated dependencies [f4e0291]
+- Updated dependencies [e7289aa]
+- Updated dependencies [9421aaa]
+- Updated dependencies [f067660]
+- Updated dependencies [0a59712]
+- Updated dependencies [6cabb5d]
+- Updated dependencies [f0d2fd9]
+  - @openapi-generator-plus/java-jaxrs-client-generator@6.0.0
+  - @openapi-generator-plus/generator-common@1.9.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@4.1.0
+  - @openapi-generator-plus/template-utils@0.3.0
+
 ## 4.0.0
 
 ### Major Changes

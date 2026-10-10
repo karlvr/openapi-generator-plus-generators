@@ -1,5 +1,29 @@
 # @openapi-generator-plus/typescript-express-example-server-generator
 
+## 2.1.0
+
+### Minor Changes
+
+- 3f090fc: Generate a `tsconfig.json` that sets `strict`.
+
+  The generated `tsconfig.json` set only `noImplicitAny`. So the test suite compiled the generated
+  code with `strictNullChecks` off, and it could not find null-safety defects. A consumer who sets
+  `strict` found them instead. See https://github.com/karlvr/openapi-generator-plus-generators/issues/59
+
+### Patch Changes
+
+- Updated dependencies [e95a3b6]
+- Updated dependencies [23723e6]
+- Updated dependencies [446f067]
+- Updated dependencies [189ecc2]
+- Updated dependencies [c438203]
+- Updated dependencies [f4e0291]
+- Updated dependencies [3f090fc]
+- Updated dependencies [9efc0f6]
+  - @openapi-generator-plus/typescript-generator-common@2.1.0
+  - @openapi-generator-plus/generator-common@1.9.0
+  - @openapi-generator-plus/template-utils@0.3.0
+
 ## 2.0.0
 
 ### Major Changes

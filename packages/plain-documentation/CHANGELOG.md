@@ -1,5 +1,17 @@
 # @openapi-generator-plus/plain-documentation-generator
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [446f067]
+- Updated dependencies [189ecc2]
+- Updated dependencies [c438203]
+- Updated dependencies [f4e0291]
+  - @openapi-generator-plus/java-like-generator-helper@2.6.8
+  - @openapi-generator-plus/generator-common@1.9.0
+  - @openapi-generator-plus/template-utils@0.3.0
+
 ## 2.0.0
 
 ### Major Changes

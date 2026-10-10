@@ -1,5 +1,38 @@
 # @openapi-generator-plus/generator-common
 
+## 1.9.0
+
+### Minor Changes
+
+- 446f067: Accept the documented values for the `constantStyle` and `enumMemberStyle` config options.
+
+  `constantStyle` accepted `snake` for the style that the documentation calls `allCapsSnake`.
+  `enumMemberStyle` accepted `contant` for the style that the documentation calls `constant`.
+  Both options now accept the documented value. Both options also continue to accept the earlier
+  value, which is deprecated.
+
+  An invalid value for either option now fails when the generator reads its config. The error message
+  lists the valid values.
+
+  Fixes [#70](https://github.com/karlvr/openapi-generator-plus-generators/issues/70)
+
+### Patch Changes
+
+- 189ecc2: Require a core that keeps a discriminator property in the schema that declares it
+
+  The generators render a discriminator property from the schema that the specification declares it in.
+  Core 2.32.0 is the first release that keeps the property there. An earlier core removes it, and the
+  Java templates then produce a client that sends no discriminator value at all, because the field that
+  Jackson writes the value from does not exist.
+
+  The dependency on the core now asks for 2.32.0.
+
+- c438203: Declare the `rimraf` dependency of `testGenerate`.
+
+  `dist/testing` imports `rimraf`, but the package did not declare it. A project outside this repository
+  that called `testGenerate` failed with "Cannot find module 'rimraf'", unless it happened to install
+  `rimraf` itself.
+
 ## 1.8.1
 
 ### Patch Changes

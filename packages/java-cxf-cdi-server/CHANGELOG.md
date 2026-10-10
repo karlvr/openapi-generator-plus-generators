@@ -1,5 +1,65 @@
 # @openapi-generator-plus/java-cxf-cdi-server-generator
 
+## 4.1.0
+
+### Minor Changes
+
+- fe2deb5: Send a discriminator value with the type that the spec gives it
+
+  The pojo for a discriminator previously used `@JsonTypeInfo(include = As.PROPERTY)` which Jackson always writes as a JSON string. A spec with another discriminator property type, such as a boolean or an integer, got the wrong type on the wire.
+
+  The pojo now keeps a real field for the discriminator property, and uses
+  `@JsonTypeInfo(include = As.EXISTING_PROPERTY, visible = true)`. Jackson reads and writes that field,
+  so the value keeps the type that the spec gives it, and a caller can read the value from a pojo.
+
+  A member of a discriminator sets the correct value in its constructor. A member of discriminators
+  that disagree on its value sets none, because no one value names it, so the caller sets the value of
+  the discriminator that it sends the member through.
+
+  This changes the JSON that a client sends, and that a server answers with, for a discriminator that
+  is not a string. The other side of the API may need to accept the correct form as well.
+
+### Patch Changes
+
+- f067660: Stop the JAX-RS generators emitting CXF types for a multipart body.
+
+  The JAX-RS client and server rendered a multipart request body with
+  `org.apache.cxf.jaxrs.ext.multipart.MultipartBody`, and neither `pom.xml` declared CXF. So a
+  generated project did not compile unless its author added CXF themselves, and a project that
+  used another JAX-RS implementation could not use the code at all.
+
+  JAX-RS 2.1 declares no multipart API. Each implementation invented its own, so a generator
+  that names no implementation cannot express a multipart body. Jakarta REST 3.1 added
+  `EntityPart`, which every implementation of that version supplies.
+
+  The JAX-RS generators now render `List<EntityPart>` when the `useJakarta` option is set. Without
+  it they refuse to generate a multipart request body, and report why. Use a generator that names
+  one implementation for a `javax` project, such as java-cxf-client.
+
+  The CXF generators are unchanged. They now select CXF's multipart API through the new
+  `multipartBodyType`, `multipartBodyBuilding` and `multipartBodyParsing` hooks, which
+  `cxfMultipartTemplates` supplies. A generator for another implementation can supply its own.
+
+  **Breaking:** generating a multipart request body with java-jaxrs-client or java-jaxrs-server,
+  without `useJakarta`, now fails rather than emitting CXF types.
+
+- Updated dependencies [446f067]
+- Updated dependencies [446f067]
+- Updated dependencies [189ecc2]
+- Updated dependencies [850cbdc]
+- Updated dependencies [c438203]
+- Updated dependencies [fe2deb5]
+- Updated dependencies [ca8ee30]
+- Updated dependencies [49eb21e]
+- Updated dependencies [f4e0291]
+- Updated dependencies [f067660]
+- Updated dependencies [6cabb5d]
+- Updated dependencies [f0d2fd9]
+  - @openapi-generator-plus/java-jaxrs-server-generator@5.0.0
+  - @openapi-generator-plus/generator-common@1.9.0
+  - @openapi-generator-plus/java-jaxrs-generator-common@4.1.0
+  - @openapi-generator-plus/template-utils@0.3.0
+
 ## 4.0.0
 
 ### Major Changes

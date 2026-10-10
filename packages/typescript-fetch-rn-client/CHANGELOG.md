@@ -1,5 +1,133 @@
 # @openapi-generator-plus/typescript-fetch-rn-client-generator
 
+## 2.1.0
+
+### Minor Changes
+
+- e95a3b6: Send an `Accept` header for each operation. The header lists the media types of the operation's default response. It lists only the media types that the client can parse.
+
+  A caller can override the header.
+
+  The header describes the whole request, not one status code. So it never lists a media type that only an error response declares.
+
+- 8314ca6: Keep a discriminator property in the schema that declares it
+
+  A schema that declared a discriminator property lost it, when a member of the discriminator took the
+  property from that schema. The generated model then had no such property, so a caller could not read
+  it from a response, and could not send it in a request, even where the API requires it.
+
+  The core now keeps the property. The model declares it, and a member narrows the property to its own
+  value. A member that takes the property from another schema omits it from the extends clause, so that
+  it can narrow it.
+
+  A member of discriminators that disagree on its value narrows the property to the union of their
+  values, and declares it once. It declared the property once for each discriminator, so the model did
+  not compile.
+
+  Closes #48
+
+- 19d2abf: Declare the content type that a specification gives a multipart part.
+
+  An `encoding` with a `contentType` of `application/json` produced a part that declared no
+  content type at all. The client appended the JSON as text, so the part arrived as
+  `text/plain`. A server that reads a part by its declared type could not parse it.
+
+  The client now attaches the content type to the part.
+
+  A browser `FormData` can only give a part a content type through a `Blob`, and a form
+  names every `Blob` `blob`. So a typed part now carries `filename="blob"` as well. A server
+  that sorts its parts by the presence of a filename sees this part as a file. The Node
+  clients use the `form-data` package, which takes the content type as an option, so their
+  parts carry no filename.
+
+  The new `multipartTypedPart` hook renders such a part, so a child generator can attach the
+  content type in the way that its own multipart implementation needs.
+
+- 3f090fc: Generate a `tsconfig.json` that sets `strict`.
+
+  The generated `tsconfig.json` set only `noImplicitAny`. So the test suite compiled the generated
+  code with `strictNullChecks` off, and it could not find null-safety defects. A consumer who sets
+  `strict` found them instead. See https://github.com/karlvr/openapi-generator-plus-generators/issues/59
+
+### Patch Changes
+
+- cc34e79: Percent encode a joined parameter value once, not twice.
+
+  A style that joins many values into one, such as a non-exploded array or object, a
+  `pipeDelimited` or a `spaceDelimited` parameter, ran each value through `escape` before
+  it joined them. The client then gave the joined value to `URLSearchParams` or to
+  `Headers`, which encoded the `%` of each escape again.
+
+  So a value with a space arrived as `a%20b`, and a date-time arrived as
+  `2020-01-02T03%3A04%3A05.678Z`. A server read the escape as text.
+
+  The client now joins the raw values. The destination encodes them, which it already did.
+  A header keeps its value as text, because a header carries no percent encoding.
+
+  `escape` also encodes a character outside Latin-1 as `%uXXXX`, which is not a percent
+  encoding at all. That form is gone too.
+
+  OpenAPI does not define how to escape a value that holds the delimiter itself. Such a
+  value stays ambiguous, as it was before.
+
+- f4e0291: Fix `Content-Type` header for `multipart/form-data` request bodies.
+
+  We must allow `fetch` to automatically set the `Content-Type` header for `multipart/form-data` request bodies as it includes the `boundary` parameter from the `FormData`.
+
+- c257a41: Serialize a null form property or multipart part as an empty value.
+
+  A nullable request-body property or multipart part was tested only against `undefined` before the
+  client read it. A null array or object then reached `.map()` or a property access, and a null date
+  reached `dateToString()`. Both throw a TypeError. A null scalar became the text `null`.
+
+  A form encoding carries strings, so it has no null. The client now sends `prop=` for a null value,
+  which is what a null object property and a null array element already produced. An absent value
+  stays absent. So null and absent stay distinct.
+
+  Two shapes cannot carry an empty value, because they name each property rather than the property
+  itself. An exploded object and a `deepObject` are omitted when the object itself is null.
+
+  A multipart part is unchanged where it can encode null. A JSON part still sends `null`, and a text
+  part still sends an empty string. A binary part is omitted, because it has no null form.
+
+  A JSON request body is unaffected. It has always sent `null` for a null property.
+
+  A parameter and a header are no longer nullable. The core now ignores the nullability of their
+  schemas, and warns, because OpenAPI does not define how to send null in either.
+
+- 6fb9256: Stop the React Native client importing a polyfill that it does not depend on.
+
+  The generated `runtime.ts` imported `whatwg-fetch`, because `includePolyfills` is on by
+  default. The React Native generator overrides the dependency list, and its override did not
+  carry the polyfill. So the generated project imported a package that its `package.json`
+  never named, and the import failed at run time.
+
+  React Native provides `fetch`, so `includePolyfills` now defaults to off for that
+  generator. A caller who turns it on gets the import and the dependency together, because
+  the override now builds on `defaultPackageDependencies` rather than replacing it.
+
+  `defaultPackageDependencies` is now exported. A child generator that overrides
+  `packageDependencies` should call it, and add its own lines to the result.
+
+- Updated dependencies [e95a3b6]
+- Updated dependencies [23723e6]
+- Updated dependencies [446f067]
+- Updated dependencies [446f067]
+- Updated dependencies [189ecc2]
+- Updated dependencies [8314ca6]
+- Updated dependencies [c438203]
+- Updated dependencies [cc34e79]
+- Updated dependencies [f4e0291]
+- Updated dependencies [19d2abf]
+- Updated dependencies [c257a41]
+- Updated dependencies [6fb9256]
+- Updated dependencies [3f090fc]
+- Updated dependencies [9efc0f6]
+  - @openapi-generator-plus/typescript-generator-common@2.1.0
+  - @openapi-generator-plus/typescript-fetch-client-generator@2.1.0
+  - @openapi-generator-plus/generator-common@1.9.0
+  - @openapi-generator-plus/template-utils@0.3.0
+
 ## 2.0.0
 
 ### Major Changes
