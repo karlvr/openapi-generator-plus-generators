@@ -1,6 +1,6 @@
-import { CodegenContentEncodingType, CodegenRequestBody } from '@openapi-generator-plus/types'
-import { ts, indent } from '@openapi-generator-plus/template-utils'
-import { encoderName, FORM, FORM_ENCODING_CLASS, FormBodyBuilder, formBodyStatements, generatedAnnotation, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { CodegenContentEncodingType, CodegenOperation, CodegenOperationGroup, CodegenRequestBody } from '@openapi-generator-plus/types'
+import { ts, className, indent, stringLiteral } from '@openapi-generator-plus/template-utils'
+import { FORM, FORM_ENCODING_CLASS, FormBodyBuilder, formBodyStatements, generatedAnnotation, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { multipartBodyStatements } from './frag/multipartBody'
 
 /** How OkHttp builds an `application/x-www-form-urlencoded` body. */
@@ -18,44 +18,63 @@ function okHttpForm(ctx: JavaModelContext): FormBodyBuilder {
 /** The variable that holds the request model that an encoder reads. */
 const MODEL = '__value'
 
+/** The simple name of the parameter annotation that names the encoding of one request body. */
+const ENCODING_ANNOTATION = 'Encoding'
+
 /**
  * A request body whose content this generator encodes itself: a form body or a multipart body.
  *
  * Retrofit describes a request with annotations alone, and has no annotation for the encoding
  * styles that OpenAPI declares. So the whole body goes through one converter.
+ *
+ * Each operation declares its own encoding, even for a request model that another operation
+ * also sends. So the converter selects the encoding by the operation, not by the Java type.
  */
 export interface EncodedRequestBody {
-	/** The Java type of the request model, which the converter matches on. */
+	/** The name that identifies the operation's encoding. It is unique in the document. */
+	id: string
+	/** The Java type of the request model. */
 	type: string
 	/** The request body that declares the content. */
 	requestBody: CodegenRequestBody
 }
 
-/**
- * Every request body in the document that this generator encodes itself, once for each type.
- *
- * Two operations may share a request model, and one converter serves both.
- */
-export function encodedRequestBodies(groups: { operations: { requestBody: CodegenRequestBody | null }[] }[]): EncodedRequestBody[] {
-	const result: EncodedRequestBody[] = []
-	const seen = new Set<string>()
+/** Whether this generator encodes `requestBody` itself, rather than leaving it to the JSON converter. */
+function isEncoded(requestBody: CodegenRequestBody | null): requestBody is CodegenRequestBody {
+	return !!requestBody && !!requestBody.nativeType && !!requestBody.defaultContent.encoding
+}
 
+/**
+ * The annotation that selects the encoding of the operation's request body, or null when this
+ * generator does not encode that body itself.
+ *
+ * Put the annotation on the `@Body` parameter. Retrofit ignores an annotation that it does not
+ * know, and gives it to the converter factory.
+ */
+export function encodingAnnotation(operation: CodegenOperation, ctx: JavaModelContext): string | null {
+	if (!isEncoded(operation.requestBody)) {
+		return null
+	}
+	return `@${ctx.root.apiPackage}.ApiConverterFactory.${ENCODING_ANNOTATION}(${stringLiteral(ctx.generatorContext, operation.uniqueName)})`
+}
+
+/** Every request body in the document that this generator encodes itself, once for each operation. */
+export function encodedRequestBodies(groups: CodegenOperationGroup[]): EncodedRequestBody[] {
+	const result: EncodedRequestBody[] = []
 	for (const group of groups) {
 		for (const operation of group.operations) {
 			const requestBody = operation.requestBody
-			const encoding = requestBody?.defaultContent.encoding
-			if (!requestBody || !requestBody.nativeType || !encoding) {
-				continue
+			if (isEncoded(requestBody)) {
+				result.push({ id: operation.uniqueName, type: String(requestBody.nativeType), requestBody })
 			}
-			const type = String(requestBody.nativeType)
-			if (seen.has(type)) {
-				continue
-			}
-			seen.add(type)
-			result.push({ type, requestBody })
 		}
 	}
 	return result
+}
+
+/** The name of the method that encodes one request body. */
+function encoderName(body: EncodedRequestBody, ctx: JavaModelContext): string {
+	return `encode${className(ctx.generatorContext.generator(), body.id)}`
 }
 
 /** The statements that encode one request body. */
@@ -71,20 +90,20 @@ function encoderStatements(body: EncodedRequestBody, ctx: JavaModelContext): str
 function encoder(body: EncodedRequestBody, ctx: JavaModelContext): string {
 	const mimeType = body.requestBody.defaultContent.mediaType.mimeType
 	return `\t/** The {@code ${mimeType}} body that holds {@code ${body.type}}. */\n`
-		+ `\tprivate okhttp3.RequestBody ${encoderName(body.type)}(${body.type} ${MODEL}) throws java.io.IOException {\n`
+		+ `\tprivate okhttp3.RequestBody ${encoderName(body, ctx)}(${body.type} ${MODEL}) throws java.io.IOException {\n`
 		+ indent(encoderStatements(body, ctx), '\t\t')
 		+ '\t}\n'
 }
 
 /** The branch of `requestBodyConverter` that answers for one request body. */
-function converterBranch(body: EncodedRequestBody): string {
+function converterBranch(body: EncodedRequestBody, ctx: JavaModelContext): string {
 	const converter = `new retrofit2.Converter<${body.type}, okhttp3.RequestBody>() {\n`
 		+ '\t@java.lang.Override\n'
 		+ `\tpublic okhttp3.RequestBody convert(${body.type} ${MODEL}) throws java.io.IOException {\n`
-		+ `\t\treturn ${encoderName(body.type)}(${MODEL});\n`
+		+ `\t\treturn ${encoderName(body, ctx)}(${MODEL});\n`
 		+ '\t}\n'
 		+ '}'
-	return `if (${body.type}.class.equals(type)) {\n\treturn ${indent(converter, '\t').trimStart()};\n}\n`
+	return `if (${stringLiteral(ctx.generatorContext, body.id)}.equals(encoding)) {\n\treturn ${indent(converter, '\t').trimStart()};\n}\n`
 }
 
 /**
@@ -97,7 +116,7 @@ function converterBranch(body: EncodedRequestBody): string {
 export function apiConverterFactory(bodies: EncodedRequestBody[], ctx: JavaModelContext): string {
 	const root = ctx.root
 	const noExplode = `${root.supportPackage}.NoExplodeCollection`
-	const branches = bodies.map(converterBranch).join('')
+	const branches = bodies.map(body => converterBranch(body, ctx)).join('')
 	const encoders = bodies.map(body => encoder(body, ctx)).join('\n')
 
 	return ts`
@@ -152,8 +171,33 @@ public class ApiConverterFactory extends retrofit2.Converter.Factory {
 		return null;
 	}
 
+	/**
+	 * The encoding that an operation declares for its request body.
+	 * <p>
+	 * Each operation declares its own encoding, even for a request model that another operation
+	 * also sends. So the factory selects the encoding by this name, and not by the type of the
+	 * model. A body without this annotation goes to the next factory.
+	 */
+	@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+	@java.lang.annotation.Target(java.lang.annotation.ElementType.PARAMETER)
+	public @interface ${ENCODING_ANNOTATION} {
+
+		/** The name of the operation that declares the encoding. */
+		java.lang.String value();
+
+	}
+
 	@java.lang.Override
 	public retrofit2.Converter<?, okhttp3.RequestBody> requestBodyConverter(java.lang.reflect.Type type, java.lang.annotation.Annotation[] parameterAnnotations, java.lang.annotation.Annotation[] methodAnnotations, retrofit2.Retrofit retrofit) {
+		java.lang.String encoding = null;
+		for (java.lang.annotation.Annotation annotation : parameterAnnotations) {
+			if (annotation instanceof ${ENCODING_ANNOTATION}) {
+				encoding = ((${ENCODING_ANNOTATION}) annotation).value();
+			}
+		}
+		if (encoding == null) {
+			return null;
+		}
 ${indent(branches, '\t\t')}		return null;
 	}
 

@@ -20,6 +20,11 @@ joined, exploded, or as a `deepObject`; and a multipart part that declares its o
 its own headers. A null value writes the form that its own encoding carries, and an absent value
 is left out, so the two stay distinct.
 
+Each operation declares its own encoding, even for a request model that another operation also
+sends, possibly as JSON. So the `@Body` parameter of an encoded body carries
+`@ApiConverterFactory.Encoding`, which names its operation, and the factory selects the encoder by
+that name. A body without it goes to the next converter factory.
+
 The factory also joins an `explode: false` query array, which Retrofit would otherwise repeat.
 
 A second generated class, `ApiObjectMapper`, holds the Jackson configuration that the models

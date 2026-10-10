@@ -2,6 +2,7 @@ import { CodegenOperation, CodegenOperationGroup, CodegenParameter } from '@open
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { ts, each, when, identifier, className, stringLiteral, SKIP, Skip } from '@openapi-generator-plus/template-utils'
 import { JavaModelContext, imports, generatedAnnotation } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { encodingAnnotation } from './ApiConverterFactory'
 
 /**
  * One parameter's declaration, under the Retrofit annotation that `annotation` names.
@@ -60,7 +61,8 @@ function operationParameters(operation: CodegenOperation, ctx: JavaModelContext)
 	const declarations = parameters.map(parameter => parameterDeclaration(parameter, ctx)).filter(declaration => declaration !== '')
 
 	if (operation.requestBody?.nativeType) {
-		declarations.push(`@retrofit2.http.Body ${operation.requestBody.nativeType} ${operation.requestBody.name}`)
+		const encoding = encodingAnnotation(operation, ctx)
+		declarations.push(`${encoding ? `${encoding} ` : ''}@retrofit2.http.Body ${operation.requestBody.nativeType} ${operation.requestBody.name}`)
 	}
 	return declarations.join(', ')
 }

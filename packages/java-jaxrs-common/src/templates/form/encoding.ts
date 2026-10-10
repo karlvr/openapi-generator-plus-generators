@@ -1,14 +1,7 @@
 import { CodegenArraySchema, CodegenEncodingStyle, CodegenLogLevel, CodegenObjectSchema, CodegenProperty } from '@openapi-generator-plus/types'
-import { allProperties, capitalize, indent, stringLiteral } from '@openapi-generator-plus/template-utils'
+import { allProperties, indent, stringLiteral } from '@openapi-generator-plus/template-utils'
 import { getter, isPrimitive } from '../helpers'
 import { JavaModelContext } from '../types'
-
-/** The name of the generated method that encodes the request body whose type is `nativeType`. */
-export function encoderName(nativeType: string): string {
-	const simpleNames = nativeType.split('.').filter(part => /^[A-Z]/.test(part))
-	const names = simpleNames.length > 0 ? simpleNames : [nativeType]
-	return `encode${names.map(name => capitalize(name.replace(/[^A-Za-z0-9]/g, ''))).join('')}`
-}
 
 /** The expression that reads `property` from the model held in `modelVar`. */
 export function accessor(property: CodegenProperty, modelVar: string, ctx: JavaModelContext): string {
