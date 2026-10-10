@@ -19,7 +19,7 @@
   "dependencies": {
     "@openapi-generator-plus/generator-common": "workspace:*",
     "@openapi-generator-plus/testing": "^2.31.3",
-    "@openapi-generator-plus/types": "^2.22.2",
+    "@openapi-generator-plus/types": "^2.23.0",
     "maven": "github:karlvr/node-maven"
   }
 }
