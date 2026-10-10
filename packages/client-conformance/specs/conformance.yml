@@ -199,6 +199,16 @@ paths:
         "200":
           description: OK
 
+  /:
+    get:
+      operationId: root
+      description: The operation at the root of the server URL, which a client must not lose.
+      tags:
+        - root
+      responses:
+        "204":
+          description: No content
+
   #
   # Form request bodies
   #
@@ -325,6 +335,55 @@ paths:
         "200":
           description: OK
 
+  /form/delimited-explode:
+    post:
+      operationId: formDelimitedExplode
+      description: >-
+        A form body with array properties in a delimited style that explodes. OpenAPI 3.1
+        writes such an array as one pair for each element, the same as the form style.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                pipeStrs:
+                  type: array
+                  items:
+                    type: string
+                spaceStrs:
+                  type: array
+                  items:
+                    type: string
+            encoding:
+              pipeStrs:
+                style: pipeDelimited
+                explode: true
+              spaceStrs:
+                style: spaceDelimited
+                explode: true
+      responses:
+        "200":
+          description: OK
+
+  /form/optional:
+    post:
+      operationId: formOptional
+      description: A form body that a request may leave out.
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                str:
+                  type: string
+      responses:
+        "200":
+          description: OK
+
   #
   # Multipart request bodies
   #
@@ -433,6 +492,37 @@ paths:
         "200":
           description: OK
 
+  /body/shared/json:
+    post:
+      operationId: bodySharedJson
+      description: A JSON request body whose model another operation sends as a form.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharedBody'
+      responses:
+        "200":
+          description: OK
+
+  /body/shared/form:
+    post:
+      operationId: bodySharedForm
+      description: A form request body whose model another operation sends as JSON.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SharedBody'
+            encoding:
+              tags:
+                style: pipeDelimited
+      responses:
+        "200":
+          description: OK
+
   #
   # Responses
   #
@@ -525,6 +615,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
+
+  /response/header-types:
+    get:
+      operationId: responseHeaderTypes
+      description: A response that declares a list header and a required header.
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Ids:
+              description: The ids of the items, which a server may separate with ", ".
+              schema:
+                type: array
+                items:
+                  type: integer
+            X-Count:
+              description: How many items exist. Every response carries it.
+              required: true
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
 
   #
   # Security
@@ -640,6 +754,16 @@ components:
         day:
           type: string
           format: date
+
+    SharedBody:
+      type: object
+      properties:
+        name:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
 
     ErrorObject:
       type: object

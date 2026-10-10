@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -130,6 +131,26 @@ public class ConformanceDriver extends ConformanceHarness {
 		return states;
 	}
 
+	/**
+	 * How the driver reports the typed headers of a response: each value as text, a list as
+	 * the text of each element, or "absent" where the client exposes none.
+	 */
+	private Map<String, Object> headerTypeStates(String name, List<?> ids, Object count) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("name", name);
+		if (ids != null) {
+			List<String> texts = new ArrayList<>();
+			for (Object id : ids) {
+				texts.add(String.valueOf(id));
+			}
+			states.put("ids", texts);
+		} else {
+			states.put("ids", "absent");
+		}
+		states.put("count", count != null ? String.valueOf(count) : "absent");
+		return states;
+	}
+
 	@Override
 	protected void run() throws Exception {
 		QueryApi query = new com.example.impl.QueryApiImpl(baseUrl);
@@ -138,6 +159,7 @@ public class ConformanceDriver extends ConformanceHarness {
 		JsonApi json = new com.example.impl.JsonApiImpl(baseUrl);
 		ResponseApi response = new com.example.impl.ResponseApiImpl(baseUrl);
 		BodyApi bodyApi = new com.example.impl.BodyApiImpl(baseUrl);
+		RootApi root = new com.example.impl.RootApiImpl(baseUrl);
 		com.example.impl.SecurityApiImpl security = new com.example.impl.SecurityApiImpl(baseUrl);
 
 		startCase("query-scalars-values");
@@ -242,6 +264,12 @@ public class ConformanceDriver extends ConformanceHarness {
 			return null;
 		});
 
+		startCase("path-root");
+		call(() -> {
+			root.root();
+			return null;
+		});
+
 		/*
 		 * The client encodes a form body in the styles that the API declares, so the driver
 		 * hands it the request model rather than a JAX-RS Form.
@@ -309,6 +337,20 @@ public class ConformanceDriver extends ConformanceHarness {
 			return null;
 		});
 
+		startCase("form-arrays-delimited-explode");
+		call(() -> {
+			form.formDelimitedExplode(new com.example.model.FormDelimitedExplodeRequest()
+				.pipeStrs(Arrays.asList("a", "b"))
+				.spaceStrs(Arrays.asList("c", "d")));
+			return null;
+		});
+
+		startCase("form-optional-absent");
+		call(() -> {
+			form.formOptional(null);
+			return null;
+		});
+
 		startCase("multipart-values");
 		call(() -> {
 			multipart.multipartParts(new com.example.model.MultipartPartsRequest.MultipartFormData()
@@ -373,6 +415,20 @@ public class ConformanceDriver extends ConformanceHarness {
 			return null;
 		});
 
+		startCase("body-shared-model");
+		call(() -> {
+			bodyApi.bodySharedJson(new com.example.model.SharedBody()
+				.name("j")
+				.tags(Arrays.asList("a", "b")));
+			return null;
+		});
+		call(() -> {
+			bodyApi.bodySharedForm(new com.example.model.SharedBody()
+				.name("f")
+				.tags(Arrays.asList("c", "d")));
+			return null;
+		});
+
 		startCase("response-json");
 		call(() -> response.responseJson());
 
@@ -425,6 +481,18 @@ public class ConformanceDriver extends ConformanceHarness {
 				return errorHeaderStates(e.getXErrorCode());
 			}
 		});
+
+		startCase("response-header-list");
+		call(() -> {
+			ResponseApi.ResponseHeaderTypes200 result = response.responseHeaderTypes();
+			return headerTypeStates(result.getBody().getName(), result.getXIds(), result.getXCount());
+		});
+
+		startCase("response-header-required-absent");
+		call(() -> response.responseHeaderTypes());
+
+		startCase("response-header-unparseable");
+		call(() -> response.responseHeaderTypes());
 
 		startCase("response-undocumented-status");
 		call(() -> response.responseJson());

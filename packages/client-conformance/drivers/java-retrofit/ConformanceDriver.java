@@ -112,6 +112,21 @@ public class ConformanceDriver extends ConformanceHarness {
 		return states;
 	}
 
+	/**
+	 * How the driver reports the typed headers of a response: each value as text, or "absent"
+	 * where the client exposes none.
+	 *
+	 * Retrofit gives each header as the text that the response carries, so a list arrives as
+	 * one text, not as its elements.
+	 */
+	private Map<String, Object> headerTypeStates(String name, String ids, String count) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("name", name);
+		states.put("ids", ids != null ? ids : "absent");
+		states.put("count", count != null ? count : "absent");
+		return states;
+	}
+
 	@Override
 	protected void run() throws Exception {
 		retrofit2.Retrofit retrofit = retrofit();
@@ -123,6 +138,7 @@ public class ConformanceDriver extends ConformanceHarness {
 		ResponseApi response = retrofit.create(ResponseApi.class);
 		BodyApi bodyApi = retrofit.create(BodyApi.class);
 		SecurityApi security = retrofit.create(SecurityApi.class);
+		RootApi root = retrofit.create(RootApi.class);
 
 		startCase("query-scalars-values");
 		call(() -> query.queryScalars("hello world", 42, 1.5, false, OffsetDateTime.parse(WHEN), LocalDate.parse(DAY)).execute());
@@ -180,6 +196,9 @@ public class ConformanceDriver extends ConformanceHarness {
 		startCase("query-path-segment");
 		call(() -> query.queryPathSegment(PATH_SEGMENT).execute());
 
+		startCase("path-root");
+		call(() -> root.root().execute());
+
 		startCase("form-scalars-values");
 		call(() -> form.formScalars(new com.example.model.FormScalarsRequest()
 			.str("a")
@@ -228,6 +247,14 @@ public class ConformanceDriver extends ConformanceHarness {
 			return form.formObjects(request).execute();
 		});
 
+		startCase("form-arrays-delimited-explode");
+		call(() -> form.formDelimitedExplode(new com.example.model.FormDelimitedExplodeRequest()
+			.pipeStrs(Arrays.asList("a", "b"))
+			.spaceStrs(Arrays.asList("c", "d"))).execute());
+
+		startCase("form-optional-absent");
+		call(() -> form.formOptional(null).execute());
+
 		startCase("multipart-values");
 		call(() -> multipart.multipartParts(new com.example.model.MultipartPartsRequest.MultipartFormData()
 			.text("a")
@@ -272,6 +299,14 @@ public class ConformanceDriver extends ConformanceHarness {
 		startCase("body-binary");
 		call(() -> bodyApi.bodyBinary(BINARY_BODY.getBytes(Charset.forName("UTF-8"))).execute());
 
+		startCase("body-shared-model");
+		call(() -> bodyApi.bodySharedJson(new com.example.model.SharedBody()
+			.name("j")
+			.tags(Arrays.asList("a", "b"))).execute());
+		call(() -> bodyApi.bodySharedForm(new com.example.model.SharedBody()
+			.name("f")
+			.tags(Arrays.asList("c", "d"))).execute());
+
 		startCase("response-json");
 		call(() -> response.responseJson().execute());
 
@@ -313,6 +348,18 @@ public class ConformanceDriver extends ConformanceHarness {
 		/* Retrofit gives the whole response, so a caller reads a header of a failure too */
 		callReading(() -> response.responseError().execute(),
 			httpResponse -> errorHeaderStates(httpResponse.headers().get("X-Error-Code")));
+
+		startCase("response-header-list");
+		call(() -> response.responseHeaderTypes().execute(), httpResponse -> headerTypeStates(
+			((com.example.model.ResponseObject) httpResponse.body()).getName(),
+			httpResponse.headers().get("X-Ids"),
+			httpResponse.headers().get("X-Count")));
+
+		startCase("response-header-required-absent");
+		call(() -> response.responseHeaderTypes().execute());
+
+		startCase("response-header-unparseable");
+		call(() -> response.responseHeaderTypes().execute());
 
 		startCase("response-undocumented-status");
 		call(() -> response.responseJson().execute());

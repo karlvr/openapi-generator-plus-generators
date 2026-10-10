@@ -12,7 +12,7 @@
  * Run it as: node dist/conformance.js <baseUrl> <resultsPath>
  */
 
-import { Api, BodyApi, Configuration, FormApi, JsonApi, MultipartApi, QueryApi, ResponseApi, SecurityApi } from './index'
+import { Api, BodyApi, Configuration, FormApi, JsonApi, MultipartApi, QueryApi, ResponseApi, RootApi, SecurityApi } from './index'
 import { baseUrl, call, drive, startCase } from './harness'
 
 const WHEN = '2020-01-02T03:04:05.678Z'
@@ -90,6 +90,18 @@ function headerStates(name: string, totalCount: number | undefined, note: string
 
 
 /**
+ * How a driver reports the typed headers of a response: each value as text, a list as the
+ * text of each element, or "absent" where the client exposes none.
+ */
+function headerTypeStates(name: string, ids: unknown[] | undefined, count: unknown): Record<string, unknown> {
+	return {
+		name,
+		ids: ids !== undefined ? ids.map(id => String(id)) : 'absent',
+		count: count !== undefined ? String(count) : 'absent',
+	}
+}
+
+/**
  * How a driver reports the header of a documented failure response: the value as text, or
  * "absent" where the client exposes none.
  */
@@ -120,6 +132,7 @@ async function main(): Promise<void> {
 	const json = new JsonApi(undefined, baseUrl)
 	const response = new ResponseApi(undefined, baseUrl)
 	const bodyApi = new BodyApi(undefined, baseUrl)
+	const root = new RootApi(undefined, baseUrl)
 	const security = new SecurityApi(credentials(), baseUrl)
 
 	await startCase('query-scalars-values')
@@ -159,6 +172,9 @@ async function main(): Promise<void> {
 	await startCase('query-path-segment')
 	await call(() => query.queryPathSegment(PATH_SEGMENT))
 
+	await startCase('path-root')
+	await call(() => root.root())
+
 	await startCase('form-scalars-values')
 	await call(() => form.formScalars({ str: 'a', num: 1, flag: false, when: WHEN }))
 
@@ -179,6 +195,12 @@ async function main(): Promise<void> {
 
 	await startCase('form-objects-null')
 	await call(() => form.formObjects({ nullableObj: null, nullableExplodeObj: null, nullableDeepObj: null }))
+
+	await startCase('form-arrays-delimited-explode')
+	await call(() => form.formDelimitedExplode({ pipeStrs: ['a', 'b'], spaceStrs: ['c', 'd'] }))
+
+	await startCase('form-optional-absent')
+	await call(() => form.formOptional(undefined))
 
 	await startCase('multipart-values')
 	await call(() => multipart.multipartParts({ text: 'a', json: anObject(), file: { value: 'file content' } }))
@@ -210,6 +232,10 @@ async function main(): Promise<void> {
 
 	await startCase('body-binary')
 	await call(() => bodyApi.bodyBinary(BINARY_BODY))
+
+	await startCase('body-shared-model')
+	await call(() => bodyApi.bodySharedJson({ name: 'j', tags: ['a', 'b'] }))
+	await call(() => bodyApi.bodySharedForm({ name: 'f', tags: ['c', 'd'] }))
 
 	await startCase('response-json')
 	await call(() => response.responseJson())
@@ -261,6 +287,19 @@ async function main(): Promise<void> {
 			return errorHeaderStates((e as Response).headers.get(ERROR_HEADER) ?? undefined)
 		}
 	})
+
+	await startCase('response-header-list')
+	await call(async() => {
+		/* The operation resolves with the model alone, so the client exposes no header */
+		const model: Api.ResponseObject = await response.responseHeaderTypes()
+		return headerTypeStates(model.name, undefined, undefined)
+	})
+
+	await startCase('response-header-required-absent')
+	await call(() => response.responseHeaderTypes())
+
+	await startCase('response-header-unparseable')
+	await call(() => response.responseHeaderTypes())
 
 	await startCase('response-undocumented-status')
 	await call(() => response.responseJson())

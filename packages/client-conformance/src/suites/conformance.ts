@@ -74,6 +74,17 @@ export const RESPONSE_HEADERS = {
  */
 export const ERROR_HEADER = { name: 'X-Error-Code', value: 'E_LIMIT' }
 
+/**
+ * The headers that the response header type cases send.
+ *
+ * A driver reports each one as text, under the name that this map gives. It reports a list
+ * as the text of each element.
+ */
+export const RESPONSE_HEADER_TYPES = {
+	ids: { name: 'X-Ids', value: '1, 2' },
+	count: { name: 'X-Count', value: '3' },
+}
+
 /** The `Authorization` credential that HTTP basic authentication builds from {@link CREDENTIALS}. */
 const BASIC_CREDENTIAL = Buffer.from(`${CREDENTIALS.basicUsername}:${CREDENTIALS.basicPassword}`).toString('base64')
 
@@ -276,6 +287,13 @@ export const CASES: ConformanceCase[] = [
 			expect(requests[0].query).toBe('')
 		},
 	},
+	{
+		id: 'path-root',
+		description: 'calls an operation at the root of the server URL',
+		/* An operation path appends to the server URL, so the root keeps the server's own path */
+		requests: [{ method: 'GET', path: '/' }],
+		response: { status: 204 },
+	},
 
 	/*
 	 * Form request bodies
@@ -366,6 +384,35 @@ export const CASES: ConformanceCase[] = [
 			expect(valuesOf(pairs, 'nullableExplodeObj')).toEqual([])
 			expect(valuesOf(pairs, 'nullableDeepObj')).toEqual([])
 			expect(valuesOf(pairs, 'nullableDeepObj[name]')).toEqual([])
+		},
+	},
+	{
+		id: 'form-arrays-delimited-explode',
+		description: 'writes one pair for each element of a delimited form array that explodes',
+		requests: [{ method: 'POST', path: '/form/delimited-explode' }],
+		knownDefects: {
+			'fetch-client': 'the client joins a delimited array whether or not it explodes',
+			'fetch-client2': 'the client joins a delimited array whether or not it explodes',
+		},
+		expectRequests(requests) {
+			/*
+			 * OpenAPI 3.0 leaves an exploded delimited style unclear. OpenAPI 3.1 writes it the
+			 * same as an exploded form style, so the suite follows 3.1.
+			 */
+			const pairs = formPairs(requests[0])
+			expect(valuesOf(pairs, 'pipeStrs')).toEqual(['a', 'b'])
+			expect(valuesOf(pairs, 'spaceStrs')).toEqual(['c', 'd'])
+		},
+	},
+	{
+		id: 'form-optional-absent',
+		description: 'sends an empty form for an optional form body that the caller leaves out',
+		requests: [{ method: 'POST', path: '/form/optional' }],
+		knownDefects: {
+			'java-retrofit': 'Retrofit refuses a null @Body, so a caller cannot leave out an optional request body',
+		},
+		expectRequests(requests) {
+			expect(formPairs(requests[0])).toEqual([])
 		},
 	},
 
@@ -492,6 +539,24 @@ export const CASES: ConformanceCase[] = [
 		expectRequests(requests) {
 			expect(requests[0].headers['content-type'][0]).toMatch(/^application\/octet-stream(;|$)/)
 			expect(requests[0].body).toBe(BINARY_BODY)
+		},
+	},
+	{
+		id: 'body-shared-model',
+		description: 'sends one model in the encoding that each operation declares',
+		requests: [
+			{ method: 'POST', path: '/body/shared/json' },
+			{ method: 'POST', path: '/body/shared/form' },
+		],
+		expectRequests(requests) {
+			/* Two operations send the same model, so a client must not choose the encoding by the type */
+			expect(requests[0].headers['content-type'][0]).toMatch(/^application\/json/)
+			expect(JSON.parse(requests[0].body)).toEqual({ name: 'j', tags: ['a', 'b'] })
+
+			expect(requests[1].headers['content-type'][0]).toMatch(/^application\/x-www-form-urlencoded/)
+			const pairs = formPairs(requests[1])
+			expect(valueOf(pairs, 'name')).toBe('f')
+			expect(valueOf(pairs, 'tags')).toBe('c|d')
 		},
 	},
 
@@ -722,6 +787,84 @@ export const CASES: ConformanceCase[] = [
 			 */
 			expect(calls[0].outcome).toBe('success')
 			expect(calls[0].value).toEqual({ errorCode: ERROR_HEADER.value })
+		},
+	},
+	{
+		id: 'response-header-list',
+		description: 'reads a list header whose elements have whitespace around the commas',
+		requests: [{ method: 'GET', path: '/response/header-types' }],
+		knownDefects: {
+			'fetch-client': 'the operation resolves with the model alone, so a caller cannot reach the headers',
+			'java-retrofit': 'the client gives each header as raw text, so a caller splits a list itself',
+		},
+		response: {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				[RESPONSE_HEADER_TYPES.ids.name]: RESPONSE_HEADER_TYPES.ids.value,
+				[RESPONSE_HEADER_TYPES.count.name]: RESPONSE_HEADER_TYPES.count.value,
+			},
+			body: JSON.stringify(RESPONSE_OBJECT),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			expect(calls[0].outcome).toBe('success')
+			/*
+			 * RFC 9110 lets a list carry whitespace around each comma. A driver reports each
+			 * element as text, or "absent" where the client exposes none.
+			 */
+			expect(calls[0].value).toEqual({
+				name: RESPONSE_OBJECT.name,
+				ids: ['1', '2'],
+				count: RESPONSE_HEADER_TYPES.count.value,
+			})
+		},
+	},
+	{
+		id: 'response-header-required-absent',
+		description: 'reports a failure when a response leaves out a required header',
+		requests: [{ method: 'GET', path: '/response/header-types' }],
+		knownDefects: {
+			'fetch-client': 'the operation resolves with the model alone, so the client reads no header',
+			'fetch-client2': 'the client reads a header that it cannot parse, or that is absent, as undefined or NaN',
+			'java-retrofit': 'the client gives each header as raw text, so it does not check a header',
+		},
+		response: {
+			status: 200,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(RESPONSE_OBJECT),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			/*
+			 * The server broke its own contract, the same as a response that declares content
+			 * but carries none. A client may report that as an error or as an exception. It
+			 * must not report success.
+			 */
+			expect(calls[0].outcome).not.toBe('success')
+		},
+	},
+	{
+		id: 'response-header-unparseable',
+		description: 'reports a failure when a header does not parse as its declared type',
+		requests: [{ method: 'GET', path: '/response/header-types' }],
+		knownDefects: {
+			'fetch-client': 'the operation resolves with the model alone, so the client reads no header',
+			'fetch-client2': 'the client reads a header that it cannot parse, or that is absent, as undefined or NaN',
+			'java-retrofit': 'the client gives each header as raw text, so it does not check a header',
+		},
+		response: {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				[RESPONSE_HEADER_TYPES.count.name]: 'many',
+			},
+			body: JSON.stringify(RESPONSE_OBJECT),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			/* A client may report that as an error or as an exception. It must not report success. */
+			expect(calls[0].outcome).not.toBe('success')
 		},
 	},
 	{
