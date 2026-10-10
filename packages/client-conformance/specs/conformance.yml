@@ -517,6 +517,10 @@ paths:
                 $ref: '#/components/schemas/ResponseObject'
         "400":
           description: Bad request
+          headers:
+            X-Error-Code:
+              schema:
+                type: string
           content:
             application/json:
               schema:

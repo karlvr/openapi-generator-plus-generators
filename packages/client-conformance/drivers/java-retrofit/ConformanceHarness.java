@@ -122,6 +122,25 @@ public abstract class ConformanceHarness {
 		calls.add(call);
 	}
 
+	/**
+	 * Runs `operation`, then reports what `report` reads from its response, whatever the
+	 * status that the response carries.
+	 *
+	 * Use this where a case asks what a caller can read from a failure response.
+	 * {@link #call(Operation, Report)} reads the status first, so it gives no value for one.
+	 */
+	protected void callReading(Operation operation, Report report) {
+		Map<String, Object> call = new LinkedHashMap<>();
+		try {
+			call.put("outcome", "success");
+			call.put("value", report.of(operation.run()));
+		} catch (Throwable e) {
+			call.put("outcome", "exception");
+			call.put("error", e.getClass().getName() + ": " + e.getMessage());
+		}
+		calls.add(call);
+	}
+
 	private void writeResults() throws Exception {
 		Map<String, Object> report = new HashMap<>();
 		report.put("cases", results);

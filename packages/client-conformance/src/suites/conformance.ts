@@ -66,6 +66,14 @@ export const RESPONSE_HEADERS = {
 	note: { name: 'X-Note', value: 'a note' },
 }
 
+/**
+ * The header that the failure response of the error cases carries.
+ *
+ * A driver reports the value as text, under the name that this gives, because each client
+ * names a header in its own way.
+ */
+export const ERROR_HEADER = { name: 'X-Error-Code', value: 'E_LIMIT' }
+
 /** The `Authorization` credential that HTTP basic authentication builds from {@link CREDENTIALS}. */
 const BASIC_CREDENTIAL = Buffer.from(`${CREDENTIALS.basicUsername}:${CREDENTIALS.basicPassword}`).toString('base64')
 
@@ -715,6 +723,26 @@ export const CASES: ConformanceCase[] = [
 			expect(calls).toHaveLength(1)
 			expect(calls[0].outcome).toBe('error')
 			expect(calls[0].value).toEqual({ message: 'bad' })
+		},
+	},
+	{
+		id: 'response-error-headers',
+		description: 'gives a caller the value of a header that a failure response declares',
+		requests: [{ method: 'GET', path: '/response/error' }],
+		response: {
+			status: 400,
+			headers: { 'Content-Type': 'application/json', [ERROR_HEADER.name]: ERROR_HEADER.value },
+			body: JSON.stringify({ message: 'bad' }),
+		},
+		expectCalls(calls) {
+			expect(calls).toHaveLength(1)
+			/*
+			 * The case asks whether a caller can read the header of a failure at all. So each
+			 * driver catches the failure itself and reports the value as text, or "absent"
+			 * where the client exposes none. A client that reported no failure says so too.
+			 */
+			expect(calls[0].outcome).toBe('success')
+			expect(calls[0].value).toEqual({ errorCode: ERROR_HEADER.value })
 		},
 	},
 	{

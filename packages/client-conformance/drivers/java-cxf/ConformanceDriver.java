@@ -120,6 +120,16 @@ public class ConformanceDriver extends ConformanceHarness {
 		return states;
 	}
 
+	/**
+	 * How the driver reports the header of a documented failure response: the value as text,
+	 * or "absent" where the client exposes none.
+	 */
+	private Map<String, Object> errorHeaderStates(String errorCode) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("errorCode", errorCode != null ? errorCode : "absent");
+		return states;
+	}
+
 	@Override
 	protected void run() throws Exception {
 		QueryApi query = new com.example.impl.QueryApiImpl(baseUrl);
@@ -336,6 +346,17 @@ public class ConformanceDriver extends ConformanceHarness {
 
 		startCase("response-error-body");
 		call(() -> response.responseError());
+
+		startCase("response-error-headers");
+		call(() -> {
+			try {
+				response.responseError();
+				return errorHeaderStates(null);
+			} catch (ResponseApi.ResponseError400Exception e) {
+				/* The exception of a documented failure carries each header that the response declares */
+				return errorHeaderStates(e.getXErrorCode());
+			}
+		});
 
 		startCase("response-undocumented-status");
 		call(() -> response.responseJson());

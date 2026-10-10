@@ -25,6 +25,7 @@ const API_KEY_QUERY = 'query-key'
 const BEARER_TOKEN = 'bearer-token'
 const BASIC_USERNAME = 'basic-user'
 const BASIC_PASSWORD = 'basic-secret'
+const ERROR_HEADER = 'X-Error-Code'
 
 function anObject(): Api.QueryObject {
 	return { name: 'x', count: 1, when: WHEN }
@@ -85,6 +86,15 @@ function headerStates(name: string, totalCount: number | undefined, note: string
 		totalCount: totalCount !== undefined ? String(totalCount) : 'absent',
 		note: note !== undefined ? note : 'absent',
 	}
+}
+
+
+/**
+ * How a driver reports the header of a documented failure response: the value as text, or
+ * "absent" where the client exposes none.
+ */
+function errorHeaderStates(errorCode: string | undefined): Record<string, string> {
+	return { errorCode: errorCode !== undefined ? errorCode : 'absent' }
 }
 
 /**
@@ -240,6 +250,17 @@ async function main(): Promise<void> {
 
 	await startCase('response-error-body')
 	await call(() => response.responseError())
+
+	await startCase('response-error-headers')
+	await call(async() => {
+		try {
+			await response.responseError()
+			return errorHeaderStates(undefined)
+		} catch (e) {
+			/* The client throws the raw response for a documented failure, so it carries every header */
+			return errorHeaderStates((e as Response).headers.get(ERROR_HEADER) ?? undefined)
+		}
+	})
 
 	await startCase('response-undocumented-status')
 	await call(() => response.responseJson())

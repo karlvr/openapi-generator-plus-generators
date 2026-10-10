@@ -102,6 +102,16 @@ public class ConformanceDriver extends ConformanceHarness {
 		return states;
 	}
 
+	/**
+	 * How the driver reports the header of a documented failure response: the value as text,
+	 * or "absent" where the client exposes none.
+	 */
+	private Map<String, Object> errorHeaderStates(String errorCode) {
+		Map<String, Object> states = new LinkedHashMap<>();
+		states.put("errorCode", errorCode != null ? errorCode : "absent");
+		return states;
+	}
+
 	@Override
 	protected void run() throws Exception {
 		retrofit2.Retrofit retrofit = retrofit();
@@ -298,6 +308,11 @@ public class ConformanceDriver extends ConformanceHarness {
 
 		startCase("response-error-body");
 		call(() -> response.responseError().execute());
+
+		startCase("response-error-headers");
+		/* Retrofit gives the whole response, so a caller reads a header of a failure too */
+		callReading(() -> response.responseError().execute(),
+			httpResponse -> errorHeaderStates(httpResponse.headers().get("X-Error-Code")));
 
 		startCase("response-undocumented-status");
 		call(() -> response.responseJson().execute());

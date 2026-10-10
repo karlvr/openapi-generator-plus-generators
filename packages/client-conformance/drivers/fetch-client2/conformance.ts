@@ -87,6 +87,15 @@ function headerStates(name: string, totalCount: number | undefined, note: string
 	}
 }
 
+
+/**
+ * How a driver reports the header of a documented failure response: the value as text, or
+ * "absent" where the client exposes none.
+ */
+function errorHeaderStates(errorCode: string | undefined): Record<string, string> {
+	return { errorCode: errorCode !== undefined ? errorCode : 'absent' }
+}
+
 async function main(): Promise<void> {
 	/*
 	 * The client asks for the credential of one scheme at a time, and names the
@@ -235,6 +244,16 @@ async function main(): Promise<void> {
 
 	await startCase('response-error-body')
 	await call(() => ResponseApi.responseError())
+
+	await startCase('response-error-headers')
+	await call(async() => {
+		const result = await ResponseApi.responseError()
+		if (result.status !== 400) {
+			return result
+		}
+		/* The harness reads the outcome from the status, so the report travels under a 200 */
+		return { status: 200, body: errorHeaderStates(result.headers.xErrorCode) }
+	})
 
 	await startCase('response-undocumented-status')
 	await call(() => ResponseApi.responseJson())
