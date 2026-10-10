@@ -88,14 +88,24 @@ function defaultResponseBlock(operation: CodegenOperation, wrapper: ResponseWrap
 			? `return ${RESPONSE_VAR}.readEntity(${operation.defaultResponse.defaultContent.nativeType.literalType}.class);\n`
 			: `${RESPONSE_VAR}.close();\n`
 
+	/*
+	 * A response that declares content, but that carries none, broke the contract that the
+	 * API states. The client has no model to give, so it reports that rather than a success
+	 * that carries null.
+	 */
+	const requiresEntity = operation.defaultResponse?.defaultContent?.nativeType
+		? `if (!${RESPONSE_VAR}.hasEntity()) {\n`
+			+ `\tthrow new ${ctx.root.apiPackage}.UnprocessableResponseException(${RESPONSE_VAR}, new ${jx}.ws.rs.ProcessingException("No body for response status " + ${RESPONSE_VAR}.getStatus() + ", which declares " + ${stringLiteral(ctx.generatorContext, `${operation.defaultResponse.defaultContent.mediaType.mediaType}`)}));\n`
+			+ '}\n'
+		: ''
+
 	/* A body that the client cannot parse is a failure of this response, not of another one */
-	const guarded = 'try {\n'
+	return requiresEntity
+		+ 'try {\n'
 		+ indent(body, '\t')
 		+ `} catch (${jx}.ws.rs.ProcessingException __processingException) {\n`
 		+ `\tthrow new ${ctx.root.apiPackage}.UnprocessableResponseException(${RESPONSE_VAR}, __processingException);\n`
 		+ '}\n'
-
-	return guarded
 }
 
 /**

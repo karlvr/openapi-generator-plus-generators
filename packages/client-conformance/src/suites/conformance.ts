@@ -645,9 +645,6 @@ export const CASES: ConformanceCase[] = [
 		description: 'reports a failure when a response that declares content carries none',
 		requests: [{ method: 'GET', path: '/response/json' }],
 		response: { status: 200, headers: { 'Content-Type': 'application/json' }, body: '' },
-		knownDefects: {
-			'java-cxf': 'the client reports success for an empty body, and gives no model',
-		},
 		expectCalls(calls) {
 			expect(calls).toHaveLength(1)
 			/*
