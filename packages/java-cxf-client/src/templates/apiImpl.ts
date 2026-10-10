@@ -47,7 +47,19 @@ public ${name}ApiImpl(java.lang.String baseAddress) {
 }
 
 public ${name}ApiImpl(java.lang.String baseAddress, java.util.List<?> providers) {
-	this(org.apache.cxf.jaxrs.client.JAXRSClientFactory.create(baseAddress, ${root.apiSpecPackage}.${name}ApiSpec.class, providers));
+	this(org.apache.cxf.jaxrs.client.JAXRSClientFactory.create(withTrailingSlash(baseAddress), ${root.apiSpecPackage}.${name}ApiSpec.class, providers));
+}
+
+/**
+ * {@code baseAddress}, ending with "/".
+ * <p>
+ * An operation at the root of the server URL has the path "/", which the server URL
+ * must keep. The CXF client proxy leaves out a path of "/", so the base address
+ * carries it instead. Every other path joins a base address that ends with "/" the
+ * same way as one that does not.
+ */
+private static java.lang.String withTrailingSlash(java.lang.String baseAddress) {
+	return baseAddress.endsWith("/") ? baseAddress : baseAddress + "/";
 }
 
 public ${name}ApiImpl(${root.apiSpecPackage}.${name}ApiSpec api) {
