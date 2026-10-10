@@ -89,6 +89,42 @@ A generator that shares an API shape with an existing driver needs nothing else.
 A generator with a new shape needs a harness and one entry file per suite in
 `drivers/<family>/`, and an entry in `DRIVERS` in `src/drivers.ts`.
 
+### A driver outside this repository
+
+A generator in another repository keeps its driver there, beside the generator
+that it calls. This repository cannot build or run that driver, so the driver
+changes only with its own generator.
+
+Pass the driver itself in place of a name. A `ConformanceDriver` has a `name`, an
+`install` that puts the driver sources into the generated project, and a `run`
+that builds the project and runs the driver. `run` and `shellArgument` help to
+run a command:
+
+```ts
+import { runConformanceTests } from '@openapi-generator-plus/client-conformance/dist/testing'
+import { SUITES } from '@openapi-generator-plus/client-conformance/dist/suites'
+import createGenerator from '..'
+import { DEFAULT_CONFIG } from './common'
+import { myDriver } from '../../conformance/driver'
+
+for (const suite of SUITES) {
+	runConformanceTests({
+		createGenerator,
+		driver: myDriver,
+		config: DEFAULT_CONFIG,
+		suite,
+		knownDefects: {
+			'response-header-list': 'the client gives a list header as raw text',
+		},
+	})
+}
+```
+
+The cases do not name an outside driver, so the caller gives its known defects
+and its skipped cases instead, by case id. The suite fails when an id names no
+case, so an entry cannot outlive its case. When this repository adds a case, the
+test that checks the driver reports every case fails until the driver runs it.
+
 ## Adding a case
 
 Add the operation to the suite's specification, add the case to the suite's
@@ -140,3 +176,6 @@ entry with the fix.
 
 A case may also carry `skipDrivers`, for a client that cannot express the case at
 all. Use `skipDrivers` only for that, never to accept a defect.
+
+A driver outside this repository passes its own `knownDefects` and `skipCases` to
+`runConformanceTests`, by case id. The same rules apply.

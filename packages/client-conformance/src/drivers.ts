@@ -10,9 +10,16 @@ import { ConformanceSuite } from './types'
  * two generators for one language. A driver holds the code that calls one such
  * API, and knows how to build and run it.
  *
- * Register a driver in {@link DRIVERS}, then name it from a generator package.
+ * Register a driver in {@link DRIVERS}, then name it from a generator package. A
+ * generator outside this repository passes its own driver to the suite instead.
  */
 export interface ConformanceDriver {
+	/**
+	 * The name of the driver. A case names a driver by it, in its known defects and
+	 * its skipped drivers, and the suite shows it in the name of each test.
+	 */
+	name: string
+
 	/**
 	 * Put the driver sources for `suite` into the generated project.
 	 *
@@ -39,7 +46,7 @@ export interface ConformanceDriver {
  * Use this for every value that a command line carries, because a path or a URL
  * may hold a space or a character that the shell reads.
  */
-function shellArgument(value: string): string {
+export function shellArgument(value: string): string {
 	/*
 	 * A single quote inside the text ends the quoting. So each one leaves the
 	 * quoting, escapes itself, then starts the quoting again.
@@ -68,6 +75,7 @@ const HARNESS = 'harness'
  */
 function typeScriptDriver(name: string): ConformanceDriver {
 	return {
+		name,
 		async install(basePath, suite) {
 			const source = path.join(DRIVERS_PATH, name)
 			const target = path.join(basePath, 'src')
@@ -108,6 +116,7 @@ const CLASSPATH_FILE = 'conformance-classpath.txt'
  */
 function mavenDriver(name: string): ConformanceDriver {
 	return {
+		name,
 		async install(basePath, suite) {
 			const source = path.join(DRIVERS_PATH, name)
 			const target = path.join(basePath, 'src', 'main', 'java', 'com', 'example')

@@ -4,10 +4,11 @@ import { CodegenConfig, CodegenGeneratorConstructor } from '@openapi-generator-p
 import { promises as fs } from 'fs'
 import * as os from 'os'
 import * as path from 'path'
-import { DRIVERS } from './drivers'
+import { ConformanceDriver, DRIVERS } from './drivers'
 import { CannedResponse, ConformanceServer, CONFORMANCE_BASE_PATH, RecordedRequest, startConformanceServer } from './server'
 import { CONFORMANCE } from './suites/conformance'
-import { ConformanceSuite, DriverResults, ExpectedRequest } from './types'
+import { SUITES } from './suites'
+import { ConformanceCase, ConformanceSuite, DriverResults, ExpectedRequest } from './types'
 
 /**
  * The spec of the general conformance suite.
@@ -50,8 +51,11 @@ function expectRequestLines(requests: RecordedRequest[], expected: ExpectedReque
 export interface ConformanceOptions {
 	/** The generator under test. */
 	createGenerator: CodegenGeneratorConstructor
-	/** The name of the driver that calls this generator's clients. See `DRIVERS`. */
-	driver: string
+	/**
+	 * The driver that calls this generator's clients: the name of one in `DRIVERS`,
+	 * or a driver of the caller's own.
+	 */
+	driver: string | ConformanceDriver
 	/** The config to generate with. The suite adds nothing to it. */
 	config: CodegenConfig
 	/** The suite to run. See `SUITES`. */
@@ -61,6 +65,43 @@ export interface ConformanceOptions {
 	 * a package runs a suite more than once.
 	 */
 	testName?: string
+	/**
+	 * The cases that fail with this driver because of a known defect, each with the
+	 * reason, by case id. These add to the known defects that a case declares
+	 * itself.
+	 *
+	 * Use this for a driver that the cases do not name, such as one from another
+	 * repository. Each id must name a case in one of the `SUITES`, so an entry
+	 * cannot outlive its case unnoticed.
+	 */
+	knownDefects?: Record<string, string>
+	/**
+	 * The cases that this driver cannot express at all, each with the reason, by
+	 * case id. These add to the drivers that a case skips itself. The same rule
+	 * applies as for {@link ConformanceOptions.knownDefects}.
+	 */
+	skipCases?: Record<string, string>
+}
+
+/** The driver that `driver` names, or `driver` itself. */
+function resolveDriver(driver: string | ConformanceDriver): ConformanceDriver {
+	if (typeof driver !== 'string') {
+		return driver
+	}
+	const named = DRIVERS[driver]
+	if (!named) {
+		throw new Error(`Unknown conformance driver "${driver}". Known drivers: ${Object.keys(DRIVERS).join(', ')}`)
+	}
+	return named
+}
+
+/** Fail when `entries` names a case that no suite declares. `option` names the option, for the message. */
+function checkCaseIds(entries: Record<string, string> | undefined, option: string): void {
+	const known = new Set(SUITES.flatMap(one => one.cases.map(conformanceCase => conformanceCase.id)))
+	const unknown = Object.keys(entries ?? {}).filter(id => !known.has(id))
+	if (unknown.length > 0) {
+		throw new Error(`${option} names cases that no suite declares: ${unknown.join(', ')}`)
+	}
 }
 
 /**
@@ -74,15 +115,24 @@ export interface ConformanceOptions {
  * driver sources and the spec from the package directory.
  */
 export function runConformanceTests(options: ConformanceOptions): void {
-	const driver = DRIVERS[options.driver]
-	if (!driver) {
-		throw new Error(`Unknown conformance driver "${options.driver}". Known drivers: ${Object.keys(DRIVERS).join(', ')}`)
-	}
+	const driver = resolveDriver(options.driver)
+	checkCaseIds(options.knownDefects, 'knownDefects')
+	checkCaseIds(options.skipCases, 'skipCases')
 
 	const { suite } = options
 	const CASES = suite.cases
 
-	describe(`client conformance: ${suite.id} (${options.driver})`, () => {
+	/** Why `conformanceCase` skips this driver, or undefined when it runs. */
+	function skipReason(conformanceCase: ConformanceCase): string | undefined {
+		return options.skipCases?.[conformanceCase.id] ?? conformanceCase.skipDrivers?.[driver.name]
+	}
+
+	/** The known defect that makes `conformanceCase` fail with this driver, or undefined. */
+	function defectReason(conformanceCase: ConformanceCase): string | undefined {
+		return options.knownDefects?.[conformanceCase.id] ?? conformanceCase.knownDefects?.[driver.name]
+	}
+
+	describe(`client conformance: ${suite.id} (${driver.name})`, () => {
 		let server: ConformanceServer | undefined
 		let results: DriverResults = { cases: [] }
 
@@ -125,7 +175,7 @@ export function runConformanceTests(options: ConformanceOptions): void {
 		 */
 		test('the driver reports every case that it runs, and no other', () => {
 			const expected = CASES
-				.filter(one => !(one.skipDrivers && one.skipDrivers[options.driver]))
+				.filter(one => !skipReason(one))
 				.map(one => one.id)
 			expect(results.cases.map(one => one.id)).toEqual(expected)
 		})
@@ -135,16 +185,16 @@ export function runConformanceTests(options: ConformanceOptions): void {
 		})
 
 		for (const conformanceCase of CASES) {
-			const skipReason = conformanceCase.skipDrivers && conformanceCase.skipDrivers[options.driver]
-			const defectReason = conformanceCase.knownDefects && conformanceCase.knownDefects[options.driver]
+			const skipped = skipReason(conformanceCase)
+			const defect = defectReason(conformanceCase)
 
 			/*
 			 * A known defect must still fail. So the suite stays green, and it reports
 			 * as soon as someone fixes the generator and forgets to remove the entry.
 			 */
-			const declare = skipReason ? test.skip : defectReason ? test.failing : test
-			const name = defectReason
-				? `${conformanceCase.id}: ${conformanceCase.description} [known defect: ${defectReason}]`
+			const declare = skipped ? test.skip : defect ? test.failing : test
+			const name = defect
+				? `${conformanceCase.id}: ${conformanceCase.description} [known defect: ${defect}]`
 				: `${conformanceCase.id}: ${conformanceCase.description}`
 
 			declare(name, () => {
