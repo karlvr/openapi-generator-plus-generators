@@ -115,7 +115,7 @@ function multipartBodyBuilding(requestBody: CodegenRequestBody, ctx: JavaModelCo
 		+ blocks
 		+ `${multipartBodyType()} __multipartBody = new ${multipartBodyType()}(\n`
 		+ '\t__multipartBodyParts,\n'
-		+ `\tjavax.ws.rs.core.MediaType.valueOf(${stringLiteral(ctx.generatorContext, requestBody.defaultContent.mediaType.mediaType)}),\n`
+		+ `\t${javax(ctx.root.useJakarta)}.ws.rs.core.MediaType.valueOf(${stringLiteral(ctx.generatorContext, requestBody.defaultContent.mediaType.mediaType)}),\n`
 		+ '\ttrue\n'
 		+ ');\n'
 }

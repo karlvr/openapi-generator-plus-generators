@@ -1,6 +1,6 @@
 import { CodegenSecurityScheme } from '@openapi-generator-plus/types'
 import { ts, each, capitalize, className, identifier, stringLiteral, Skip } from '@openapi-generator-plus/template-utils'
-import { JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { JavaModelContext, javax } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
 /**
  * The suffix this security scheme contributes to the method and field names derived from it —
@@ -43,7 +43,7 @@ function securityImplMethods(scheme: CodegenSecurityScheme, suffix: string, ctx:
 		const assign = scheme.in === 'header'
 			? `client.header(${stringLiteral(ctx.generatorContext, scheme.paramName)}, apiKeyValue);`
 			: scheme.in === 'cookie'
-				? `client.cookie(new javax.ws.rs.core.Cookie(${stringLiteral(ctx.generatorContext, scheme.paramName)}, apiKeyValue));`
+				? `client.cookie(new ${javax(ctx.root.useJakarta)}.ws.rs.core.Cookie(${stringLiteral(ctx.generatorContext, scheme.paramName)}, apiKeyValue));`
 				: `client.query(${stringLiteral(ctx.generatorContext, scheme.paramName)}, apiKeyValue);`
 
 		/* Unlike the other scheme types below, the `authorize*` method here has no `@Override` —

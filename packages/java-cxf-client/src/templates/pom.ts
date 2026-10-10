@@ -7,7 +7,12 @@ function mavenVersion(maven: MavenOptions, key: string, fallback: string): strin
 	return value !== undefined ? String(value) : fallback
 }
 
-/** This client's extra `<properties>`: the CXF client version, and (when tests are included) the JUnit version. */
+/**
+ * This client's extra `<properties>`: the CXF client version, and (when tests are included) the JUnit version.
+ *
+ * CXF 3 uses the `javax` packages and CXF 4 uses the `jakarta` packages, so the default CXF version follows
+ * `useJakarta`. A CXF of the other family compiles against the wrong `Response` type.
+ */
 export function pomProperties(ctx: JavaModelContext): string {
 	const maven = ctx.root.maven
 	if (!maven) {
@@ -15,7 +20,7 @@ export function pomProperties(ctx: JavaModelContext): string {
 	}
 
 	return ts`
-<cxf.version>${mavenVersion(maven, 'cxf', '3.6.9')}</cxf.version>
+<cxf.version>${mavenVersion(maven, 'cxf', ctx.root.useJakarta ? '4.1.4' : '3.6.9')}</cxf.version>
 ${when(ctx.root.includeTests, () => `<junit-jupiter.version>${mavenVersion(maven, 'junit_jupiter', '5.7.2')}</junit-jupiter.version>`)}`
 }
 
