@@ -1,10 +1,20 @@
 {
   "name": "@openapi-generator-plus/client-conformance",
   "version": "0.0.0",
-  "private": true,
-  "description": "A shared conformance test suite that runs generated API clients against a recording HTTP server",
+  "description": "A conformance test suite that runs a generated OpenAPI Generator Plus client against a recording HTTP server",
+  "keywords": [
+    "openapi-generator-plus",
+    "openapi",
+    "conformance",
+    "testing"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "drivers",
+    "specs"
+  ],
   "scripts": {
     "build": "../../node_modules/.bin/tsc -p tsconfig.prod.json",
     "clean": "../../node_modules/.bin/rimraf dist",
@@ -16,10 +26,19 @@
   },
   "author": "Karl von Randow",
   "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/karlvr/openapi-generator-plus-generators/issues"
+  },
+  "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/client-conformance#readme",
   "dependencies": {
     "@openapi-generator-plus/generator-common": "workspace:*",
     "@openapi-generator-plus/testing": "^2.31.3",
-    "@openapi-generator-plus/types": "^2.23.0",
-    "maven": "github:karlvr/node-maven"
+    "@openapi-generator-plus/types": "^2.23.0"
+  },
+  "peerDependencies": {
+    "jest": ">=29"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

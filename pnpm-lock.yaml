@@ -94,9 +94,9 @@ importers:
       '@openapi-generator-plus/types':
         specifier: link:../../../openapi-generator-plus/packages/types
         version: link:../../../openapi-generator-plus/packages/types
-      maven:
-        specifier: github:karlvr/node-maven
-        version: https://codeload.github.com/karlvr/node-maven/tar.gz/b9460728c532fcd6b223d10394e5f7a8c1418ca2
+      jest:
+        specifier: '>=29'
+        version: 30.4.0(@types/node@24.12.2)
 
   packages/generator-common:
     dependencies:

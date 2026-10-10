@@ -4,7 +4,17 @@ A shared test suite that runs a **generated** API client against a recording HTT
 server, then checks what the client put on the wire, and what it made of the
 response.
 
-This package is private. It is never published.
+The generators in this repository run it from the workspace. A generator in
+another repository installs it as a development dependency, and runs the suite
+from its own Jest tests:
+
+```
+pnpm add --save-dev @openapi-generator-plus/client-conformance
+```
+
+The package holds the specifications, the cases, the recording server and the
+drivers for the client families in this repository. Jest must provide its
+globals, because the suite declares its tests with them.
 
 ## Why
 
@@ -55,15 +65,17 @@ file of each suite builds on the harness, so it holds only the calls.
 
 ## Running it
 
-Build this package first. A generator package reads the driver sources and the
-specification from this package's directory.
+In this repository, build this package first. A generator package reads the
+driver sources and the specification from this package's directory.
 
 ```
 pnpm --filter @openapi-generator-plus/client-conformance build
 pnpm --filter @openapi-generator-plus/typescript-fetch-client-generator test
 ```
 
-The Java drivers need `mvn` and a JDK on the `PATH`.
+The TypeScript drivers need `pnpm` on the `PATH`, because each one installs and
+builds its generated project. The Java drivers need `mvn` and a JDK on the
+`PATH`.
 
 ## Adding a generator
 
