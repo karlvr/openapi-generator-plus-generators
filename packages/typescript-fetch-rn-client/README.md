@@ -27,6 +27,28 @@ response.
 Each API class takes a `fetch` function. Supply your own implementation for a request-scoped
 `fetch`. Supply one also to add a retry, a timeout or a request log.
 
+## Limitations
+
+The [client conformance suite](../client-conformance) records these gaps. The
+[typescript-fetch-client2](../typescript-fetch-client2) template closes the first two of them. This
+repository has no React Native variant of that template.
+
+### A caller cannot read a response header
+
+Each operation resolves with the parsed body alone. So a caller cannot read a header that the
+specification declares on a response, such as a page count.
+
+### A caller parses a documented error body
+
+The generated client throws the raw `Response` for every documented response other than the default
+response. The specification may declare a model for that response. The client does not parse it, so
+a caller reads and parses the body itself.
+
+### The client joins an exploded delimited form array
+
+A `pipeDelimited` or `spaceDelimited` form property with `explode: true` should write one pair for
+each element, as OpenAPI 3.1 defines. The client joins the elements whatever `explode` says.
+
 ## Using
 
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use

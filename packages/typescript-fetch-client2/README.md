@@ -55,6 +55,21 @@ The `dateApproach` config file property sets how the generated client represents
 a date-time. Use the native `Date`, use a `string`, or use the
 [`blind-date`](https://npmjs.com/blind-date) library.
 
+## Limitations
+
+The [client conformance suite](../client-conformance) records these gaps.
+
+### The client does not check a response header
+
+A header that the response does not carry reads as `undefined`, even where the specification marks
+it as required. A number that does not parse reads as `NaN`. So a caller checks a header that it
+depends on.
+
+### The client joins an exploded delimited form array
+
+A `pipeDelimited` or `spaceDelimited` form property with `explode: true` should write one pair for
+each element, as OpenAPI 3.1 defines. The client joins the elements whatever `explode` says.
+
 ## Using
 
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use

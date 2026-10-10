@@ -8,6 +8,10 @@ The generated code has useful features:
 
 * Model objects and enums will be nested in the API service if they are inlined in the specification.
 
+[java-cxf-client-generator](../java-cxf-client) builds on this template. The
+[client conformance suite](../client-conformance) runs against that generator rather than this one,
+and its [Limitations](../java-cxf-client#limitations) list what the suite records.
+
 ## Requests
 
 ### What an operation takes as a request body

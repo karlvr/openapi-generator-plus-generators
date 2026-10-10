@@ -49,6 +49,21 @@ The generated client calls the `fetch` function from its `Configuration`. Supply
 implementation for a request-scoped `fetch`. Supply one also to add a retry, a timeout or a request
 log. See [Supplying your own `fetch`](#supplying-your-own-fetch).
 
+## Limitations
+
+The [client conformance suite](../client-conformance) records these gaps.
+
+### The client does not check a response header
+
+A header that the response does not carry reads as `undefined`, even where the specification marks
+it as required. A number that does not parse reads as `NaN`. So a caller checks a header that it
+depends on.
+
+### The client joins an exploded delimited form array
+
+A `pipeDelimited` or `spaceDelimited` form property with `explode: true` should write one pair for
+each element, as OpenAPI 3.1 defines. The client joins the elements whatever `explode` says.
+
 ## Using
 
 See the [OpenAPI Generator Plus](https://github.com/karlvr/openapi-generator-plus) documentation for how to use
