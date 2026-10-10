@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/client-conformance",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A conformance test suite that runs a generated OpenAPI Generator Plus client against a recording HTTP server",
   "keywords": [
     "openapi-generator-plus",
