@@ -1,6 +1,6 @@
 {
   "name": "@openapi-generator-plus/plain-documentation-generator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "An OpenAPI Generator Plus template for generating plain documentation",
   "keywords": [
     "openapi-generator-plus",

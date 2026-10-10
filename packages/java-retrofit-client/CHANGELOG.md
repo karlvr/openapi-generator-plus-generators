@@ -1,5 +1,14 @@
 # @openapi-generator-plus/java-retrofit-client-generator
 
+## 4.0.1
+
+### Patch Changes
+
+- Updated dependencies [3e1cf09]
+  - @openapi-generator-plus/generator-common@1.9.1
+  - @openapi-generator-plus/java-jaxrs-generator-common@4.1.1
+  - @openapi-generator-plus/template-utils@0.3.1
+
 ## 4.0.0
 
 ### Major Changes
