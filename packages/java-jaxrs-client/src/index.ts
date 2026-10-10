@@ -1,7 +1,7 @@
 import { CodegenGeneratorType, CodegenGenerator, CodegenConfig } from '@openapi-generator-plus/types'
 import path from 'path'
 import { emit as emitTemplate } from '@openapi-generator-plus/template-utils'
-import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext, chainJavaGeneratorContext, javaJaxrsCommonTemplates, EffectiveJavaJaxrsTemplates, apiParams, apiConstants } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import javaGenerator, { options as javaGeneratorOptions, packageToPath, JavaGeneratorContext, chainJavaGeneratorContext, javaJaxrsCommonTemplates, EffectiveJavaJaxrsTemplates, apiParams, apiConstants, formEncoding } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { CodegenOptionsJavaClient } from './types'
 import { configBoolean, configNumber, configString } from '@openapi-generator-plus/generator-common'
 import { hooks } from './templates/hooks'
@@ -43,8 +43,11 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 	const myContext: JavaGeneratorContext = chainJavaGeneratorContext(context, {
 		templates: hooks,
 	})
-	// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	myContext.formUrlEncodedImplementation = () => new context.NativeType(`${generatorOptions.useJakarta ? 'jakarta' : 'javax'}.ws.rs.core.Form`)
+	/*
+	 * The client encodes a form body itself, in the styles that the API declares, so it needs
+	 * the type that the request body's own schema gives. See `formBody` and `bodyParam`.
+	 */
+	myContext.formUrlEncodedImplementation = () => null
 
 	const generatorOptions = options(config, myContext)
 
@@ -88,6 +91,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 				}
 			}
 		}
+
+		/* The client encodes a form body itself, so it needs the helpers that those statements call */
+		await emitTemplate(formEncoding(ctx.root), path.join(outputPath, relativeSourceOutputPath, packageToPath(generatorOptions.supportPackage), 'FormEncoding.java'), true)
 
 		await emitTemplate(apiConstants(doc.servers, ctx), path.join(outputPath, relativeSourceOutputPath, apiPackagePath, 'ApiConstants.java'), true)
 		await emitTemplate(apiInvoker(ctx), path.join(outputPath, relativeApiImplSourceOutputPath, apiPackagePath, 'ApiInvoker.java'), true)

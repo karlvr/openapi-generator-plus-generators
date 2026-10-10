@@ -1,8 +1,7 @@
 import { CodegenContentPropertyEncoding, CodegenProperty, CodegenRequestBody } from '@openapi-generator-plus/types'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { indent, isArray, stringLiteral } from '@openapi-generator-plus/template-utils'
-import { getter, isPrimitive, JavaModelContext, multipartPartCanBeNull } from '@openapi-generator-plus/java-jaxrs-generator-common'
-import { accessor, componentType, guard, present } from './encoding'
+import { accessor, componentType, FORM_ENCODING_CLASS, getter, guard, isPrimitive, JavaModelContext, multipartPartCanBeNull, present } from '@openapi-generator-plus/java-jaxrs-generator-common'
 
 /** The builder that the generated method fills. */
 const BODY = '__body'
@@ -42,7 +41,7 @@ function bytes(entry: CodegenContentPropertyEncoding, partVar: string, ctx: Java
 	if (/\bjson$/.test(entry.contentType)) {
 		return `objectMapper.writeValueAsBytes(${expression})`
 	}
-	return `text(${expression}).getBytes(java.nio.charset.StandardCharsets.UTF_8)`
+	return `${ctx.root.supportPackage}.${FORM_ENCODING_CLASS}.text(${expression}).getBytes(java.nio.charset.StandardCharsets.UTF_8)`
 }
 
 /**

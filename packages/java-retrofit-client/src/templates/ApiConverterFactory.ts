@@ -1,9 +1,19 @@
 import { CodegenContentEncodingType, CodegenRequestBody } from '@openapi-generator-plus/types'
 import { ts, indent } from '@openapi-generator-plus/template-utils'
-import { generatedAnnotation, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
-import { encoderName } from './frag/encoding'
-import { formBodyStatements } from './frag/formBody'
+import { encoderName, FORM, FORM_ENCODING_CLASS, FormBodyBuilder, formBodyStatements, generatedAnnotation, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { multipartBodyStatements } from './frag/multipartBody'
+
+/** How OkHttp builds an `application/x-www-form-urlencoded` body. */
+function okHttpForm(ctx: JavaModelContext): FormBodyBuilder {
+	const support = `${ctx.root.supportPackage}.${FORM_ENCODING_CLASS}`
+	return {
+		declare: `okhttp3.FormBody.Builder ${FORM} = new okhttp3.FormBody.Builder();\n`,
+		add: (name, value) => `${FORM}.add(${name}, ${value});\n`,
+		finish: `return ${FORM}.build();\n`,
+		text: (value) => `${support}.text(${value})`,
+		join: (values, separator) => `${support}.join(${values}, ${separator})`,
+	}
+}
 
 /** The variable that holds the request model that an encoder reads. */
 const MODEL = '__value'
@@ -54,7 +64,7 @@ function encoderStatements(body: EncodedRequestBody, ctx: JavaModelContext): str
 	if (encoding?.type === CodegenContentEncodingType.MULTIPART) {
 		return multipartBodyStatements(body.requestBody, MODEL, ctx)
 	}
-	return formBodyStatements(body.requestBody, MODEL, ctx)
+	return formBodyStatements(body.requestBody, MODEL, okHttpForm(ctx), ctx)
 }
 
 /** The method that encodes one request body. */
@@ -135,7 +145,7 @@ public class ApiConverterFactory extends retrofit2.Converter.Factory {
 			return new retrofit2.Converter<${noExplode}<?>, java.lang.String>() {
 				@java.lang.Override
 				public java.lang.String convert(${noExplode}<?> value) {
-					return join(value, ",");
+					return ${root.supportPackage}.${FORM_ENCODING_CLASS}.join(value, ",");
 				}
 			};
 		}
@@ -157,35 +167,6 @@ ${encoders}
 			return rawType(((java.lang.reflect.ParameterizedType) type).getRawType());
 		}
 		return null;
-	}
-
-	/**
-	 * The text form of a value, which is empty for null.
-	 *
-	 * A URL, a header and a form body carry text, so none of them has a null. An empty value
-	 * stands for it, and keeps it distinct from an absent value, which is left out.
-	 */
-	private static java.lang.String text(java.lang.Object value) {
-		return value != null ? java.lang.String.valueOf(value) : "";
-	}
-
-	/** The elements of {@code values}, in their text form, with {@code separator} between them. */
-	private static java.lang.String join(java.lang.Iterable<?> values, java.lang.String separator) {
-		java.lang.StringBuilder result = new java.lang.StringBuilder();
-		boolean first = true;
-		for (java.lang.Object value : values) {
-			if (!first) {
-				result.append(separator);
-			}
-			result.append(text(value));
-			first = false;
-		}
-		return result.toString();
-	}
-
-	/** The elements of {@code values}, in their text form, with {@code separator} between them. */
-	private static java.lang.String join(${noExplode}<?> values, java.lang.String separator) {
-		return join(values.stream().collect(java.util.stream.Collectors.toList()), separator);
 	}
 
 	/** The headers that {@code pairs} names, leaving out every pair whose value is null. */

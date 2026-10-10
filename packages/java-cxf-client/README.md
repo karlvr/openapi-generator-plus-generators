@@ -7,10 +7,10 @@ See [java-jaxrs-client-generator](https://github.com/karlvr/openapi-generator-pl
 The Java CXF client API includes interfaces and default implementations to invoke the API. These are created
 in the `impl` package.
 
-## Responses
+## Requests and responses
 
-See [java-jaxrs-client-generator](https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-jaxrs-client#responses)
-for what an operation returns and throws, and for the headers that a response carries.
+See [java-jaxrs-client-generator](https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/java-jaxrs-client#requests)
+for the request body that an operation takes, and for what it returns and throws.
 
 ## Config file
 

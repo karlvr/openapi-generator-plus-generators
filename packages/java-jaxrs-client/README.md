@@ -8,6 +8,25 @@ The generated code has useful features:
 
 * Model objects and enums will be nested in the API service if they are inlined in the specification.
 
+## Requests
+
+### What an operation takes as a request body
+
+An operation takes the model of its request body, whatever the media type that the body declares.
+
+A form body and a multipart body each reach the wire in the styles that the API declares, including
+the joined, exploded and `deepObject` styles. The client builds the body itself, because JAX-RS
+applies none of those styles to a `javax.ws.rs.core.Form`.
+
+```java
+api.createItem(new CreateItemRequest()
+    .name("a widget")
+    .tags(Arrays.asList("new", "sale")));
+```
+
+A property that is absent is left out of the body. A property that is null writes an empty value,
+because a form body carries text, which has no null. So the two stay apart on the wire.
+
 ## Responses
 
 ### What an operation returns

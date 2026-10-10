@@ -285,9 +285,6 @@ export const CASES: ConformanceCase[] = [
 		id: 'form-scalars-values',
 		description: 'writes one form property for each scalar type',
 		requests: [{ method: 'POST', path: '/form/scalars' }],
-		skipDrivers: {
-			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
-		},
 		expectRequests(requests) {
 			expect(requests[0].headers['content-type']).toEqual(['application/x-www-form-urlencoded'])
 			const pairs = formPairs(requests[0])
@@ -301,9 +298,6 @@ export const CASES: ConformanceCase[] = [
 		id: 'form-scalars-null',
 		description: 'writes a null form property as an empty value',
 		requests: [{ method: 'POST', path: '/form/scalars' }],
-		skipDrivers: {
-			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
-		},
 		expectRequests(requests) {
 			const pairs = formPairs(requests[0])
 			/* A form encoding carries text, so it has no null. An empty value stands for it. */
@@ -317,9 +311,6 @@ export const CASES: ConformanceCase[] = [
 		id: 'form-scalars-absent',
 		description: 'omits an absent form property, so null and absent stay distinct',
 		requests: [{ method: 'POST', path: '/form/scalars' }],
-		skipDrivers: {
-			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
-		},
 		expectRequests(requests) {
 			expect(formPairs(requests[0])).toEqual([])
 		},
@@ -328,9 +319,6 @@ export const CASES: ConformanceCase[] = [
 		id: 'form-arrays-values',
 		description: 'writes a form array in each collection style',
 		requests: [{ method: 'POST', path: '/form/arrays' }],
-		skipDrivers: {
-			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
-		},
 		expectRequests(requests) {
 			const pairs = formPairs(requests[0])
 			expect(valuesOf(pairs, 'strs')).toEqual(['a', 'b'])
@@ -341,9 +329,6 @@ export const CASES: ConformanceCase[] = [
 		id: 'form-arrays-null',
 		description: 'writes a null form array as an empty value',
 		requests: [{ method: 'POST', path: '/form/arrays' }],
-		skipDrivers: {
-			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
-		},
 		expectRequests(requests) {
 			const pairs = formPairs(requests[0])
 			expect(valueOf(pairs, 'nullableStrs')).toBe('')
@@ -354,9 +339,6 @@ export const CASES: ConformanceCase[] = [
 		id: 'form-objects-values',
 		description: 'writes a form object in each object style',
 		requests: [{ method: 'POST', path: '/form/objects' }],
-		skipDrivers: {
-			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
-		},
 		expectRequests(requests) {
 			const pairs = formPairs(requests[0])
 			expect(valueOf(pairs, 'obj')).toBe('name,x,count,1')
@@ -372,9 +354,6 @@ export const CASES: ConformanceCase[] = [
 		id: 'form-objects-null',
 		description: 'writes a null form object as an empty value, unless the style names each property',
 		requests: [{ method: 'POST', path: '/form/objects' }],
-		skipDrivers: {
-			'java-cxf': 'the client takes a JAX-RS Form, so the caller encodes the body, not the client',
-		},
 		expectRequests(requests) {
 			const pairs = formPairs(requests[0])
 			/* A joined object has a place to put an empty value */

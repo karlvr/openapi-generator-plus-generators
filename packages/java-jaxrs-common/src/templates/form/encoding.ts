@@ -1,6 +1,7 @@
 import { CodegenArraySchema, CodegenEncodingStyle, CodegenLogLevel, CodegenObjectSchema, CodegenProperty } from '@openapi-generator-plus/types'
 import { allProperties, capitalize, indent, stringLiteral } from '@openapi-generator-plus/template-utils'
-import { getter, isPrimitive, JavaModelContext } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { getter, isPrimitive } from '../helpers'
+import { JavaModelContext } from '../types'
 
 /** The name of the generated method that encodes the request body whose type is `nativeType`. */
 export function encoderName(nativeType: string): string {
@@ -82,10 +83,11 @@ export function arrayShape(style: CodegenEncodingStyle | null, explode: boolean,
 	switch (style ?? CodegenEncodingStyle.FORM) {
 		case CodegenEncodingStyle.FORM:
 			return explode ? { kind: 'explode' } : { kind: 'join', separator: ',', keyValueSeparator: ',' }
+		/* OpenAPI 3.1 writes an exploded delimited value as one pair for each part, the same as form */
 		case CodegenEncodingStyle.SPACE_DELIMITED:
-			return { kind: 'join', separator: ' ', keyValueSeparator: ' ' }
+			return explode ? { kind: 'explode' } : { kind: 'join', separator: ' ', keyValueSeparator: ' ' }
 		case CodegenEncodingStyle.PIPE_DELIMITED:
-			return { kind: 'join', separator: '|', keyValueSeparator: '|' }
+			return explode ? { kind: 'explode' } : { kind: 'join', separator: '|', keyValueSeparator: '|' }
 		case CodegenEncodingStyle.SIMPLE:
 			return { kind: 'join', separator: ',', keyValueSeparator: ',' }
 		default:
@@ -99,10 +101,11 @@ export function objectShape(style: CodegenEncodingStyle | null, explode: boolean
 	switch (style ?? CodegenEncodingStyle.FORM) {
 		case CodegenEncodingStyle.FORM:
 			return explode ? { kind: 'explode' } : { kind: 'join', separator: ',', keyValueSeparator: ',' }
+		/* OpenAPI 3.1 writes an exploded delimited value as one pair for each part, the same as form */
 		case CodegenEncodingStyle.SPACE_DELIMITED:
-			return { kind: 'join', separator: ' ', keyValueSeparator: ' ' }
+			return explode ? { kind: 'explode' } : { kind: 'join', separator: ' ', keyValueSeparator: ' ' }
 		case CodegenEncodingStyle.PIPE_DELIMITED:
-			return { kind: 'join', separator: '|', keyValueSeparator: '|' }
+			return explode ? { kind: 'explode' } : { kind: 'join', separator: '|', keyValueSeparator: '|' }
 		case CodegenEncodingStyle.SIMPLE:
 			return explode ? { kind: 'join', separator: ',', keyValueSeparator: '=' } : { kind: 'join', separator: ',', keyValueSeparator: ',' }
 		case CodegenEncodingStyle.DEEP_OBJECT:

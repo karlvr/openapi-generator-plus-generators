@@ -29,6 +29,11 @@ export {
 	clientObjectMapperConfiguration,
 } from './templates'
 export { escapeString }
+export { accessor, arrayShape, componentType, encoderName, guard, nameLiteral, objectProperties, objectShape, present, unsupportedStyle } from './templates/form/encoding'
+export type { EncodingShape } from './templates/form/encoding'
+export { FORM, formBodyStatements } from './templates/form/formBody'
+export { FORM_ENCODING_CLASS, formEncoding } from './templates/form/formEncoding'
+export type { FormBodyBuilder } from './templates/form/formBody'
 
 /**
  * Turns a Java package name into a path

@@ -133,6 +133,7 @@ public class ConformanceDriver extends ConformanceHarness {
 	@Override
 	protected void run() throws Exception {
 		QueryApi query = new com.example.impl.QueryApiImpl(baseUrl);
+		FormApi form = new com.example.impl.FormApiImpl(baseUrl);
 		MultipartApi multipart = new com.example.impl.MultipartApiImpl(baseUrl);
 		JsonApi json = new com.example.impl.JsonApiImpl(baseUrl);
 		ResponseApi response = new com.example.impl.ResponseApiImpl(baseUrl);
@@ -238,6 +239,73 @@ public class ConformanceDriver extends ConformanceHarness {
 		startCase("query-path-segment");
 		call(() -> {
 			query.queryPathSegment(PATH_SEGMENT);
+			return null;
+		});
+
+		/*
+		 * The client encodes a form body in the styles that the API declares, so the driver
+		 * hands it the request model rather than a JAX-RS Form.
+		 */
+		startCase("form-scalars-values");
+		call(() -> {
+			form.formScalars(new com.example.model.FormScalarsRequest()
+				.str("a")
+				.num(1)
+				.flag(false)
+				.when(OffsetDateTime.parse(WHEN)));
+			return null;
+		});
+
+		startCase("form-scalars-null");
+		call(() -> {
+			com.example.model.FormScalarsRequest request = new com.example.model.FormScalarsRequest();
+			request.setNullableStr(Optional.empty());
+			request.setNullableNum(Optional.empty());
+			request.setNullableFlag(Optional.empty());
+			request.setNullableWhen(Optional.empty());
+			form.formScalars(request);
+			return null;
+		});
+
+		startCase("form-scalars-absent");
+		call(() -> {
+			form.formScalars(new com.example.model.FormScalarsRequest());
+			return null;
+		});
+
+		startCase("form-arrays-values");
+		call(() -> {
+			form.formArrays(new com.example.model.FormArraysRequest()
+				.strs(Arrays.asList("a", "b"))
+				.pipeStrs(Arrays.asList("c", "d")));
+			return null;
+		});
+
+		startCase("form-arrays-null");
+		call(() -> {
+			com.example.model.FormArraysRequest request = new com.example.model.FormArraysRequest();
+			request.setNullableStrs(Optional.empty());
+			request.setNullablePipeStrs(Optional.empty());
+			form.formArrays(request);
+			return null;
+		});
+
+		startCase("form-objects-values");
+		call(() -> {
+			form.formObjects(new com.example.model.FormObjectsRequest()
+				.obj(aPlainObject())
+				.explodeObj(anObject())
+				.deepObj(anotherObject()));
+			return null;
+		});
+
+		startCase("form-objects-null");
+		call(() -> {
+			com.example.model.FormObjectsRequest request = new com.example.model.FormObjectsRequest();
+			request.setNullableObj(Optional.empty());
+			request.setNullableExplodeObj(Optional.empty());
+			request.setNullableDeepObj(Optional.empty());
+			form.formObjects(request);
 			return null;
 		});
 

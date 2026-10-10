@@ -6,6 +6,7 @@ import javaGenerator, {
 	chainJavaGeneratorContext,
 	CodegenOptionsJava,
 	EffectiveJavaJaxrsTemplates,
+	formEncoding,
 	JavaGeneratorContext,
 	JavaModelContext,
 	javaJaxrsCommonTemplates,
@@ -80,6 +81,9 @@ export default function createGenerator(config: CodegenConfig, context: JavaGene
 		await emitTemplate(apiConstants(doc.servers, ctx), path.join(sourcePath, 'ApiConstants.java'), true)
 		await emitTemplate(apiObjectMapper(ctx.root), path.join(sourcePath, 'ApiObjectMapper.java'), true)
 		await emitTemplate(apiConverterFactory(encodedRequestBodies(doc.groups), ctx), path.join(sourcePath, 'ApiConverterFactory.java'), true)
+
+		/* The client encodes a form body and the text of a multipart part itself, so it needs the helpers that those statements call */
+		await emitTemplate(formEncoding(ctx.root), path.join(outputPath, generatorOptions.relativeSourceOutputPath, packageToPath(generatorOptions.supportPackage), 'FormEncoding.java'), true)
 
 		if (context.exportFiles) {
 			await context.exportFiles(outputPath, doc, rootContext)

@@ -1,7 +1,7 @@
-import { CodegenArraySchema, CodegenContent, CodegenContentPropertyEncoding, CodegenOperation, CodegenOperationGroup, CodegenResponse } from '@openapi-generator-plus/types'
+import { CodegenArraySchema, CodegenContent, CodegenContentEncodingType, CodegenContentPropertyEncoding, CodegenOperation, CodegenOperationGroup, CodegenResponse } from '@openapi-generator-plus/types'
 import * as idx from '@openapi-generator-plus/indexed-type'
 import { indent, isArray, isContentMultipart, identifier, className, stringLiteral, nonDefaultResponses, nonDefaultAndCatchAllResponses, responseContentAndNone, SKIP, Skip } from '@openapi-generator-plus/template-utils'
-import { imports, operationVars, generatedAnnotation, javax, getter } from '@openapi-generator-plus/java-jaxrs-generator-common'
+import { imports, operationVars, generatedAnnotation, javax, getter, FORM_ENCODING_CLASS, FormBodyBuilder, formBodyStatements } from '@openapi-generator-plus/java-jaxrs-generator-common'
 import { ClientContext } from './types'
 import { bodyParam } from './frag/bodyParam'
 import { exceptionName } from './api'
@@ -29,6 +29,39 @@ function multipartBuilding(operation: CodegenOperation, ctx: ClientContext): str
 		return SKIP
 	}
 	return ctx.templates.multipartBodyBuilding(requestBody, ctx)
+}
+
+/** The local that carries the form body of a request, which the generated statements fill. */
+const FORM_BODY = '__formBody'
+
+/** How JAX-RS builds an `application/x-www-form-urlencoded` body. */
+function jaxrsForm(ctx: ClientContext): FormBodyBuilder {
+	const jx = javax(ctx.root.useJakarta)
+	const support = `${ctx.root.supportPackage}.${FORM_ENCODING_CLASS}`
+	/* A Form is complete as each pair goes in, so the body needs no step to finish it */
+	return {
+		declare: `${jx}.ws.rs.core.Form ${FORM_BODY} = new ${jx}.ws.rs.core.Form();\n`,
+		add: (name, value) => `${FORM_BODY}.param(${name}, ${value});\n`,
+		finish: '',
+		text: (value) => `${support}.text(${value})`,
+		join: (values, separator) => `${support}.join(${values}, ${separator})`,
+	}
+}
+
+/**
+ * The form request body this operation sends, built into `__formBody`. SKIP (rendering
+ * nothing) when the operation's request body is not form encoded.
+ *
+ * JAX-RS writes a `Form` without applying the styles that the API declares, so the client
+ * builds the pairs itself rather than handing over the request model.
+ */
+function formBuilding(operation: CodegenOperation, ctx: ClientContext): string | Skip {
+	const requestBody = operation.requestBody
+	if (!requestBody || requestBody.defaultContent.encoding?.type !== CodegenContentEncodingType.WWW_FORM_URLENCODED) {
+		return SKIP
+	}
+	const name = identifier(ctx.generatorContext.generator(), requestBody.name)
+	return formBodyStatements(requestBody, name, jaxrsForm(ctx), ctx)
 }
 
 /**
@@ -166,9 +199,11 @@ function operationMethod(operation: CodegenOperation, group: CodegenOperationGro
 	const jx = javax(ctx.root.useJakarta)
 	const { parameters, arguments: baseArgs } = operationVars(operation, { jaxrs: false, service: false }, bodyParam, ctx)
 	const isMultipart = !!operation.requestBody && isContentMultipart(operation.requestBody.defaultContent)
-	/* A multipart request body is sent as `__multipartBody`, not the request body's own variable — recomputed here to match. */
-	const callArgs = isMultipart
-		? operationVars(operation, { jaxrs: false, service: false, requestBodyVar: '__multipartBody' }, bodyParam, ctx).arguments
+	const isForm = operation.requestBody?.defaultContent.encoding?.type === CodegenContentEncodingType.WWW_FORM_URLENCODED
+	/* A multipart or form request body is sent as its own local, not the request body's own variable — recomputed here to match. */
+	const bodyVar = isMultipart ? '__multipartBody' : isForm ? FORM_BODY : null
+	const callArgs = bodyVar
+		? operationVars(operation, { jaxrs: false, service: false, requestBodyVar: bodyVar }, bodyParam, ctx).arguments
 		: baseArgs
 
 	const wrapper = responseWrapper(operation, group, ctx)
@@ -183,6 +218,9 @@ function operationMethod(operation: CodegenOperation, group: CodegenOperationGro
 
 	const multipart = multipartBuilding(operation, ctx)
 	const multipartText = typeof multipart === 'string' ? `${multipart}\n` : ''
+
+	const form = formBuilding(operation, ctx)
+	const formText = typeof form === 'string' ? `${form}\n` : ''
 
 	/* An unauthorized response asks the provider for a new credential, then repeats the call once */
 	const reauthorizeBlock = operation.securityRequirements
@@ -201,7 +239,7 @@ function operationMethod(operation: CodegenOperation, group: CodegenOperationGro
 	const deprecatedLine = operation.deprecated ? '\t@java.lang.SuppressWarnings("deprecation")\n' : ''
 
 	return `\t@java.lang.Override\n${deprecatedLine}\tpublic ${returnType} ${identifier(generator, operation.name)}(${parameters}) throws ${throwsClause} {\n`
-		+ indent(authorizeBlock + multipartText, '\t\t')
+		+ indent(authorizeBlock + multipartText + formText, '\t\t')
 		+ '\t\ttry {\n'
 		+ indent(tryBody, '\t\t\t')
 		+ `\t\t} catch (${jx}.ws.rs.client.ResponseProcessingException __e) {\n`
