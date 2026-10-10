@@ -32,7 +32,7 @@
   "homepage": "https://github.com/karlvr/openapi-generator-plus-generators/tree/master/packages/client-conformance#readme",
   "dependencies": {
     "@openapi-generator-plus/generator-common": "workspace:*",
-    "@openapi-generator-plus/testing": "^2.31.3",
+    "@openapi-generator-plus/testing": "^2.33.0",
     "@openapi-generator-plus/types": "^2.23.0"
   },
   "peerDependencies": {
