@@ -26,6 +26,7 @@ public class ConformanceDriver extends ConformanceHarness {
 	private static final String WHEN = "2020-01-02T03:04:05.678Z";
 	private static final String DAY = "2020-01-02";
 	private static final String PATH_SEGMENT = "a b/c?d#e&f+g%h:i@j";
+	private static final String QUERY_VALUE = "a b+c&d=e%f#g";
 	private static final String TEXT_BODY = "plain \"text\" body";
 	private static final String BINARY_BODY = "binary content";
 
@@ -192,6 +193,9 @@ public class ConformanceDriver extends ConformanceHarness {
 
 		startCase("query-required-values");
 		call(() -> query.queryRequired("needed value", null, "needed header").execute());
+
+		startCase("query-reserved-value");
+		call(() -> query.queryScalars(QUERY_VALUE, null, null, null, null, null).execute());
 
 		startCase("query-path-segment");
 		call(() -> query.queryPathSegment(PATH_SEGMENT).execute());

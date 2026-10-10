@@ -30,6 +30,15 @@ export const OTHER_RESPONSE_OBJECT = { name: 'm', count: 3, when: WHEN, day: DAY
  */
 export const PATH_SEGMENT = 'a b/c?d#e&f+g%h:i@j'
 
+/**
+ * The query value that the reserved query value case sends.
+ *
+ * It holds each character that a query string gives a meaning to. A "+" reads as a
+ * space in a query, so a client must encode it. A client must encode "&" and "="
+ * too, or the value splits into other parameters.
+ */
+export const QUERY_VALUE = 'a b+c&d=e%f#g'
+
 /** The text that the plain text body case sends. A quote shows a client that wrote JSON instead. */
 export const TEXT_BODY = 'plain "text" body'
 
@@ -268,6 +277,18 @@ export const CASES: ConformanceCase[] = [
 			/* An absent optional parameter must not become an empty value */
 			expect(valueOf(pairs, 'optional')).toBeUndefined()
 			expect(requests[0].headers['x-needed']).toEqual(['needed header'])
+		},
+	},
+	{
+		id: 'query-reserved-value',
+		description: 'encodes the characters that a query value cannot carry',
+		requests: [{ method: 'GET', path: '/query/scalars' }],
+		expectRequests(requests) {
+			/* A "+" that the client left alone decodes as a space */
+			const pairs = queryPairs(requests[0])
+			expect(valueOf(pairs, 'str')).toBe(QUERY_VALUE)
+			/* An "&" or "=" that the client left alone adds a parameter */
+			expect(pairs.map(pair => pair[0])).toEqual(['str'])
 		},
 	},
 	{

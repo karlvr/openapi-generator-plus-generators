@@ -18,6 +18,7 @@ import { baseUrl, call, drive, startCase } from './harness'
 const WHEN = '2020-01-02T03:04:05.678Z'
 const DAY = '2020-01-02'
 const PATH_SEGMENT = 'a b/c?d#e&f+g%h:i@j'
+const QUERY_VALUE = 'a b+c&d=e%f#g'
 const TEXT_BODY = 'plain "text" body'
 const BINARY_BODY = 'binary content'
 const API_KEY_HEADER = 'header-key'
@@ -168,6 +169,9 @@ async function main(): Promise<void> {
 
 	await startCase('query-required-values')
 	await call(() => query.queryRequired('needed value', undefined, 'needed header'))
+
+	await startCase('query-reserved-value')
+	await call(() => query.queryScalars(QUERY_VALUE, undefined, undefined, undefined, undefined, undefined))
 
 	await startCase('query-path-segment')
 	await call(() => query.queryPathSegment(PATH_SEGMENT))
