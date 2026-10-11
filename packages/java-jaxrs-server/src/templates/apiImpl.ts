@@ -29,12 +29,16 @@ function multipartParsing(operation: CodegenOperation, ctx: ServerContext): stri
 	return indent(ctx.templates.multipartBodyParsing(requestBody, ctx), '\t\t')
 }
 
-/** The `final Response.ResponseBuilder __response = ...` declaration, seeded with the default response's status and cache-control header. */
+/**
+ * The `final Response.ResponseBuilder __response = ...` declaration, seeded with the default response's status and cache-control header.
+ * A catch-all default response documents no status code, so it is sent with 200.
+ */
 function responseBuilderDecl(defaultResponse: CodegenResponse, ctx: ServerContext): string {
 	const jx = javax(ctx.root.useJakarta)
 	const cacheControlExtension = defaultResponse.vendorExtensions?.['x-cache-control']
 	const cacheControl = cacheControlExtension !== undefined ? String(cacheControlExtension) : 'no-cache, no-store, must-revalidate, private'
-	return `\t\tfinal ${jx}.ws.rs.core.Response.ResponseBuilder __response = ${jx}.ws.rs.core.Response.status(${String(defaultResponse.code)}).cacheControl(${jx}.ws.rs.ext.RuntimeDelegate.getInstance().createHeaderDelegate(${jx}.ws.rs.core.CacheControl.class).fromString("${cacheControl}"));\n`
+	const status = defaultResponse.isCatchAll ? '200' : String(defaultResponse.code)
+	return `\t\tfinal ${jx}.ws.rs.core.Response.ResponseBuilder __response = ${jx}.ws.rs.core.Response.status(${status}).cacheControl(${jx}.ws.rs.ext.RuntimeDelegate.getInstance().createHeaderDelegate(${jx}.ws.rs.core.CacheControl.class).fromString("${cacheControl}"));\n`
 }
 
 /** The `try` block's call to the delegate API service, and building the response entity from its result (or the response wrapper's headers). */
