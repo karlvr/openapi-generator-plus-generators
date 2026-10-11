@@ -41,16 +41,30 @@ function collectUnionMembers(generatorContext: CodegenGeneratorContext, op: Code
 	for (const response of idx.allValues(op.responses)) {
 		if (response.contents && response.contents.length > 0) {
 			for (const content of response.contents) {
-				const baseName = `${op.name}_${response.code}`
-				const suffix = response.contents.length > 1 ? className(generatorContext.generator(), content.mediaType.mimeType) : ''
-				members.push(`${className(generatorContext.generator(), baseName)}${suffix}Response`)
+				members.push(responseInterfaceName(generatorContext, op, response, content))
 			}
 		} else {
-			const baseName = `${op.name}_${response.code}`
-			members.push(`${className(generatorContext.generator(), baseName)}Response`)
+			members.push(responseInterfaceName(generatorContext, op, response, null))
 		}
 	}
 	return members
+}
+
+/**
+ * The name of the interface for one response of an operation, and for one of its contents when the
+ * response has more than one. The union type and the interface declaration must use the same name.
+ */
+function responseInterfaceName(generatorContext: CodegenGeneratorContext, op: CodegenOperation, response: CodegenResponse, content: CodegenContent | null): string {
+	const baseName = `${op.name}_${response.code}`
+	const suffix = content && response.contents && response.contents.length > 1 ? className(generatorContext.generator(), content.mediaType.mimeType) : ''
+	return `${className(generatorContext.generator(), baseName)}${suffix}Response`
+}
+
+/**
+ * The `status` member of a response interface. A catch-all response matches any status code.
+ */
+function responseStatusLine(response: CodegenResponse): string {
+	return response.isCatchAll ? 'status: number' : `status: ${response.code}`
 }
 
 function collectInterfaces(generatorContext: CodegenGeneratorContext, op: CodegenOperation): string {
@@ -71,10 +85,7 @@ function collectInterfaces(generatorContext: CodegenGeneratorContext, op: Codege
 }
 
 function renderContentInterface(generatorContext: CodegenGeneratorContext, op: CodegenOperation, response: CodegenResponse, content: CodegenContent): string {
-	const baseName = `${op.name}_${response.code}`
-	const suffix = response.contents && response.contents.length > 1 ? className(generatorContext.generator(), content.mediaType.mimeType) : ''
-	const interfaceName = `${className(generatorContext.generator(), baseName)}${suffix}Response`
-	const statusLine = response.isCatchAll ? 'status: number' : `status: ${response.code}`
+	const interfaceName = responseInterfaceName(generatorContext, op, response, content)
 	const headersBlock = response.headers ? ts`
 	headers: {
 ${each(response.headers, (h) => `		${stringLiteral(generatorContext, h.name)}?: ${h.schema.nativeType}`, '\n')}
@@ -99,7 +110,7 @@ ${each(response.headers, (h) => `		${stringLiteral(generatorContext, h.name)}?: 
 
 	return ts`
 export interface ${interfaceName} {
-	${statusLine}
+	${responseStatusLine(response)}
 	contentType: ${stringLiteral(generatorContext, content.mediaType.mimeType)}
 ${bodyBlock}
 ${headersBlock}
@@ -107,14 +118,14 @@ ${headersBlock}
 }
 
 function renderNoContentInterface(generatorContext: CodegenGeneratorContext, op: CodegenOperation, response: CodegenResponse): string {
-	const interfaceName = `${className(generatorContext.generator(), op.name)}${response.code}Response`
+	const interfaceName = responseInterfaceName(generatorContext, op, response, null)
 	const headersBlock = response.headers ? ts`
 	headers: {
 ${each(response.headers, (h) => `		${stringLiteral(generatorContext, h.name)}?: ${h.schema.nativeType}`, '\n')}
 	}` : '	headers?: undefined'
 	return ts`
 export interface ${interfaceName} {
-	status: ${String(response.code)}
+	${responseStatusLine(response)}
 	body?: undefined
 ${headersBlock}
 }`
