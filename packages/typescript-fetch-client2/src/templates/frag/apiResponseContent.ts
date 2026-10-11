@@ -66,7 +66,8 @@ export function responseHeaders(response: CodegenResponse, dateApproach: DateApp
 	headers: {
 ${each(headers, (h: CodegenHeader) => {
 	const value = `response.headers.get(${stringLiteral(generatorContext, h.serializedName)})`
-	return `		${identifier(generatorContext.generator(), h.name)}: ${value} ? ${stringToSchema(h.schema, value, dateApproach)} ?? undefined : undefined,`
+	/* The condition proves the header is a non-empty string, but TypeScript does not narrow a repeated call */
+	return `		${identifier(generatorContext.generator(), h.name)}: ${value} ? ${stringToSchema(h.schema, `${value}!`, dateApproach)} : undefined,`
 }, '\n')}
 	},`)
 }
