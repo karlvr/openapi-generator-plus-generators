@@ -1,0 +1,44 @@
+---
+openapi: '3.0.3'
+info:
+  title: Response headers with formats
+  version: '1.0'
+paths:
+  /login:
+    get:
+      operationId: login
+      responses:
+        200:
+          description: OK
+          headers:
+            X-Expires-After:
+              description: When the token expires
+              schema:
+                type: string
+                format: date-time
+            X-Valid-On:
+              schema:
+                type: string
+                format: date
+            X-Rate-Limit:
+              schema:
+                type: integer
+                format: int32
+            X-Enabled:
+              schema:
+                type: boolean
+            X-Tags:
+              schema:
+                type: array
+                items:
+                  type: string
+            X-Instants:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: date-time
+          content:
+            application/json:
+              schema:
+                type: string
