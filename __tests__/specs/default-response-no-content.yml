@@ -1,0 +1,37 @@
+---
+openapi: '3.0.3'
+info:
+  version: 1.0.1
+  title: Default responses without content
+paths:
+  /only-default:
+    post:
+      operationId: onlyDefault
+      responses:
+        default:
+          description: All responses
+  /default-with-others:
+    get:
+      operationId: defaultWithOthers
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  test1:
+                    type: string
+        default:
+          description: All other
+  /default-with-headers:
+    get:
+      operationId: defaultWithHeaders
+      responses:
+        default:
+          description: All responses
+          headers:
+            X-Request-Id:
+              schema:
+                type: string
