@@ -6,7 +6,7 @@ import { extendsClause } from './frag/extends'
 import { propertyDocumentation } from './frag/propertyDocumentation'
 import { modelNestedModels } from './modelNestedModels'
 
-export function modelGeneric(generatorContext: CodegenGeneratorContext, schema: CodegenObjectSchema): string {
+export function modelGeneric(generatorContext: CodegenGeneratorContext, schema: CodegenObjectSchema, path: string[]): string {
 	const name = className(generatorContext.generator(), schema.name)
 	const parents = schema.parents ?? []
 	const implementsList = schema.implements ?? []
@@ -23,7 +23,7 @@ ${each(declaredProperties(schema), (p) => ts`
 	${maybe(propertyDocumentation({ property: p, memberOf: schema.name, generatorContext }))}
 	${p.readOnly ? 'readonly ' : ''}${quoteInvalidIdentifier(generatorContext, p.serializedName)}${p.required ? '' : '?'}: ${p.nativeType.serializedType};`, '\n')}
 }
-${modelNestedModels(generatorContext, schema)}`
+${modelNestedModels(generatorContext, schema, path)}`
 }
 
 export type _MapSchemaTypeReference = CodegenMapSchema

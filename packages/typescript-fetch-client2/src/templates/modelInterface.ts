@@ -5,7 +5,7 @@ import { declaredProperties, discriminator } from './frag/discriminator'
 import { propertyDocumentation } from './frag/propertyDocumentation'
 import { modelNestedModels } from './modelNestedModels'
 
-export function modelInterface(generatorContext: CodegenGeneratorContext, schema: CodegenInterfaceSchema): string {
+export function modelInterface(generatorContext: CodegenGeneratorContext, schema: CodegenInterfaceSchema, path: string[]): string {
 	const name = className(generatorContext.generator(), schema.name)
 	const parents = schema.parents ?? []
 
@@ -18,5 +18,5 @@ ${each(declaredProperties(schema), (p) => ts`
 	${maybe(propertyDocumentation({ property: p, memberOf: schema.name, generatorContext }))}
 	${p.serializedName}${p.required ? '' : '?'}: ${p.nativeType.serializedType};`, '\n')}
 }
-${modelNestedModels(generatorContext, schema)}`
+${modelNestedModels(generatorContext, schema, path)}`
 }
