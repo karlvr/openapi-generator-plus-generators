@@ -13,16 +13,18 @@ function defaultRuntimeImports(ctx: RootContext): string {
 }
 
 /**
- * Default body for the `defaultFetch` hook: the browser-fetch fallback.
+ * Default body for the `defaultFetch` hook: a function that calls the global `fetch`. It looks up
+ * the global `fetch` at each call, so a polyfill or a test can replace it after the client loads,
+ * and it calls `fetch` as a plain function, which browsers require. It does not refer to `window`,
+ * so it compiles without the DOM library.
  */
 function defaultDefaultFetch(): string {
-	return `const MISSING_FETCH: FetchAPI = () => { throw new Error('fetch is undefined'); };
-export const defaultFetch: FetchAPI = typeof window !== "undefined" && typeof window.fetch !== "undefined"
-	? window.fetch.bind(window) as typeof window.fetch
-	: typeof fetch !== "undefined"
-		? fetch
-		: MISSING_FETCH
-		;`
+	return `export const defaultFetch: FetchAPI = (url, init) => {
+	if (typeof fetch === "undefined") {
+		throw new Error('fetch is undefined');
+	}
+	return fetch(url, init);
+};`
 }
 
 export function runtime(ctx: DocumentContext, hooks: FetchClient2Hooks): string {
@@ -119,8 +121,11 @@ export function isDocumentedResponse<T>(response: T | UnexpectedResponse | Unaut
  * @extends {Error}
  */
 export class RequiredError extends Error {
-	constructor(public field: string, msg?: string) {
+	field: string;
+
+	constructor(field: string, msg?: string) {
 		super(msg);
+		this.field = field;
 		Object.setPrototypeOf(this, RequiredError.prototype);
 		this.name = "RequiredError";
 	}

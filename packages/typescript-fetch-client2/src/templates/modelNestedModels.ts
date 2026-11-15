@@ -2,7 +2,11 @@ import { CodegenSchema, CodegenScope, CodegenGeneratorContext } from '@openapi-g
 import { ts, className, SKIP, Skip } from '@openapi-generator-plus/template-utils'
 import { nestedModels } from './nestedModels'
 
-export function modelNestedModels(generatorContext: CodegenGeneratorContext, schema: CodegenSchema): string | Skip {
+/**
+ * Render the namespace of the schemas nested in a schema.
+ * @param path the names of the namespaces that enclose the schema, from the API namespace
+ */
+export function modelNestedModels(generatorContext: CodegenGeneratorContext, schema: CodegenSchema, path: string[]): string | Skip {
 	const scope = schema as CodegenSchema & CodegenScope
 	if (!scope.schemas) {
 		return SKIP
@@ -17,6 +21,6 @@ export function modelNestedModels(generatorContext: CodegenGeneratorContext, sch
  * @namespace ${name}
  */
 export namespace ${name} {
-${nestedModels(generatorContext, scope)}
+${nestedModels(generatorContext, scope, [...path, name])}
 }`
 }

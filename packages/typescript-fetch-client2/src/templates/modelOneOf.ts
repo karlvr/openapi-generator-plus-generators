@@ -2,9 +2,9 @@ import { CodegenOneOfSchema, CodegenAnyOfSchema, CodegenGeneratorContext } from 
 import { ts, each, className } from '@openapi-generator-plus/template-utils'
 import { modelNestedModels } from './modelNestedModels'
 
-export function modelOneOf(generatorContext: CodegenGeneratorContext, schema: CodegenOneOfSchema | CodegenAnyOfSchema): string {
+export function modelOneOf(generatorContext: CodegenGeneratorContext, schema: CodegenOneOfSchema | CodegenAnyOfSchema, path: string[]): string {
 	const name = className(generatorContext.generator(), schema.name)
 	return ts`
 export type ${name} = ${each(schema.composes, (s) => `${s.nativeType.parentType}`, ' | ')};
-${modelNestedModels(generatorContext, schema)}`
+${modelNestedModels(generatorContext, schema, path)}`
 }

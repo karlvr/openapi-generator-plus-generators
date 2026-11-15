@@ -39,7 +39,7 @@ import { COLLECTION_FORMATS, encodeURIPathSegment, RequiredError, dateToString }
 import type { FetchArgs, UnauthorizedResponse, UndocumentedResponse, FetchErrorResponse } from "../runtime${ext}";
 import { Api } from "../models${ext}";
 ${when(ctx.dateApproach === 'blind-date',
-	'import { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from \'blind-date\';')}
+	'import type { LocalDateString, LocalTimeString, LocalDateTimeString, OffsetDateTimeString } from \'blind-date\';')}
 ${maybe(hooks.apiImports?.(ctx))}
 
 namespace ${groupName}Api {

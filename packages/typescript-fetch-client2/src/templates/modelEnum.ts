@@ -2,17 +2,27 @@ import { CodegenEnumSchema, CodegenGeneratorContext } from '@openapi-generator-p
 import { ts, each, className, maybe, md, indent } from '@openapi-generator-plus/template-utils'
 import { schemaDocumentation } from './frag/schemaDocumentation'
 
-export function modelEnum(generatorContext: CodegenGeneratorContext, schema: CodegenEnumSchema): string {
+/**
+ * Render the type of an enum, the union of its values.
+ * @param path the path of the object of enum values that holds the values of this enum
+ */
+export function modelEnum(generatorContext: CodegenGeneratorContext, schema: CodegenEnumSchema, path: string[]): string {
 	const name = className(generatorContext.generator(), schema.name)
 	return ts`
 ${maybe(schemaDocumentation(schema))}
-export type ${name} = ValuesOf<typeof ${name}>;
+export type ${name} = ValuesOf<typeof ${[...path, name].join('.')}>;`
+}
 
-export const ${name} = {
+/** Render the values of an enum, as a property of the object of enum values for its scope. */
+export function modelEnumValues(generatorContext: CodegenGeneratorContext, schema: CodegenEnumSchema): string {
+	const name = className(generatorContext.generator(), schema.name)
+	return ts`
+${maybe(schemaDocumentation(schema))}
+${name}: {
 ${each(schema.enumValues, (v) => ts`
 ${maybe(v.description, d => `	/**
 ${indent(md(d), '	 * ')}
 	 */`)}
 	${v.name}: ${v.literalValue},`, '\n')}
-} as const;`
+},`
 }

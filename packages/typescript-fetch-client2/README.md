@@ -49,6 +49,15 @@ log. See [Supplying your own `fetch`](#supplying-your-own-fetch).
 The generated models use a TypeScript namespace. The `apiNamespace` config file property sets its
 name. A nested model keeps the shape of the API specification.
 
+The namespace holds only types. A constant of the same name holds the values of each enum, in the
+same nesting. So `Api.Status` is both the type of an enum and the object of its values.
+
+### Compiles with strict settings
+
+The generated client uses only erasable TypeScript syntax, and it does not need the DOM library. It
+compiles with `verbatimModuleSyntax` and `erasableSyntaxOnly`, for example in a Cloudflare Worker or
+in Node with type stripping.
+
 ### Represents dates and times in three ways
 
 The `dateApproach` config file property sets how the generated client represents a date, a time and
